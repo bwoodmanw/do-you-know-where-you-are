@@ -235,4 +235,61 @@ test('preset phrases: index only, three per ten seconds', function () {
   assert.strictEqual(evs(s, 'say').length, 4);
 });
 
+test('Patch rescues twice as fast and heals teammates close by', function () {
+  var s = game(['patch', 'tinker']);
+  var t = Rules.charById(s, 'c1'), p = Rules.charById(s, 'c0'), cage = Rules.objById(Rules.getRoom('hall'), 'cage');
+  t.caged = true; t.x = cage.x; t.y = cage.y; s.creature.appearAt = 1e9;
+  p.x = cage.x + 1; p.y = cage.y;
+  s = goAct(s, 'c0', 'cage');
+  s = run(s, 11);
+  assert.strictEqual(Rules.charById(s, 'c1').caged, false, 'freed in 1 second');
+  s = calm(game(['patch', 'tinker']));
+  s.chars[1].energy = 10; s.chars[1].stamina = 5;
+  s = Rules.apply(s, { t: 'heal', id: 'c0' });
+  assert.strictEqual(Rules.charById(s, 'c1').energy, 50);
+  assert.strictEqual(Rules.charById(s, 'c1').stamina, 100);
+  s = Rules.apply(s, { t: 'heal', id: 'c0' });
+  assert.strictEqual(evs(s, 'notyet').length, 1, 'heal recharges');
+});
+
+test('Echo throws a noise and the host goes to look, even mid-chase', function () {
+  var s = game(['echo']);
+  s.creature.appearAt = 0; s = run(s, 2);
+  s.creature.mode = 'hunt'; s.creature.target = 'c0';
+  var c = Rules.charById(s, 'c0');
+  s = Rules.apply(s, { t: 'lure', id: 'c0', x: c.x - 5, y: c.y });
+  assert.strictEqual(s.creature.mode, 'search');
+  assert.deepStrictEqual(s.creature.goal, [c.x - 5, c.y]);
+  s = Rules.apply(s, { t: 'lure', id: 'c0', x: c.x - 4, y: c.y });
+  assert.strictEqual(evs(s, 'notyet').length, 1);
+  s = calm(game(['echo']));
+  s = Rules.apply(s, { t: 'lure', id: 'c0', x: 0, y: 0 });
+  assert.strictEqual(evs(s, 'toofar').length, 1, 'too far away');
+  s = calm(game(['echo']));
+  s = Rules.apply(s, { t: 'lure', id: 'c0', x: 10, y: 17 });
+  assert.strictEqual(evs(s, 'lure').length, 1, 'aimed at a wall lands beside it');
+  assert.ok(Rules.walkable(s, evs(s, 'lure')[0].x, evs(s, 'lure')[0].y));
+});
+
+test('Bramble talks to the library plant and learns the code; others are told who can', function () {
+  var s = calm(game(['bramble']));
+  s = goAct(s, 'c0', 'plant'); s = untilIdle(s, 'c0');
+  assert.deepStrictEqual(s.known, s.code);
+  s = calm(game(['muscle']));
+  s = goAct(s, 'c0', 'plant'); s = untilIdle(s, 'c0');
+  assert.strictEqual(evs(s, 'need')[0].skill, 'bramble');
+});
+
+test('the three new characters can each clear the house alone', function () {
+  ['patch', 'echo', 'bramble'].forEach(function (ch) {
+    var s = calm(game([ch])), i;
+    if (ch === 'bramble') { s = goAct(s, 'c0', 'plant'); s = untilIdle(s, 'c0'); }
+    else { ['b0', 'b1', 'b2'].forEach(function (b) { s = goAct(s, 'c0', b); s = untilIdle(s, 'c0'); }); }
+    s = goAct(s, 'c0', 'door'); s = untilIdle(s, 'c0');
+    for (i = 0; i < 3; i++) { s = Rules.apply(s, { t: 'press', id: 'c0', c: s.code[i] }); }
+    s = goAct(s, 'c0', 'door'); s = untilIdle(s, 'c0');
+    assert.strictEqual(s.status, 'cleared', ch + ' cleared');
+  });
+});
+
 console.log('\n' + passed + ' passed' + (process.exitCode ? ', some FAILED' : ''));

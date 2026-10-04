@@ -29,7 +29,8 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 .wob span { display: inline-block; animation: wob 2.6s ease-in-out infinite; }
 @keyframes wob { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-4px) rotate(-3deg); } }
 /* squad picker */
-#cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 760px; }
+#cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 600px; }
+#squad { overflow-y: auto; justify-content: flex-start; touch-action: pan-y; }
 .card { width: 132px; background: #2b1d40; border-radius: 16px; padding: 8px; position: relative; border: 3px solid transparent; }
 .card.pick { border-color: var(--slime); background: #233a2a; }
 .card canvas { width: 96px; height: 96px; }

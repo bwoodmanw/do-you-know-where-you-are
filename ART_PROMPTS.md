@@ -1,153 +1,170 @@
-# Art prompts - sheets for development
+# Art prompts - sheets for ChatGPT's image maker
 
-**How this works.** Brent runs a prompt in an image tool and saves the result
-into `art/sheets/` with the filename given. Claude checks it, looks at it, and
-uses it. Until a sheet arrives, the game keeps its code-drawn art, so nothing
-waits.
+**Audience is now 8+** (decided 4 Oct 2026), and the look is **realistic,
+stylised 3D** - the level of detail kids know from online hide-and-seek and
+murder-mystery games - not the simple blobs drawn in code today.
 
-**Give the image tool the reference sheets too.** `art/reference/` holds the
-code-drawn versions of what is in the game today - attach the matching one to
-each prompt ("match this style and these characters") so the AI sheets look
-like the same game:
+## How to use these
 
-| Reference | Shows |
+1. Open ChatGPT, choose image creation.
+2. Paste the **style block** below, then the prompt for one sheet.
+3. Use the size given (ChatGPT offers square 1024 x 1024, wide 1536 x 1024,
+   tall 1024 x 1536).
+4. If the first result is close but not right, reply in the same chat with
+   what to change ("make the goggles brass", "same character, but the back
+   view") - it keeps the character more consistent than starting again.
+5. Save each image into `art/sheets/` with the exact filename given, and tell
+   Claude which ones are there.
+
+**The repo is public, so the site is public.** Reject and regenerate anything
+that looks like a character from a film, show, toy, or game - including
+Roblox avatars, Minecraft, Among Us, Five Nights at Freddy's, Pokemon, Jack
+Skellington, or branded sweets. No logos, no brand names, no text in the
+image.
+
+**What each sheet is for** (Brent's decision, 4 Oct 2026):
+
+| Sheet | Used how |
 |---|---|
-| `art/reference/characters.png` | All 8 characters (5 starters + 3 unlockables), standing / walking / scared |
-| `art/reference/host-party.png` | The Halloween party host: wandering, hunting, stunned |
-| `art/reference/parts-today.png` | The eyes, headwear and body colours the game can draw today |
+| Characters, customisation parts | **Design guide.** Claude redraws them in the game to match, so every part fits every character and works offline. |
+| Hosts, jumpscares | **Go in directly** - the jumpscare, the host's portrait, the title screen. |
+| Rooms | **Go in directly** as the room's arrival card, loading and safe-area screens, and they set the look of the playable room. |
+| Textures | **Go in directly** onto the floors and walls of the playable rooms. |
 
-**The repo is public.** Before saving, check nothing looks like a character
-from a film, cartoon, anime, game or toy brand (no Roblox, Minecraft, Among Us,
-Five Nights at Freddy's, Pokemon, Jack Skellington, Haribo bears). If it does,
-regenerate.
+## Style block - paste first, every time
 
-## How the sheets get used (decision 1 in chat)
+> Stylised 3D game render, like a polished modern online kids' horror-escape
+> game (hide-and-seek / murder-mystery style), for ages 8 and up. Realistic
+> lighting and soft shadows, detailed materials (fabric, wood, plastic,
+> metal), slightly chunky, appealing proportions. Creepy and tense but never
+> gory: no blood, wounds, weapons or body horror. Not blocky toy avatars. No
+> text, letters, logos, brand names or watermark.
 
-AI image tools do not keep parts exactly the same size and position from one
-picture to the next, and a 2.5D game needs every part to line up on every
-character. So:
+## 1. Character turnaround sheets (8)
 
-- **Character, host and parts sheets are design references.** Claude redraws
-  each part in code to match them. Customisation stays endless, tiny and
-  offline, and every part fits every body.
-- **Room sheets and hosts can also be used directly** as backdrops, jumpscare
-  pictures and title art, because nothing has to line up with a tile.
+Size: **1536 x 1024**. Filename: `art/sheets/char-<name>.png`.
 
-## Style line - paste at the start of every prompt
+> Character turnaround sheet of ONE child character, about 10 years old, full
+> body, on a plain light grey background. Top row, four views, same size and
+> pose height: front, three-quarter front, side, back. Bottom row, four
+> poses: running, hiding (crouched, peeking), scared (jumping back), cheering.
+> Same outfit and colours in all eight. [CHARACTER]
 
-> Children's game art for ages 6 and up. Spooky-cute, never gory: no blood,
-> wounds or weapons. Round, chunky, soft shapes; thick soft outlines; flat
-> colour with gentle shading, like a modern picture book or a friendly mobile
-> game. Characters are small rounded blob-bodies with big expressive eyes,
-> stubby feet and no arms, as in the attached reference. No text, letters,
-> logos or watermark. Plain light background unless the prompt says otherwise.
-
-## 1. Character sheets - one per character
-
-Filename: `art/sheets/char-<name>.png`, e.g. `char-tinker.png`. 2048 x 1024.
-
-> Character turnaround sheet for one character, in a 4 x 2 grid of equal
-> squares, same size and scale in every square: front, three-quarter front,
-> side, back; then happy, scared (mouth an O), sneaking (crouched, eyes
-> narrow), cheering. [CHARACTER DESCRIPTION]
-
-| Name | Description to paste |
+| Name | [CHARACTER] |
 |---|---|
-| Tinker | An orange blob with a blue lower half like overalls, round brown-rimmed goggles over big eyes, a blue cap worn slightly sideways with a yellow button. A little spanner tucked in a pocket. Cheerful and curious. |
-| Shadow | A lavender-purple blob with a dark purple lower half, a black ninja-style mask band across the eyes with tails that flutter, sleepy half-closed eyes. Quiet and sly. |
-| Brainy | A sky-blue blob with a white lower half like a lab coat, big round black glasses, a red beanie with a blue propeller on top. Clever and excitable. |
-| Muscle | A red blob with a charcoal lower half, a yellow sweatband with tails, determined eyebrows, a confident grin. Strong and kind. |
-| Glow | A lime-green blob with a dark green lower half, huge shiny eyes, a curly antenna on top with a glowing yellow bulb. Gentle and bright. |
-| Patch (unlock) | A pink blob with a white lower half, big friendly eyes, a sticking plaster on the forehead, a little first-aid bag (no cross symbol). Caring and fast. |
-| Echo (unlock) | A yellow blob with a purple lower half, round goggles, big dark headphones over the top. Always listening. |
-| Bramble (unlock) | A leafy-green blob with a brown lower half like bark, sleepy eyes, a crown of green leaves growing from the head, a tiny flower. Calm, talks to plants. |
+| Tinker | An inventive kid in blue dungarees over an orange T-shirt, brass-rimmed workshop goggles pushed up on a blue cap worn slightly sideways, a tool belt with a small spanner and screwdriver, scuffed trainers. Curious, quick grin. |
+| Shadow | A quiet, sly kid in a dark purple hoodie with the hood up, a black cloth mask over the lower face, dark joggers and soft black sneakers, purple fingerless gloves. Moves like a cat. |
+| Brainy | A clever kid in a white lab coat over a sky-blue jumper, big round black glasses, a red beanie with a little blue propeller, a notebook and pencil behind the ear. Excitable. |
+| Muscle | A strong, kind kid in a red sports jersey with no team name, charcoal shorts, a yellow sweatband, high-top trainers, rolled-up sleeves. Confident. |
+| Glow | A gentle kid in a lime-green glow-in-the-dark raincoat, a headband with a curly antenna and a glowing bulb, a head torch around the neck, green wellies. Bright eyes. |
+| Patch | A caring kid in a pink medic-style vest over a white top, a sticking plaster on the forehead, a small first-aid satchel with a heart (no red cross), comfy trainers. |
+| Echo | A watchful kid in a yellow bomber jacket and purple trousers, big dark headphones around the neck, round goggles, a little handheld sound gadget. |
+| Bramble | An outdoorsy kid in a leaf-green poncho and brown cargo shorts, a crown of real leaves and one small flower in the hair, muddy boots, a pouch of seeds. Calm. |
 
-## 2. Host sheets - one per theme
+## 2. Host sheets - one per theme, plus a jumpscare each
 
-Filename: `art/sheets/host-<theme>.png`. 2048 x 1024, light background, 4 x 2
-grid: front, three-quarter, side, back; wandering, hunting (reaching), stunned,
-silly moment.
+Turnaround: **1536 x 1024**, `art/sheets/host-<theme>.png`:
 
-| Theme | Host description to paste |
+> Creature turnaround sheet on a plain light grey background. Top row: front,
+> three-quarter, side, back. Bottom row: wandering, hunting (lunging, arms
+> reaching), stunned, a funny moment. The creature is about twice the height of
+> a 10-year-old. [HOST]
+
+Jumpscare: **1536 x 1024**, `art/sheets/host-<theme>-scare.png`:
+
+> Extreme close-up of [HOST NAME] lunging out of total darkness toward the
+> viewer, only the face and hands lit from below, dramatic. Startling, not gory.
+
+| Theme | [HOST] |
 |---|---|
-| Party (Halloween) | A very tall, thin party host in a dark purple tailcoat and bow tie, long thin arms, white gloves. His head is a carved pumpkin mask, melting a little - orange drips. Triangle eyes and a jagged grin glow candle-yellow (red when hunting). A tilted striped green party hat. Creepy but funny: too eager for you to stay for cake. Silly moment: the mask has slipped and he is trying to push it back up. |
-| Gummy Bounce House | A giant wobbly jelly ringmaster made of translucent raspberry gummy, a tiny top hat, a sparkly cane, a wide grin of sugar-crystal teeth. Bounces instead of walking; leaves a sticky trail. Silly moment: stuck to the floor by his own goo. |
-| Abandoned Hospital | A tall, rattling night-shift robot: a lamp for a head that flickers, a body like an old drip stand on squeaky wheels, long bendy arms holding a clipboard. Wants to "take your temperature". No blood, no needles shown. Silly moment: the lamp head blows a bulb and it bumps into a trolley. |
+| `party` (Halloween, now) | **The Party Host.** Very tall and thin, in a worn dark purple tailcoat, bow tie and white gloves, long arms. His head is a carved pumpkin mask that is melting - glossy orange drips at the chin - with triangle eyes and a jagged grin glowing candle-yellow (red when hunting). A crooked striped party hat. Funny moment: his mask has slipped sideways and he is pushing it back. |
+| `gummy` (next) | **The Jelly Ringmaster.** A towering, translucent raspberry-gummy figure with light passing through it, a tiny top hat, a sparkly cane, a wide grin of sugar-crystal teeth. Wobbles and bounces, leaves a glossy sticky trail. Funny moment: stuck to the floor by his own goo. |
+| `hospital` (later) | **The Night Shift.** A tall, creaking robot built from an old drip stand on squeaky wheels, a flickering examination lamp for a head, long jointed arms holding a clipboard and a thermometer. Wants to "take your temperature". No needles, no blood. Funny moment: its lamp pops and it rolls into a trolley. |
 
-Add a jumpscare picture per host too: `art/sheets/host-<theme>-scare.png`,
-1536 x 1024, black background:
+## 3. Room pictures
 
-> Extreme close-up of [host] lunging toward the viewer out of total darkness,
-> only the face lit. Startling, not gory.
+Size: **1536 x 1024**. Filename: `art/sheets/room-<theme>-<room>.png`.
 
-## 3. Room sheets - one per room
+> Isometric three-quarter view from above of one room in a game level, like a
+> diorama with the near walls cut away so you can see in. Realistic lighting
+> and materials. No people or creatures. [ROOM] Lighting: [LIGHT].
 
-Filename: `art/sheets/room-<theme>-<room>.png`. 1536 x 1024.
+### Party House (Halloween) - in the game now
 
-> Isometric game room, seen from above at an angle like a cosy tablet game,
-> the floor a diamond grid, low walls on the near sides so you can see in, tall
-> walls at the back. [ROOM DESCRIPTION] Plenty of floor space to walk around.
-> Lighting: [LIGHT]. No characters in the room.
-
-### The Party House (Halloween) - built in the game now
-
-| File | Room description | Light |
+| Filename | [ROOM] | [LIGHT] |
 |---|---|---|
-| `room-party-parlour.png` | A Victorian parlour: plum carpet, a tall wardrobe, a squashy purple sofa, a framed party invitation on the back wall, a numbered party balloon, a fireplace with a carved pumpkin. | candle-yellow, cosy-creepy |
-| `room-party-corridor.png` | A long wooden-floored corridor leading to a huge front door with a coloured keypad; a blue wrapped present on the floor; portraits whose eyes follow you. | moonlight through a fanlight |
-| `room-party-library.png` | A library: green carpet, two long rows of bookshelves, a curtained reading nook, faint glow-paint squiggles on the back wall. | dark, one green lamp |
-| `room-party-kitchen.png` | A kitchen: black-and-white checker floor, a long counter with party food, a pantry cupboard, a dark creature-door in the side wall with two red eyes, a numbered balloon, a red present. | fridge glow |
-| `room-party-hall.png` | The front hall: wooden floor, a long party table with a white cloth, orange scalloped edge and a birthday cake, a cage in the corner with a cushion inside, a red curtain. | chandelier, flickering |
-| `room-party-gameroom.png` | A games room: purple carpet, a big wooden cabinet against the side wall hiding a hole, a cardboard box, a numbered balloon, board games and a ball pit. | disco-ball sparkles |
-| `room-party-garden.png` | The safe area: the back garden at night, fairy lights, parents waving by a gate, a cheerful glow. | warm and safe |
+| `room-party-parlour.png` | A Victorian parlour: plum carpet, tall dark wardrobe, squashy purple sofa, fireplace with a carved pumpkin, a framed party invitation on the back wall, one white balloon with a number 2 on it. | candlelight, cosy but wrong |
+| `room-party-corridor.png` | A long wooden corridor ending in a huge front door with a four-colour keypad, old portraits on the walls, a blue wrapped present on the floor. | cold moonlight through a fanlight |
+| `room-party-library.png` | Two long rows of bookshelves, green carpet, a curtained reading nook, a large leafy potted plant in the corner, faint glow-paint scribbles on the back wall. | one green banker's lamp |
+| `room-party-kitchen.png` | Black-and-white tiled floor, a long counter of party food, a pantry cupboard, a small dark door in the side wall with two red eyes inside, a white balloon numbered 1, a red present. | the glow of an open fridge |
+| `room-party-hall.png` | The front hall: wooden floor, a long party table with a white cloth, orange scalloped trim and a birthday cake, a metal cage with a cushion in the corner, a red velvet curtain. | flickering chandelier |
+| `room-party-gameroom.png` | Purple carpet, a big wooden cabinet against the side wall, a large cardboard box, a white balloon numbered 3, board games, a ball pit, a disco ball. | disco-ball sparkles in the dark |
+| `room-party-garden.png` | The safe area: the back garden at night with fairy lights and a gate; warm light; a welcoming bench. | warm and safe |
 
 ### Gummy Bounce House (next theme)
 
-| File | Room description |
+| Filename | [ROOM] |
 |---|---|
-| `room-gummy-lobby.png` | A bouncy-castle lobby made of jelly, gummy-bear-shaped (not branded) statues, candy-stripe walls. |
-| `room-gummy-pit.png` | A giant ball pit of gumdrops with hiding spots under the balls. |
-| `room-gummy-slide.png` | A rainbow sprinkle slide tower with platforms and sparkle-power pads. |
-| `room-gummy-vault.png` | A sticky caramel vault with a wobbling jelly door and colour switches. |
-| `room-gummy-safe.png` | Safe area: a cloud of candyfloss above the castle. |
+| `room-gummy-lobby.png` | A bouncy-castle lobby made of jelly, candy-stripe walls, giant gummy statues (not any brand). |
+| `room-gummy-pit.png` | A giant pit of gumdrops with hiding gaps underneath. |
+| `room-gummy-slide.png` | A rainbow sprinkle slide tower with platforms and glowing sparkle-power pads. |
+| `room-gummy-vault.png` | A caramel vault with a wobbling jelly door and colour switches. |
+| `room-gummy-safe.png` | Safe area: a floating cloud of candyfloss above the castle. |
 
 ### Abandoned Hospital (later theme)
 
-| File | Room description |
+| Filename | [ROOM] |
 |---|---|
-| `room-hospital-waiting.png` | A dusty waiting room: tipped chairs, a fish tank with one cheerful fish, a reception desk with a bell. |
+| `room-hospital-waiting.png` | A dusty waiting room: tipped chairs, a reception desk with a bell, a fish tank with one cheerful fish. |
 | `room-hospital-ward.png` | A ward of empty beds with curtains to hide behind, wheeled trolleys. |
-| `room-hospital-xray.png` | An X-ray room with a glowing lightbox showing a silly skeleton doing a dance. |
-| `room-hospital-pharmacy.png` | A pharmacy with tall shelves of coloured bottles (no pills or needles shown) and a locked hatch. |
-| `room-hospital-boiler.png` | A basement boiler room, pipes, steam, a big red lever. |
-| `room-hospital-safe.png` | Safe area: an ambulance bay at dawn, parents waiting. |
+| `room-hospital-xray.png` | An X-ray room with a glowing lightbox showing a cartoon skeleton dancing. |
+| `room-hospital-pharmacy.png` | Tall shelves of coloured bottles (no pills or needles), a locked hatch. |
+| `room-hospital-boiler.png` | A basement boiler room: pipes, steam, a big red lever. |
+| `room-hospital-safe.png` | Safe area: an ambulance bay at dawn, a waiting family car. |
 
-## 4. Customisation part sheets
+## 4. Textures for the playable rooms
 
-Filename: `art/sheets/parts-<kind>.png`. 2048 x 2048, a 4 x 4 grid of equal
-squares, one item per square, all drawn **on the same plain lavender blob
-body** (from `parts-today.png`), same size, same position, facing front, light
-background.
+Size: **1024 x 1024**. Filename: `art/sheets/tex-<name>.png`.
 
-> Customisation sheet for a character creator: sixteen variations of
-> [PART], each in its own square on the same plain lavender blob character,
-> identical body size and position in every square, only the [PART] changes.
+> Seamless tileable texture, viewed straight from above, evenly lit, no
+> shadows, no objects: [SURFACE]. It must tile with no visible seam.
 
-| File | [PART] - ask for variety like this |
+| Filename | [SURFACE] |
 |---|---|
-| `parts-eyes.png` | eyes: round, sleepy, starry, heart, wink, tiny dots, huge sparkly, cat, robot screen, spiral, googly, lashes, half-moon, cross-eyed silly, glowing, one big one small |
-| `parts-eyebrows.png` | eyebrows: none, thin, bushy, angry, worried, raised, unibrow, zigzag, dots, thick straight, curly, sparkles |
-| `parts-mouths.png` | mouths: smile, big grin with teeth, O, tongue out, toothy gap, fangs (cute), wobbly, cat mouth, whistle, laugh, smirk, braces |
-| `parts-noses.png` | noses: none, button, round red, triangle, pig snout, freckles, whiskers, star, long, heart |
-| `parts-hair.png` | hair and hats: spiky, curly afro, pigtails, bob, mohawk, beanie, cap, wizard hat, crown, bunny ears, cat ears, bandana, top hat, bow, flower, leaves |
-| `parts-tops.png` | shirts on the lower half of the body: striped tee, hoodie, dungarees, lab coat, superhero cape, raincoat, jumper with a pumpkin, tank top, sports jersey (no team names), pyjamas, ninja wrap, sequins |
-| `parts-bottoms.png` | bottoms visible above the feet: shorts, skirt, tutu, jeans, swim shorts, kilt-style skirt, leggings, cargo shorts |
-| `parts-shoes.png` | feet and shoes: trainers, wellies, slippers, roller skates, flippers, cowboy boots, ballet shoes, rocket boots |
-| `parts-extras.png` | extras: backpack, scarf, cape, wings, tail, glasses, eyepatch (pirate), medal, bow tie, necklace, wand, umbrella, balloon on a string, pet mouse, torch, lollipop |
+| `tex-wood.png` | old honey-coloured wooden floorboards |
+| `tex-darkwood.png` | dark worn wooden corridor boards |
+| `tex-carpet-plum.png` | faded plum Victorian carpet with a subtle pattern |
+| `tex-carpet-green.png` | worn green library carpet |
+| `tex-carpet-purple.png` | purple games-room carpet with a faint star pattern |
+| `tex-tiles.png` | black-and-white checker kitchen tiles, slightly grimy |
+| `tex-wallpaper.png` | peeling Victorian party wallpaper, dark purple stripes with small orange balloons |
+
+## 5. Customisation sheets (9) - design guides
+
+Size: **1024 x 1024**. Filename: `art/sheets/parts-<kind>.png`.
+
+> Character-creator sheet: a 4 x 4 grid of sixteen equal squares on a plain
+> light grey background. In every square the SAME plain 10-year-old
+> mannequin-style character (grey T-shirt, grey shorts, neutral face), same
+> pose, same size, same position - only the [PART] changes. Each square shows
+> a different [PART]: [LIST].
+
+| Filename | [PART] | [LIST] |
+|---|---|---|
+| `parts-eyes.png` | eyes | round, sleepy, starry, wink, narrow and sly, huge and sparkly, cat-like, glowing, worried, determined, tired with bags, one eyebrow raised, laughing shut, wide with fright, heterochromia, freckled under-eye |
+| `parts-eyebrows.png` | eyebrows | none, thin, bushy, angry, worried, raised, unibrow, zigzag, thick straight, curly, pierced-look (no metal), scar notch, arched, flat, tiny, sparkly |
+| `parts-mouths.png` | mouth | smile, big toothy grin, O, tongue out, gap tooth, braces, cheeky smirk, nervous, laughing, whistling, frown, determined line, cat mouth, buck teeth, lollipop in mouth, face mask |
+| `parts-noses.png` | nose | small button, round, pointed, freckled, wide, upturned, long, sunburnt, plaster on nose, clown red, whiskers drawn on, narrow, hooked, tiny, star sticker, snub |
+| `parts-hair.png` | hair or headwear | short spiky, curly afro, two puffs, long braids, bob, mohawk, beanie, baseball cap, bucket hat, wizard hat, bunny ears, cat ears, bandana, top hat, flower crown, hood up |
+| `parts-tops.png` | top | striped tee, hoodie, dungarees, lab coat, superhero cape, raincoat, Halloween-pumpkin jumper, tank top, plain sports jersey, pyjamas, ninja wrap, sequin jacket, denim jacket, puffer coat, knitted cardigan, explorer shirt |
+| `parts-bottoms.png` | bottoms | shorts, skirt, tutu, jeans, joggers, cargo shorts, leggings, dungaree legs, kilt-style skirt, pyjama bottoms, swim shorts, ripped jeans, snow trousers, karate trousers, tracksuit, overall shorts |
+| `parts-shoes.png` | shoes | trainers, wellies, slippers, roller skates, flippers, cowboy boots, ballet shoes, rocket boots, flip-flops, hiking boots, light-up trainers, socks only, clogs, football boots (no logos), sandals, bunny slippers |
+| `parts-extras.png` | accessory | backpack, scarf, cape, small wings, tail, round glasses, eyepatch, medal, bow tie, necklace, wand, umbrella, balloon on a string, pet mouse on the shoulder, torch, skateboard |
 
 ## After saving
 
-Tell Claude which files are in `art/sheets/`. Claude checks each for
-resemblance to known characters, looks at it, and either redraws the parts in
-code to match (characters, parts) or wires the picture in (rooms, scares,
-title).
+Tell Claude which files are in `art/sheets/`. Claude checks each one for
+resemblance to known characters or brands, looks at it, and then either wires
+it in (hosts, scares, rooms, textures) or redraws the game's characters and
+parts to match (characters, parts) - the character creator screen gets built
+once the parts sheets are in.

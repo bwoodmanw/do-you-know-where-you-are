@@ -164,7 +164,7 @@ var Rules = (function () {
         path: [], run: false, running: false, act: null, chan: null, moveCd: 0,
         stamina: 100, tired: false, energy: 100, shield: false, freeRunUntil: 0,
         hidden: false, hideId: null, caged: false, escaped: false,
-        sneakUntil: 0, sneakReady: 0
+        sneakUntil: 0, sneakReady: 0, healReady: 0, lureReady: 0
       });
       if (s.points[sq.id] === undefined) { s.points[sq.id] = 0; }
     }
@@ -207,6 +207,12 @@ var Rules = (function () {
       else { event(s, 'need', { id: c.id, skill: 'brainy', obj: o.id }); }
       return;
     }
+    if (o.kind === 'plant') {
+      if (st.talked) { return; }
+      if (c.char === 'bramble') { c.chan = { act: 'talk', obj: o.id, left: 15, total: 15 }; }
+      else { event(s, 'need', { id: c.id, skill: 'bramble', obj: o.id }); }
+      return;
+    }
     if (o.kind === 'uv') {
       if (s.uvLit) { return; }
       if (c.char === 'glow') { c.chan = { act: 'light', obj: o.id, left: 15, total: 15 }; }
@@ -217,6 +223,7 @@ var Rules = (function () {
       for (i = 0; i < s.chars.length; i++) {
         if (s.chars[i].caged) {
           n = s.spook === 'spooky' ? 30 : 20;
+          if (c.char === 'patch') { n = Math.ceil(n / 2); }
           c.chan = { act: 'rescue', obj: o.id, left: n, total: n };
           return;
         }
@@ -245,8 +252,8 @@ var Rules = (function () {
       if (o.boost === 'shield') { c.shield = true; }
       else { c.freeRunUntil = s.tick + 200; }
       event(s, 'boost', { id: c.id, obj: o.id, boost: o.boost });
-    } else if (ch.act === 'read' || ch.act === 'light') {
-      if (ch.act === 'read') { st.read = true; } else { s.uvLit = true; }
+    } else if (ch.act === 'read' || ch.act === 'light' || ch.act === 'talk') {
+      if (ch.act === 'read') { st.read = true; } else if (ch.act === 'talk') { st.talked = true; } else { s.uvLit = true; }
       for (i = 0; i < 3; i++) { s.known[i] = s.code[i]; }
       addPoints(s, c, 10);
       event(s, 'reveal', { id: c.id, by: c.char });
@@ -430,6 +437,7 @@ var Rules = (function () {
     if (has.muscle) { return { obj: 'cab', say: 'That cabinet is hiding something. Muscle can shove it!' }; }
     if (has.brainy && !s.obj.invite.read) { return { obj: 'invite', say: 'Brainy can read the twisty party invitation.' }; }
     if (has.glow && !s.uvLit) { return { obj: 'uv', say: 'Glow can light up the painted wall.' }; }
+    if (has.bramble && s.obj.plant && !s.obj.plant.talked) { return { obj: 'plant', say: 'Bramble can ask the big plant in the library - it saw everything.' }; }
     for (i = 0; i < r.objects.length; i++) {
       if (r.objects[i].kind === 'balloon' && !s.obj[r.objects[i].id].popped) {
         return { obj: r.objects[i].id, say: 'Pop the balloons - each one hides a colour of the door code. Watch the numbers!' };
@@ -506,6 +514,36 @@ var Rules = (function () {
       c.energy -= cost; s.cluesLeft -= 1;
       s.hint = hintFor(s); s.hint.until = s.tick + 150;
       event(s, 'clue', { id: c.id, obj: s.hint.obj, say: s.hint.say });
+    } else if (move.t === 'heal') {
+      // Patch: energy and stamina back for Patch and free teammates close by
+      if (!c || c.char !== 'patch' || !isFree(c)) { return s; }
+      if (s.tick < c.healReady) { event(s, 'notyet', { id: c.id, wait: c.healReady - s.tick }); return s; }
+      c.healReady = s.tick + 300;
+      for (i = 0; i < s.chars.length; i++) {
+        var mate = s.chars[i];
+        if (isFree(mate) && cheb(mate.x, mate.y, c.x, c.y) <= 2) {
+          mate.energy = Math.min(100, mate.energy + 40); mate.stamina = 100; mate.tired = false;
+        }
+      }
+      event(s, 'heal', { id: c.id });
+    } else if (move.t === 'lure') {
+      // Echo: throw a noise; the host goes to look, even mid-chase
+      if (!c || c.char !== 'echo' || !isFree(c)) { return s; }
+      if (s.tick < c.lureReady) { event(s, 'notyet', { id: c.id, wait: c.lureReady - s.tick }); return s; }
+      tx = move.x | 0; ty = move.y | 0;
+      if (!walkable(s, tx, ty)) {
+        // aimed at a wall or table: land on the nearest floor beside it
+        ok = false;
+        for (i = 0; i < 8 && !ok; i++) {
+          var nx = tx + [0, 1, 0, -1, 1, 1, -1, -1][i], ny = ty + [-1, 0, 1, 0, -1, 1, 1, -1][i];
+          if (walkable(s, nx, ny)) { tx = nx; ty = ny; ok = true; }
+        }
+        if (!ok) { event(s, 'toofar', { id: c.id }); return s; }
+      }
+      if (cheb(tx, ty, c.x, c.y) > 8) { event(s, 'toofar', { id: c.id }); return s; }
+      c.lureReady = s.tick + 250;
+      if (s.creature.active) { s.creature.mode = 'search'; s.creature.goal = [tx, ty]; s.creature.lost = 0; }
+      event(s, 'lure', { id: c.id, x: tx, y: ty });
     } else if (move.t === 'sneak') {
       if (!c || c.char !== 'shadow' || !isFree(c)) { return s; }
       if (s.tick < c.sneakReady) { event(s, 'notyet', { id: c.id, wait: c.sneakReady - s.tick }); return s; }

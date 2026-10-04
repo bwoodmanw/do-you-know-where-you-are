@@ -29,7 +29,8 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 .wob span { display: inline-block; animation: wob 2.6s ease-in-out infinite; }
 @keyframes wob { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-4px) rotate(-3deg); } }
 /* squad picker */
-#cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 760px; }
+#cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 600px; }
+#squad { overflow-y: auto; justify-content: flex-start; touch-action: pan-y; }
 .card { width: 132px; background: #2b1d40; border-radius: 16px; padding: 8px; position: relative; border: 3px solid transparent; }
 .card.pick { border-color: var(--slime); background: #233a2a; }
 .card canvas { width: 96px; height: 96px; }
@@ -333,7 +334,7 @@ var Rules = (function () {
         path: [], run: false, running: false, act: null, chan: null, moveCd: 0,
         stamina: 100, tired: false, energy: 100, shield: false, freeRunUntil: 0,
         hidden: false, hideId: null, caged: false, escaped: false,
-        sneakUntil: 0, sneakReady: 0
+        sneakUntil: 0, sneakReady: 0, healReady: 0, lureReady: 0
       });
       if (s.points[sq.id] === undefined) { s.points[sq.id] = 0; }
     }
@@ -376,6 +377,12 @@ var Rules = (function () {
       else { event(s, 'need', { id: c.id, skill: 'brainy', obj: o.id }); }
       return;
     }
+    if (o.kind === 'plant') {
+      if (st.talked) { return; }
+      if (c.char === 'bramble') { c.chan = { act: 'talk', obj: o.id, left: 15, total: 15 }; }
+      else { event(s, 'need', { id: c.id, skill: 'bramble', obj: o.id }); }
+      return;
+    }
     if (o.kind === 'uv') {
       if (s.uvLit) { return; }
       if (c.char === 'glow') { c.chan = { act: 'light', obj: o.id, left: 15, total: 15 }; }
@@ -386,6 +393,7 @@ var Rules = (function () {
       for (i = 0; i < s.chars.length; i++) {
         if (s.chars[i].caged) {
           n = s.spook === 'spooky' ? 30 : 20;
+          if (c.char === 'patch') { n = Math.ceil(n / 2); }
           c.chan = { act: 'rescue', obj: o.id, left: n, total: n };
           return;
         }
@@ -414,8 +422,8 @@ var Rules = (function () {
       if (o.boost === 'shield') { c.shield = true; }
       else { c.freeRunUntil = s.tick + 200; }
       event(s, 'boost', { id: c.id, obj: o.id, boost: o.boost });
-    } else if (ch.act === 'read' || ch.act === 'light') {
-      if (ch.act === 'read') { st.read = true; } else { s.uvLit = true; }
+    } else if (ch.act === 'read' || ch.act === 'light' || ch.act === 'talk') {
+      if (ch.act === 'read') { st.read = true; } else if (ch.act === 'talk') { st.talked = true; } else { s.uvLit = true; }
       for (i = 0; i < 3; i++) { s.known[i] = s.code[i]; }
       addPoints(s, c, 10);
       event(s, 'reveal', { id: c.id, by: c.char });
@@ -599,6 +607,7 @@ var Rules = (function () {
     if (has.muscle) { return { obj: 'cab', say: 'That cabinet is hiding something. Muscle can shove it!' }; }
     if (has.brainy && !s.obj.invite.read) { return { obj: 'invite', say: 'Brainy can read the twisty party invitation.' }; }
     if (has.glow && !s.uvLit) { return { obj: 'uv', say: 'Glow can light up the painted wall.' }; }
+    if (has.bramble && s.obj.plant && !s.obj.plant.talked) { return { obj: 'plant', say: 'Bramble can ask the big plant in the library - it saw everything.' }; }
     for (i = 0; i < r.objects.length; i++) {
       if (r.objects[i].kind === 'balloon' && !s.obj[r.objects[i].id].popped) {
         return { obj: r.objects[i].id, say: 'Pop the balloons - each one hides a colour of the door code. Watch the numbers!' };
@@ -675,6 +684,36 @@ var Rules = (function () {
       c.energy -= cost; s.cluesLeft -= 1;
       s.hint = hintFor(s); s.hint.until = s.tick + 150;
       event(s, 'clue', { id: c.id, obj: s.hint.obj, say: s.hint.say });
+    } else if (move.t === 'heal') {
+      // Patch: energy and stamina back for Patch and free teammates close by
+      if (!c || c.char !== 'patch' || !isFree(c)) { return s; }
+      if (s.tick < c.healReady) { event(s, 'notyet', { id: c.id, wait: c.healReady - s.tick }); return s; }
+      c.healReady = s.tick + 300;
+      for (i = 0; i < s.chars.length; i++) {
+        var mate = s.chars[i];
+        if (isFree(mate) && cheb(mate.x, mate.y, c.x, c.y) <= 2) {
+          mate.energy = Math.min(100, mate.energy + 40); mate.stamina = 100; mate.tired = false;
+        }
+      }
+      event(s, 'heal', { id: c.id });
+    } else if (move.t === 'lure') {
+      // Echo: throw a noise; the host goes to look, even mid-chase
+      if (!c || c.char !== 'echo' || !isFree(c)) { return s; }
+      if (s.tick < c.lureReady) { event(s, 'notyet', { id: c.id, wait: c.lureReady - s.tick }); return s; }
+      tx = move.x | 0; ty = move.y | 0;
+      if (!walkable(s, tx, ty)) {
+        // aimed at a wall or table: land on the nearest floor beside it
+        ok = false;
+        for (i = 0; i < 8 && !ok; i++) {
+          var nx = tx + [0, 1, 0, -1, 1, 1, -1, -1][i], ny = ty + [-1, 0, 1, 0, -1, 1, 1, -1][i];
+          if (walkable(s, nx, ny)) { tx = nx; ty = ny; ok = true; }
+        }
+        if (!ok) { event(s, 'toofar', { id: c.id }); return s; }
+      }
+      if (cheb(tx, ty, c.x, c.y) > 8) { event(s, 'toofar', { id: c.id }); return s; }
+      c.lureReady = s.tick + 250;
+      if (s.creature.active) { s.creature.mode = 'search'; s.creature.goal = [tx, ty]; s.creature.lost = 0; }
+      event(s, 'lure', { id: c.id, x: tx, y: ty });
     } else if (move.t === 'sneak') {
       if (!c || c.char !== 'shadow' || !isFree(c)) { return s; }
       if (s.tick < c.sneakReady) { event(s, 'notyet', { id: c.id, wait: c.sneakReady - s.tick }); return s; }
@@ -795,6 +834,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       { id: 'b2', kind: 'balloon', n: 2, x: 25, y: 12 },
       { id: 'invite', kind: 'invite', x: 6, y: 0 },
       { id: 'uv', kind: 'uv', x: 25, y: 0 },
+      { id: 'plant', kind: 'plant', x: 27, y: 8 },
       { id: 'p0', kind: 'present', boost: 'candy', x: 2, y: 20 },
       { id: 'p1', kind: 'present', boost: 'shield', x: 12, y: 2 },
       { id: 'wardrobe', kind: 'hide', look: 'wardrobe', x: 8, y: 1, cap: 2 },
@@ -815,7 +855,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
 (function () {
   'use strict';
 
-  var BUILD = '20261004T2243-5f80898';
+  var BUILD = '20261004T2307-bbaac2b';
   var KEY = 'dykwya.';
   var SHELL_CACHE = 'dykwya-shell-' + BUILD;
   var ART_CACHE = 'dykwya-art';
@@ -864,13 +904,13 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       look: { body: '#b8e05a', outfit: '#3a7d44', eyes: 'big', hat: 'antenna', hatColor: '#fff27a' } }
   };
   // unlockable later (v1); drawn now so the reference sheets show them
-  CHARS.patch = { name: 'Patch', skill: 'Fast rescues', badge: '\uD83E\uDE79', locked: true,
+  CHARS.patch = { name: 'Patch', skill: 'Heals and rescues', badge: '\uD83D\uDC97',
     look: { body: '#ffb3c7', outfit: '#ffffff', eyes: 'big', hat: 'plaster', hatColor: '#f2d0a0' } };
-  CHARS.echo = { name: 'Echo', skill: 'Hears the host', badge: '\uD83C\uDFA7', locked: true,
+  CHARS.echo = { name: 'Echo', skill: 'Hears and tricks the host', badge: '\uD83C\uDFA7',
     look: { body: '#ffd23f', outfit: '#5b3b8a', eyes: 'goggles', hat: 'headphones', hatColor: '#2b2140' } };
-  CHARS.bramble = { name: 'Bramble', skill: 'Talks to plants', badge: '\uD83C\uDF3F', locked: true,
+  CHARS.bramble = { name: 'Bramble', skill: 'Talks to plants', badge: '\uD83C\uDF3F',
     look: { body: '#8fd16a', outfit: '#7a4a1e', eyes: 'sleepy', hat: 'leaves', hatColor: '#3a7d44' } };
-  var ORDER = ['tinker', 'shadow', 'brainy', 'muscle', 'glow'];
+  var ORDER = ['tinker', 'shadow', 'brainy', 'muscle', 'glow', 'patch', 'echo', 'bramble'];
   var COLOR_HEX = { red: '#ff4d5e', blue: '#3d8bff', yellow: '#ffd23f', green: '#46d160' };
   var COLOR_WORD = { red: 'RED', blue: 'BLUE', yellow: 'YELLOW', green: 'GREEN' };
 
@@ -1230,7 +1270,8 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
   var PHRASES = ['👋 Over here!', '🔑 I found something!', '🙈 Hide!', '🏃 Run!',
     '⭐ Use your skill!', '🆘 Help me!', '👍 Nice one!', '🚪 The door is open!',
     '🎈 Pop the balloons!', '🎃 It is coming!', '😂 Ha ha ha!', '🎂 I want cake!'];
-  var SKILL_BTN = { tinker: '🔧 Pick lock', shadow: '🌙 Sneak', brainy: '🧠 Read', muscle: '💪 Shove', glow: '💡 Light up' };
+  var SKILL_BTN = { tinker: '🔧 Pick lock', shadow: '🌙 Sneak', brainy: '🧠 Read', muscle: '💪 Shove', glow: '💡 Light up', patch: '\uD83D\uDC97 Heal', echo: '\uD83C\uDFA7 Throw noise', bramble: '\uD83C\uDF3F Ask plant' };
+  var luring = false;
   var FLOOR = {
     carpet: ['#7a2741', '#70223b'], boards: ['#4d3526', '#463022'], green: ['#2f5a3e', '#2a5238'],
     tiles: ['#d6cfbf', '#3d3d48'], wood: ['#6b4a32', '#634429'], purple: ['#4b3570', '#43306a'], door: ['#3e2c22', '#3a291f']
@@ -1534,6 +1575,16 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
         line(W2(o.x - 0.2, 1, 0.7), W2(o.x + 0.4, 1, 1.0), 'rgba(200,170,255,.25)', Math.max(1, s * 0.04));
         line(W2(o.x + 0.4, 1, 1.0), W2(o.x + 1.1, 1, 0.75), 'rgba(200,170,255,.25)', Math.max(1, s * 0.04));
       }
+    } else if (o.kind === 'plant') {
+      h = 1.1;
+      box(o.x + 0.3, o.y + 0.3, 0.4, 0.4, 0.35, '#b5653a', '#9a5230', '#7e4226');
+      for (k = 0; k < 6; k++) {
+        var lp = W2(o.x + 0.5, o.y + 0.5, 0.4), ang = -Math.PI / 2 + (k - 2.5) * 0.45 + Math.sin(t * 1.5 + k) * 0.05;
+        g.save(); g.translate(lp[0], lp[1]); g.rotate(ang + Math.PI / 2);
+        g.fillStyle = k % 2 ? '#3a7d44' : '#5fb35a'; ell(g, 0, -s * 0.28, s * 0.09, s * 0.3); g.fill();
+        g.restore();
+      }
+      if (st.talked) { var fl = W2(o.x + 0.5, o.y + 0.5, 1.15); circ(g, fl[0], fl[1], s * 0.07, '#ff8ac0'); circ(g, fl[0], fl[1], s * 0.03, '#ffd23f'); }
     } else if (o.kind === 'hide') {
       h = drawHide(o);
     }
@@ -1791,10 +1842,14 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       mg.fillStyle = ch.id === sel ? '#7be36b' : '#ffffff';
       mg.fillRect(ch.x * s - 1, ch.y * s - 1, s + 2, s + 2);
     }
-    if (k.active && dangerLevel() >= 3) { mg.fillStyle = '#ff3b30'; mg.fillRect(k.x * s - 1, k.y * s - 1, s + 2, s + 2); }
+    if (k.active && (hasEcho() || dangerLevel() >= 3)) { mg.fillStyle = '#ff3b30'; mg.fillRect(k.x * s - 1, k.y * s - 1, s + 2, s + 2); }
   }
 
   // footsteps and heartbeat from the danger level
+  function hasEcho() {
+    var i; for (i = 0; i < S.chars.length; i++) { if (S.chars[i].char === 'echo' && !S.chars[i].caged && !S.chars[i].escaped) { return true; } }
+    return false;
+  }
   function dangerLevel() {
     var k = S.creature, i, c, d, best = 99;
     if (!k.active) { return 0; }
@@ -1804,6 +1859,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       d = Math.max(Math.abs(k.x - c.x), Math.abs(k.y - c.y));
       if (d < best) { best = d; }
     }
+    if (hasEcho()) { best = Math.max(0, best - 3); }
     return best <= 2 ? 5 : best <= 3 ? 4 : best <= 5 ? 3 : best <= 7 ? 2 : best <= 11 ? 1 : 0;
   }
   function sounds(t) {
@@ -1878,11 +1934,11 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
         break;
       case 'reveal':
         SFX.chime();
-        toast((e.by === 'brainy' ? 'Brainy cracked the invitation!' : 'Glow lit up the secret paint!') + ' The code is ' + dot(S.code[0]) + ' ' + dot(S.code[1]) + ' ' + dot(S.code[2]), c.char, 4200);
+        toast((e.by === 'brainy' ? 'Brainy cracked the invitation!' : e.by === 'bramble' ? 'The plant whispered the code to Bramble!' : 'Glow lit up the secret paint!') + ' The code is ' + dot(S.code[0]) + ' ' + dot(S.code[1]) + ' ' + dot(S.code[2]), c.char, 4200);
         break;
       case 'need':
         SFX.click();
-        toast({ brainy: 'Twisty writing... <b>Brainy</b> could read this!', glow: 'Something is painted here, but it is too dark. <b>Glow</b> could light it up!', muscle: 'Too heavy! <b>Muscle</b> could shove it.' }[e.skill], e.skill, 3000);
+        toast({ brainy: 'Twisty writing... <b>Brainy</b> could read this!', glow: 'Something is painted here, but it is too dark. <b>Glow</b> could light it up!', muscle: 'Too heavy! <b>Muscle</b> could shove it.', bramble: 'This plant looks like it knows something... <b>Bramble</b> could ask it!' }[e.skill], e.skill, 3000);
         break;
       case 'press': SFX.press(e.c); break;
       case 'wrong': SFX.buzz(); shake = 6; toast('Wrong code! And that was LOUD... something is coming.', null, 2600); break;
@@ -1900,6 +1956,9 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       case 'blocked': toast('Can\'t get there!', c ? c.char : null, 1200); break;
       case 'cleared': SFX.cheer(); setTimeout(endScreen, 900); break;
       case 'lost': SFX.laugh(); setTimeout(endScreen, 900); break;
+      case 'heal': SFX.sparkle(); toast('Patch patched everyone nearby - energy and stamina back!', 'patch', 2200); break;
+      case 'toofar': toast('Throw it somewhere closer, inside the house - tap again.', 'echo', 2000); luring = true; break;
+      case 'lure': SFX.pop(); toast('Echo threw a noise - the host has gone to look!', 'echo', 2200); pings.push({ x: e.x, y: e.y, until: Date.now() + 2500 }); break;
       case 'sneak': SFX.sparkle(); toast('Shadow is sneaking - the host cannot see or grab Shadow for 6 seconds!', 'shadow', 2200); break;
       case 'notyet': toast('Sneak is recharging... ' + Math.ceil(e.wait / 10) + ' seconds', 'shadow', 1500); break;
       case 'say': bubbles[e.id] = { text: PHRASES[e.p], until: Date.now() + 2800 }; speak(PHRASES[e.p]); break;
@@ -1996,6 +2055,11 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       s = sprites[i];
       if (w[0] >= s.x0 && w[0] <= s.x1 && w[1] >= s.y0 && w[1] <= s.y1) { hit = s; break; }
     }
+    if (luring) {
+      luring = false; tl = toTile(w);
+      T.send({ t: 'lure', id: sel, x: tl[0], y: tl[1] });
+      return;
+    }
     if (hit && hit.kind === 'char' && hit.id !== sel) { selectChar(hit.id); return; }
     tl = toTile(w);
     run = runMode || (now - lastTap.t < 380 && Math.abs(tl[0] - lastTap.x) <= 1 && Math.abs(tl[1] - lastTap.y) <= 1);
@@ -2058,6 +2122,9 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
   function actSkill() {
     var c = me(); if (!c) { return; }
     if (c.char === 'shadow') { T.send({ t: 'sneak', id: sel }); return; }
+    if (c.char === 'patch') { T.send({ t: 'heal', id: sel }); return; }
+    if (c.char === 'echo') { luring = true; toast('\uD83C\uDFA7 Tap a spot nearby to throw a noise there.', 'echo', 2500); return; }
+    if (c.char === 'bramble') { if (S.obj.plant && S.obj.plant.talked) { toast('The plant already told Bramble!', 'bramble', 1500); } else { go(objOf('plant')); } return; }
     if (c.char === 'tinker') {
       if (S.doorOpen) { toast('The door is already open!', 'tinker', 1500); }
       else if (Rules.nearDoor(S, c)) { T.send({ t: 'pick', id: sel }); }
@@ -2262,7 +2329,8 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
 
   // read-only look inside, for diagnosing from a browser console
   window.dykwya = { state: function () { return S; }, bubbles: function () { return bubbles; }, sel: function () { return sel; },
-    draw: { chars: CHARS, order: ORDER, char: drawChar, host: drawCreature } };
+    draw: { chars: CHARS, order: ORDER, char: drawChar, host: drawCreature },
+    tileAt: function (x, y) { return toTile(toWorld(x, y)); } };
   requestAnimationFrame(frame);
 })();
 

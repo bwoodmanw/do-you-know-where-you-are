@@ -52,13 +52,13 @@
       look: { body: '#b8e05a', outfit: '#3a7d44', eyes: 'big', hat: 'antenna', hatColor: '#fff27a' } }
   };
   // unlockable later (v1); drawn now so the reference sheets show them
-  CHARS.patch = { name: 'Patch', skill: 'Fast rescues', badge: '\uD83E\uDE79', locked: true,
+  CHARS.patch = { name: 'Patch', skill: 'Heals and rescues', badge: '\uD83D\uDC97',
     look: { body: '#ffb3c7', outfit: '#ffffff', eyes: 'big', hat: 'plaster', hatColor: '#f2d0a0' } };
-  CHARS.echo = { name: 'Echo', skill: 'Hears the host', badge: '\uD83C\uDFA7', locked: true,
+  CHARS.echo = { name: 'Echo', skill: 'Hears and tricks the host', badge: '\uD83C\uDFA7',
     look: { body: '#ffd23f', outfit: '#5b3b8a', eyes: 'goggles', hat: 'headphones', hatColor: '#2b2140' } };
-  CHARS.bramble = { name: 'Bramble', skill: 'Talks to plants', badge: '\uD83C\uDF3F', locked: true,
+  CHARS.bramble = { name: 'Bramble', skill: 'Talks to plants', badge: '\uD83C\uDF3F',
     look: { body: '#8fd16a', outfit: '#7a4a1e', eyes: 'sleepy', hat: 'leaves', hatColor: '#3a7d44' } };
-  var ORDER = ['tinker', 'shadow', 'brainy', 'muscle', 'glow'];
+  var ORDER = ['tinker', 'shadow', 'brainy', 'muscle', 'glow', 'patch', 'echo', 'bramble'];
   var COLOR_HEX = { red: '#ff4d5e', blue: '#3d8bff', yellow: '#ffd23f', green: '#46d160' };
   var COLOR_WORD = { red: 'RED', blue: 'BLUE', yellow: 'YELLOW', green: 'GREEN' };
 
@@ -418,7 +418,8 @@
   var PHRASES = ['👋 Over here!', '🔑 I found something!', '🙈 Hide!', '🏃 Run!',
     '⭐ Use your skill!', '🆘 Help me!', '👍 Nice one!', '🚪 The door is open!',
     '🎈 Pop the balloons!', '🎃 It is coming!', '😂 Ha ha ha!', '🎂 I want cake!'];
-  var SKILL_BTN = { tinker: '🔧 Pick lock', shadow: '🌙 Sneak', brainy: '🧠 Read', muscle: '💪 Shove', glow: '💡 Light up' };
+  var SKILL_BTN = { tinker: '🔧 Pick lock', shadow: '🌙 Sneak', brainy: '🧠 Read', muscle: '💪 Shove', glow: '💡 Light up', patch: '\uD83D\uDC97 Heal', echo: '\uD83C\uDFA7 Throw noise', bramble: '\uD83C\uDF3F Ask plant' };
+  var luring = false;
   var FLOOR = {
     carpet: ['#7a2741', '#70223b'], boards: ['#4d3526', '#463022'], green: ['#2f5a3e', '#2a5238'],
     tiles: ['#d6cfbf', '#3d3d48'], wood: ['#6b4a32', '#634429'], purple: ['#4b3570', '#43306a'], door: ['#3e2c22', '#3a291f']
@@ -722,6 +723,16 @@
         line(W2(o.x - 0.2, 1, 0.7), W2(o.x + 0.4, 1, 1.0), 'rgba(200,170,255,.25)', Math.max(1, s * 0.04));
         line(W2(o.x + 0.4, 1, 1.0), W2(o.x + 1.1, 1, 0.75), 'rgba(200,170,255,.25)', Math.max(1, s * 0.04));
       }
+    } else if (o.kind === 'plant') {
+      h = 1.1;
+      box(o.x + 0.3, o.y + 0.3, 0.4, 0.4, 0.35, '#b5653a', '#9a5230', '#7e4226');
+      for (k = 0; k < 6; k++) {
+        var lp = W2(o.x + 0.5, o.y + 0.5, 0.4), ang = -Math.PI / 2 + (k - 2.5) * 0.45 + Math.sin(t * 1.5 + k) * 0.05;
+        g.save(); g.translate(lp[0], lp[1]); g.rotate(ang + Math.PI / 2);
+        g.fillStyle = k % 2 ? '#3a7d44' : '#5fb35a'; ell(g, 0, -s * 0.28, s * 0.09, s * 0.3); g.fill();
+        g.restore();
+      }
+      if (st.talked) { var fl = W2(o.x + 0.5, o.y + 0.5, 1.15); circ(g, fl[0], fl[1], s * 0.07, '#ff8ac0'); circ(g, fl[0], fl[1], s * 0.03, '#ffd23f'); }
     } else if (o.kind === 'hide') {
       h = drawHide(o);
     }
@@ -979,10 +990,14 @@
       mg.fillStyle = ch.id === sel ? '#7be36b' : '#ffffff';
       mg.fillRect(ch.x * s - 1, ch.y * s - 1, s + 2, s + 2);
     }
-    if (k.active && dangerLevel() >= 3) { mg.fillStyle = '#ff3b30'; mg.fillRect(k.x * s - 1, k.y * s - 1, s + 2, s + 2); }
+    if (k.active && (hasEcho() || dangerLevel() >= 3)) { mg.fillStyle = '#ff3b30'; mg.fillRect(k.x * s - 1, k.y * s - 1, s + 2, s + 2); }
   }
 
   // footsteps and heartbeat from the danger level
+  function hasEcho() {
+    var i; for (i = 0; i < S.chars.length; i++) { if (S.chars[i].char === 'echo' && !S.chars[i].caged && !S.chars[i].escaped) { return true; } }
+    return false;
+  }
   function dangerLevel() {
     var k = S.creature, i, c, d, best = 99;
     if (!k.active) { return 0; }
@@ -992,6 +1007,7 @@
       d = Math.max(Math.abs(k.x - c.x), Math.abs(k.y - c.y));
       if (d < best) { best = d; }
     }
+    if (hasEcho()) { best = Math.max(0, best - 3); }
     return best <= 2 ? 5 : best <= 3 ? 4 : best <= 5 ? 3 : best <= 7 ? 2 : best <= 11 ? 1 : 0;
   }
   function sounds(t) {
@@ -1066,11 +1082,11 @@
         break;
       case 'reveal':
         SFX.chime();
-        toast((e.by === 'brainy' ? 'Brainy cracked the invitation!' : 'Glow lit up the secret paint!') + ' The code is ' + dot(S.code[0]) + ' ' + dot(S.code[1]) + ' ' + dot(S.code[2]), c.char, 4200);
+        toast((e.by === 'brainy' ? 'Brainy cracked the invitation!' : e.by === 'bramble' ? 'The plant whispered the code to Bramble!' : 'Glow lit up the secret paint!') + ' The code is ' + dot(S.code[0]) + ' ' + dot(S.code[1]) + ' ' + dot(S.code[2]), c.char, 4200);
         break;
       case 'need':
         SFX.click();
-        toast({ brainy: 'Twisty writing... <b>Brainy</b> could read this!', glow: 'Something is painted here, but it is too dark. <b>Glow</b> could light it up!', muscle: 'Too heavy! <b>Muscle</b> could shove it.' }[e.skill], e.skill, 3000);
+        toast({ brainy: 'Twisty writing... <b>Brainy</b> could read this!', glow: 'Something is painted here, but it is too dark. <b>Glow</b> could light it up!', muscle: 'Too heavy! <b>Muscle</b> could shove it.', bramble: 'This plant looks like it knows something... <b>Bramble</b> could ask it!' }[e.skill], e.skill, 3000);
         break;
       case 'press': SFX.press(e.c); break;
       case 'wrong': SFX.buzz(); shake = 6; toast('Wrong code! And that was LOUD... something is coming.', null, 2600); break;
@@ -1088,6 +1104,9 @@
       case 'blocked': toast('Can\'t get there!', c ? c.char : null, 1200); break;
       case 'cleared': SFX.cheer(); setTimeout(endScreen, 900); break;
       case 'lost': SFX.laugh(); setTimeout(endScreen, 900); break;
+      case 'heal': SFX.sparkle(); toast('Patch patched everyone nearby - energy and stamina back!', 'patch', 2200); break;
+      case 'toofar': toast('Throw it somewhere closer, inside the house - tap again.', 'echo', 2000); luring = true; break;
+      case 'lure': SFX.pop(); toast('Echo threw a noise - the host has gone to look!', 'echo', 2200); pings.push({ x: e.x, y: e.y, until: Date.now() + 2500 }); break;
       case 'sneak': SFX.sparkle(); toast('Shadow is sneaking - the host cannot see or grab Shadow for 6 seconds!', 'shadow', 2200); break;
       case 'notyet': toast('Sneak is recharging... ' + Math.ceil(e.wait / 10) + ' seconds', 'shadow', 1500); break;
       case 'say': bubbles[e.id] = { text: PHRASES[e.p], until: Date.now() + 2800 }; speak(PHRASES[e.p]); break;
@@ -1184,6 +1203,11 @@
       s = sprites[i];
       if (w[0] >= s.x0 && w[0] <= s.x1 && w[1] >= s.y0 && w[1] <= s.y1) { hit = s; break; }
     }
+    if (luring) {
+      luring = false; tl = toTile(w);
+      T.send({ t: 'lure', id: sel, x: tl[0], y: tl[1] });
+      return;
+    }
     if (hit && hit.kind === 'char' && hit.id !== sel) { selectChar(hit.id); return; }
     tl = toTile(w);
     run = runMode || (now - lastTap.t < 380 && Math.abs(tl[0] - lastTap.x) <= 1 && Math.abs(tl[1] - lastTap.y) <= 1);
@@ -1246,6 +1270,9 @@
   function actSkill() {
     var c = me(); if (!c) { return; }
     if (c.char === 'shadow') { T.send({ t: 'sneak', id: sel }); return; }
+    if (c.char === 'patch') { T.send({ t: 'heal', id: sel }); return; }
+    if (c.char === 'echo') { luring = true; toast('\uD83C\uDFA7 Tap a spot nearby to throw a noise there.', 'echo', 2500); return; }
+    if (c.char === 'bramble') { if (S.obj.plant && S.obj.plant.talked) { toast('The plant already told Bramble!', 'bramble', 1500); } else { go(objOf('plant')); } return; }
     if (c.char === 'tinker') {
       if (S.doorOpen) { toast('The door is already open!', 'tinker', 1500); }
       else if (Rules.nearDoor(S, c)) { T.send({ t: 'pick', id: sel }); }
@@ -1450,6 +1477,7 @@
 
   // read-only look inside, for diagnosing from a browser console
   window.dykwya = { state: function () { return S; }, bubbles: function () { return bubbles; }, sel: function () { return sel; },
-    draw: { chars: CHARS, order: ORDER, char: drawChar, host: drawCreature } };
+    draw: { chars: CHARS, order: ORDER, char: drawChar, host: drawCreature },
+    tileAt: function (x, y) { return toTile(toWorld(x, y)); } };
   requestAnimationFrame(frame);
 })();

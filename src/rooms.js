@@ -61,6 +61,7 @@
       { id: 'b2', kind: 'balloon', n: 2, x: 25, y: 12 },
       { id: 'invite', kind: 'invite', x: 6, y: 0 },
       { id: 'uv', kind: 'uv', x: 25, y: 0 },
+      { id: 'plant', kind: 'plant', x: 27, y: 8 },
       { id: 'p0', kind: 'present', boost: 'candy', x: 2, y: 20 },
       { id: 'p1', kind: 'present', boost: 'shield', x: 12, y: 2 },
       { id: 'wardrobe', kind: 'hide', look: 'wardrobe', x: 8, y: 1, cap: 2 },

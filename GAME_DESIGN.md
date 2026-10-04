@@ -1,6 +1,6 @@
 # Do You Know Where You Are?
 
-**A co-operative escape game for ages 6+: a team of up to six kids solves puzzles
+**A co-operative escape game for ages 8+: a team of up to six kids solves puzzles
 room by room to reach the final safe area - and their parents - before the
 creature that lives there finds them.**
 
@@ -39,8 +39,10 @@ drawing on the wall. Far away, a footstep.
 
 ## 2. Audience
 
-- **Ages 6 and up.** Puzzles lead with pictures, colours, shapes and counting;
-  reading is never required to progress. Preset phrases are spoken aloud.
+- **Ages 8 and up** (raised from 6+ on 4 Oct 2026: kids who play online
+  hide-and-seek and mystery games expect that level of realism and tension).
+  Puzzles still lead with pictures, colours and codes; short reading is fine.
+  Preset phrases are spoken aloud. Giggly/Spooky stays, for younger siblings.
 - **Players:** 1 (solo) or 2-6 online.
 - **Devices:** Amazon Fire tablet first and tested first (Kids profile); also
   phone and PC browsers, so a friend without a Fire can join.
@@ -222,9 +224,20 @@ revisited later with a test scene on the tablet first.
 - **Humour is designed in:** every creature has a silly side (it sneezes,
   trips, gets distracted by a balloon), every room has at least one joke object.
 
+**Art direction (4 Oct 2026): realistic, stylised 3D**, like popular online
+hide-and-seek and mystery games. Brent makes the sheets in ChatGPT's image
+maker from `ART_PROMPTS.md`. Characters and customisation parts are design
+guides that the game's own drawing is rebuilt to match; hosts, jumpscares,
+room pictures and floor/wall textures go in directly. The character creator
+is built once the parts sheets arrive. The playable world stays 2.5D: real
+3D remains a later option, tested on the Fire HD 10 first.
+
 ## 9. Characters, progression and saving
 
-### Starting characters (all five available from the start)
+### Starting characters (all eight available from the start)
+
+Eight, so a full room of six still lets every child be different (decided
+4 Oct 2026). More characters unlock later with points.
 
 | Character | Skill |
 |---|---|
@@ -234,15 +247,15 @@ revisited later with a test scene on the tablet first.
 | **Muscle** | Moves heavy objects, holds a door shut against the creature |
 | **Glow** | Lights dark rooms, reveals invisible clues (UV writing, footprints) |
 
-### Unlockable characters (3 in v1)
+### The three added on 4 Oct (built and tested)
 
-Earned with points. Proposed, for Brent to change:
+Playable from the start, like the first five:
 
 | Character | Skill |
 |---|---|
-| **Patch** | Rescues caged teammates faster; restores a little energy |
-| **Echo** | Hears the creature further away; can throw a noise to lure it |
-| **Bramble** | Talks to plants and animals - vines become ladders, a cat fetches a key |
+| **Patch** | Frees caged teammates twice as fast; Heal gives energy and stamina back to everyone close by (recharges) |
+| **Echo** | Hears the host from further away (danger meter, host always on the minimap); Throw noise sends the host to look somewhere else, even mid-chase (recharges) |
+| **Bramble** | Talks to plants: the library plant whispers the door code (vines and animals in later rooms) |
 
 ### Skill trees
 
@@ -342,7 +355,7 @@ Everything in the Halloween edition, plus:
 - Two themes: **Gummy Bounce House** (bright) and **the Hospital** (creepy),
   each 4-5 rooms with its own creature.
 - 8-10 puzzle types, each solvable two ways.
-- Skill trees; 3 unlockable characters.
+- Skill trees; the first characters to unlock with points (beyond the starting eight).
 - Cosmetics shop with earned points.
 - Team and solo leaderboards, weekly, with reporting.
 - Resume from the last safe area (7 days).
