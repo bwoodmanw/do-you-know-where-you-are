@@ -186,6 +186,15 @@ information or lets strangers message children is a legal and safety problem
 
 ## 8. Art and sound
 
+**View: 2.5D (decided 4 Oct 2026, after the first 2D room was built).** Brent
+wanted Roblox-style 3D with expansive environments. True 3D was weighed and set
+aside for v1: a tilted, looking-down-at-an-angle view with depth, shadows and
+tall objects, a camera that follows the selected character, and **maps several
+screens big** with many connected rooms. The rules stay on a tile grid, so
+everything built for the flat room carries over; only the drawing and camera
+change. Target tablet: Fire HD 10 / Max 11 (Brent's answer), so real 3D could be
+revisited later with a test scene on the tablet first.
+
 - **Characters are drawn in code** from layered parts - body shape and colour,
   eyes, mouth, hair/hat, outfit, accessory, a trail or sparkle effect. Highly
   customisable for almost no download size. Every part must be rendered to PNG
