@@ -1,0 +1,14 @@
+{
+  "name": "do-you-know-where-you-are",
+  "private": true,
+  "description": "Do You Know Where You Are? - a co-operative escape game for kids",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node test/rules.test.js",
+    "deploy": "node test/rules.test.js && node build.js && wrangler deploy",
+    "serve": "node tools/serve.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.147.0"
+  }
+}

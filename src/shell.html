@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1026">
+<title>Do You Know Where You Are?</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root { --night: #1a1026; --deep: #0e0816; --pump: #ff8a1f; --slime: #7be36b; --cream: #fff4e0; --mute: #b9a8cf; --red: #ff4d5e; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; background: var(--deep); color: var(--cream); overflow: hidden;
+  font-family: "Trebuchet MS", "Segoe UI", Roboto, Arial, sans-serif; -webkit-user-select: none; user-select: none; touch-action: none; }
+button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action: manipulation; }
+.screen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 16px; text-align: center; }
+.screen.on { display: flex; }
+.big { background: var(--pump); color: #2a1200; font-weight: bold; font-size: 24px; padding: 14px 28px; border-radius: 18px; margin: 8px; box-shadow: 0 5px 0 #a94f00; min-width: 220px; }
+.big:active { transform: translateY(3px); box-shadow: 0 2px 0 #a94f00; }
+.big.alt { background: #4b3a66; color: var(--cream); box-shadow: 0 5px 0 #2a1f3a; }
+.big:disabled { opacity: .45; }
+.small { background: transparent; color: var(--mute); font-size: 16px; padding: 10px 16px; text-decoration: underline; }
+h1 { font-size: 40px; margin: 6px 0; color: var(--pump); text-shadow: 0 3px 0 #000, 0 0 18px rgba(255,138,31,.45); letter-spacing: 1px; }
+h2 { font-size: 26px; margin: 6px 0 12px; }
+.sub { color: var(--mute); font-size: 18px; margin-bottom: 18px; }
+#title { background: radial-gradient(ellipse at 50% 30%, #3a2457 0%, var(--night) 55%, var(--deep) 100%); }
+#title canvas { width: 240px; height: 150px; }
+.wob span { display: inline-block; animation: wob 2.6s ease-in-out infinite; }
+@keyframes wob { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-4px) rotate(-3deg); } }
+/* squad picker */
+#cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 760px; }
+.card { width: 132px; background: #2b1d40; border-radius: 16px; padding: 8px; position: relative; border: 3px solid transparent; }
+.card.pick { border-color: var(--slime); background: #233a2a; }
+.card canvas { width: 96px; height: 96px; }
+.card b { display: block; font-size: 18px; }
+.card i { display: block; font-style: normal; font-size: 13px; color: var(--mute); min-height: 32px; }
+.card .num { position: absolute; top: 6px; left: 8px; background: var(--slime); color: #0d2a0d; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; font-weight: bold; display: none; }
+.card.pick .num { display: block; }
+.row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 12px 0; }
+.toggle { background: #2b1d40; padding: 12px 18px; border-radius: 14px; font-size: 20px; border: 3px solid transparent; }
+.toggle.on { border-color: var(--pump); background: #402a1a; }
+/* story */
+#story p { font-size: 22px; max-width: 620px; line-height: 1.45; margin: 8px 0; opacity: 0; transition: opacity .8s; }
+#story p.show { opacity: 1; }
+/* game */
+#game { padding: 0; justify-content: flex-start; background: var(--deep); }
+#top { width: 100%; height: 52px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: #140c1f; flex: none; }
+#top .rname { font-weight: bold; font-size: 16px; color: var(--pump); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; text-align: left; }
+#danger { font-size: 20px; letter-spacing: -2px; min-width: 120px; text-align: center; }
+#danger span { opacity: .18; transition: opacity .2s; }
+#danger span.on { opacity: 1; }
+.tbtn { background: #2b1d40; border-radius: 12px; padding: 8px 12px; font-size: 16px; white-space: nowrap; }
+#stage { position: relative; flex: 1; width: 100%; min-height: 0; }
+#cv { position: absolute; left: 0; top: 0; touch-action: none; }
+#bar { width: 100%; display: flex; gap: 8px; padding: 6px 8px; background: #140c1f; flex: none; justify-content: center; }
+.sq { display: flex; align-items: center; gap: 6px; background: #2b1d40; border-radius: 14px; padding: 4px 10px 4px 4px; border: 3px solid transparent; min-width: 150px; text-align: left; }
+.sq.sel { border-color: var(--slime); }
+.sq canvas { width: 52px; height: 52px; flex: none; }
+.sq .info { flex: 1; font-size: 13px; }
+.sq .nm { font-weight: bold; font-size: 15px; }
+.meter { height: 8px; border-radius: 4px; background: #120a1b; margin-top: 3px; overflow: hidden; }
+.meter i { display: block; height: 100%; width: 100%; }
+.meter.st i { background: var(--slime); }
+.meter.en i { background: #ffd23f; }
+#toast { position: absolute; left: 50%; bottom: 10px; pointer-events: none; transform: translateX(-50%); background: rgba(20,12,31,.94); border: 2px solid var(--pump);
+  border-radius: 16px; padding: 10px 16px; font-size: 18px; max-width: 92%; display: none; align-items: center; gap: 10px; z-index: 5; }
+#toast canvas { width: 44px; height: 44px; flex: none; }
+#keypad { position: absolute; right: 10px; top: 10px; background: rgba(20,12,31,.95); border: 2px solid #6b5a85; border-radius: 16px; padding: 10px; display: none; z-index: 4; text-align: center; }
+#keypad .keys { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+#keypad .k { width: 66px; height: 66px; border-radius: 14px; box-shadow: 0 4px 0 rgba(0,0,0,.45); }
+#keypad .k:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.45); }
+#keypad .dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px; }
+#keypad .dots i { width: 18px; height: 18px; border-radius: 50%; background: #120a1b; border: 2px solid #6b5a85; }
+#keypad .pick { margin-top: 8px; background: #3b6fd8; padding: 10px; border-radius: 12px; width: 100%; font-size: 16px; }
+#scare { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 9; display: none; align-items: center; justify-content: center; background: #000; }
+#scare canvas { width: 100%; height: 100%; }
+#over { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 6; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(10,5,18,.88); padding: 16px; }
+#over .pts { font-size: 18px; margin: 8px 0 14px; line-height: 1.6; }
+/* check */
+#check { justify-content: flex-start; overflow-y: auto; background: #f7f3ea; color: #1b1b1b; touch-action: pan-y; }
+#check table { border-collapse: collapse; font-size: 18px; max-width: 760px; width: 100%; text-align: left; }
+#check td { padding: 7px 8px; border-bottom: 1px solid #ddd; vertical-align: top; }
+#check td.m { font-size: 24px; width: 40px; text-align: center; }
+#check .url { font-family: monospace; font-size: 17px; background: #fff; padding: 8px; border: 2px solid #333; word-break: break-all; margin: 8px 0; max-width: 760px; }
+#check .act { font-size: 20px; font-weight: bold; background: #fff3c4; border: 2px solid #c79a00; padding: 10px; margin: 10px 0; max-width: 760px; }
+#check h2 { color: #1b1b1b; }
+</style>
+</head>
+<body>
+
+<div id="title" class="screen on">
+  <canvas id="tcv" width="480" height="300"></canvas>
+  <h1 class="wob" id="ttl"></h1>
+  <div class="sub">The Party at the End of the Lane</div>
+  <button class="big" id="bSolo">Play</button>
+  <button class="big alt" id="bFriends" disabled>Play with friends<br><small>coming soon</small></button>
+  <div class="sub" id="totPts"></div>
+  <button class="small" id="bCheck">Check</button>
+</div>
+
+<div id="squad" class="screen">
+  <h2>Pick your squad - up to 3</h2>
+  <div id="cards"></div>
+  <div class="row">
+    <button class="toggle on" id="tGiggly">&#x1F604; Giggly</button>
+    <button class="toggle" id="tSpooky">&#x1F47B; Spooky</button>
+  </div>
+  <div class="row">
+    <button class="big alt" id="bBack1">Back</button>
+    <button class="big" id="bStart" disabled>Start</button>
+  </div>
+</div>
+
+<div id="story" class="screen">
+  <p>Your grown-ups dropped you off at a birthday party in the big house at the end of the lane.</p>
+  <p>Balloons on the gate. Music inside. But nobody else is here...</p>
+  <p>...and the front door just locked behind you.</p>
+  <p><b>Find the way out - before the party host finds you!</b></p>
+  <button class="big" id="bGo">Let's go!</button>
+</div>
+
+<div id="game" class="screen">
+  <div id="top">
+    <button class="tbtn" id="bHome">&#x1F3E0;</button>
+    <div class="rname" id="rname"></div>
+    <div id="danger"><span>&#x1F463;</span><span>&#x1F463;</span><span>&#x1F463;</span><span>&#x1F463;</span><span>&#x1F463;</span></div>
+    <button class="tbtn" id="bClue">&#x1F4A1; Clue</button>
+  </div>
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="toast"><canvas width="88" height="88"></canvas><span></span></div>
+    <div id="keypad"><div class="dots"><i></i><i></i><i></i></div><div class="keys"></div><button class="pick" id="bPick">&#x1F527; Pick the lock</button></div>
+    <div id="over"><h2 id="overT"></h2><div class="pts" id="overP"></div><div class="row" id="overB"></div></div>
+  </div>
+  <div id="bar"></div>
+  <div id="scare"><canvas id="scv"></canvas></div>
+</div>
+
+<div id="check" class="screen">
+  <h2>Check</h2>
+  <div class="url" id="ckUrl"></div>
+  <div class="act" id="ckAct"></div>
+  <table id="ckT"></table>
+  <div class="row"><button class="big alt" id="bCkBack">Back</button><button class="big alt" id="bCkAgain">Check again</button></div>
+</div>
+
+<script>
+/*RULES*/
+</script>
+<script>
+/*ROOMS*/
+</script>
+<script>
+/*GAME*/
+</script>
+</body>
+</html>
