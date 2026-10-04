@@ -21,7 +21,7 @@ function calm(s) { s.creature.appearAt = 1e9; return s; } // no creature
 function evs(s, k) { return s.events.filter(function (e) { return e.k === k; }); }
 function goAct(s, id, act) { return Rules.apply(s, { t: 'go', id: id, act: act }); }
 function untilIdle(s, id, max) {
-  for (var i = 0; i < (max || 400); i++) {
+  for (var i = 0; i < (max || 1500); i++) {
     var c = Rules.charById(s, id);
     if (!c.path.length && !c.chan) { return s; }
     s = Rules.tick(s);
@@ -44,12 +44,12 @@ test('apply and tick never mutate the input state', function () {
 
 test('walking reaches the tapped cell; running is twice as fast and costs stamina', function () {
   var s = calm(game(['tinker', 'shadow']));
-  s = Rules.apply(s, { t: 'go', id: 'c0', x: 7, y: 5 });           // 3 cells up
-  s = Rules.apply(s, { t: 'go', id: 'c1', x: 12, y: 8, run: true }); // 4 cells right
+  s = Rules.apply(s, { t: 'go', id: 'c0', x: 14, y: 16 });          // 3 cells up
+  s = Rules.apply(s, { t: 'go', id: 'c1', x: 18, y: 19, run: true }); // 3 cells right
   s = run(s, 9);
   var walker = Rules.charById(s, 'c0'), runner = Rules.charById(s, 'c1');
-  assert.deepStrictEqual([walker.x, walker.y], [7, 5]);
-  assert.deepStrictEqual([runner.x, runner.y], [12, 8]);
+  assert.deepStrictEqual([walker.x, walker.y], [14, 16]);
+  assert.deepStrictEqual([runner.x, runner.y], [18, 19]);
   assert.ok(runner.stamina < 100, 'running spent stamina');
 });
 
@@ -122,7 +122,7 @@ test('the creature catches a visible player, who goes to the cage; a teammate fr
   var s = game(['shadow', 'tinker']);
   s.creature.appearAt = 0;
   var k = s.creature, t = Rules.charById(s, 'c1');
-  t.x = 3; t.y = 2; // right next to the creature's door
+  t.x = 3; t.y = 13; // right next to the creature's door
   s = run(s, 30);
   t = Rules.charById(s, 'c1');
   assert.strictEqual(t.caged, true);
@@ -136,15 +136,15 @@ test('the creature catches a visible player, who goes to the cage; a teammate fr
 test('a hidden player is not caught; a shield saves one capture', function () {
   var s = game(['shadow']);
   var c = Rules.charById(s, 'c0');
-  c.x = 1; c.y = 5; c.hidden = true; c.hideId = 'curtain';
+  c.x = 3; c.y = 7; c.hidden = true; c.hideId = 'sofa';
   s.creature.appearAt = 0;
-  s.creature.x = 1; s.creature.y = 4;
+  s.creature.x = 3; s.creature.y = 6;
   s = run(s, 20);
   assert.strictEqual(Rules.charById(s, 'c0').caged, false);
 
   s = game(['tinker']);
   c = Rules.charById(s, 'c0');
-  c.shield = true; c.x = 2; c.y = 2;
+  c.shield = true; c.x = 2; c.y = 13;
   s.creature.appearAt = 0;
   s = run(s, 5);
   assert.strictEqual(evs(s, 'shield').length, 1);
@@ -155,15 +155,15 @@ test('a hidden player is not caught; a shield saves one capture', function () {
 test('everyone caged loses the room; retry starts it again; three losses end the run', function () {
   var s = game(['tinker']);
   var c = Rules.charById(s, 'c0');
-  c.x = 2; c.y = 2; s.creature.appearAt = 0;
+  c.x = 2; c.y = 13; s.creature.appearAt = 0;
   s = run(s, 5);
   assert.strictEqual(s.status, 'lost');
   s = Rules.apply(s, { t: 'retry' });
   assert.strictEqual(s.status, 'playing');
   assert.strictEqual(s.tries, 1);
-  c = Rules.charById(s, 'c0'); c.x = 2; c.y = 2; s.creature.appearAt = 0;
+  c = Rules.charById(s, 'c0'); c.x = 2; c.y = 13; s.creature.appearAt = 0;
   s = run(s, 5); s = Rules.apply(s, { t: 'retry' });
-  c = Rules.charById(s, 'c0'); c.x = 2; c.y = 2; s.creature.appearAt = 0;
+  c = Rules.charById(s, 'c0'); c.x = 2; c.y = 13; s.creature.appearAt = 0;
   s = run(s, 5);
   assert.strictEqual(s.status, 'over');
   assert.ok(Rules.isOver(s));
@@ -203,6 +203,36 @@ test('every squad of one can clear the room on its own', function () {
     s = untilIdle(s, 'c0');
     assert.strictEqual(s.status, 'cleared', ch + ' cleared');
   });
+});
+
+test('Shadow sneaks: unseen and ungrabbable for 6 seconds, then must wait', function () {
+  var s = game(['shadow']);
+  var c = Rules.charById(s, 'c0');
+  c.x = 3; c.y = 13; s.creature.appearAt = 0;
+  s = Rules.apply(s, { t: 'sneak', id: 'c0' });
+  s = run(s, 30);
+  assert.strictEqual(Rules.charById(s, 'c0').caged, false);
+  s = Rules.apply(s, { t: 'sneak', id: 'c0' });
+  assert.strictEqual(evs(s, 'notyet').length, 1);
+  s = calm(game(['tinker']));
+  s = Rules.apply(s, { t: 'sneak', id: 'c0' });
+  assert.strictEqual(evs(s, 'sneak').length, 0, 'only Shadow sneaks');
+});
+
+test('preset phrases: index only, three per ten seconds', function () {
+  var s = calm(game(['glow']));
+  s = Rules.apply(s, { t: 'say', id: 'c0', p: 3 });
+  s = Rules.apply(s, { t: 'say', id: 'c0', p: 4 });
+  s = Rules.apply(s, { t: 'say', id: 'c0', p: 5 });
+  s = Rules.apply(s, { t: 'say', id: 'c0', p: 6 });
+  assert.strictEqual(evs(s, 'say').length, 3);
+  assert.strictEqual(evs(s, 'hush').length, 1);
+  s = Rules.apply(s, { t: 'say', id: 'c0', p: 'hello' });
+  s = Rules.apply(s, { t: 'say', id: 'c0', p: 99 });
+  assert.strictEqual(evs(s, 'say').length, 3, 'free text and bad indexes refused');
+  s = run(s, 101);
+  s = Rules.apply(s, { t: 'say', id: 'c0', p: 0 });
+  assert.strictEqual(evs(s, 'say').length, 4);
 });
 
 console.log('\n' + passed + ' passed' + (process.exitCode ? ', some FAILED' : ''));

@@ -7,6 +7,7 @@ var Rules = (function () {
   var TPS = 10;                       // ticks per second
   var COLORS = ['red', 'blue', 'yellow', 'green'];
   var RUN_COST = 7;                   // stamina per cell run
+  var PHRASES = 12;                   // size of the preset phrase list (text lives in the page)
   var ROOMS = {};
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
@@ -130,6 +131,8 @@ var Rules = (function () {
     return null;
   }
   function isFree(c) { return !c.caged && !c.escaped; }
+  // Hidden or sneaking: the creature can neither see nor grab them.
+  function unseen(s, c) { return c.hidden || s.tick < c.sneakUntil; }
   function addPoints(s, c, n) { s.points[c.id] = (s.points[c.id] || 0) + n; }
 
   function init(cfg) {
@@ -160,7 +163,8 @@ var Rules = (function () {
         x: r.start[i][0], y: r.start[i][1],
         path: [], run: false, running: false, act: null, chan: null, moveCd: 0,
         stamina: 100, tired: false, energy: 100, shield: false, freeRunUntil: 0,
-        hidden: false, hideId: null, caged: false, escaped: false
+        hidden: false, hideId: null, caged: false, escaped: false,
+        sneakUntil: 0, sneakReady: 0
       });
       if (s.points[sq.id] === undefined) { s.points[sq.id] = 0; }
     }
@@ -335,7 +339,7 @@ var Rules = (function () {
     if (k.pause > 0) { k.pause -= 1; return; }
     for (i = 0; i < s.chars.length; i++) {
       c = s.chars[i];
-      if (!isFree(c) || c.hidden) { continue; }
+      if (!isFree(c) || unseen(s, c)) { continue; }
       range = c.char === 'shadow' ? 2 : (s.spook === 'spooky' ? 5 : 4);
       d = cheb(k.x, k.y, c.x, c.y);
       if (d <= range && d < best && los(s, k.x, k.y, c.x, c.y)) { best = d; seen = c; }
@@ -376,7 +380,7 @@ var Rules = (function () {
     if (!k.active || k.pause > 0) { return; }
     for (i = 0; i < s.chars.length; i++) {
       c = s.chars[i];
-      if (!isFree(c) || c.hidden) { continue; }
+      if (!isFree(c) || unseen(s, c)) { continue; }
       if (Math.abs(k.x - c.x) + Math.abs(k.y - c.y) <= 1) {
         if (c.shield) {
           c.shield = false; k.pause = 25; k.mode = 'patrol';
@@ -502,6 +506,19 @@ var Rules = (function () {
       c.energy -= cost; s.cluesLeft -= 1;
       s.hint = hintFor(s); s.hint.until = s.tick + 150;
       event(s, 'clue', { id: c.id, obj: s.hint.obj, say: s.hint.say });
+    } else if (move.t === 'sneak') {
+      if (!c || c.char !== 'shadow' || !isFree(c)) { return s; }
+      if (s.tick < c.sneakReady) { event(s, 'notyet', { id: c.id, wait: c.sneakReady - s.tick }); return s; }
+      c.sneakUntil = s.tick + 60; c.sneakReady = s.tick + 200;
+      event(s, 'sneak', { id: c.id });
+    } else if (move.t === 'say') {
+      // preset phrases only (an index into a fixed list); 3 per 10 seconds each
+      if (!c || typeof move.p !== 'number' || move.p < 0 || move.p >= PHRASES || move.p % 1) { return s; }
+      if (!s.said) { s.said = {}; }
+      var recent = (s.said[c.id] || []).filter(function (t) { return s.tick - t < 100; });
+      if (recent.length >= 3) { event(s, 'hush', { id: c.id }); return s; }
+      recent.push(s.tick); s.said[c.id] = recent;
+      event(s, 'say', { id: c.id, p: move.p });
     }
     return s;
   }
@@ -535,7 +552,7 @@ var Rules = (function () {
   function isOver(s) { return s.status === 'cleared' || s.status === 'over'; }
 
   return {
-    TPS: TPS, COLORS: COLORS,
+    TPS: TPS, COLORS: COLORS, PHRASES: PHRASES,
     addRoom: addRoom, getRoom: function (id) { return ROOMS[id]; },
     init: init, apply: apply, tick: tick, legalMoves: legalMoves, isOver: isOver,
     walkable: walkable, nearDoor: nearDoor, charById: charById, objById: objById,

@@ -53,8 +53,18 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 .tbtn { background: #2b1d40; border-radius: 12px; padding: 8px 12px; font-size: 16px; white-space: nowrap; }
 #stage { position: relative; flex: 1; width: 100%; min-height: 0; }
 #cv { position: absolute; left: 0; top: 0; touch-action: none; }
-#bar { width: 100%; display: flex; gap: 8px; padding: 6px 8px; background: #140c1f; flex: none; justify-content: center; }
-.sq { display: flex; align-items: center; gap: 6px; background: #2b1d40; border-radius: 14px; padding: 4px 10px 4px 4px; border: 3px solid transparent; min-width: 150px; text-align: left; }
+#bar { width: 100%; display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 8px; background: #140c1f; flex: none; justify-content: center; align-items: center; }
+#sqs, #acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.act { background: #4b3a66; border-radius: 14px; padding: 0 12px; height: 58px; min-width: 76px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 0 #2a1f3a; }
+.act:active { transform: translateY(3px); box-shadow: 0 1px 0 #2a1f3a; }
+.act.on { background: var(--pump); color: #2a1200; box-shadow: 0 4px 0 #a94f00; }
+#aSkill { background: #2f6b3a; box-shadow: 0 4px 0 #1b4022; }
+#say { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); display: none; grid-template-columns: repeat(3, auto); gap: 6px; z-index: 7;
+  background: rgba(20,12,31,.96); border: 2px solid #6b5a85; border-radius: 16px; padding: 8px; }
+#say .ph { background: #fff4e0; color: #1a1026; border-radius: 12px; padding: 10px 12px; font-size: 16px; font-weight: bold; white-space: nowrap; }
+#mini { position: absolute; left: 8px; top: 8px; width: 120px; border: 2px solid #6b5a85; border-radius: 8px; opacity: .85; pointer-events: none; z-index: 3; image-rendering: pixelated; }
+.sq { display: flex; align-items: center; gap: 6px; background: #2b1d40; border-radius: 14px; padding: 4px 8px 4px 4px; border: 3px solid transparent; width: 140px; text-align: left; overflow: hidden; }
+.sq .stt { display: inline-block; min-width: 2.2em; }
 .sq.sel { border-color: var(--slime); }
 .sq canvas { width: 52px; height: 52px; flex: none; }
 .sq .info { flex: 1; font-size: 13px; }
@@ -129,11 +139,22 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
   </div>
   <div id="stage">
     <canvas id="cv"></canvas>
+    <canvas id="mini"></canvas>
+    <div id="say"></div>
     <div id="toast"><canvas width="88" height="88"></canvas><span></span></div>
     <div id="keypad"><div class="dots"><i></i><i></i><i></i></div><div class="keys"></div><button class="pick" id="bPick">&#x1F527; Pick the lock</button></div>
     <div id="over"><h2 id="overT"></h2><div class="pts" id="overP"></div><div class="row" id="overB"></div></div>
   </div>
-  <div id="bar"></div>
+  <div id="bar">
+    <div id="sqs"></div>
+    <div id="acts">
+      <button class="act" id="aRun">&#x1F3C3; Run</button>
+      <button class="act" id="aHide">&#x1F648; Hide</button>
+      <button class="act" id="aUse">&#x270B; Use</button>
+      <button class="act" id="aSkill">&#x2B50; Skill</button>
+      <button class="act" id="aSay">&#x1F4AC; Say</button>
+    </div>
+  </div>
   <div id="scare"><canvas id="scv"></canvas></div>
 </div>
 
