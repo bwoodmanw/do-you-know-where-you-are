@@ -51,6 +51,13 @@
     glow: { name: 'Glow', skill: 'Lights up secrets', badge: '💡',
       look: { body: '#b8e05a', outfit: '#3a7d44', eyes: 'big', hat: 'antenna', hatColor: '#fff27a' } }
   };
+  // unlockable later (v1); drawn now so the reference sheets show them
+  CHARS.patch = { name: 'Patch', skill: 'Fast rescues', badge: '\uD83E\uDE79', locked: true,
+    look: { body: '#ffb3c7', outfit: '#ffffff', eyes: 'big', hat: 'plaster', hatColor: '#f2d0a0' } };
+  CHARS.echo = { name: 'Echo', skill: 'Hears the host', badge: '\uD83C\uDFA7', locked: true,
+    look: { body: '#ffd23f', outfit: '#5b3b8a', eyes: 'goggles', hat: 'headphones', hatColor: '#2b2140' } };
+  CHARS.bramble = { name: 'Bramble', skill: 'Talks to plants', badge: '\uD83C\uDF3F', locked: true,
+    look: { body: '#8fd16a', outfit: '#7a4a1e', eyes: 'sleepy', hat: 'leaves', hatColor: '#3a7d44' } };
   var ORDER = ['tinker', 'shadow', 'brainy', 'muscle', 'glow'];
   var COLOR_HEX = { red: '#ff4d5e', blue: '#3d8bff', yellow: '#ffd23f', green: '#46d160' };
   var COLOR_WORD = { red: 'RED', blue: 'BLUE', yellow: 'YELLOW', green: 'GREEN' };
@@ -151,7 +158,24 @@
       g.beginPath(); g.arc(x, top + h * 0.55, s * 0.1, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke();
     }
     // hats on top
-    if (L.hat === 'cap') {
+    if (L.hat === 'plaster') {
+      g.save(); g.translate(x + w * 0.18, top + h * 0.18); g.rotate(-0.6);
+      g.fillStyle = L.hatColor; rr(g, -s * 0.13, -s * 0.045, s * 0.26, s * 0.09, s * 0.04); g.fill();
+      g.fillStyle = 'rgba(0,0,0,.2)'; g.fillRect(-s * 0.03, -s * 0.03, s * 0.06, s * 0.06);
+      g.restore();
+    } else if (L.hat === 'headphones') {
+      g.strokeStyle = L.hatColor; g.lineWidth = Math.max(2, s * 0.06);
+      g.beginPath(); g.arc(x, top + h * 0.3, w * 0.5, Math.PI * 1.05, Math.PI * 1.95); g.stroke();
+      g.fillStyle = L.hatColor; rr(g, left - s * 0.06, ey - s * 0.12, s * 0.12, s * 0.2, s * 0.05); g.fill();
+      rr(g, left + w - s * 0.06, ey - s * 0.12, s * 0.12, s * 0.2, s * 0.05); g.fill();
+    } else if (L.hat === 'leaves') {
+      var lf;
+      for (lf = 0; lf < 5; lf++) {
+        g.save(); g.translate(x + (lf - 2) * w * 0.17, top + h * 0.05); g.rotate((lf - 2) * 0.35 + Math.sin(t * 2 + lf) * 0.08);
+        g.fillStyle = lf % 2 ? L.hatColor : '#5fb35a'; ell(g, 0, -s * 0.09, s * 0.06, s * 0.12); g.fill();
+        g.restore();
+      }
+    } else if (L.hat === 'cap') {
       g.fillStyle = L.hatColor;
       g.beginPath(); g.arc(x, top + h * 0.14, w * 0.36, Math.PI, 0); g.closePath(); g.fill();
       g.fillRect(x, top + h * 0.11, w * 0.5, h * 0.06);
@@ -1425,6 +1449,7 @@
   });
 
   // read-only look inside, for diagnosing from a browser console
-  window.dykwya = { state: function () { return S; }, bubbles: function () { return bubbles; }, sel: function () { return sel; } };
+  window.dykwya = { state: function () { return S; }, bubbles: function () { return bubbles; }, sel: function () { return sel; },
+    draw: { chars: CHARS, order: ORDER, char: drawChar, host: drawCreature } };
   requestAnimationFrame(frame);
 })();

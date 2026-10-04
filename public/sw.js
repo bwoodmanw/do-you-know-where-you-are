@@ -2,7 +2,7 @@
    icons) and a separate unversioned art cache, so a code change never
    re-downloads the art. The shell is stale-while-revalidate: an update
    reaches a tablet one launch late. */
-var BUILD = '20261004T2228-b9cac40';
+var BUILD = '20261004T2243-75dd017';
 var SHELL = 'dykwya-shell-' + BUILD;
 var ART = 'dykwya-art';
 var SHELL_FILES = ['./', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
