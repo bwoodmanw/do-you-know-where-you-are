@@ -314,6 +314,21 @@ function House.buildGarden(world)
 		part(root, { Name = "FairyLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.6, 0.6), Position = pos, Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 220, 140), CanCollide = false })
 	end
 	light(root, garden.Position + Vector3.new(0, 10, 0), Color3.fromRGB(255, 220, 160), 60, 2)
+	-- hedges you can see, and tall invisible walls so nobody walks or jumps off
+	local function hedge(x0, z0, x1, z1)
+		local size = Vector3.new(math.max(2, math.abs(x1 - x0)), 6, math.max(2, math.abs(z1 - z0)))
+		local centre = Vector3.new((x0 + x1) / 2, 3, (z0 + z1) / 2)
+		part(root, { Name = "Hedge", Size = size, Position = centre, Material = Enum.Material.LeafyGrass, Color = Color3.fromRGB(40, 80, 38) })
+		part(root, { Name = "Boundary", Size = Vector3.new(size.X, 40, size.Z), Position = centre + Vector3.new(0, 20, 0), Transparency = 1 })
+	end
+	local gx0s, gx1s, gz = gx0 * T, gx1 * T, -6 * T
+	hedge(gx0s, gz, gx0s, 0) -- west side of the garden
+	hedge(gx1s, gz, gx1s, 0) -- east side
+	hedge(gx0s, gz, gx1s, gz) -- far end
+	local px0, px1 = map.w * T, map.w * T + 4 * T
+	hedge(px1, 0, px1, map.h * T) -- outer side of the side path
+	hedge(px0, 0, px1, 0) -- its two ends
+	hedge(px0, map.h * T, px1, map.h * T)
 	world.gardenSpot = garden.Position + Vector3.new(0, 4, 0)
 	world.gardenSpotSide = Vector3.new(map.w * T + 2 * T, 4, map.h * T / 2)
 end

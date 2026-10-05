@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TextChatService = game:GetService("TextChatService")
+local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
 local HouseMap = require(ReplicatedStorage.Shared.HouseMap)
@@ -135,14 +136,15 @@ local function jumpscare()
 end
 
 -- ---------- top bar ----------
-local top = frame(gui, { Size = UDim2.new(0.34, 0, 0, 44), Position = UDim2.new(0.4, 0, 0, 8), BackgroundTransparency = 0.25 })
+local top = frame(gui, { Size = UDim2.new(0.36, 0, 0, 40), Position = UDim2.new(0.4, 0, 0, 8), BackgroundTransparency = 0.25 })
 corner(top, 12)
 local roomName -- placed with the bars below
 local steps = {}
 for i = 1, 5 do
-	steps[i] = label(top, { Position = UDim2.new(0.02 + (i - 1) * 0.09, 0, 0.1, 0), Size = UDim2.new(0.09, 0, 0.8, 0), Text = "\u{1F463}", TextTransparency = 0.8 })
+	steps[i] = label(top, { Position = UDim2.new(0.02 + (i - 1) * 0.065, 0, 0.2, 0), Size = UDim2.new(0.065, 0, 0.6, 0), Text = "\u{1F463}", TextTransparency = 0.8 })
 end
-local codeLabel = label(top, { Size = UDim2.new(0.5, 0, 0.7, 0), Position = UDim2.fromScale(0.48, 0.15), RichText = true, Text = "Code: ? ? ?" })
+local timerLabel = label(top, { Size = UDim2.new(0.26, 0, 0.7, 0), Position = UDim2.fromScale(0.36, 0.15), Text = "\u{23F1} --:--" })
+local codeLabel = label(top, { Size = UDim2.new(0.36, 0, 0.7, 0), Position = UDim2.fromScale(0.62, 0.15), RichText = true, Text = "Code: ? ? ?" })
 local clueBtn -- lives with the action buttons below
 local function askClue()
 	remotes.AskClue:FireServer()
@@ -164,23 +166,24 @@ RoundState.AttributeChanged:Connect(paintCode)
 paintCode()
 
 -- ---------- bars ----------
-local bars = frame(gui, { Size = UDim2.fromOffset(240, 76), Position = TOUCH and UDim2.fromOffset(10, 60) or UDim2.new(0, 10, 1, -86), BackgroundTransparency = 0.3 })
-roomName = label(bars, { Size = UDim2.new(1, -16, 0, 24), Position = UDim2.fromOffset(8, 46), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
+local bars = frame(gui, { Size = UDim2.fromOffset(250, 84), Position = TOUCH and UDim2.fromOffset(10, 60) or UDim2.new(0, 10, 1, -94), BackgroundTransparency = 0.3 })
+roomName = label(bars, { Size = UDim2.new(1, -16, 0, 20), Position = UDim2.fromOffset(8, 58), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
 corner(bars, 10)
-local function bar(y, color)
-	local back = frame(bars, { Size = UDim2.new(1, -16, 0, 12), Position = UDim2.fromOffset(8, y), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0 })
+local function bar(y, color, name)
+	label(bars, { Size = UDim2.fromOffset(78, 16), Position = UDim2.fromOffset(8, y - 2), Text = name, TextXAlignment = Enum.TextXAlignment.Left })
+	local back = frame(bars, { Size = UDim2.new(1, -96, 0, 12), Position = UDim2.fromOffset(88, y), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0 })
 	corner(back, 6)
 	local fill = frame(back, { Size = UDim2.fromScale(1, 1), BackgroundColor3 = color, BackgroundTransparency = 0 })
 	corner(fill, 6)
 	return fill
 end
-local staminaBar = bar(8, Color3.fromRGB(123, 227, 107))
-local energyBar = bar(26, Color3.fromRGB(255, 210, 63))
+local staminaBar = bar(10, Color3.fromRGB(123, 227, 107), "Stamina")
+local energyBar = bar(34, Color3.fromRGB(255, 210, 63), "Energy")
 
 -- ---------- action buttons ----------
-local acts = frame(gui, { Size = UDim2.fromOffset(330, 120), Position = TOUCH and UDim2.new(1, -340, 1, -270) or UDim2.new(1, -340, 1, -130), BackgroundTransparency = 1 })
+local acts = frame(gui, { Size = UDim2.fromOffset(290, 100), Position = TOUCH and UDim2.new(1, -300, 1, -250) or UDim2.new(1, -300, 1, -110), BackgroundTransparency = 1 })
 local grid = Instance.new("UIGridLayout")
-grid.CellSize = UDim2.fromOffset(104, 54)
+grid.CellSize = UDim2.fromOffset(92, 44)
 grid.CellPadding = UDim2.fromOffset(6, 6)
 grid.HorizontalAlignment = Enum.HorizontalAlignment.Right
 grid.VerticalAlignment = Enum.VerticalAlignment.Bottom
@@ -195,7 +198,7 @@ local sayBtn = button(acts, "\u{1F4AC} Say", { LayoutOrder = 3 })
 local outBtn = button(acts, "\u{1F440} Come out", { LayoutOrder = 4, Visible = false }, function()
 	remotes.Unhide:FireServer()
 end)
-local pickBtn = button(acts, "\u{1F504} Skill", { LayoutOrder = 5 })
+local pickBtn = button(acts, "\u{1F504} Change", { LayoutOrder = 5 })
 clueBtn = button(acts, "\u{1F4A1} Clue (3)", { LayoutOrder = 6 }, askClue)
 
 -- ---------- quick-chat phrases ----------
@@ -225,9 +228,9 @@ remotes.Bubble.OnClientEvent:Connect(function(who, idx)
 end)
 
 -- ---------- skill picker ----------
-local picker = frame(gui, { Size = UDim2.fromOffset(620, 380), Position = UDim2.new(0.5, -310, 0.5, -190), ZIndex = 20 })
+local picker = frame(gui, { Size = UDim2.fromOffset(620, 430), Position = UDim2.new(0.5, -310, 0.5, -215), ZIndex = 20 })
 corner(picker, 16)
-label(picker, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 8), Text = "Pick your skill", TextColor3 = PUMP, ZIndex = 21 })
+label(picker, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 8), Text = "Escape Crew - pick your character", TextColor3 = PUMP, ZIndex = 21 })
 local cardBox = frame(picker, { Size = UDim2.new(1, -20, 0, 240), Position = UDim2.fromOffset(10, 54), BackgroundTransparency = 1, ZIndex = 21 })
 local cardGrid = Instance.new("UIGridLayout")
 cardGrid.CellSize = UDim2.fromOffset(142, 112)
@@ -261,6 +264,20 @@ end)
 button(picker, "\u{25B6} Play", { Size = UDim2.fromOffset(150, 44), Position = UDim2.new(0.5, 140, 1, -56), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 22 }, function()
 	picker.Visible = false
 end)
+local diffBtns = {}
+for i, key in ipairs(Config.DIFFICULTY_ORDER) do
+	diffBtns[key] = button(picker, Config.DIFFICULTY[key].name, { Size = UDim2.fromOffset(136, 36), Position = UDim2.new(0, 22 + (i - 1) * 146, 1, -104), ZIndex = 22 }, function()
+		remotes.SetDifficulty:FireServer(key)
+	end)
+end
+local function paintDifficulty()
+	local d = RoundState:GetAttribute("Difficulty")
+	for key, b in pairs(diffBtns) do
+		b.BackgroundColor3 = key == d and Color3.fromRGB(232, 80, 91) or Color3.fromRGB(75, 58, 102)
+	end
+end
+RoundState:GetAttributeChangedSignal("Difficulty"):Connect(paintDifficulty)
+paintDifficulty()
 local function paintSpook()
 	local s = RoundState:GetAttribute("Spook")
 	giggly.BackgroundColor3 = s == "giggly" and PUMP or Color3.fromRGB(75, 58, 102)
@@ -311,10 +328,10 @@ end)
 
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
-local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F497} Heal", echo = "\u{1F3A7} Throw noise" }
+local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F497} Heal", echo = "\u{1F3A7} Noise" }
 local function paintSkill()
 	local s = player:GetAttribute("Skill")
-	skillBtn.Text = SKILL_TEXT[s] or "\u{2B50} Skill: walk up + E"
+	skillBtn.Text = SKILL_TEXT[s] or "\u{2B50} Skill"
 end
 player:GetAttributeChangedSignal("Skill"):Connect(paintSkill)
 paintSkill()
@@ -417,6 +434,35 @@ RunService.RenderStepped:Connect(function(dt)
 	staminaBar.BackgroundColor3 = tired and Color3.fromRGB(255, 77, 94) or Color3.fromRGB(123, 227, 107)
 	energyBar.Size = UDim2.fromScale((player:GetAttribute("Energy") or 0) / 100, 1)
 
+	-- skill countdown: active time, then recharge time
+	local serverNow = workspace:GetServerTimeNow()
+	local skill = player:GetAttribute("Skill")
+	if SKILL_TEXT[skill] then
+		local active = (player:GetAttribute("SneakUntil") or 0) - serverNow
+		local cool = (player:GetAttribute("CoolUntil") or 0) - serverNow
+		if skill == "shadow" and active > 0 then
+			skillBtn.Text = "\u{1F319} Sneaking " .. math.ceil(active) .. "s"
+			skillBtn.BackgroundColor3 = PUMP
+		elseif cool > 0 then
+			skillBtn.Text = SKILL_TEXT[skill] .. " " .. math.ceil(cool) .. "s"
+			skillBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+		else
+			skillBtn.Text = SKILL_TEXT[skill]
+			skillBtn.BackgroundColor3 = Color3.fromRGB(47, 107, 58)
+		end
+	end
+
+	-- escape timer
+	local ends = RoundState:GetAttribute("EndsAt")
+	if RoundState:GetAttribute("Frenzy") then
+		timerLabel.Text = "\u{1F525} FRENZY"
+		timerLabel.TextColor3 = Color3.fromRGB(255, 77, 94)
+	elseif ends and RoundState:GetAttribute("Status") == "playing" then
+		local left = math.max(0, math.floor(ends - serverNow))
+		timerLabel.Text = string.format("\u{23F1} %d:%02d", math.floor(left / 60), left % 60)
+		timerLabel.TextColor3 = left < 60 and Color3.fromRGB(255, 77, 94) or CREAM
+	end
+
 	-- where am I, and how close is the host?
 	local r = roomAt(hrp.Position)
 	roomName.Text = r and ("The Party House \u{00B7} " .. r) or "The Party House"
@@ -432,6 +478,47 @@ RunService.RenderStepped:Connect(function(dt)
 	for i = 1, 5 do
 		steps[i].TextTransparency = i <= level and 0 or 0.8
 	end
+end)
+
+-- ---------- end of round: results ----------
+local results = frame(gui, { Size = UDim2.fromOffset(460, 360), Position = UDim2.new(0.5, -230, 0.5, -180), Visible = false, ZIndex = 40 })
+corner(results, 18)
+local resTitle = label(results, { Size = UDim2.new(1, -20, 0, 44), Position = UDim2.fromOffset(10, 12), TextColor3 = PUMP, ZIndex = 41 })
+local resInfo = label(results, { Size = UDim2.new(1, -20, 0, 26), Position = UDim2.fromOffset(10, 60), ZIndex = 41 })
+local resList = label(results, { Size = UDim2.new(1, -40, 0, 190), Position = UDim2.fromOffset(20, 96), TextScaled = false, TextSize = 22, TextYAlignment = Enum.TextYAlignment.Top, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 41 })
+local resNext = label(results, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.new(0, 10, 1, -44), TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
+local function confetti()
+	local colours = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), PUMP }
+	for i = 1, 70 do
+		local c = frame(gui, { Size = UDim2.fromOffset(10, 6), Position = UDim2.new(math.random(), 0, -0.05, 0), BackgroundColor3 = colours[i % #colours + 1], BackgroundTransparency = 0, Rotation = math.random(0, 180), ZIndex = 45 })
+		local fall = TweenService:Create(c, TweenInfo.new(2 + math.random() * 2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Position = UDim2.new(c.Position.X.Scale + (math.random() - 0.5) * 0.2, 0, 1.05, 0), Rotation = c.Rotation + 360 })
+		fall:Play()
+		fall.Completed:Connect(function()
+			c:Destroy()
+		end)
+	end
+end
+remotes.Results.OnClientEvent:Connect(function(r)
+	resTitle.Text = r.won and "\u{1F389} You escaped the Party House!" or "\u{1F512} Everyone was caught..."
+	resInfo.Text = r.difficulty .. "  \u{00B7}  " .. string.format("%d:%02d", math.floor(r.seconds / 60), r.seconds % 60) .. (r.timeBonus > 0 and ("  \u{00B7}  time bonus +" .. r.timeBonus) or "")
+	local lines = {}
+	for _, row in ipairs(r.players) do
+		table.insert(lines, (row.escaped and "\u{2705} " or "\u{1F512} ") .. row.name .. "  +" .. row.points .. " points")
+	end
+	resList.Text = table.concat(lines, "\n")
+	results.Visible = true
+	if r.won then
+		confetti()
+	end
+	local left = r.nextIn
+	task.spawn(function()
+		while left > 0 and results.Visible do
+			resNext.Text = "Next party in " .. left .. "..."
+			task.wait(1)
+			left -= 1
+		end
+		results.Visible = false
+	end)
 end)
 
 -- ---------- messages from the server ----------

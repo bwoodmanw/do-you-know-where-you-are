@@ -26,6 +26,17 @@ Config.HOST = {
 	lostAfter = 4, -- seconds out of sight before it gives up
 }
 
+-- Difficulty: chosen before the host comes out. timer = seconds to escape
+-- before the lights go out and the host goes into a frenzy. bonus multiplies
+-- the escape reward.
+Config.DIFFICULTY_ORDER = { "easy", "normal", "hard", "nightmare" }
+Config.DIFFICULTY = {
+	easy = { name = "Easy", grace = 30, timer = 480, hunt = 10, sight = 26, catch = 4, clues = 5, bonus = 1 },
+	normal = { name = "Normal", grace = 20, timer = 360, hunt = 12, sight = 32, catch = 4.5, clues = 3, bonus = 1.5 },
+	hard = { name = "Hard", grace = 12, timer = 270, hunt = 14, sight = 40, catch = 5, clues = 2, bonus = 2 },
+	nightmare = { name = "Nightmare", grace = 6, timer = 210, hunt = 16, sight = 48, catch = 5.5, clues = 1, bonus = 3 },
+}
+
 Config.CLUE_COST = 30
 Config.CLUES = 3
 

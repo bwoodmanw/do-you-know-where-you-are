@@ -1,4 +1,4 @@
-# Do You Know Where You Are?
+# Escape Crew (first named "Do You Know Where You Are?")
 
 **A co-operative escape game for ages 8+: a team of up to six kids solves puzzles
 room by room to reach the final safe area - and their parents - before the

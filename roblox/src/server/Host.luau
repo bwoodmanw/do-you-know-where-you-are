@@ -102,14 +102,15 @@ function Host.new(world, round)
 	return self
 end
 
-function Host:spawn(spook)
+function Host:spawn(diff)
 	local H = self.world
 	local sx, sy = table.unpack(H.map.spawn)
 	local pos = require(script.Parent.House).at(sx, sy, 0)
 	self.model, self.hum, self.root, self.face, self.arms = buildModel(pos)
 	self.model.Parent = workspace
 	self.root:SetNetworkOwner(nil)
-	self.spook = spook
+	self.diff = diff -- a Config.DIFFICULTY entry
+	self.frenzy = false
 	self.mode = "patrol"
 	self.path = PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 11, AgentCanJump = false, WaypointSpacing = 6 })
 	return self.model
@@ -149,11 +150,11 @@ function Host:canSee(char)
 	if not plr or plr:GetAttribute("Hidden") or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return false
 	end
-	if (plr:GetAttribute("SneakUntil") or 0) > os.clock() then
+	if (plr:GetAttribute("SneakUntil") or 0) > workspace:GetServerTimeNow() then
 		return false
 	end
 	local dist = (target.Position - head.Position).Magnitude
-	local range = Config.HOST.sight[self.spook] or 32
+	local range = self.diff.sight
 	if plr:GetAttribute("Skill") == "shadow" then
 		range = Config.HOST.shadowSight
 	end
@@ -218,16 +219,34 @@ function Host:step(dt)
 		self.round:hostLost()
 	end
 	setFace(self, self.mode == "hunt")
-	self.hum.WalkSpeed = self.mode == "hunt" and Config.HOST.hunt[self.spook] or (self.mode == "search" and Config.HOST.search or Config.HOST.patrol)
+	if self.frenzy and not best then
+		-- time is up: it always knows where the nearest kid is
+		local near, nd = nil, math.huge
+		for _, plr in ipairs(Players:GetPlayers()) do
+			local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+			if hrp and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped") then
+				local d = (hrp.Position - self.root.Position).Magnitude
+				if d < nd then near, nd = hrp, d end
+			end
+		end
+		if near then
+			self.mode = "hunt"
+			self.goal = near.Position
+			self.lastSeen = now
+		end
+	end
+	self.hum.WalkSpeed = self.mode == "hunt" and (self.diff.hunt + (self.frenzy and 2 or 0)) or (self.mode == "search" and Config.HOST.search or Config.HOST.patrol)
 
 	-- catch anyone close enough who is not hidden
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local char = plr.Character
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
-		if hrp and not plr:GetAttribute("Hidden") and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
-			and (plr:GetAttribute("SneakUntil") or 0) <= now then
+		local hidden = plr:GetAttribute("Hidden")
+		if hrp and (not hidden or self.frenzy) and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
+			and (plr:GetAttribute("SneakUntil") or 0) <= workspace:GetServerTimeNow() then
 			local flat = Vector3.new(hrp.Position.X - self.root.Position.X, 0, hrp.Position.Z - self.root.Position.Z)
-			if flat.Magnitude < Config.HOST.catch then
+			-- in a frenzy it searches hiding places it walks right up to
+			if flat.Magnitude < (hidden and 3.5 or self.diff.catch) then
 				self.pause = 2.5
 				self.mode = "patrol"
 				self.round:hostCaught(plr)

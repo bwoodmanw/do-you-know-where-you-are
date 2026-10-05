@@ -39,11 +39,28 @@ local Bubble = remote("Bubble") -- server -> clients: player, phrase index
 local Unhide = remote("Unhide")
 local SetSpook = remote("SetSpook")
 local Boost = remote("Boost") -- server -> one client: "candy" | "stamina"
+local SetDifficulty = remote("SetDifficulty")
+local Results = remote("Results") -- server -> clients: the end-of-round summary
 
 local RoundState = Instance.new("Configuration")
 RoundState.Name = "RoundState"
 RoundState.Parent = ReplicatedStorage
 RoundState:SetAttribute("Spook", "giggly")
+RoundState:SetAttribute("Difficulty", "normal")
+
+-- realistic night lighting
+local Lighting = game:GetService("Lighting")
+local function effect(class, props)
+	local e = Lighting:FindFirstChildOfClass(class) or Instance.new(class)
+	for k, v in pairs(props) do
+		e[k] = v
+	end
+	e.Parent = Lighting
+	return e
+end
+effect("Atmosphere", { Density = 0.35, Color = Color3.fromRGB(120, 100, 150), Decay = Color3.fromRGB(40, 30, 60), Glare = 0, Haze = 1.5 })
+effect("BloomEffect", { Intensity = 0.6, Size = 30, Threshold = 1.4 })
+effect("ColorCorrectionEffect", { Saturation = -0.05, Contrast = 0.12, TintColor = Color3.fromRGB(255, 240, 230) })
 
 -- ---------- saving points ----------
 local store
@@ -79,17 +96,20 @@ local function savePlayer(plr)
 	end
 end
 
+local state = {}
 local function addPoints(plr, n)
 	local stats = plr:FindFirstChild("leaderstats")
 	if stats then
 		stats.Points.Value += n
+	end
+	if state.earned then
+		state.earned[plr.UserId] = (state.earned[plr.UserId] or 0) + n
 	end
 end
 
 -- ---------- the round ----------
 local round = {}
 local world, host
-local state = {}
 local hostTimer = nil
 
 local function say(kind, text, data, toPlayer)
@@ -138,70 +158,45 @@ local function colourWord(c)
 	return string.upper(c)
 end
 
--- skill gear: a few parts welded to the avatar's head
+-- a name tag over each kid showing their character, until the real
+-- character models replace the avatars
 local function gear(plr)
 	local c = plr.Character
 	local head = c and c:FindFirstChild("Head")
 	if not head then
 		return
 	end
-	local old = c:FindFirstChild("SkillGear")
+	local old = head:FindFirstChild("SkillTag")
 	if old then
 		old:Destroy()
 	end
-	local folder = Instance.new("Folder")
-	folder.Name = "SkillGear"
-	folder.Parent = c
-	local s = head.Size.Y
-	local function g(name, size, offset, color, material, shape)
-		local p = Instance.new("Part")
-		p.Name = name
-		if shape then
-			p.Shape = shape
-		end
-		p.Size = size * s
-		p.Color = color
-		p.Material = material or Enum.Material.SmoothPlastic
-		p.CanCollide, p.Massless, p.Anchored, p.CanQuery = false, true, false, false
-		p.CFrame = head.CFrame * CFrame.new(offset * s)
-		p.Parent = folder
-		local w = Instance.new("WeldConstraint")
-		w.Part0, w.Part1 = head, p
-		w.Parent = p
-		return p
-	end
-	local skill = plr:GetAttribute("Skill")
-	if skill == "tinker" then
-		for i = -1, 1, 2 do
-			g("Goggle", Vector3.new(0.38, 0.38, 0.2), Vector3.new(i * 0.24, 0.42, -0.5), Color3.fromRGB(181, 140, 60), Enum.Material.Metal, Enum.PartType.Cylinder)
-		end
-		g("Strap", Vector3.new(1.05, 0.12, 1.05), Vector3.new(0, 0.42, 0), Color3.fromRGB(90, 60, 30))
-	elseif skill == "shadow" then
-		g("Mask", Vector3.new(1.08, 0.3, 1.08), Vector3.new(0, 0.05, 0), Color3.fromRGB(30, 24, 40), Enum.Material.Fabric)
-	elseif skill == "brainy" then
-		g("Beanie", Vector3.new(1.05, 0.5, 1.05), Vector3.new(0, 0.55, 0), Color3.fromRGB(232, 66, 63), Enum.Material.Fabric)
-		g("Propeller", Vector3.new(1.0, 0.06, 0.18), Vector3.new(0, 0.95, 0), Color3.fromRGB(61, 139, 255))
-	elseif skill == "muscle" then
-		g("Sweatband", Vector3.new(1.08, 0.2, 1.08), Vector3.new(0, 0.32, 0), Color3.fromRGB(255, 210, 63), Enum.Material.Fabric)
-	elseif skill == "glow" then
-		g("Antenna", Vector3.new(0.06, 0.7, 0.06), Vector3.new(0, 0.85, 0), Color3.fromRGB(42, 77, 47))
-		local bulb = g("Bulb", Vector3.new(0.3, 0.3, 0.3), Vector3.new(0, 1.25, 0), Color3.fromRGB(255, 242, 122), Enum.Material.Neon, Enum.PartType.Ball)
-		local l = Instance.new("PointLight")
-		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 242, 160), 22, 1.5
-		l.Parent = bulb
-	elseif skill == "patch" then
-		g("Plaster", Vector3.new(0.4, 0.14, 0.05), Vector3.new(0.2, 0.35, -0.52), Color3.fromRGB(242, 208, 160))
-	elseif skill == "echo" then
-		g("Band", Vector3.new(1.1, 0.12, 0.2), Vector3.new(0, 0.6, 0), Color3.fromRGB(43, 33, 64))
-		for i = -1, 1, 2 do
-			g("Cup", Vector3.new(0.2, 0.42, 0.42), Vector3.new(i * 0.56, 0.05, 0), Color3.fromRGB(43, 33, 64))
-		end
-	elseif skill == "bramble" then
-		for i = 0, 5 do
-			local a = i / 6 * math.pi * 2
-			g("Leaf", Vector3.new(0.22, 0.36, 0.22), Vector3.new(math.cos(a) * 0.45, 0.62, math.sin(a) * 0.45), i % 2 == 0 and Color3.fromRGB(58, 125, 68) or Color3.fromRGB(95, 179, 90), Enum.Material.Grass, Enum.PartType.Ball)
+	local skill
+	for _, sk in ipairs(Config.SKILLS) do
+		if sk.id == plr:GetAttribute("Skill") then
+			skill = sk
 		end
 	end
+	if not skill then
+		return
+	end
+	local tag = Instance.new("BillboardGui")
+	tag.Name = "SkillTag"
+	tag.Size = UDim2.fromOffset(120, 30)
+	tag.StudsOffset = Vector3.new(0, 2.6, 0)
+	tag.MaxDistance = 60
+	tag.Parent = head
+	local l = Instance.new("TextLabel")
+	l.Size = UDim2.fromScale(1, 1)
+	l.BackgroundColor3 = skill.color
+	l.BackgroundTransparency = 0.15
+	l.TextColor3 = Color3.fromRGB(26, 16, 38)
+	l.Font = Enum.Font.FredokaOne
+	l.TextScaled = true
+	l.Text = skill.name
+	l.Parent = tag
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = l
 end
 
 local function playersInRound()
@@ -233,20 +228,34 @@ local function checkEnd()
 	if free > 0 then
 		return
 	end
-	if escaped > 0 then
+	local diff = Config.DIFFICULTY[state.diff] or Config.DIFFICULTY.normal
+	local now = workspace:GetServerTimeNow()
+	local won = escaped > 0
+	if won then
 		state.status = "won"
-		RoundState:SetAttribute("Status", "won")
+		local winBonus = math.floor(20 * diff.bonus)
+		local timeBonus = state.frenzy and 0 or math.max(0, math.floor((state.endsAt - now) / 6))
 		for _, plr in ipairs(list) do
-			addPoints(plr, 20)
+			addPoints(plr, plr:GetAttribute("Escaped") and (winBonus + timeBonus) or math.floor(winBonus / 2))
 		end
-		say("win", "You escaped the Party House! Everyone made it to the garden.")
-		task.delay(10, round.start)
+		state.timeBonus = timeBonus
 	else
 		state.status = "lost"
-		RoundState:SetAttribute("Status", "lost")
-		say("lose", "Everyone is in the cage! The party starts again...")
-		task.delay(7, round.start)
 	end
+	RoundState:SetAttribute("Status", state.status)
+	local rows = {}
+	for _, plr in ipairs(list) do
+		table.insert(rows, { name = plr.DisplayName, points = state.earned[plr.UserId] or 0, escaped = plr:GetAttribute("Escaped") == true, skill = plr:GetAttribute("Skill") })
+	end
+	Results:FireAllClients({
+		won = won,
+		difficulty = diff.name,
+		seconds = math.floor(now - state.startedAt),
+		timeBonus = state.timeBonus or 0,
+		nextIn = won and 12 or 8,
+		players = rows,
+	})
+	task.delay(won and 12 or 8, round.start)
 end
 
 local function escape(plr, side)
@@ -513,6 +522,7 @@ function round.hostSniff()
 	say("sniff", "Sniff sniff... I smell birthday cake.")
 end
 function round.hostCaught(_, plr)
+	unhide(plr)
 	if plr:GetAttribute("Shield") then
 		plr:SetAttribute("Shield", false)
 		host:stun(2.5)
@@ -614,7 +624,7 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 	if not cd or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return
 	end
-	local now = os.clock()
+	local now = workspace:GetServerTimeNow()
 	if (plr:GetAttribute("CoolUntil") or 0) > now then
 		return say("info", "Your skill is recharging... " .. math.ceil(plr:GetAttribute("CoolUntil") - now) .. " seconds", nil, plr)
 	end
@@ -699,6 +709,13 @@ end)
 
 Unhide.OnServerEvent:Connect(unhide)
 
+SetDifficulty.OnServerEvent:Connect(function(_, key)
+	if typeof(key) == "string" and Config.DIFFICULTY[key] and not (host and host.model) then
+		RoundState:SetAttribute("Difficulty", key)
+		say("info", "Difficulty: " .. Config.DIFFICULTY[key].name)
+	end
+end)
+
 SetSpook.OnServerEvent:Connect(function(_, level)
 	if (level == "giggly" or level == "spooky") and not (host and host.model) then
 		RoundState:SetAttribute("Spook", level)
@@ -721,10 +738,16 @@ function round.start()
 	for i = 1, 3 do
 		code[i] = Config.COLORS[math.random(1, #Config.COLORS)]
 	end
-	state = { status = "playing", code = code, known = {}, entry = {}, doorOpen = false, holeOpen = false, cluesLeft = Config.CLUES }
+	local diffKey = RoundState:GetAttribute("Difficulty") or "normal"
+	local diff = Config.DIFFICULTY[diffKey]
+	local now = workspace:GetServerTimeNow()
+	state = { status = "playing", code = code, known = {}, entry = {}, doorOpen = false, holeOpen = false, cluesLeft = diff.clues,
+		diff = diffKey, earned = {}, startedAt = now, endsAt = now + diff.timer, frenzy = false }
 	RoundState:SetAttribute("Status", "playing")
 	RoundState:SetAttribute("DoorOpen", false)
-	RoundState:SetAttribute("CluesLeft", Config.CLUES)
+	RoundState:SetAttribute("CluesLeft", diff.clues)
+	RoundState:SetAttribute("EndsAt", state.endsAt)
+	RoundState:SetAttribute("Frenzy", false)
 	RoundState:SetAttribute("HostOut", false)
 	for i = 1, 3 do
 		RoundState:SetAttribute("Known" .. i, nil)
@@ -750,12 +773,12 @@ function round.start()
 		teleport(plr, at(s[1], s[2], 0))
 	end
 	host = Host.new(world, round)
-	local grace = spook == "spooky" and Config.GRACE_SPOOKY or Config.GRACE
+	local grace = diff.grace
 	say("start", "Find the way out of the Party House. Don't get caught!", { grace = grace })
 	hostTimer = task.delay(grace, function()
 		hostTimer = nil
 		if state.status == "playing" then
-			host:spawn(spook)
+			host:spawn(Config.DIFFICULTY[state.diff])
 			RoundState:SetAttribute("HostOut", true)
 			say("appear", "Ding dong! Who came to my party?")
 		end
@@ -771,9 +794,42 @@ RunService.Heartbeat:Connect(function(dt)
 	end
 	local step = acc
 	acc = 0
-	if host and host.model and state.status == "playing" then
+	if state.status ~= "playing" or not world then
+		return
+	end
+	if host and host.model then
 		host:step(step)
 	end
+	local W, Hh = HouseMap.w * T, HouseMap.h * T
+	for _, plr in ipairs(Players:GetPlayers()) do
+		local hrp = hrpOf(plr)
+		if hrp then
+			local pos = hrp.Position
+			if pos.Y < -20 then
+				-- fell off the world: back to safety
+				teleport(plr, plr:GetAttribute("Escaped") and world.gardenSpot or at(HouseMap.start[1][1], HouseMap.start[1][2], 0))
+			elseif not plr:GetAttribute("Escaped") and not plr:GetAttribute("Caged") and not plr:GetAttribute("Waiting") then
+				if state.doorOpen and pos.Z < -1 then
+					escape(plr, false)
+				elseif state.holeOpen and pos.X > W + 1 then
+					escape(plr, true)
+				end
+			end
+		end
+	end
+	if not state.frenzy and workspace:GetServerTimeNow() >= state.endsAt then
+		state.frenzy = true
+		RoundState:SetAttribute("Frenzy", true)
+		for _, l in ipairs(world.lights) do
+			l.Brightness = 0.15
+			l.Color = Color3.fromRGB(255, 60, 40)
+		end
+		if host then
+			host.frenzy = true
+		end
+		say("frenzy", "TIME'S UP! The lights go out... and the host knows where you are!")
+	end
+	local _ = Hh
 end)
 
 -- ---------- players coming and going ----------
