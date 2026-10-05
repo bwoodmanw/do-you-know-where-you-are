@@ -4,7 +4,41 @@
 room by room to reach the final safe area - and their parents - before the
 creature that lives there finds them.**
 
-Status: draft for approval, 4 Oct 2026. Nothing is built yet.
+Status: approved 4 Oct 2026. **Platform changed to Roblox on 5 Oct 2026** - see
+section 0. Sections 6, 7 and 11 describe the web version, which is parked.
+
+---
+
+## 0. Platform: Roblox (decided 5 Oct 2026)
+
+Brent wants the game to look like the ChatGPT sheets in real 3D, like Roblox
+games. The kids already play Roblox, so the game is now a **Roblox experience**.
+
+- **Built with:** Roblox Studio (already on Brent's PC) and **Rojo**, which syncs
+  the code in `roblox/` into Studio. Claude writes the Luau; Brent opens Studio,
+  presses Play to test, and Publish to release.
+- **3D world:** the Party House is built from code out of the same layout as the
+  web version (`roblox/src/shared/HouseMap.luau`), with Roblox materials now and
+  Brent's textures once uploaded to Roblox.
+- **Characters:** kids play as **their own Roblox avatars, wearing their skill
+  gear** (Tinker's goggles and tool belt, Glow's antenna, and so on). The 8
+  skills are unchanged. Custom kid models matching the sheets: later.
+- **The host:** a custom pumpkin-headed model matching `art/sheets/host-party.png`
+  (built from parts now; a proper 3D model later).
+- **Multiplayer:** Roblox servers, up to 6 per server; friends join each other
+  or a private server. The server is the referee, as designed.
+- **Safety:** Roblox accounts, Roblox's chat filtering and Roblox parental
+  controls replace our own no-accounts design. The preset phrases stay as
+  quick-chat buttons. Content maturity: answer Roblox's questionnaire honestly;
+  repeated mild fear is expected to be **"Mild"**, which under-9s can still join.
+- **Fire tablet:** the Roblox app, installed from the adult profile and shared
+  to the Kids profile.
+- **Given up:** offline play (Roblox needs internet); the "no accounts" rule;
+  the web version stays live but parked.
+- **Solo on Roblox:** one player has one avatar, so the squad-swap solo mode
+  does not carry over directly - see open questions.
+- **Sound:** synthesised Web Audio does not exist on Roblox; sounds come from
+  Roblox's free audio library or uploaded files.
 
 ---
 
