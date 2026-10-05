@@ -49,14 +49,14 @@ Config.COLOR3 = {
 }
 
 Config.SKILLS = {
-	{ id = "tinker", name = "Tinker", say = "Picks locks", color = Color3.fromRGB(242, 140, 40) },
-	{ id = "shadow", name = "Shadow", say = "Sneaks unseen", color = Color3.fromRGB(138, 107, 209) },
-	{ id = "brainy", name = "Brainy", say = "Cracks codes", color = Color3.fromRGB(79, 179, 232) },
-	{ id = "muscle", name = "Muscle", say = "Shoves heavy things", color = Color3.fromRGB(232, 80, 91) },
-	{ id = "glow", name = "Glow", say = "Lights up secrets", color = Color3.fromRGB(184, 224, 90) },
-	{ id = "patch", name = "Patch", say = "Heals and rescues", color = Color3.fromRGB(255, 179, 199) },
-	{ id = "echo", name = "Echo", say = "Throws a noise", color = Color3.fromRGB(255, 210, 63) },
-	{ id = "bramble", name = "Bramble", say = "Talks to plants", color = Color3.fromRGB(143, 209, 106) },
+	{ id = "tinker", name = "Tinker", icon = "\u{1F527}", say = "Picks locks", color = Color3.fromRGB(242, 140, 40) },
+	{ id = "shadow", name = "Shadow", icon = "\u{1F319}", say = "Sneaks unseen", color = Color3.fromRGB(138, 107, 209) },
+	{ id = "brainy", name = "Brainy", icon = "\u{1F9E0}", say = "Cracks codes", color = Color3.fromRGB(79, 179, 232) },
+	{ id = "muscle", name = "Muscle", icon = "\u{1F4AA}", say = "Shoves heavy things", color = Color3.fromRGB(232, 80, 91) },
+	{ id = "glow", name = "Glow", icon = "\u{1F4A1}", say = "Lights up secrets", color = Color3.fromRGB(184, 224, 90) },
+	{ id = "patch", name = "Patch", icon = "\u{1F497}", say = "Heals and rescues", color = Color3.fromRGB(255, 179, 199) },
+	{ id = "echo", name = "Echo", icon = "\u{1F3A7}", say = "Throws a noise", color = Color3.fromRGB(255, 210, 63) },
+	{ id = "bramble", name = "Bramble", icon = "\u{1F33F}", say = "Talks to plants", color = Color3.fromRGB(143, 209, 106) },
 }
 
 Config.COOLDOWN = { shadow = 20, patch = 30, echo = 25 }
@@ -65,6 +65,17 @@ Config.PHRASES = {
 	"Over here!", "I found something!", "Hide!", "Run!", "Use your skill!", "Help me!",
 	"Nice one!", "The door is open!", "Pop the balloons!", "It is coming!", "Ha ha ha!", "I want cake!",
 }
+
+-- icons for things you pick up
+Config.ITEM_ICONS = { candy = "\u{1F36C}", shield = "\u{1F6E1}", balloon = "\u{1F388}" }
+
+-- the two places in the experience: players arrive in the Lobby; a party is
+-- sent to its own private server of the Party House. Found by name at run
+-- time, so no ids need copying.
+Config.LOBBY_PLACE = "Lobby"
+Config.GAME_PLACE = "Party House"
+Config.VOTE_SECONDS = 10
+Config.MAX_PARTY = 6
 
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }
 Config.IMAGES = {}

@@ -1,0 +1,261 @@
+--[[
+	Lobby - where everyone arrives. A party of 1-6 forms here (friends only
+	by default), its leader picks difficulty and Giggly/Spooky, and Start
+	sends the whole party to its own private server of the Party House.
+]]
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeleportService = game:GetService("TeleportService")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Places = require(ReplicatedStorage.Shared.Places)
+
+-- ---------- the lobby scene: the lane outside the Party House ----------
+local function part(props)
+	local p = Instance.new("Part")
+	p.Anchored = true
+	p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+	for k, v in pairs(props) do
+		p[k] = v
+	end
+	p.Parent = workspace
+	return p
+end
+
+part({ Name = "Ground", Size = Vector3.new(200, 2, 200), Position = Vector3.new(0, -1, 0), Material = Enum.Material.Grass, Color = Color3.fromRGB(46, 82, 40) })
+part({ Name = "Lane", Size = Vector3.new(16, 0.2, 140), Position = Vector3.new(0, 0.1, -20), Material = Enum.Material.Cobblestone, Color = Color3.fromRGB(90, 84, 80) })
+-- the house at the end of the lane
+part({ Name = "HouseFront", Size = Vector3.new(60, 34, 4), Position = Vector3.new(0, 17, -92), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(40, 28, 46) })
+part({ Name = "Roof", Size = Vector3.new(66, 4, 30), CFrame = CFrame.new(0, 38, -100) * CFrame.Angles(math.rad(-25), 0, 0), Material = Enum.Material.Slate, Color = Color3.fromRGB(25, 20, 30) })
+part({ Name = "Door", Size = Vector3.new(8, 14, 1), Position = Vector3.new(0, 7, -89.6), Material = Enum.Material.Wood, Color = Color3.fromRGB(122, 74, 30) })
+for _, x in ipairs({ -20, -8, 8, 20 }) do
+	for _, y in ipairs({ 12, 26 }) do
+		if not (x == -8 and y == 12) and not (x == 8 and y == 12) then
+			local w = part({ Name = "Window", Size = Vector3.new(6, 7, 0.5), Position = Vector3.new(x, y, -89.8), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 190, 90) })
+			local l = Instance.new("PointLight")
+			l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 180, 90), 18, 1.5
+			l.Parent = w
+		end
+	end
+end
+-- a silhouette at the top window
+part({ Name = "Watcher", Shape = Enum.PartType.Ball, Size = Vector3.new(3, 3, 3), Position = Vector3.new(20, 27, -89.4), Material = Enum.Material.Neon, Color = Color3.fromRGB(230, 110, 20) })
+-- the gate with balloons, and lamps along the lane
+part({ Name = "GatePostL", Size = Vector3.new(2, 8, 2), Position = Vector3.new(-9, 4, -60), Material = Enum.Material.Brick, Color = Color3.fromRGB(70, 50, 50) })
+part({ Name = "GatePostR", Size = Vector3.new(2, 8, 2), Position = Vector3.new(9, 4, -60), Material = Enum.Material.Brick, Color = Color3.fromRGB(70, 50, 50) })
+for i, c in ipairs({ Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63) }) do
+	part({ Name = "Balloon", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2.4, 2.4), Position = Vector3.new(-9 + (i - 2) * 1.6, 11 + i * 0.5, -60), Material = Enum.Material.SmoothPlastic, Color = c, CanCollide = false })
+end
+for z = 30, -50, -20 do
+	for _, x in ipairs({ -11, 11 }) do
+		part({ Name = "LampPost", Size = Vector3.new(0.6, 10, 0.6), Position = Vector3.new(x, 5, z), Material = Enum.Material.Metal, Color = Color3.fromRGB(30, 30, 34) })
+		local bulb = part({ Name = "Lamp", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.4, 1.4), Position = Vector3.new(x, 10.4, z), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 220, 150), CanCollide = false })
+		local l = Instance.new("PointLight")
+		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 210, 150), 22, 1.2
+		l.Parent = bulb
+	end
+end
+-- edges you cannot walk off
+for _, w in ipairs({ { Vector3.new(200, 40, 2), Vector3.new(0, 20, 100) }, { Vector3.new(200, 40, 2), Vector3.new(0, 20, -100) }, { Vector3.new(2, 40, 200), Vector3.new(100, 20, 0) }, { Vector3.new(2, 40, 200), Vector3.new(-100, 20, 0) } }) do
+	part({ Name = "Boundary", Size = w[1], Position = w[2], Transparency = 1 })
+end
+local spawnPad = Instance.new("SpawnLocation")
+spawnPad.Anchored, spawnPad.Neutral, spawnPad.Duration = true, true, 0
+spawnPad.Size = Vector3.new(10, 1, 10)
+spawnPad.Position = Vector3.new(0, 0.1, 30)
+spawnPad.Transparency = 1
+spawnPad.CanCollide = false
+spawnPad.Parent = workspace
+
+-- ---------- parties ----------
+local remotes = Instance.new("Folder")
+remotes.Name = "LobbyRemotes"
+remotes.Parent = ReplicatedStorage
+local function remote(name)
+	local r = Instance.new("RemoteEvent")
+	r.Name = name
+	r.Parent = remotes
+	return r
+end
+local CreateParty = remote("CreateParty") -- (solo: boolean)
+local JoinParty = remote("JoinParty") -- (partyId)
+local LeaveParty = remote("LeaveParty")
+local SetOption = remote("SetOption") -- (key, value) leader only
+local StartParty = remote("StartParty") -- leader only
+local PartyList = remote("PartyList") -- server -> client: what this player can see
+local Notice = remote("Notice") -- server -> client: a message
+
+local parties = {}
+local partyOf = {}
+local nextId = 1
+local friendCache = {}
+
+local function isFriend(a, b)
+	if a == b then
+		return true
+	end
+	local key = math.min(a.UserId, b.UserId) .. ":" .. math.max(a.UserId, b.UserId)
+	if friendCache[key] == nil then
+		local ok, yes = pcall(function()
+			return a:IsFriendsWith(b.UserId)
+		end)
+		friendCache[key] = ok and yes or false
+	end
+	return friendCache[key]
+end
+
+local function snapshot(party)
+	local members = {}
+	for _, m in ipairs(party.members) do
+		table.insert(members, { name = m.DisplayName, userId = m.UserId })
+	end
+	return {
+		id = party.id,
+		leader = party.leader.DisplayName,
+		leaderId = party.leader.UserId,
+		members = members,
+		max = party.max,
+		friendsOnly = party.friendsOnly,
+		difficulty = party.difficulty,
+		spook = party.spook,
+	}
+end
+
+local function broadcast()
+	for _, plr in ipairs(Players:GetPlayers()) do
+		local list = {}
+		for _, party in pairs(parties) do
+			if partyOf[plr] == party or not party.friendsOnly or isFriend(plr, party.leader) then
+				table.insert(list, snapshot(party))
+			end
+		end
+		PartyList:FireClient(plr, list, partyOf[plr] and partyOf[plr].id or nil)
+	end
+end
+
+local function leave(plr)
+	local party = partyOf[plr]
+	if not party then
+		return
+	end
+	partyOf[plr] = nil
+	local i = table.find(party.members, plr)
+	if i then
+		table.remove(party.members, i)
+	end
+	if #party.members == 0 then
+		parties[party.id] = nil
+	elseif party.leader == plr then
+		party.leader = party.members[1]
+		Notice:FireClient(party.leader, "You are now the party leader.")
+	end
+end
+
+local function start(party)
+	if party.starting then
+		return
+	end
+	local placeId = Places.game()
+	if not placeId then
+		for _, m in ipairs(party.members) do
+			Notice:FireClient(m, "Starting a party only works in the published game. In Studio, open the Party House place and press Play to test it.")
+		end
+		return
+	end
+	party.starting = true
+	for _, m in ipairs(party.members) do
+		Notice:FireClient(m, "Off to the Party House...")
+	end
+	local ok, err = pcall(function()
+		local code = TeleportService:ReserveServer(placeId)
+		local options = Instance.new("TeleportOptions")
+		options.ReservedServerAccessCode = code
+		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook })
+		TeleportService:TeleportAsync(placeId, party.members, options)
+	end)
+	if not ok then
+		party.starting = false
+		for _, m in ipairs(party.members) do
+			Notice:FireClient(m, "Couldn't start the game: " .. tostring(err))
+		end
+	end
+end
+
+CreateParty.OnServerEvent:Connect(function(plr, solo)
+	leave(plr)
+	local party = {
+		id = nextId,
+		leader = plr,
+		members = { plr },
+		max = solo and 1 or Config.MAX_PARTY,
+		friendsOnly = true,
+		difficulty = "normal",
+		spook = "giggly",
+	}
+	nextId += 1
+	parties[party.id] = party
+	partyOf[plr] = party
+	broadcast()
+	if solo then
+		start(party)
+	end
+end)
+
+JoinParty.OnServerEvent:Connect(function(plr, id)
+	local party = parties[id]
+	if not party or party.starting then
+		return Notice:FireClient(plr, "That party has already gone.")
+	end
+	if #party.members >= party.max then
+		return Notice:FireClient(plr, "That party is full.")
+	end
+	if party.friendsOnly and not isFriend(plr, party.leader) then
+		return Notice:FireClient(plr, "That party is friends only.")
+	end
+	leave(plr)
+	table.insert(party.members, plr)
+	partyOf[plr] = party
+	for _, m in ipairs(party.members) do
+		Notice:FireClient(m, plr.DisplayName .. " joined the party!")
+	end
+	broadcast()
+end)
+
+LeaveParty.OnServerEvent:Connect(function(plr)
+	leave(plr)
+	broadcast()
+end)
+
+SetOption.OnServerEvent:Connect(function(plr, key, value)
+	local party = partyOf[plr]
+	if not party or party.leader ~= plr or party.starting then
+		return
+	end
+	if key == "max" and typeof(value) == "number" and value % 1 == 0 then
+		party.max = math.clamp(value, math.max(1, #party.members), Config.MAX_PARTY)
+	elseif key == "friendsOnly" and typeof(value) == "boolean" then
+		party.friendsOnly = value
+	elseif key == "difficulty" and Config.DIFFICULTY[value] then
+		party.difficulty = value
+	elseif key == "spook" and (value == "giggly" or value == "spooky") then
+		party.spook = value
+	end
+	broadcast()
+end)
+
+StartParty.OnServerEvent:Connect(function(plr)
+	local party = partyOf[plr]
+	if party and party.leader == plr then
+		start(party)
+	end
+end)
+
+Players.PlayerAdded:Connect(function()
+	task.wait(1)
+	broadcast()
+end)
+Players.PlayerRemoving:Connect(function(plr)
+	leave(plr)
+	broadcast()
+end)

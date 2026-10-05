@@ -239,7 +239,7 @@ cardGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 cardGrid.Parent = cardBox
 local cards = {}
 for _, s in ipairs(Config.SKILLS) do
-	local b = button(cardBox, s.name .. "\n" .. s.say, { BackgroundColor3 = s.color, TextColor3 = NIGHT, ZIndex = 22 }, function()
+	local b = button(cardBox, s.icon .. " " .. s.name .. "\n" .. s.say, { BackgroundColor3 = s.color, TextColor3 = NIGHT, ZIndex = 22 }, function()
 		remotes.PickSkill:FireServer(s.id)
 	end)
 	cards[s.id] = b
@@ -331,7 +331,13 @@ local aiming = false
 local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F497} Heal", echo = "\u{1F3A7} Noise" }
 local function paintSkill()
 	local s = player:GetAttribute("Skill")
-	skillBtn.Text = SKILL_TEXT[s] or "\u{2B50} Skill"
+	local icon = "\u{2B50}"
+	for _, sk in ipairs(Config.SKILLS) do
+		if sk.id == s then
+			icon = sk.icon
+		end
+	end
+	skillBtn.Text = SKILL_TEXT[s] or (icon .. " Skill")
 end
 player:GetAttributeChangedSignal("Skill"):Connect(paintSkill)
 paintSkill()
@@ -480,13 +486,106 @@ RunService.RenderStepped:Connect(function(dt)
 	end
 end)
 
+-- ---------- a big icon that pops up: items picked up, skills used ----------
+local popFrame = frame(gui, { Size = UDim2.fromOffset(170, 170), Position = UDim2.new(0.5, -85, 0.55, -85), BackgroundTransparency = 1, Visible = false, ZIndex = 35 })
+local popIcon = label(popFrame, { Size = UDim2.fromScale(1, 0.75), Text = "", ZIndex = 36 })
+local popText = label(popFrame, { Size = UDim2.new(1.6, 0, 0.25, 0), Position = UDim2.fromScale(-0.3, 0.75), Text = "", ZIndex = 36 })
+local popToken = 0
+local function popUp(icon, text)
+	popToken += 1
+	local my = popToken
+	popIcon.Text, popText.Text = icon, text or ""
+	popFrame.Size = UDim2.fromOffset(60, 60)
+	popFrame.Position = UDim2.new(0.5, -30, 0.55, -30)
+	popFrame.Visible = true
+	TweenService:Create(popFrame, TweenInfo.new(0.35, Enum.EasingStyle.Back), { Size = UDim2.fromOffset(170, 170), Position = UDim2.new(0.5, -85, 0.55, -85) }):Play()
+	task.delay(1.6, function()
+		if popToken == my then
+			popFrame.Visible = false
+		end
+	end)
+end
+local function skillIcon(id)
+	for _, sk in ipairs(Config.SKILLS) do
+		if sk.id == id then
+			return sk.icon
+		end
+	end
+	return "\u{2B50}"
+end
+
+-- ---------- spectating: when caught (or out), watch the team ----------
+local spec = frame(gui, { Size = UDim2.fromOffset(380, 46), Position = UDim2.new(0.5, -190, 1, -160), Visible = false, ZIndex = 25 })
+corner(spec, 12)
+local specName = label(spec, { Size = UDim2.new(0.5, 0, 0.8, 0), Position = UDim2.fromScale(0.2, 0.1), Text = "", ZIndex = 26 })
+local specIndex = 0
+local function teammates()
+	local list = {}
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= player and p.Character and p.Character:FindFirstChildOfClass("Humanoid") and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
+			table.insert(list, p)
+		end
+	end
+	return list
+end
+local function watch(step)
+	local list = teammates()
+	local cam = workspace.CurrentCamera
+	local mine = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+	if #list == 0 or step == 0 then
+		specIndex = 0
+		if mine then
+			cam.CameraSubject = mine
+		end
+		specName.Text = #list == 0 and "Nobody left to watch" or "Your view"
+		return
+	end
+	specIndex = ((specIndex - 1 + step) % #list) + 1
+	local who = list[specIndex]
+	cam.CameraSubject = who.Character:FindFirstChildOfClass("Humanoid")
+	specName.Text = "\u{1F440} " .. who.DisplayName
+end
+button(spec, "\u{25C0}", { Size = UDim2.new(0.16, 0, 0.8, 0), Position = UDim2.fromScale(0.02, 0.1), ZIndex = 26 }, function()
+	watch(-1)
+end)
+button(spec, "\u{25B6}", { Size = UDim2.new(0.16, 0, 0.8, 0), Position = UDim2.fromScale(0.7, 0.1), ZIndex = 26 }, function()
+	watch(1)
+end)
+button(spec, "Me", { Size = UDim2.new(0.12, 0, 0.8, 0), Position = UDim2.fromScale(0.87, 0.1), ZIndex = 26 }, function()
+	watch(0)
+end)
+local function paintSpectate()
+	local out = player:GetAttribute("Caged") or player:GetAttribute("Escaped")
+	spec.Visible = out == true and RoundState:GetAttribute("Status") == "playing"
+	if not spec.Visible and specIndex ~= 0 then
+		watch(0)
+	elseif spec.Visible and specName.Text == "" then
+		specName.Text = "Watch your team"
+	end
+end
+player:GetAttributeChangedSignal("Caged"):Connect(paintSpectate)
+player:GetAttributeChangedSignal("Escaped"):Connect(paintSpectate)
+RoundState:GetAttributeChangedSignal("Status"):Connect(paintSpectate)
+
 -- ---------- end of round: results ----------
 local results = frame(gui, { Size = UDim2.fromOffset(460, 360), Position = UDim2.new(0.5, -230, 0.5, -180), Visible = false, ZIndex = 40 })
 corner(results, 18)
 local resTitle = label(results, { Size = UDim2.new(1, -20, 0, 44), Position = UDim2.fromOffset(10, 12), TextColor3 = PUMP, ZIndex = 41 })
 local resInfo = label(results, { Size = UDim2.new(1, -20, 0, 26), Position = UDim2.fromOffset(10, 60), ZIndex = 41 })
 local resList = label(results, { Size = UDim2.new(1, -40, 0, 190), Position = UDim2.fromOffset(20, 96), TextScaled = false, TextSize = 22, TextYAlignment = Enum.TextYAlignment.Top, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 41 })
-local resNext = label(results, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.new(0, 10, 1, -44), TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
+local resNext = label(results, { Size = UDim2.new(1, -20, 0, 24), Position = UDim2.new(0, 10, 1, -96), TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
+local againBtn, lobbyBtn
+local function chose(choice)
+	remotes.Vote:FireServer(choice)
+	againBtn.Visible, lobbyBtn.Visible = false, false
+	resNext.Text = choice == "again" and "Waiting for the others..." or "Going back to the lobby..."
+end
+againBtn = button(results, "\u{1F501} Play again", { Size = UDim2.fromOffset(200, 50), Position = UDim2.new(0.5, -210, 1, -64), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 41 }, function()
+	chose("again")
+end)
+lobbyBtn = button(results, "\u{1F3E0} Back to lobby", { Size = UDim2.fromOffset(200, 50), Position = UDim2.new(0.5, 10, 1, -64), ZIndex = 41 }, function()
+	chose("lobby")
+end)
 local function confetti()
 	local colours = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), PUMP }
 	for i = 1, 70 do
@@ -507,13 +606,17 @@ remotes.Results.OnClientEvent:Connect(function(r)
 	end
 	resList.Text = table.concat(lines, "\n")
 	results.Visible = true
+	againBtn.Visible, lobbyBtn.Visible = r.vote == true, r.vote == true
+	spec.Visible = false
 	if r.won then
 		confetti()
 	end
 	local left = r.nextIn
 	task.spawn(function()
 		while left > 0 and results.Visible do
-			resNext.Text = "Next party in " .. left .. "..."
+			if againBtn.Visible then
+				resNext.Text = "Choose in " .. left .. "... (no choice = back to the lobby)"
+			end
 			task.wait(1)
 			left -= 1
 		end
@@ -535,6 +638,10 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 				cam.CFrame = cam.CFrame * CFrame.Angles(0, 0, (math.random() - 0.5) * 0.06)
 			end)
 		end
+	elseif (kind == "boost" or kind == "pop") and data and data.userId == player.UserId then
+		popUp(data.icon or "\u{2B50}", data.item or "")
+	elseif (kind == "sneak" or kind == "heal" or kind == "lure") and data and data.userId == player.UserId then
+		popUp(skillIcon(player:GetAttribute("Skill")), kind == "sneak" and "Sneaking!" or kind == "heal" and "Healed!" or "Noise!")
 	elseif kind == "start" then
 		picker.Visible = true
 		keypad.Visible = false

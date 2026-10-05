@@ -1,24 +1,38 @@
 {
-  "name": "DoYouKnowWhereYouAre",
+  "name": "EscapeCrewPartyHouse",
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
-      "Shared": { "$path": "src/shared" }
+      "Shared": {
+        "$path": "src/shared"
+      }
     },
     "ServerScriptService": {
-      "Server": { "$path": "src/server" }
+      "Server": {
+        "$path": "src/game/server"
+      }
     },
     "StarterPlayer": {
       "StarterPlayerScripts": {
-        "Client": { "$path": "src/client" }
+        "Client": {
+          "$path": "src/game/client"
+        }
       }
     },
     "Lighting": {
       "$properties": {
         "ClockTime": 0,
         "Brightness": 1,
-        "Ambient": [0.22, 0.18, 0.28],
-        "OutdoorAmbient": [0.25, 0.2, 0.32],
+        "Ambient": [
+          0.22,
+          0.18,
+          0.28
+        ],
+        "OutdoorAmbient": [
+          0.25,
+          0.2,
+          0.32
+        ],
         "GlobalShadows": true,
         "Technology": "Future",
         "EnvironmentDiffuseScale": 0.6,

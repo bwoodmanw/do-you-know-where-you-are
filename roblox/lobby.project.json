@@ -1,0 +1,43 @@
+{
+  "name": "EscapeCrewLobby",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/shared"
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/lobby/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/lobby/client"
+        }
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "ClockTime": 21,
+        "Brightness": 1,
+        "Ambient": [
+          0.22,
+          0.18,
+          0.28
+        ],
+        "OutdoorAmbient": [
+          0.25,
+          0.2,
+          0.32
+        ],
+        "GlobalShadows": true,
+        "Technology": "Future",
+        "EnvironmentDiffuseScale": 0.6,
+        "EnvironmentSpecularScale": 1
+      }
+    }
+  }
+}

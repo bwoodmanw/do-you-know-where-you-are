@@ -14,6 +14,9 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local HouseMap = require(ReplicatedStorage.Shared.HouseMap)
 local House = require(script.Parent.House)
 local Host = require(script.Parent.Host)
+local Effects = require(script.Parent.Effects)
+local Places = require(ReplicatedStorage.Shared.Places)
+local TeleportService = game:GetService("TeleportService")
 
 local T = Config.TILE
 local at = House.at
@@ -41,6 +44,7 @@ local SetSpook = remote("SetSpook")
 local Boost = remote("Boost") -- server -> one client: "candy" | "stamina"
 local SetDifficulty = remote("SetDifficulty")
 local Results = remote("Results") -- server -> clients: the end-of-round summary
+local Vote = remote("Vote") -- client -> server: "again" | "lobby"
 
 local RoundState = Instance.new("Configuration")
 RoundState.Name = "RoundState"
@@ -192,7 +196,7 @@ local function gear(plr)
 	l.TextColor3 = Color3.fromRGB(26, 16, 38)
 	l.Font = Enum.Font.FredokaOne
 	l.TextScaled = true
-	l.Text = skill.name
+	l.Text = skill.icon .. " " .. skill.name
 	l.Parent = tag
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 10)
@@ -252,10 +256,11 @@ local function checkEnd()
 		difficulty = diff.name,
 		seconds = math.floor(now - state.startedAt),
 		timeBonus = state.timeBonus or 0,
-		nextIn = won and 12 or 8,
+		nextIn = Config.VOTE_SECONDS,
+		vote = true,
 		players = rows,
 	})
-	task.delay(won and 12 or 8, round.start)
+	round.startVote()
 end
 
 local function escape(plr, side)
@@ -265,6 +270,7 @@ local function escape(plr, side)
 	plr:SetAttribute("Escaped", true)
 	plr:SetAttribute("Hidden", false)
 	teleport(plr, side and world.gardenSpotSide or world.gardenSpot)
+	Effects.burst((side and world.gardenSpotSide or world.gardenSpot) + Vector3.new(0, 2, 0), "escape")
 	addPoints(plr, 15)
 	say("escape", plr.DisplayName .. " made it out!")
 	checkEnd()
@@ -373,7 +379,8 @@ local function wirePrompts()
 				entry.part.Position = at(def.x, def.y, 0.8)
 				entry.label.TextColor3 = Color3.new(1, 1, 1)
 				addPoints(plr, 5)
-				say("pop", "Balloon " .. def.n .. " was " .. colourWord(col) .. "! That was LOUD...", { n = def.n, color = col })
+				Effects.burst(entry.part.Position + Vector3.new(0, 4, 0), "pop")
+				say("pop", "Balloon " .. def.n .. " was " .. colourWord(col) .. "! That was LOUD...", { n = def.n, color = col, icon = Config.ITEM_ICONS.balloon, userId = plr.UserId })
 				if host then
 					host:alert(entry.part.Position)
 				end
@@ -389,10 +396,12 @@ local function wirePrompts()
 				addPoints(plr, 5)
 				if def.boost == "shield" then
 					plr:SetAttribute("Shield", true)
-					say("boost", plr.DisplayName .. " found a Party Shield - it saves you from one grab!")
+					Effects.burst(entry.part.Position, "boost")
+					say("boost", plr.DisplayName .. " found a Party Shield - it saves you from one grab!", { icon = Config.ITEM_ICONS.shield, userId = plr.UserId, item = "Party Shield" })
 				else
 					Boost:FireClient(plr, "candy")
-					say("boost", plr.DisplayName .. " found Candy Corn - run without getting puffed!")
+					Effects.burst(entry.part.Position, "boost")
+					say("boost", plr.DisplayName .. " found Candy Corn - run without getting puffed!", { icon = Config.ITEM_ICONS.candy, userId = plr.UserId, item = "Candy Corn" })
 				end
 			end)
 		elseif def.kind == "invite" then
@@ -401,6 +410,7 @@ local function wirePrompts()
 					return need(plr, "brainy", "Twisty writing... Brainy could read this!")
 				end
 				entry.prompt.Enabled = false
+				Effects.burst(entry.part.Position, "reveal")
 				revealAll(plr, "Brainy cracked the invitation!")
 			end)
 		elseif def.kind == "uv" then
@@ -418,6 +428,7 @@ local function wirePrompts()
 					t ..= string.format('<font color="#%02x%02x%02x">&#9679;</font> ', math.floor(c.R * 255 + 0.5), math.floor(c.G * 255 + 0.5), math.floor(c.B * 255 + 0.5))
 				end
 				entry.label.Text = t
+				Effects.burst(entry.part.Position, "light")
 				revealAll(plr, "Glow lit up the secret paint!")
 			end)
 		elseif def.kind == "plant" then
@@ -426,6 +437,7 @@ local function wirePrompts()
 					return need(plr, "bramble", "This plant looks like it knows something... Bramble could ask it!")
 				end
 				entry.prompt.Enabled = false
+				Effects.burst(entry.part.Position + Vector3.new(0, 3, 0), "plant")
 				revealAll(plr, "The plant whispered the code to Bramble!")
 			end)
 		elseif def.kind == "cabinet" then
@@ -439,6 +451,7 @@ local function wirePrompts()
 				state.holeOpen = true
 				entry.prompt.Enabled = false
 				TweenService:Create(entry.part, TweenInfo.new(1), { Position = entry.part.Position + Vector3.new(0, 0, T) }):Play()
+				Effects.burst(entry.part.Position, "shove")
 				o.hole.panel:Destroy()
 				addPoints(plr, 25)
 				say("open", "Muscle shoved the cabinet - a secret hole! Squeeze through!")
@@ -453,6 +466,7 @@ local function wirePrompts()
 				if plr:GetAttribute("Skill") ~= "tinker" then
 					return need(plr, "tinker", "Only Tinker can pick this lock. Try the colour code instead!")
 				end
+				Effects.burst(entry.keypad.Position, "pick")
 				openDoor(plr, "pick")
 			end)
 			entry.exit.Touched:Connect(function(hit)
@@ -481,6 +495,7 @@ local function wirePrompts()
 					end
 				end
 				if freed > 0 then
+					Effects.burst(world.objects.cage.outside, "rescue")
 					addPoints(plr, 20 * freed)
 					say("rescue", plr.DisplayName .. " freed " .. freed .. (freed == 1 and " friend" or " friends") .. " from the cage!")
 				end
@@ -528,6 +543,7 @@ function round.hostCaught(_, plr)
 		host:stun(2.5)
 		return say("shield", "POP! " .. plr.DisplayName .. "'s Party Shield saved them - run!")
 	end
+	Effects.at(plr, "caught")
 	plr:SetAttribute("Caged", true)
 	teleport(plr, world.objects.cage.inside)
 	setSpeed(plr, 0)
@@ -578,6 +594,58 @@ local function hintFor()
 	end
 	return "door", "Try the keypad by the big door."
 end
+
+-- ---------- after a round: play again or go back to the lobby ----------
+local votes = {}
+local voting = false
+
+local function toLobby(list)
+	local lobbyId = Places.lobby()
+	if not lobbyId or #list == 0 then
+		return false
+	end
+	local ok = pcall(function()
+		TeleportService:TeleportAsync(lobbyId, list)
+	end)
+	return ok
+end
+
+function round.startVote()
+	votes = {}
+	voting = true
+	task.delay(Config.VOTE_SECONDS, function()
+		voting = false
+		local again, rest = {}, {}
+		for _, plr in ipairs(Players:GetPlayers()) do
+			if votes[plr.UserId] == "again" then
+				table.insert(again, plr)
+			elseif votes[plr.UserId] ~= "lobby" then
+				table.insert(rest, plr)
+			end
+		end
+		-- anyone who did not choose goes back to the lobby (if there is one)
+		if #again > 0 or not toLobby(rest) then
+			if #again > 0 then
+				toLobby(rest)
+			end
+			round.start()
+		end
+	end)
+end
+
+Vote.OnServerEvent:Connect(function(plr, choice)
+	if not voting or (choice ~= "again" and choice ~= "lobby") then
+		return
+	end
+	votes[plr.UserId] = choice
+	if choice == "lobby" then
+		if not toLobby({ plr }) then
+			say("info", "The lobby only works in the published game - you'll play again here.", nil, plr)
+			votes[plr.UserId] = "again"
+		end
+	end
+	say("vote", plr.DisplayName .. (choice == "again" and " wants to play again!" or " went back to the lobby."))
+end)
 
 -- ---------- requests from players ----------
 Press.OnServerEvent:Connect(function(plr, colour)
@@ -634,7 +702,8 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 	end
 	if skill == "shadow" then
 		plr:SetAttribute("SneakUntil", now + 6)
-		say("sneak", plr.DisplayName .. " is sneaking - the host cannot see or grab them for 6 seconds!")
+		Effects.at(plr, "sneak")
+		say("sneak", plr.DisplayName .. " is sneaking - the host cannot see or grab them for 6 seconds!", { userId = plr.UserId })
 	elseif skill == "patch" then
 		for _, p in ipairs(Players:GetPlayers()) do
 			local h = hrpOf(p)
@@ -643,7 +712,8 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 				Boost:FireClient(p, "stamina")
 			end
 		end
-		say("heal", "Patch patched up everyone nearby - energy and stamina back!")
+		Effects.at(plr, "heal")
+		say("heal", "Patch patched up everyone nearby - energy and stamina back!", { userId = plr.UserId })
 	elseif skill == "echo" then
 		if typeof(pos) ~= "Vector3" or (pos - hrp.Position).Magnitude > 70 then
 			return say("info", "Throw it somewhere closer!", nil, plr)
@@ -652,7 +722,8 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 			host.mode = "search"
 			host.goal = pos
 		end
-		say("lure", "Echo threw a noise - the host has gone to look!", { pos = pos })
+		Effects.burst(pos + Vector3.new(0, 1, 0), "noise")
+		say("lure", "Echo threw a noise - the host has gone to look!", { pos = pos, userId = plr.UserId })
 	end
 	plr:SetAttribute("CoolUntil", now + cd)
 end)
@@ -846,6 +917,15 @@ spawnPart.Parent = workspace
 local started = false
 Players.PlayerAdded:Connect(function(plr)
 	setupPlayer(plr)
+	local data = plr:GetJoinData().TeleportData
+	if type(data) == "table" and not (host and host.model) then
+		if Config.DIFFICULTY[data.difficulty] then
+			RoundState:SetAttribute("Difficulty", data.difficulty)
+		end
+		if data.spook == "giggly" or data.spook == "spooky" then
+			RoundState:SetAttribute("Spook", data.spook)
+		end
+	end
 	plr.CharacterAdded:Connect(function(char)
 		task.wait(0.2)
 		gear(plr)
