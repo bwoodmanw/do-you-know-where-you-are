@@ -24,8 +24,41 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 h1 { font-size: 40px; margin: 6px 0; color: var(--pump); text-shadow: 0 3px 0 #000, 0 0 18px rgba(255,138,31,.45); letter-spacing: 1px; }
 h2 { font-size: 26px; margin: 6px 0 12px; }
 .sub { color: var(--mute); font-size: 18px; margin-bottom: 18px; }
-#title { background: radial-gradient(ellipse at 50% 30%, #3a2457 0%, var(--night) 55%, var(--deep) 100%); }
-#title canvas { width: 240px; height: 150px; }
+#title { background: #05030c; padding: 0; }
+#tbg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.tmain { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 18px 22px; max-width: 94%; }
+@media (min-aspect-ratio: 1/1) { #title { justify-content: center; align-items: flex-start; padding-left: 5%; } }
+.tkicker { color: #ffd9a8; font-size: 15px; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 2px 6px #000; }
+#title h1 { font-size: 40px; color: #ffb04d; text-shadow: 0 4px 0 #3a1500, 0 0 30px rgba(255,120,20,.6), 0 0 2px #000; margin: 4px 0 18px; }
+.tmenu { display: flex; flex-direction: column; align-items: stretch; }
+.glass { background: linear-gradient(180deg, rgba(40,24,62,.82), rgba(14,8,22,.88)); border: 1px solid rgba(255,190,120,.28); border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08); }
+.big { background: linear-gradient(180deg, #ffb04d, #e8700f); color: #2a1200; text-shadow: 0 1px 0 rgba(255,255,255,.35); }
+.big.alt { background: linear-gradient(180deg, rgba(75,58,102,.95), rgba(43,29,64,.95)); border: 1px solid rgba(255,255,255,.12); text-shadow: none; }
+.tfoot { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 10px; color: var(--mute); text-shadow: 0 1px 4px #000; }
+/* overlays: help, menu, arrival card, tutorial */
+.ovl { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 20; display: none; align-items: center; justify-content: center; background: rgba(5,3,12,.78); padding: 14px; }
+#helpBox { width: 100%; max-width: 760px; max-height: 100%; display: flex; flex-direction: column; padding: 14px; overflow-y: auto; touch-action: pan-y; }
+#hcv { width: 100%; height: 34vh; min-height: 150px; border-radius: 12px; }
+#hTitle { color: #ffb04d; margin: 10px 0 4px; }
+#hText { font-size: 19px; line-height: 1.5; text-align: left; min-height: 5.5em; }
+#hDots { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+#hDots i { width: 10px; height: 10px; border-radius: 50%; background: #4b3a66; }
+#hDots i.on { background: #ffb04d; }
+#menuBox { display: flex; flex-direction: column; padding: 18px; min-width: 280px; }
+#menuBox h2 { color: #ffb04d; text-align: center; }
+#intro { background-color: #05030c; background-size: cover; background-position: center; flex-direction: column; cursor: pointer; }
+#intro .card2 { padding: 22px 28px; text-align: center; max-width: 640px; }
+#intro h2 { font-size: 34px; color: #ffb04d; margin: 0 0 6px; }
+#intro .go { font-size: 20px; margin-bottom: 14px; }
+#iTip { color: #ffd9a8; font-size: 17px; }
+#intro .spin { width: 46px; height: 46px; margin: 14px auto 0; border-radius: 50%; border: 5px solid rgba(255,176,77,.25); border-top-color: #ffb04d; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#coach { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); z-index: 6; display: none; pointer-events: none; opacity: .9; align-items: center; gap: 10px; padding: 10px 14px; max-width: 94%; font-size: 18px; }
+#coach small { color: var(--mute); }
+#coachSkip { pointer-events: auto; background: transparent; color: var(--mute); text-decoration: underline; font-size: 14px; white-space: nowrap; }
+.pulse { animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(123,227,107,.9); } 50% { box-shadow: 0 0 0 8px rgba(123,227,107,0); } }
 .wob span { display: inline-block; animation: wob 2.6s ease-in-out infinite; }
 @keyframes wob { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-4px) rotate(-3deg); } }
 /* squad picker */
@@ -42,7 +75,8 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 .toggle { background: #2b1d40; padding: 12px 18px; border-radius: 14px; font-size: 20px; border: 3px solid transparent; }
 .toggle.on { border-color: var(--pump); background: #402a1a; }
 /* story */
-#story p { font-size: 22px; max-width: 620px; line-height: 1.45; margin: 8px 0; opacity: 0; transition: opacity .8s; }
+#story { background: radial-gradient(ellipse at 50% 35%, #2c1747 0%, #120a1f 60%, #05030c 100%); }
+#story p { text-shadow: 0 2px 6px #000; font-size: 22px; max-width: 620px; line-height: 1.45; margin: 8px 0; opacity: 0; transition: opacity .8s; }
 #story p.show { opacity: 1; }
 /* game */
 #game { padding: 0; justify-content: flex-start; background: var(--deep); }
@@ -101,13 +135,17 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 <body>
 
 <div id="title" class="screen on">
-  <canvas id="tcv" width="480" height="300"></canvas>
-  <h1 class="wob" id="ttl"></h1>
-  <div class="sub">The Party at the End of the Lane</div>
-  <button class="big" id="bSolo">Play</button>
-  <button class="big alt" id="bFriends" disabled>Play with friends<br><small>coming soon</small></button>
-  <div class="sub" id="totPts"></div>
-  <button class="small" id="bCheck">Check</button>
+  <canvas id="tbg"></canvas>
+  <div class="tmain glass">
+    <div class="tkicker">The Party at the End of the Lane</div>
+    <h1 class="wob" id="ttl"></h1>
+    <div class="tmenu">
+      <button class="big" id="bSolo">&#x25B6; Play</button>
+      <button class="big alt" id="bHelp">&#x2753; How to play</button>
+      <button class="big alt" id="bFriends" disabled>Play with friends <small>- coming soon</small></button>
+    </div>
+    <div class="tfoot"><span id="totPts"></span><button class="small" id="bSound">Sound on</button><button class="small" id="bCheck">Check</button></div>
+  </div>
 </div>
 
 <div id="squad" class="screen">
@@ -133,7 +171,7 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 
 <div id="game" class="screen">
   <div id="top">
-    <button class="tbtn" id="bHome">&#x1F3E0;</button>
+    <button class="tbtn" id="bHome">&#x2630; Menu</button>
     <div class="rname" id="rname"></div>
     <div id="danger"><span>&#x1F463;</span><span>&#x1F463;</span><span>&#x1F463;</span><span>&#x1F463;</span><span>&#x1F463;</span></div>
     <button class="tbtn" id="bClue">&#x1F4A1; Clue</button>
@@ -142,6 +180,7 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
     <canvas id="cv"></canvas>
     <canvas id="mini"></canvas>
     <div id="say"></div>
+    <div id="coach" class="glass"><span id="coachT"></span><button id="coachSkip">Skip tips</button></div>
     <div id="toast"><canvas width="88" height="88"></canvas><span></span></div>
     <div id="keypad"><div class="dots"><i></i><i></i><i></i></div><div class="keys"></div><button class="pick" id="bPick">&#x1F527; Pick the lock</button></div>
     <div id="over"><h2 id="overT"></h2><div class="pts" id="overP"></div><div class="row" id="overB"></div></div>
@@ -157,6 +196,37 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
     </div>
   </div>
   <div id="scare"><canvas id="scv"></canvas></div>
+</div>
+
+<div id="help" class="ovl">
+  <div id="helpBox" class="glass">
+    <canvas id="hcv"></canvas>
+    <h2 id="hTitle"></h2>
+    <div id="hText"></div>
+    <div id="hDots"></div>
+    <div class="row"><button class="big alt" id="hPrev">&#x25C0; Back</button><button class="big" id="hNext">Next</button></div>
+    <div class="row"><button class="small" id="hReplay">Play the tutorial again</button><button class="small" id="hClose">Close</button></div>
+  </div>
+</div>
+
+<div id="menu" class="ovl">
+  <div id="menuBox" class="glass">
+    <h2>Paused</h2>
+    <button class="big" id="mResume">&#x25B6; Keep playing</button>
+    <button class="big alt" id="mHelp">&#x2753; How to play</button>
+    <button class="big alt" id="mSound">Sound on</button>
+    <button class="big alt" id="mRestart">&#x21BB; Restart</button>
+    <button class="big alt" id="mQuit">&#x1F3E0; Leave game</button>
+  </div>
+</div>
+
+<div id="intro" class="ovl">
+  <div class="card2 glass">
+    <h2>The Party House</h2>
+    <div class="go">Find the way out. Don't get caught.</div>
+    <div id="iTip"></div>
+    <div class="spin"></div>
+  </div>
 </div>
 
 <div id="check" class="screen">
@@ -315,7 +385,7 @@ var Rules = (function () {
       squad: clone(cfg.squad), chars: [],
       creature: {
         x: r.spawn[0], y: r.spawn[1], active: false,
-        appearAt: cfg.spook === 'spooky' ? 120 : 200,
+        appearAt: cfg.appearAt || (cfg.spook === 'spooky' ? 120 : 200),
         mode: 'wait', target: null, goal: null, wp: 0, cd: 0, lost: 0, pause: 0
       },
       obj: {}, code: [], known: [null, null, null], entry: [],
@@ -855,7 +925,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
 (function () {
   'use strict';
 
-  var BUILD = '20261004T2307-3a3e97f';
+  var BUILD = '20261005T0154-71d4dd1';
   var KEY = 'dykwya.';
   var SHELL_CACHE = 'dykwya-shell-' + BUILD;
   var ART_CACHE = 'dykwya-art';
@@ -1199,25 +1269,6 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     }
     $('ttl').innerHTML = h;
   })();
-  function drawTitle() {
-    var cv = $('tcv'), g = cv.getContext('2d'), now = Date.now() / 1000;
-    g.clearRect(0, 0, cv.width, cv.height);
-    g.fillStyle = '#ffe9a8'; circ(g, 410, 50, 26, '#ffe9a8');
-    g.fillStyle = '#1a1026'; circ(g, 398, 44, 22, '#2a1a3d');
-    // the house at the end of the lane
-    g.fillStyle = '#120a1b';
-    g.fillRect(150, 120, 180, 150);
-    g.beginPath(); g.moveTo(135, 125); g.lineTo(240, 50); g.lineTo(345, 125); g.closePath(); g.fill();
-    g.fillStyle = '#ffd23f'; g.fillRect(180, 160, 30, 34); g.fillRect(270, 160, 30, 34);
-    g.fillStyle = '#ff8a1f'; g.fillRect(222, 205, 36, 65);
-    circ(g, 160, 128, 10, '#ff4d5e'); circ(g, 172, 118, 10, '#3d8bff'); circ(g, 184, 128, 10, '#ffd23f');
-    drawChar(g, 70, 290, 90, 'tinker', { t: now });
-    drawChar(g, 120, 292, 70, 'brainy', { t: now + 1 });
-    var peek = 30 + Math.max(0, Math.sin(now * 0.8)) * 60;
-    g.save(); g.beginPath(); g.rect(330, 0, 150, 300); g.clip();
-    drawCreature(g, 480 - peek, 300, 110, { t: now });
-    g.restore();
-  }
   $('totPts').textContent = prog.points ? ('⭐ ' + prog.points + ' points saved') : '';
 
   // ---- squad picker ----
@@ -1302,7 +1353,8 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     var squad = [], i, x, y, f;
     for (i = 0; i < picked.length; i++) { squad.push({ id: 'c' + i, char: picked[i], owner: 'me' }); }
     save('squad', picked); save('spook', spook);
-    var st = Rules.init({ room: 'hall', squad: squad, seed: (Date.now() & 0x7fffffff) || 1, spook: spook });
+    var st = Rules.init({ room: 'hall', squad: squad, seed: (Date.now() & 0x7fffffff) || 1, spook: spook,
+      appearAt: load('tutorialDone', false) ? undefined : 600 }); // first game: a minute to learn
     room = Rules.getRoom('hall');
     // which floor and furniture each tile has
     floorKind = [];
@@ -1333,8 +1385,10 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     var c0 = st.chars[0], w0 = W2(c0.x + 0.5, c0.y + 0.5, 0);
     cam.x = w0[0]; cam.y = w0[1] - TW * 0.3;
     T.onState(onState);
-    T.start();
     gameOn = true;
+    paused = false;
+    coachBegin();
+    showIntro(function () { if (!paused && gameOn) { T.start(); } });
   }
 
   function buildBar() {
@@ -1801,8 +1855,9 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     }
   }
   function drawHint(t, hh) {
-    if (!S.hint) { return; }
-    var o = objOf(S.hint.obj); if (!o) { return; }
+    var hintObj = S.hint ? S.hint.obj : coachObj;
+    if (!hintObj) { return; }
+    var o = objOf(hintObj); if (!o) { return; }
     var wall = o.y === 0, gp = W2(o.x + 0.5, wall ? 1 : o.y + 0.5, 0), top = W2(o.x + 0.5, wall ? 1 : o.y + 0.5, (hh[o.id] || 0.6) + (wall ? 1.4 : 0.5));
     var b = Math.abs(Math.sin(t * 4)) * TW * 0.25;
     g.strokeStyle = 'rgba(123,227,107,' + (0.5 + 0.5 * Math.sin(t * 6)) + ')'; g.lineWidth = Math.max(3, TW * 0.06);
@@ -1891,7 +1946,8 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       var f = (Date.now() - t0) / 650;
       sg.fillStyle = '#000'; sg.fillRect(0, 0, w, h);
       var sz = Math.min(w, h) * (0.9 + f * 0.6);
-      drawCreature(sg, w / 2, h / 2 + sz * 1.42, sz, { t: f * 3, mode: 'hunt' });
+      var si = art('host-party-scare.png');
+      if (si) { cover(sg, si, w, h, 1 + f * 0.25); } else { drawCreature(sg, w / 2, h / 2 + sz * 1.42, sz, { t: f * 3, mode: 'hunt' }); }
       if (f < 1) { requestAnimationFrame(anim); } else { el.style.display = 'none'; }
     })();
   }
@@ -1907,6 +1963,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
 
   function onEvent(e) {
     var c = e.id ? Rules.charById(S, e.id) : null, nm = c ? CHARS[c.char].name : '', o;
+    coachEvent(e);
     switch (e.k) {
       case 'appear':
         if (S.spook === 'spooky') { scare(); shake = 14; } else { SFX.boing(); toast(silly('appear'), 'creature', 3200); }
@@ -1986,6 +2043,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     autoSelect();
     paintBar();
     paintKeypad();
+    coachTick();
   }
 
   // ---- keypad ----
@@ -2051,9 +2109,15 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
   }
   function tapAt(cx, cy) {
     var w = toWorld(cx, cy), i, s, hit = null, tl, now = Date.now(), run, o;
+    // overlapping things (a cupboard in front of a balloon): the one whose
+    // middle is nearest the finger wins
+    var best = 1e9, sc;
     for (i = sprites.length - 1; i >= 0; i--) {
       s = sprites[i];
-      if (w[0] >= s.x0 && w[0] <= s.x1 && w[1] >= s.y0 && w[1] <= s.y1) { hit = s; break; }
+      if (w[0] >= s.x0 && w[0] <= s.x1 && w[1] >= s.y0 && w[1] <= s.y1) {
+        sc = Math.abs(w[0] - (s.x0 + s.x1) / 2) + Math.abs(w[1] - (s.y0 + s.y1) / 2);
+        if (sc < best) { best = sc; hit = s; }
+      }
     }
     if (luring) {
       luring = false; tl = toTile(w);
@@ -2121,6 +2185,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
   }
   function actSkill() {
     var c = me(); if (!c) { return; }
+    coachSkillUsed = true;
     if (c.char === 'shadow') { T.send({ t: 'sneak', id: sel }); return; }
     if (c.char === 'patch') { T.send({ t: 'heal', id: sel }); return; }
     if (c.char === 'echo') { luring = true; toast('\uD83C\uDFA7 Tap a spot nearby to throw a noise there.', 'echo', 2500); return; }
@@ -2224,6 +2289,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     box.appendChild(b);
   }
   function goHome() {
+    coachOn = false; $('coach').style.display = 'none'; $('menu').style.display = 'none';
     gameOn = false; if (T) { T.stop(); }
     $('totPts').textContent = prog.points ? ('⭐ ' + prog.points + ' points saved') : '';
     show('title');
@@ -2231,7 +2297,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
 
   document.addEventListener('visibilitychange', function () {
     if (!T || !gameOn) { return; }
-    if (document.hidden) { T.stop(); } else if (S && S.status === 'playing') { T.start(); }
+    if (document.hidden) { T.stop(); } else if (S && S.status === 'playing' && !paused) { T.start(); }
   });
 
   // ---- buttons ----
@@ -2247,7 +2313,6 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     SFX.click();
   };
   $('bGo').onclick = function () { SFX.click(); startGame(); };
-  $('bHome').onclick = goHome;
   $('bCheck').onclick = function () { show('check'); runCheck(); };
   $('bCkBack').onclick = function () { show('title'); };
   $('bCkAgain').onclick = function () { runCheck(); };
@@ -2326,6 +2391,259 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       try { navigator.storage.persist(); } catch (e) { /* ignore */ }
     }
   });
+
+  // ---- art from art/: used when it exists, code-drawn until then ----
+  var ART = {};
+  function art(name) {
+    var a = ART[name];
+    if (!a) {
+      a = ART[name] = { img: new Image(), ok: false };
+      a.img.onload = function () { a.ok = true; };
+      a.img.onerror = function () { a.ok = false; };
+      a.img.src = 'art/' + name;
+    }
+    return a.ok ? a.img : null;
+  }
+  function cover(g2, img, w, h, zoom) {
+    var z = zoom || 1, s = Math.max(w / img.width, h / img.height) * z, iw = img.width * s, ih = img.height * s;
+    g2.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
+  }
+  ['title.png', 'host-party.png', 'host-party-scare.png', 'room-party-hall.png'].forEach(function (n) { art(n); });
+
+  // ---- title: a night scene at the end of the lane ----
+  var tcv = $('tbg'), tg = tcv.getContext('2d'), TSTARS = [], i0;
+  for (i0 = 0; i0 < 90; i0++) { TSTARS.push([Math.random(), Math.random() * 0.55, Math.random() * 1.6 + 0.3, Math.random() * 6]); }
+  function drawTitle() {
+    var w = window.innerWidth, h = window.innerHeight, r = Math.min(2, window.devicePixelRatio || 1), now = Date.now() / 1000, i, s, x, y;
+    if (tcv.width !== Math.round(w * r) || tcv.height !== Math.round(h * r)) { tcv.width = Math.round(w * r); tcv.height = Math.round(h * r); }
+    var g2 = tg; g2.setTransform(r, 0, 0, r, 0, 0);
+    var img = art('title.png');
+    if (img) {
+      cover(g2, img, w, h, 1.04 + Math.sin(now * 0.1) * 0.02);
+    } else {
+      var sky = g2.createLinearGradient(0, 0, 0, h);
+      sky.addColorStop(0, '#05030c'); sky.addColorStop(0.55, '#24123d'); sky.addColorStop(1, '#3a1c38');
+      g2.fillStyle = sky; g2.fillRect(0, 0, w, h);
+      for (i = 0; i < TSTARS.length; i++) {
+        s = TSTARS[i]; g2.globalAlpha = 0.4 + 0.6 * Math.abs(Math.sin(now * 0.8 + s[3]));
+        g2.fillStyle = '#fff'; g2.fillRect(s[0] * w, s[1] * h, s[2], s[2]);
+      }
+      g2.globalAlpha = 1;
+      // moon with a glow
+      x = w > h ? w * 0.86 : w * 0.78; y = h * 0.17;
+      var mg2 = g2.createRadialGradient(x, y, 10, x, y, h * 0.35);
+      mg2.addColorStop(0, 'rgba(255,240,200,.45)'); mg2.addColorStop(1, 'rgba(255,240,200,0)');
+      g2.fillStyle = mg2; g2.fillRect(0, 0, w, h);
+      circ(g2, x, y, h * 0.08, '#f4ead0');
+      circ(g2, x - h * 0.02, y - h * 0.015, h * 0.015, 'rgba(180,165,140,.5)'); circ(g2, x + h * 0.025, y + h * 0.02, h * 0.01, 'rgba(180,165,140,.5)');
+      // drifting cloud over the moon
+      var cx2 = x - h * 0.3 + ((now * 8) % (h * 0.6)), cg = g2.createRadialGradient(cx2, y + h * 0.05, 4, cx2, y + h * 0.05, h * 0.2);
+      cg.addColorStop(0, 'rgba(30,18,48,.8)'); cg.addColorStop(1, 'rgba(30,18,48,0)');
+      g2.save(); g2.translate(0, y + h * 0.05); g2.scale(1, 0.25); g2.translate(0, -(y + h * 0.05)); g2.fillStyle = cg; g2.fillRect(0, 0, w, h * 2); g2.restore();
+      // hills
+      g2.fillStyle = '#140b22'; g2.beginPath(); g2.moveTo(0, h * 0.68);
+      for (i = 0; i <= 10; i++) { g2.lineTo(w * i / 10, h * (0.64 + 0.04 * Math.sin(i * 1.7))); }
+      g2.lineTo(w, h); g2.lineTo(0, h); g2.closePath(); g2.fill();
+      // the house
+      var hx = w > h ? w * 0.7 : w * 0.5, hy = h * 0.66, hw = Math.min(w * 0.36, h * 0.6), hh = hw * 0.55;
+      g2.fillStyle = '#0b0614';
+      g2.fillRect(hx - hw / 2, hy - hh, hw, hh);
+      g2.beginPath(); g2.moveTo(hx - hw * 0.58, hy - hh); g2.lineTo(hx - hw * 0.15, hy - hh * 1.75); g2.lineTo(hx + hw * 0.25, hy - hh); g2.closePath(); g2.fill();
+      g2.beginPath(); g2.moveTo(hx + hw * 0.05, hy - hh); g2.lineTo(hx + hw * 0.32, hy - hh * 1.45); g2.lineTo(hx + hw * 0.6, hy - hh); g2.closePath(); g2.fill();
+      g2.fillRect(hx + hw * 0.3, hy - hh * 1.75, hw * 0.06, hh * 0.5);
+      // windows that flicker; one has a watcher
+      var win = [[-0.36, -0.75], [-0.16, -0.75], [0.16, -0.75], [0.36, -0.75], [-0.36, -0.4], [0.36, -0.4], [-0.15, -1.3]];
+      for (i = 0; i < win.length; i++) {
+        var fl = 0.75 + 0.25 * Math.sin(now * (3 + i) + i * 2) * Math.sin(now * 7.3 + i);
+        g2.fillStyle = 'rgba(255,196,90,' + fl + ')';
+        g2.fillRect(hx + win[i][0] * hw - hw * 0.05, hy + win[i][1] * hh, hw * 0.1, hh * 0.18);
+      }
+      var peek = Math.max(0, Math.sin(now * 0.5));
+      if (peek > 0.3) {
+        g2.save(); g2.beginPath(); g2.rect(hx - 0.15 * hw - hw * 0.05, hy - 1.3 * hh, hw * 0.1, hh * 0.18); g2.clip();
+        drawCreature(g2, hx - 0.15 * hw, hy - 1.3 * hh + hh * 0.5 - peek * hh * 0.12, hh * 0.22, { t: now, mode: 'hunt' });
+        g2.restore();
+      }
+      // door, lane, gate with balloons
+      g2.fillStyle = '#ff9a3a'; g2.fillRect(hx - hw * 0.05, hy - hh * 0.32, hw * 0.1, hh * 0.32);
+      g2.fillStyle = '#1b1028'; g2.beginPath(); g2.moveTo(hx - hw * 0.05, hy); g2.lineTo(hx + hw * 0.05, hy); g2.lineTo(hx + w * 0.16, h); g2.lineTo(hx - w * 0.16, h); g2.closePath(); g2.fill();
+      for (i = 0; i < 3; i++) {
+        var bx = hx - hw * 0.62 + i * hw * 0.05, by = hy - hh * 0.25 + Math.sin(now * 1.5 + i) * 4;
+        g2.strokeStyle = 'rgba(255,255,255,.4)'; g2.lineWidth = 1; g2.beginPath(); g2.moveTo(bx, by + 8); g2.lineTo(hx - hw * 0.58, hy); g2.stroke();
+        circ(g2, bx, by, hh * 0.06, ['#ff4d5e', '#3d8bff', '#ffd23f'][i]);
+      }
+      // three kids on the lane, from behind-ish
+      drawChar(g2, hx - w * 0.07, h * 0.97, Math.min(110, h * 0.16), 'tinker', { t: now, scared: true });
+      drawChar(g2, hx + w * 0.0, h * 0.99, Math.min(120, h * 0.17), 'glow', { t: now + 1, scared: true });
+      drawChar(g2, hx + w * 0.07, h * 0.97, Math.min(110, h * 0.16), 'echo', { t: now + 2, scared: true });
+    }
+    // fog bands and a vignette over everything
+    for (i = 0; i < 4; i++) {
+      x = ((now * (12 + i * 6) + i * 300) % (w + 600)) - 300; y = h * (0.72 + i * 0.07);
+      var fg = g2.createRadialGradient(x, y, 10, x, y, w * 0.35);
+      fg.addColorStop(0, 'rgba(190,170,220,.16)'); fg.addColorStop(1, 'rgba(190,170,220,0)');
+      g2.fillStyle = fg; g2.fillRect(0, 0, w, h);
+    }
+    var vg = g2.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.3, w / 2, h / 2, Math.max(w, h) * 0.75);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.75)');
+    g2.fillStyle = vg; g2.fillRect(0, 0, w, h);
+  }
+
+  // ---- sound on/off (saved) ----
+  var soundOn = load('sound', true);
+  function applySound() {
+    if (master) { master.gain.value = soundOn ? 0.7 : 0; }
+    var t = soundOn ? '🔊 Sound on' : '🔇 Sound off';
+    $('bSound').textContent = t; $('mSound').textContent = t;
+  }
+  function toggleSound() { soundOn = !soundOn; save('sound', soundOn); audio(); applySound(); SFX.click(); }
+  $('bSound').onclick = toggleSound;
+  $('mSound').onclick = toggleSound;
+  document.addEventListener('pointerdown', function () { setTimeout(applySound, 0); }, true);
+  applySound();
+
+  // ---- How to play: illustrated pages ----
+  var HELP = [
+    { h: 'The goal', p: 'Your grown-ups dropped you at a party. It was a trick. Find the way out of every room and reach the safe area - before the <b>party host</b> catches you.',
+      d: function (g2, w, h, t) { drawCreature(g2, w * 0.74, h * 0.95, h * 0.5, { t: t }); drawChar(g2, w * 0.22, h * 0.92, h * 0.38, 'tinker', { t: t, scared: true }); drawChar(g2, w * 0.4, h * 0.94, h * 0.38, 'brainy', { t: t + 1, scared: true }); } },
+    { h: 'Moving', p: '<b>Tap</b> the floor to walk there. <b>Double-tap</b> (or the 🏃 Run button) to run - running uses your <span style="color:#7be36b">green stamina bar</span>, which refills when you slow down. <b>Drag</b> the map to look around.',
+      d: function (g2, w, h, t) { var x = w * 0.3 + (t * 60 % (w * 0.4)); drawChar(g2, x, h * 0.9, h * 0.4, 'muscle', { t: t, moving: true }); ring(g2, w * 0.75, h * 0.8, t); } },
+    { h: 'The host', p: 'The 👣 footprints at the top show how close it is. <b>Noise brings it</b> - popping balloons, wrong codes. Tap 🙈 <b>Hide</b> to dive into a wardrobe, curtain or box. Caught? You go in the cage until a teammate stands by it and frees you.',
+      d: function (g2, w, h, t) { drawCreature(g2, w * 0.3 + Math.sin(t) * 20, h * 0.95, h * 0.5, { t: t, moving: true, mode: 'hunt' }); g2.fillStyle = '#4e2f1a'; g2.fillRect(w * 0.62, h * 0.25, w * 0.18, h * 0.68); g2.fillStyle = '#fff'; ell(g2, w * 0.69, h * 0.5, 5, 6); g2.fill(); ell(g2, w * 0.73, h * 0.5, 5, 6); g2.fill(); } },
+    { h: 'Finding the way out', p: 'Every room has a locked way out - and <b>more than one way to open it</b>. Pop the numbered balloons to learn the colour code, or use the right skill. ✋ <b>Use</b> opens presents: some hold boosts like Candy Corn and a Party Shield.',
+      d: function (g2, w, h, t) { var cs = ['#ff4d5e', '#3d8bff', '#ffd23f'], i; for (i = 0; i < 3; i++) { circ(g2, w * (0.25 + i * 0.17), h * 0.4 + Math.sin(t * 2 + i) * 6, h * 0.12, cs[i]); g2.fillStyle = '#fff'; g2.font = 'bold ' + Math.round(h * 0.12) + 'px sans-serif'; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillText(String(i + 1), w * (0.25 + i * 0.17), h * 0.4 + Math.sin(t * 2 + i) * 6); } g2.fillStyle = '#7a4a1e'; g2.fillRect(w * 0.8, h * 0.2, w * 0.12, h * 0.72); } },
+    { h: 'Skills', p: 'Pick up to 3 characters. Each has a skill on the green button: <b>Tinker</b> picks locks, <b>Shadow</b> sneaks, <b>Brainy</b> reads codes, <b>Muscle</b> shoves, <b>Glow</b> lights secrets, <b>Patch</b> heals, <b>Echo</b> throws a noise, <b>Bramble</b> talks to plants. Tap a character card to switch.',
+      d: function (g2, w, h, t) { var i; for (i = 0; i < ORDER.length; i++) { drawChar(g2, w * (0.08 + i * 0.12), h * 0.85, Math.min(w * 0.11, h * 0.36), ORDER[i], { t: t + i }); } } },
+    { h: 'Clues and energy', p: '💡 <b>Clue</b> points an arrow at the next step. It costs some of your <span style="color:#ffd23f">yellow energy bar</span>, which fills up again in each safe area. Only a few clues per room - use them wisely.',
+      d: function (g2, w, h, t) { var b = Math.abs(Math.sin(t * 4)) * 14; g2.fillStyle = '#7be36b'; g2.beginPath(); g2.moveTo(w * 0.5 - 22, h * 0.3 - b); g2.lineTo(w * 0.5 + 22, h * 0.3 - b); g2.lineTo(w * 0.5, h * 0.42 - b); g2.closePath(); g2.fill(); circ(g2, w * 0.5, h * 0.66, h * 0.16, '#efe9f5'); } },
+    { h: 'Teamwork', p: '💬 <b>Say</b> sends a quick message your team hears out loud. <b>Tap and hold</b> the map to drop a "look here!" marker. Free each other, share boosts, and get <b>everyone</b> out.',
+      d: function (g2, w, h, t) { drawChar(g2, w * 0.35, h * 0.92, h * 0.4, 'patch', { t: t }); drawChar(g2, w * 0.62, h * 0.92, h * 0.4, 'shadow', { t: t + 1 }); g2.fillStyle = '#fff'; rr(g2, w * 0.2, h * 0.08, w * 0.3, h * 0.16, 12); g2.fill(); g2.fillStyle = '#1a1026'; g2.font = 'bold ' + Math.round(h * 0.07) + 'px sans-serif'; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillText('Over here!', w * 0.35, h * 0.16); } },
+    { h: 'On a computer', p: '<b>Arrows</b> or <b>WASD</b> move · <b>1 2 3</b> pick a character · <b>R</b> run · <b>H</b> hide · <b>E</b> or Space use · <b>Q</b> skill · <b>T</b> talk · <b>C</b> clue.',
+      d: function (g2, w, h) { var k = ['W', 'A', 'S', 'D'], p = [[1, 0], [0, 1], [1, 1], [2, 1]], i, u = Math.min(w, h * 2) * 0.09; for (i = 0; i < 4; i++) { g2.fillStyle = '#efe9f5'; rr(g2, w / 2 - u * 1.6 + p[i][0] * u * 1.1, h * 0.2 + p[i][1] * u * 1.1, u, u, 8); g2.fill(); g2.fillStyle = '#1a1026'; g2.font = 'bold ' + Math.round(u * 0.5) + 'px sans-serif'; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillText(k[i], w / 2 - u * 1.1 + p[i][0] * u * 1.1, h * 0.2 + p[i][1] * u * 1.1 + u / 2); } } }
+  ];
+  function ring(g2, x, y, t) { g2.strokeStyle = 'rgba(123,227,107,' + (0.5 + 0.5 * Math.sin(t * 6)) + ')'; g2.lineWidth = 4; ell(g2, x, y, 40, 18); g2.stroke(); }
+  var helpPage = 0, helpFrom = 'title';
+  function openHelp(from) {
+    helpFrom = from; helpPage = 0; paintHelp();
+    $('help').style.display = 'flex';
+  }
+  function paintHelp() {
+    var pg = HELP[helpPage], dots = '', i;
+    $('hTitle').textContent = pg.h;
+    $('hText').innerHTML = pg.p;
+    for (i = 0; i < HELP.length; i++) { dots += '<i' + (i === helpPage ? ' class="on"' : '') + '></i>'; }
+    $('hDots').innerHTML = dots;
+    $('hPrev').style.visibility = helpPage ? 'visible' : 'hidden';
+    $('hNext').textContent = helpPage === HELP.length - 1 ? 'Got it!' : 'Next ▶';
+  }
+  function drawHelp() {
+    var c = $('hcv'), r = Math.min(2, window.devicePixelRatio || 1), w = c.clientWidth, h = c.clientHeight, g2;
+    if (!w || !h) { return; }
+    if (c.width !== Math.round(w * r)) { c.width = Math.round(w * r); c.height = Math.round(h * r); }
+    g2 = c.getContext('2d'); g2.setTransform(r, 0, 0, r, 0, 0);
+    var bg2 = g2.createLinearGradient(0, 0, 0, h); bg2.addColorStop(0, '#24123d'); bg2.addColorStop(1, '#0e0816');
+    g2.fillStyle = bg2; g2.fillRect(0, 0, w, h);
+    HELP[helpPage].d(g2, w, h, Date.now() / 1000);
+  }
+  $('hPrev').onclick = function () { if (helpPage > 0) { helpPage--; paintHelp(); SFX.click(); } };
+  $('hNext').onclick = function () {
+    SFX.click();
+    if (helpPage < HELP.length - 1) { helpPage++; paintHelp(); } else { closeHelp(); }
+  };
+  $('hClose').onclick = function () { closeHelp(); };
+  $('hReplay').onclick = function () { save('tutorialDone', false); toast('The tutorial will play at the start of your next game.', null, 2400); closeHelp(); };
+  function closeHelp() {
+    $('help').style.display = 'none';
+    if (helpFrom === 'menu') { $('menu').style.display = 'flex'; }
+  }
+  $('bHelp').onclick = function () { SFX.click(); openHelp('title'); };
+
+  // ---- in-game menu (pauses the game) ----
+  var paused = false;
+  function openMenu() {
+    if (!T) { return; }
+    paused = true; T.stop();
+    $('menu').style.display = 'flex'; SFX.click();
+  }
+  function closeMenu() {
+    $('menu').style.display = 'none';
+    paused = false;
+    if (S && S.status === 'playing' && gameOn) { T.start(); }
+  }
+  $('bHome').onclick = openMenu;
+  $('mResume').onclick = closeMenu;
+  $('mHelp').onclick = function () { $('menu').style.display = 'none'; openHelp('menu'); };
+  $('mRestart').onclick = function () { $('menu').style.display = 'none'; paused = false; startGame(); };
+  $('mQuit').onclick = function () { $('menu').style.display = 'none'; paused = false; goHome(); };
+
+  // ---- the arrival card (doubles as the loading screen) ----
+  var TIPS = ['Noise brings the host. Pop balloons when it is far away.', 'Hiding works even when it is right next to you.',
+    'Every way out has more than one way to open it.', 'Running uses stamina. Walk to get it back.',
+    'Caught? Your team can free you from the cage.', 'Patch frees caged friends twice as fast.',
+    'Echo can throw a noise to send the host away.', 'Presents hold boosts - Candy Corn and Party Shields.'];
+  function showIntro(done) {
+    var el = $('intro'), img = art('room-party-hall.png'), finished = false;
+    $('iTip').textContent = '💡 ' + TIPS[Math.floor(Math.random() * TIPS.length)];
+    el.style.backgroundImage = img ? 'url(art/room-party-hall.png)' : '';
+    el.style.display = 'flex';
+    function go() {
+      if (finished) { return; }
+      finished = true; el.style.display = 'none'; el.onclick = null; done();
+    }
+    el.onclick = go;
+    setTimeout(go, 3200);
+  }
+
+  // ---- first-game tutorial: coach marks that advance as you do each thing ----
+  var coachOn = false, coachStep = 0, coachObj = null, coachAt = 0, coachStart = null;
+  var COACH = [
+    { say: '👆 Tap the floor to walk there.', done: function () { var c = me(); return c && coachStart && (c.x !== coachStart[0] || c.y !== coachStart[1]); } },
+    { say: '🎈 Tap a numbered balloon to pop it - it shows one colour of the door code.', obj: 'nearBalloon',
+      done: function () { var k; for (k in S.obj) { if (S.obj[k].popped) { return true; } } return false; } },
+    { say: '👣 That was LOUD - noise brings the host! Tap 🙈 Hide to dive into the nearest hiding spot.', btn: 'aHide',
+      done: function () { var i; for (i = 0; i < S.chars.length; i++) { if (S.chars[i].hidden) { return true; } } return false; } },
+    { say: '⭐ Each character has a skill. Come out, then try the green skill button.', btn: 'aSkill',
+      done: function () { return coachSkillUsed; } },
+    { say: '💡 Stuck? Clue shows the way (it costs energy). Now find the way out - good luck!', btn: 'bClue', done: function () { return Date.now() - coachAt > 7000; } }
+  ];
+  var coachSkillUsed = false;
+  function coachBegin() {
+    coachOn = !load('tutorialDone', false);
+    coachStep = 0; coachSkillUsed = false; coachObj = null;
+    var c = S && S.chars[0]; coachStart = c ? [c.x, c.y] : null;
+    $('coach').style.display = coachOn ? 'flex' : 'none';
+    if (coachOn) { paintCoach(); }
+  }
+  function paintCoach() {
+    var st = COACH[coachStep], i, ids = ['aHide', 'aSkill', 'bClue'];
+    $('coachT').innerHTML = st.say + ' <small>(' + (coachStep + 1) + '/' + COACH.length + ')</small>';
+    for (i = 0; i < ids.length; i++) { $(ids[i]).className = $(ids[i]).className.replace(/ ?pulse/g, '') + (st.btn === ids[i] ? ' pulse' : ''); }
+    coachObj = null;
+    if (st.obj === 'nearBalloon') {
+      var b = nearest(function (q) { return q.kind === 'balloon' && !S.obj[q.id].popped; }, 99);
+      coachObj = b ? b.id : null;
+    }
+    coachAt = Date.now();
+  }
+  function coachTick() {
+    if (!coachOn || !S) { return; }
+    if (COACH[coachStep].done()) {
+      SFX.sparkle();
+      coachStep++;
+      if (coachStep >= COACH.length) { coachEnd(); return; }
+      paintCoach();
+    }
+  }
+  function coachEnd() {
+    coachOn = false; coachObj = null; save('tutorialDone', true);
+    $('coach').style.display = 'none';
+    ['aHide', 'aSkill', 'bClue'].forEach(function (id) { $(id).className = $(id).className.replace(/ ?pulse/g, ''); });
+  }
+  function coachEvent(e) {
+    if (e.k === 'open' || e.k === 'reveal' || e.k === 'sneak' || e.k === 'heal' || e.k === 'lure' || e.k === 'need' || e.k === 'keypad') { coachSkillUsed = true; }
+  }
+  $('coachSkip').onclick = function () { coachEnd(); SFX.click(); };
+  setInterval(function () { if (coachOn) { coachTick(); } if ($('help').style.display === 'flex') { drawHelp(); } }, 120);
 
   // read-only look inside, for diagnosing from a browser console
   window.dykwya = { state: function () { return S; }, bubbles: function () { return bubbles; }, sel: function () { return sel; },

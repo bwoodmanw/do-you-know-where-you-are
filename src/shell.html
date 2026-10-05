@@ -24,8 +24,41 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; touch-action
 h1 { font-size: 40px; margin: 6px 0; color: var(--pump); text-shadow: 0 3px 0 #000, 0 0 18px rgba(255,138,31,.45); letter-spacing: 1px; }
 h2 { font-size: 26px; margin: 6px 0 12px; }
 .sub { color: var(--mute); font-size: 18px; margin-bottom: 18px; }
-#title { background: radial-gradient(ellipse at 50% 30%, #3a2457 0%, var(--night) 55%, var(--deep) 100%); }
-#title canvas { width: 240px; height: 150px; }
+#title { background: #05030c; padding: 0; }
+#tbg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.tmain { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 18px 22px; max-width: 94%; }
+@media (min-aspect-ratio: 1/1) { #title { justify-content: center; align-items: flex-start; padding-left: 5%; } }
+.tkicker { color: #ffd9a8; font-size: 15px; letter-spacing: 4px; text-transform: uppercase; text-shadow: 0 2px 6px #000; }
+#title h1 { font-size: 40px; color: #ffb04d; text-shadow: 0 4px 0 #3a1500, 0 0 30px rgba(255,120,20,.6), 0 0 2px #000; margin: 4px 0 18px; }
+.tmenu { display: flex; flex-direction: column; align-items: stretch; }
+.glass { background: linear-gradient(180deg, rgba(40,24,62,.82), rgba(14,8,22,.88)); border: 1px solid rgba(255,190,120,.28); border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.08); }
+.big { background: linear-gradient(180deg, #ffb04d, #e8700f); color: #2a1200; text-shadow: 0 1px 0 rgba(255,255,255,.35); }
+.big.alt { background: linear-gradient(180deg, rgba(75,58,102,.95), rgba(43,29,64,.95)); border: 1px solid rgba(255,255,255,.12); text-shadow: none; }
+.tfoot { display: flex; gap: 6px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 10px; color: var(--mute); text-shadow: 0 1px 4px #000; }
+/* overlays: help, menu, arrival card, tutorial */
+.ovl { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 20; display: none; align-items: center; justify-content: center; background: rgba(5,3,12,.78); padding: 14px; }
+#helpBox { width: 100%; max-width: 760px; max-height: 100%; display: flex; flex-direction: column; padding: 14px; overflow-y: auto; touch-action: pan-y; }
+#hcv { width: 100%; height: 34vh; min-height: 150px; border-radius: 12px; }
+#hTitle { color: #ffb04d; margin: 10px 0 4px; }
+#hText { font-size: 19px; line-height: 1.5; text-align: left; min-height: 5.5em; }
+#hDots { display: flex; gap: 6px; justify-content: center; margin: 8px 0; }
+#hDots i { width: 10px; height: 10px; border-radius: 50%; background: #4b3a66; }
+#hDots i.on { background: #ffb04d; }
+#menuBox { display: flex; flex-direction: column; padding: 18px; min-width: 280px; }
+#menuBox h2 { color: #ffb04d; text-align: center; }
+#intro { background-color: #05030c; background-size: cover; background-position: center; flex-direction: column; cursor: pointer; }
+#intro .card2 { padding: 22px 28px; text-align: center; max-width: 640px; }
+#intro h2 { font-size: 34px; color: #ffb04d; margin: 0 0 6px; }
+#intro .go { font-size: 20px; margin-bottom: 14px; }
+#iTip { color: #ffd9a8; font-size: 17px; }
+#intro .spin { width: 46px; height: 46px; margin: 14px auto 0; border-radius: 50%; border: 5px solid rgba(255,176,77,.25); border-top-color: #ffb04d; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+#coach { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); z-index: 6; display: none; pointer-events: none; opacity: .9; align-items: center; gap: 10px; padding: 10px 14px; max-width: 94%; font-size: 18px; }
+#coach small { color: var(--mute); }
+#coachSkip { pointer-events: auto; background: transparent; color: var(--mute); text-decoration: underline; font-size: 14px; white-space: nowrap; }
+.pulse { animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(123,227,107,.9); } 50% { box-shadow: 0 0 0 8px rgba(123,227,107,0); } }
 .wob span { display: inline-block; animation: wob 2.6s ease-in-out infinite; }
 @keyframes wob { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-4px) rotate(-3deg); } }
 /* squad picker */
@@ -42,7 +75,8 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 .toggle { background: #2b1d40; padding: 12px 18px; border-radius: 14px; font-size: 20px; border: 3px solid transparent; }
 .toggle.on { border-color: var(--pump); background: #402a1a; }
 /* story */
-#story p { font-size: 22px; max-width: 620px; line-height: 1.45; margin: 8px 0; opacity: 0; transition: opacity .8s; }
+#story { background: radial-gradient(ellipse at 50% 35%, #2c1747 0%, #120a1f 60%, #05030c 100%); }
+#story p { text-shadow: 0 2px 6px #000; font-size: 22px; max-width: 620px; line-height: 1.45; margin: 8px 0; opacity: 0; transition: opacity .8s; }
 #story p.show { opacity: 1; }
 /* game */
 #game { padding: 0; justify-content: flex-start; background: var(--deep); }
@@ -101,13 +135,17 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 <body>
 
 <div id="title" class="screen on">
-  <canvas id="tcv" width="480" height="300"></canvas>
-  <h1 class="wob" id="ttl"></h1>
-  <div class="sub">The Party at the End of the Lane</div>
-  <button class="big" id="bSolo">Play</button>
-  <button class="big alt" id="bFriends" disabled>Play with friends<br><small>coming soon</small></button>
-  <div class="sub" id="totPts"></div>
-  <button class="small" id="bCheck">Check</button>
+  <canvas id="tbg"></canvas>
+  <div class="tmain glass">
+    <div class="tkicker">The Party at the End of the Lane</div>
+    <h1 class="wob" id="ttl"></h1>
+    <div class="tmenu">
+      <button class="big" id="bSolo">&#x25B6; Play</button>
+      <button class="big alt" id="bHelp">&#x2753; How to play</button>
+      <button class="big alt" id="bFriends" disabled>Play with friends <small>- coming soon</small></button>
+    </div>
+    <div class="tfoot"><span id="totPts"></span><button class="small" id="bSound">Sound on</button><button class="small" id="bCheck">Check</button></div>
+  </div>
 </div>
 
 <div id="squad" class="screen">
@@ -133,7 +171,7 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 
 <div id="game" class="screen">
   <div id="top">
-    <button class="tbtn" id="bHome">&#x1F3E0;</button>
+    <button class="tbtn" id="bHome">&#x2630; Menu</button>
     <div class="rname" id="rname"></div>
     <div id="danger"><span>&#x1F463;</span><span>&#x1F463;</span><span>&#x1F463;</span><span>&#x1F463;</span><span>&#x1F463;</span></div>
     <button class="tbtn" id="bClue">&#x1F4A1; Clue</button>
@@ -142,6 +180,7 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
     <canvas id="cv"></canvas>
     <canvas id="mini"></canvas>
     <div id="say"></div>
+    <div id="coach" class="glass"><span id="coachT"></span><button id="coachSkip">Skip tips</button></div>
     <div id="toast"><canvas width="88" height="88"></canvas><span></span></div>
     <div id="keypad"><div class="dots"><i></i><i></i><i></i></div><div class="keys"></div><button class="pick" id="bPick">&#x1F527; Pick the lock</button></div>
     <div id="over"><h2 id="overT"></h2><div class="pts" id="overP"></div><div class="row" id="overB"></div></div>
@@ -157,6 +196,37 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
     </div>
   </div>
   <div id="scare"><canvas id="scv"></canvas></div>
+</div>
+
+<div id="help" class="ovl">
+  <div id="helpBox" class="glass">
+    <canvas id="hcv"></canvas>
+    <h2 id="hTitle"></h2>
+    <div id="hText"></div>
+    <div id="hDots"></div>
+    <div class="row"><button class="big alt" id="hPrev">&#x25C0; Back</button><button class="big" id="hNext">Next</button></div>
+    <div class="row"><button class="small" id="hReplay">Play the tutorial again</button><button class="small" id="hClose">Close</button></div>
+  </div>
+</div>
+
+<div id="menu" class="ovl">
+  <div id="menuBox" class="glass">
+    <h2>Paused</h2>
+    <button class="big" id="mResume">&#x25B6; Keep playing</button>
+    <button class="big alt" id="mHelp">&#x2753; How to play</button>
+    <button class="big alt" id="mSound">Sound on</button>
+    <button class="big alt" id="mRestart">&#x21BB; Restart</button>
+    <button class="big alt" id="mQuit">&#x1F3E0; Leave game</button>
+  </div>
+</div>
+
+<div id="intro" class="ovl">
+  <div class="card2 glass">
+    <h2>The Party House</h2>
+    <div class="go">Find the way out. Don't get caught.</div>
+    <div id="iTip"></div>
+    <div class="spin"></div>
+  </div>
 </div>
 
 <div id="check" class="screen">

@@ -145,7 +145,7 @@ var Rules = (function () {
       squad: clone(cfg.squad), chars: [],
       creature: {
         x: r.spawn[0], y: r.spawn[1], active: false,
-        appearAt: cfg.spook === 'spooky' ? 120 : 200,
+        appearAt: cfg.appearAt || (cfg.spook === 'spooky' ? 120 : 200),
         mode: 'wait', target: null, goal: null, wp: 0, cd: 0, lost: 0, pause: 0
       },
       obj: {}, code: [], known: [null, null, null], entry: [],
