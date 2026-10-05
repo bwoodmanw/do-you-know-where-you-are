@@ -18,6 +18,7 @@ local player = Players.LocalPlayer
 local T = Config.TILE
 
 local NIGHT = Color3.fromRGB(26, 16, 38)
+local TOUCH = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 local PUMP = Color3.fromRGB(255, 138, 31)
 local CREAM = Color3.fromRGB(255, 244, 224)
 
@@ -80,7 +81,7 @@ local function button(parent, text, props, onClick)
 end
 
 -- ---------- messages ----------
-local toastFrame = frame(gui, { Size = UDim2.new(0.6, 0, 0, 56), Position = UDim2.new(0.2, 0, 0, 64), Visible = false })
+local toastFrame = frame(gui, { Size = UDim2.new(0.5, 0, 0, 56), Position = UDim2.new(0.25, 0, 0.2, 0), Visible = false })
 corner(toastFrame, 14)
 local toastStroke = Instance.new("UIStroke")
 toastStroke.Color = PUMP
@@ -134,17 +135,18 @@ local function jumpscare()
 end
 
 -- ---------- top bar ----------
-local top = frame(gui, { Size = UDim2.new(1, -20, 0, 48), Position = UDim2.fromOffset(10, 8), BackgroundTransparency = 0.25 })
+local top = frame(gui, { Size = UDim2.new(0.34, 0, 0, 44), Position = UDim2.new(0.4, 0, 0, 8), BackgroundTransparency = 0.25 })
 corner(top, 12)
-local roomName = label(top, { Size = UDim2.new(0.3, 0, 0.7, 0), Position = UDim2.fromScale(0.02, 0.15), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
+local roomName -- placed with the bars below
 local steps = {}
 for i = 1, 5 do
-	steps[i] = label(top, { Size = UDim2.new(0.04, 0, 0.8, 0), Position = UDim2.new(0.33 + i * 0.04, 0, 0.1, 0), Text = "\u{1F463}", TextTransparency = 0.8 })
+	steps[i] = label(top, { Position = UDim2.new(0.02 + (i - 1) * 0.09, 0, 0.1, 0), Size = UDim2.new(0.09, 0, 0.8, 0), Text = "\u{1F463}", TextTransparency = 0.8 })
 end
-local codeLabel = label(top, { Size = UDim2.new(0.2, 0, 0.7, 0), Position = UDim2.fromScale(0.6, 0.15), RichText = true, Text = "Code: ? ? ?" })
-local clueBtn = button(top, "\u{1F4A1} Clue (3)", { Size = UDim2.new(0.16, 0, 0.8, 0), Position = UDim2.fromScale(0.82, 0.1) }, function()
+local codeLabel = label(top, { Size = UDim2.new(0.5, 0, 0.7, 0), Position = UDim2.fromScale(0.48, 0.15), RichText = true, Text = "Code: ? ? ?" })
+local clueBtn -- lives with the action buttons below
+local function askClue()
 	remotes.AskClue:FireServer()
-end)
+end
 
 local function hex(c)
 	return string.format("#%02x%02x%02x", math.floor(c.R * 255 + 0.5), math.floor(c.G * 255 + 0.5), math.floor(c.B * 255 + 0.5))
@@ -156,13 +158,14 @@ local function paintCode()
 		parts[i] = k and ('<font color="' .. hex(Config.COLOR3[k]) .. '">\u{25CF}</font>') or "?"
 	end
 	codeLabel.Text = "Code: " .. table.concat(parts, " ")
-	clueBtn.Text = "\u{1F4A1} Clue (" .. tostring(RoundState:GetAttribute("CluesLeft") or 0) .. ")"
+	if clueBtn then clueBtn.Text = "\u{1F4A1} Clue (" .. tostring(RoundState:GetAttribute("CluesLeft") or 0) .. ")" end
 end
 RoundState.AttributeChanged:Connect(paintCode)
 paintCode()
 
 -- ---------- bars ----------
-local bars = frame(gui, { Size = UDim2.fromOffset(220, 46), Position = UDim2.new(0, 10, 1, -56), BackgroundTransparency = 0.3 })
+local bars = frame(gui, { Size = UDim2.fromOffset(240, 76), Position = TOUCH and UDim2.fromOffset(10, 60) or UDim2.new(0, 10, 1, -86), BackgroundTransparency = 0.3 })
+roomName = label(bars, { Size = UDim2.new(1, -16, 0, 24), Position = UDim2.fromOffset(8, 46), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
 corner(bars, 10)
 local function bar(y, color)
 	local back = frame(bars, { Size = UDim2.new(1, -16, 0, 12), Position = UDim2.fromOffset(8, y), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0 })
@@ -175,7 +178,7 @@ local staminaBar = bar(8, Color3.fromRGB(123, 227, 107))
 local energyBar = bar(26, Color3.fromRGB(255, 210, 63))
 
 -- ---------- action buttons ----------
-local acts = frame(gui, { Size = UDim2.fromOffset(330, 120), Position = UDim2.new(1, -340, 1, -130), BackgroundTransparency = 1 })
+local acts = frame(gui, { Size = UDim2.fromOffset(330, 120), Position = TOUCH and UDim2.new(1, -340, 1, -270) or UDim2.new(1, -340, 1, -130), BackgroundTransparency = 1 })
 local grid = Instance.new("UIGridLayout")
 grid.CellSize = UDim2.fromOffset(104, 54)
 grid.CellPadding = UDim2.fromOffset(6, 6)
@@ -193,6 +196,7 @@ local outBtn = button(acts, "\u{1F440} Come out", { LayoutOrder = 4, Visible = f
 	remotes.Unhide:FireServer()
 end)
 local pickBtn = button(acts, "\u{1F504} Skill", { LayoutOrder = 5 })
+clueBtn = button(acts, "\u{1F4A1} Clue (3)", { LayoutOrder = 6 }, askClue)
 
 -- ---------- quick-chat phrases ----------
 local sayPanel = frame(gui, { Size = UDim2.fromOffset(420, 250), Position = UDim2.new(0.5, -210, 1, -390), Visible = false })
