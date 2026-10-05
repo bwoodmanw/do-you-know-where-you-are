@@ -105,6 +105,9 @@ kids.push(p('Save each image with the filename shown, then put the files in the 
 kids.push(p('Public website: if an image looks like a character from a film, show, toy or game (Roblox avatars, Minecraft, Among Us, Five Nights at Freddy\'s, Pokemon, branded sweets) - make it again. No logos or text in images.'));
 kids.push(p('How they are used: characters and customisation sheets are design guides (the game is redrawn to match); hosts, jumpscares, rooms and textures go into the game directly.'));
 
+h1('Title screen (1)');
+prompt('Title screen', 'title.png', 'Wide (1536 x 1024)', 'Wide title-screen scene at night: a tall, crooked Victorian house at the end of a dark country lane, warm flickering light in some windows, bunting and party balloons tied to the front gate, a big full moon behind drifting clouds, low fog rolling across the lane. In one upstairs window, the silhouette of a very tall figure with a glowing carved-pumpkin head and a crooked party hat is watching. Three children seen from behind, holding torches, stand on the lane looking up at the house. Keep the left third of the picture darker and simpler (sky, fog, hedges) so menu buttons can sit there; the house is on the right.');
+
 h1('Characters (8)');
 chars.forEach(function (c) { prompt(c[0], 'char-' + c[0].toLowerCase() + '.png', 'Wide (1536 x 1024)', CHAR + c[1]); });
 
