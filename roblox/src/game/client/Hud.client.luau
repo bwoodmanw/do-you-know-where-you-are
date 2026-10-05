@@ -135,6 +135,23 @@ local function jumpscare()
 	end)
 end
 
+-- When the server swaps the avatar for the real character, the camera can
+-- stay on the old (removed) avatar: always follow the current character.
+local function followMe(char)
+	local hum = char:WaitForChild("Humanoid", 10)
+	if hum and player.Character == char then
+		local cam = workspace.CurrentCamera
+		cam.CameraType = Enum.CameraType.Custom
+		cam.CameraSubject = hum
+	end
+end
+player.CharacterAdded:Connect(function(char)
+	task.defer(followMe, char)
+end)
+if player.Character then
+	task.defer(followMe, player.Character)
+end
+
 -- the camera rushes in on the host's face (works with any host model)
 local function hostCloseUp(intense)
 	local host = workspace:FindFirstChild("PartyHost")
