@@ -9,6 +9,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SocialService = game:GetService("SocialService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+local Progress = require(ReplicatedStorage.Shared.Progress)
+local HttpService = game:GetService("HttpService")
+local MarketplaceService = game:GetService("MarketplaceService")
 local remotes = ReplicatedStorage:WaitForChild("LobbyRemotes")
 local player = Players.LocalPlayer
 
@@ -112,7 +115,7 @@ local function invite()
 end
 
 -- ---------- main menu (left) ----------
-local menu = frame(gui, { Size = UDim2.fromOffset(330, 400), Position = UDim2.new(0, 24, 0.5, -200) })
+local menu = frame(gui, { Size = UDim2.fromOffset(330, 500), Position = UDim2.new(0, 24, 0.5, -250) })
 corner(menu, 18)
 local menuStroke = Instance.new("UIStroke")
 menuStroke.Color, menuStroke.Transparency = PUMP, 0.6
@@ -130,7 +133,9 @@ button(menu, "\u{1F465} Create a party", { Size = UDim2.new(0.86, 0, 0, 52), Lay
 	remotes.CreateParty:FireServer(false)
 end)
 button(menu, "\u{2709} Invite friends", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 5 }, invite)
-local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 6 })
+local shopBtn = button(menu, "\u{1F6D2} Shop", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 6 })
+local charsBtn = button(menu, "\u{1F9D1}\u{200D}\u{1F91D}\u{200D}\u{1F9D1} Characters", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 7 })
+local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 8 })
 
 -- ---------- parties you can join (right) ----------
 local joinBox = frame(gui, { Size = UDim2.fromOffset(330, 400), Position = UDim2.new(1, -354, 0.5, -200) })
@@ -141,7 +146,7 @@ list(joinList, 8)
 local joinEmpty = label(joinList, { Size = UDim2.new(1, 0, 0, 60), Text = "No parties yet - create one and invite a friend!", TextColor3 = Color3.fromRGB(185, 168, 207) })
 
 -- ---------- your party (middle) ----------
-local partyBox = frame(gui, { Size = UDim2.fromOffset(440, 470), Position = UDim2.new(0.5, -220, 0.5, -235), Visible = false })
+local partyBox = frame(gui, { Size = UDim2.fromOffset(440, 560), Position = UDim2.new(0.5, -220, 0.5, -280), Visible = false })
 corner(partyBox, 18)
 local partyTitle = label(partyBox, { Size = UDim2.new(1, -20, 0, 40), Position = UDim2.fromOffset(10, 10), Text = "Your party", TextColor3 = PUMP })
 local slots = frame(partyBox, { Size = UDim2.new(1, -40, 0, 150), Position = UDim2.fromOffset(20, 56), BackgroundTransparency = 1 })
@@ -161,7 +166,18 @@ local amLeader = false
 local function opt(key, value)
 	remotes.SetOption:FireServer(key, value)
 end
-local optBox = frame(partyBox, { Size = UDim2.new(1, -40, 0, 170), Position = UDim2.fromOffset(20, 214), BackgroundTransparency = 1 })
+local mapBox = frame(partyBox, { Size = UDim2.new(1, -40, 0, 80), Position = UDim2.fromOffset(20, 210), BackgroundTransparency = 1 })
+local mapGrid = Instance.new("UIGridLayout")
+mapGrid.CellSize = UDim2.fromOffset(128, 76)
+mapGrid.CellPadding = UDim2.fromOffset(8, 0)
+mapGrid.Parent = mapBox
+local mapBtns = {}
+for _, m in ipairs(Progress.MAPS) do
+	mapBtns[m.id] = button(mapBox, "", {}, function()
+		remotes.VoteMap:FireServer(m.id)
+	end)
+end
+local optBox = frame(partyBox, { Size = UDim2.new(1, -40, 0, 170), Position = UDim2.fromOffset(20, 300), BackgroundTransparency = 1 })
 label(optBox, { Size = UDim2.new(0.32, 0, 0, 30), Position = UDim2.fromOffset(0, 0), Text = "Players", TextXAlignment = Enum.TextXAlignment.Left })
 button(optBox, "-", { Size = UDim2.fromOffset(40, 32), Position = UDim2.fromOffset(150, 0) }, function()
 	if current then
@@ -226,6 +242,19 @@ local function paintParty(p)
 	spkBtn.BackgroundColor3 = p.spook == "spooky" and PUMP or PLUM
 	optBox.Active = amLeader
 	startBtn.Visible = amLeader
+	local tally = {}
+	for _, mapId in pairs(p.votes or {}) do
+		tally[mapId] = (tally[mapId] or 0) + 1
+	end
+	local myVote = p.votes and p.votes[tostring(player.UserId)]
+	for _, m in ipairs(Progress.MAPS) do
+		local b = mapBtns[m.id]
+		local open = m.ready and p.unlocked and p.unlocked[m.id]
+		local state = not m.ready and "Coming soon" or (open and ((tally[m.id] or 0) .. " vote" .. ((tally[m.id] or 0) == 1 and "" or "s")) or "\u{1F512} Locked")
+		b.Text = m.icon .. " " .. m.name .. "\n" .. state
+		b.BackgroundColor3 = myVote == m.id and PUMP or (open and PLUM or Color3.fromRGB(50, 44, 60))
+		b.TextColor3 = myVote == m.id and NIGHT or CREAM
+	end
 end
 
 remotes.PartyList.OnClientEvent:Connect(function(parties, myId)
@@ -249,6 +278,169 @@ remotes.PartyList.OnClientEvent:Connect(function(parties, myId)
 	joinEmpty.Visible = shown == 0
 	paintParty(mine)
 end)
+
+-- ---------- my profile (points, bag, characters) ----------
+local profile = { points = 0, inv = {}, loadout = {}, xp = {}, picks = {}, unlocked = {} }
+local pointsLabel = label(gui, { Size = UDim2.fromOffset(240, 36), Position = UDim2.new(1, -260, 0, 64), Text = "\u{2B50} 0 points", TextXAlignment = Enum.TextXAlignment.Right })
+local repaintShop, repaintChars
+
+local function readProfile()
+	local json = player:GetAttribute("ProfileJson")
+	if json then
+		local ok, data = pcall(function()
+			return HttpService:JSONDecode(json)
+		end)
+		if ok and type(data) == "table" then
+			profile = data
+		end
+	end
+	pointsLabel.Text = "\u{2B50} " .. tostring(profile.points or 0) .. " points"
+	if repaintShop then
+		repaintShop()
+	end
+	if repaintChars then
+		repaintChars()
+	end
+end
+player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
+
+-- ---------- the shop ----------
+local shop = frame(gui, { Size = UDim2.fromOffset(560, 470), Position = UDim2.new(0.5, -280, 0.5, -235), Visible = false, ZIndex = 10 })
+corner(shop, 18)
+label(shop, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "\u{1F6D2} Boost Shop", TextColor3 = PUMP, ZIndex = 11 })
+label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "Tick up to " .. Progress.MAX_BOOSTS .. " boosts to take into your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+local shopRows = {}
+for i, id in ipairs(Progress.BOOST_ORDER) do
+	local b = Progress.BOOSTS[id]
+	local row = frame(shop, { Size = UDim2.new(1, -24, 0, 64), Position = UDim2.fromOffset(12, 78 + (i - 1) * 70), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 11 })
+	corner(row, 12)
+	label(row, { Size = UDim2.fromOffset(46, 46), Position = UDim2.fromOffset(8, 9), Text = b.icon, ZIndex = 12 })
+	label(row, { Size = UDim2.fromOffset(200, 26), Position = UDim2.fromOffset(60, 6), Text = b.name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+	label(row, { Size = UDim2.fromOffset(220, 22), Position = UDim2.fromOffset(60, 34), Text = b.say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
+	local owned = label(row, { Size = UDim2.fromOffset(60, 22), Position = UDim2.fromOffset(282, 6), Text = "x0", ZIndex = 12 })
+	button(row, b.price .. " \u{2B50}", { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(282, 30 - 18 + 14), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, function()
+		remotes.BuyBoost:FireServer(id)
+	end)
+	local productId = Config.ROBUX_PRODUCTS[id] or 0
+	if productId > 0 then
+		button(row, "R$", { Size = UDim2.fromOffset(46, 40), Position = UDim2.fromOffset(372, 26), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 12 }, function()
+			MarketplaceService:PromptProductPurchase(player, productId)
+		end)
+	end
+	local take = button(row, "", { Size = UDim2.fromOffset(92, 40), Position = UDim2.fromOffset(424, 12), ZIndex = 12 }, function()
+		local list, have = {}, false
+		for _, x in ipairs(profile.loadout or {}) do
+			if x == id and not have then
+				have = true
+			else
+				table.insert(list, x)
+			end
+		end
+		if not have then
+			table.insert(list, id)
+		end
+		remotes.SetLoadout:FireServer(list)
+	end)
+	shopRows[id] = { owned = owned, take = take }
+end
+button(shop, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -56), ZIndex = 11 }, function()
+	shop.Visible = false
+end)
+repaintShop = function()
+	for id, r in pairs(shopRows) do
+		local n = (profile.inv and profile.inv[id]) or 0
+		r.owned.Text = "x" .. n
+		local taking = table.find(profile.loadout or {}, id) ~= nil
+		r.take.Text = taking and "\u{2705} Taking" or "Take"
+		r.take.BackgroundColor3 = taking and Color3.fromRGB(47, 107, 58) or PLUM
+		r.take.Visible = n > 0
+	end
+end
+shopBtn.Activated:Connect(function()
+	shop.Visible = true
+end)
+remotes.OpenShop.OnClientEvent:Connect(function()
+	shop.Visible = true
+end)
+
+-- ---------- characters and the skill ladder ----------
+local chars = frame(gui, { Size = UDim2.fromOffset(640, 500), Position = UDim2.new(0.5, -320, 0.5, -250), Visible = false, ZIndex = 10 })
+corner(chars, 18)
+label(chars, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "Characters & skill ladder", TextColor3 = PUMP, ZIndex = 11 })
+local charRow = frame(chars, { Size = UDim2.new(1, -20, 0, 50), Position = UDim2.fromOffset(10, 56), BackgroundTransparency = 1, ZIndex = 11 })
+local charGrid = Instance.new("UIGridLayout")
+charGrid.CellSize = UDim2.fromOffset(72, 46)
+charGrid.CellPadding = UDim2.fromOffset(6, 0)
+charGrid.Parent = charRow
+local selected = Config.SKILLS[1].id
+local charBtns = {}
+for _, sk in ipairs(Config.SKILLS) do
+	charBtns[sk.id] = button(charRow, sk.icon, { BackgroundColor3 = sk.color, ZIndex = 12 }, function()
+		selected = sk.id
+		repaintChars()
+	end)
+end
+local charTitle = label(chars, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.fromOffset(10, 114), Text = "", ZIndex = 11 })
+local xpBack = frame(chars, { Size = UDim2.new(1, -40, 0, 14), Position = UDim2.fromOffset(20, 150), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 11 })
+corner(xpBack, 7)
+local xpFill = frame(xpBack, { Size = UDim2.fromScale(0, 1), BackgroundColor3 = Color3.fromRGB(123, 227, 107), BackgroundTransparency = 0, ZIndex = 12 })
+corner(xpFill, 7)
+local ladder = {}
+for level = 2, 5 do
+	local y = 176 + (level - 2) * 68
+	local tag = label(chars, { Size = UDim2.fromOffset(70, 56), Position = UDim2.fromOffset(16, y), Text = "Lv " .. level, ZIndex = 11 })
+	local a = button(chars, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(92, y), ZIndex = 11 })
+	local b = button(chars, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(364, y), ZIndex = 11 })
+	ladder[level] = { tag = tag, a = a, b = b }
+	for _, side in ipairs({ "a", "b" }) do
+		ladder[level][side].Activated:Connect(function()
+			local options = Progress.choices(selected, level)
+			local opt = options and options[side == "a" and 1 or 2]
+			if opt then
+				remotes.PickUpgrade:FireServer(selected, level, opt.id)
+			end
+		end)
+	end
+end
+button(chars, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, -80, 1, -50), ZIndex = 11 }, function()
+	chars.Visible = false
+end)
+repaintChars = function()
+	local sk
+	for _, x in ipairs(Config.SKILLS) do
+		if x.id == selected then
+			sk = x
+		end
+		local stroke = charBtns[x.id]:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", charBtns[x.id])
+		stroke.Thickness = x.id == selected and 3 or 0
+		stroke.Color = Color3.new(1, 1, 1)
+	end
+	local xp = (profile.xp and profile.xp[selected]) or 0
+	local lvl = Progress.level(xp)
+	local nextNeed = Progress.LEVEL_XP[lvl + 1]
+	charTitle.Text = sk.icon .. " " .. sk.name .. "  \u{00B7}  Level " .. lvl .. "  \u{00B7}  " .. xp .. " XP" .. (nextNeed and (" (next at " .. nextNeed .. ")") or " (max!)")
+	local prev = Progress.LEVEL_XP[lvl]
+	xpFill.Size = UDim2.fromScale(nextNeed and math.clamp((xp - prev) / (nextNeed - prev), 0, 1) or 1, 1)
+	local picks = (profile.picks and profile.picks[selected]) or {}
+	for level = 2, 5 do
+		local options = Progress.choices(selected, level)
+		local row = ladder[level]
+		local reached = lvl >= level
+		for i, side in ipairs({ "a", "b" }) do
+			local opt = options[i]
+			local chosen = picks[tostring(level)] == opt.id
+			row[side].Text = (chosen and "\u{2705} " or "") .. opt.name .. "\n" .. opt.say
+			row[side].BackgroundColor3 = chosen and Color3.fromRGB(47, 107, 58) or (reached and PLUM or Color3.fromRGB(45, 40, 55))
+			row[side].TextTransparency = reached and 0 or 0.5
+		end
+		row.tag.Text = reached and ("Lv " .. level) or ("\u{1F512} " .. level)
+	end
+end
+charsBtn.Activated:Connect(function()
+	chars.Visible = true
+	repaintChars()
+end)
+readProfile()
 
 -- ---------- how to play ----------
 local help = frame(gui, { Size = UDim2.fromOffset(520, 420), Position = UDim2.new(0.5, -260, 0.5, -210), Visible = false, ZIndex = 10 })

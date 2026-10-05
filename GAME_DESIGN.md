@@ -42,6 +42,29 @@ games. The kids already play Roblox, so the game is now a **Roblox experience**.
 
 ---
 
+## 0b. Progression (decided 5 Oct 2026)
+
+- **Points** are earned in every game and saved (one profile shared by the
+  Lobby and the game). They buy boosts and appear on the leaderboards.
+- **Boost shop** in the Lobby (menu button and a stall in the garden): Candy
+  Corn, Party Shield, Extra Clue, Energy Drink, Head Start. Bought with
+  **points or Robux** (Brent's decision, replacing "never real money");
+  every boost is always buyable with points, so nobody has to pay to play
+  well, and Roblox's parental controls govern children's Robux spending.
+  Up to 2 boosts are taken into the next game and used up there.
+- **Skill ladder:** each character levels 1-5 from the points earned while
+  playing it; at levels 2-5 the player picks 1 of 2 upgrades (Lobby ->
+  Characters). Upgrades change stamina, speed, how far the host sees you,
+  hold times, skill cooldowns and strengths, clues, a starting shield, and
+  more. All numbers live in `roblox/src/shared/Progress.luau`.
+- **Maps:** escaping a map (any difficulty) unlocks the next - Party House,
+  then Gummy Bounce House, then Abandoned Hospital. The party votes; the
+  leader breaks ties; the leader's unlocks decide what can be chosen, so
+  friends can come along to maps they have not reached. Gummy and Hospital
+  are planned for November; the Party House is polished first for Halloween.
+- **Leaderboards** in the Lobby, as boards in the garden: most points, most
+  rescues, fastest escape this week (Normal).
+
 ## 1. Concept
 
 The parents dropped the kids off at what looked like a birthday party, a camp,

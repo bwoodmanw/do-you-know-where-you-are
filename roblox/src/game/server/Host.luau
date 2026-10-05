@@ -188,6 +188,7 @@ function Host:canSee(char)
 	if plr:GetAttribute("Skill") == "shadow" then
 		range = Config.HOST.shadowSight
 	end
+	range *= plr:GetAttribute("SightMult") or 1
 	if dist > range then
 		return false
 	end

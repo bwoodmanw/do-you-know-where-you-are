@@ -77,6 +77,17 @@ Config.GAME_PLACE = "Party House"
 Config.VOTE_SECONDS = 10
 Config.MAX_PARTY = 6
 
+-- Robux prices for boosts: the Developer Product id for each boost, created in
+-- Creator Hub -> Escape Crew -> Monetization -> Developer Products. 0 = not on
+-- sale for Robux (points only). Every boost can always be bought with points.
+Config.ROBUX_PRODUCTS = {
+	candy = 0,
+	shield = 0,
+	clue = 0,
+	energy = 0,
+	headstart = 0,
+}
+
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }
 Config.IMAGES = {}
 Config.SOUNDS = {}

@@ -246,6 +246,27 @@ local outBtn = button(acts, "\u{1F440} Come out", { LayoutOrder = 4, Visible = f
 end)
 local pickBtn = button(acts, "\u{1F504} Change", { LayoutOrder = 5 })
 clueBtn = button(acts, "\u{1F4A1} Clue (3)", { LayoutOrder = 6 }, askClue)
+local candyBtn = button(acts, "\u{1F36C} Candy", { LayoutOrder = 8, Visible = false }, function()
+	remotes.UseCandy:FireServer()
+end)
+local function paintCandy()
+	local n = player:GetAttribute("CandyCharges") or 0
+	candyBtn.Visible = n > 0
+	candyBtn.Text = "\u{1F36C} Candy (" .. n .. ")"
+end
+player:GetAttributeChangedSignal("CandyCharges"):Connect(paintCandy)
+paintCandy()
+
+-- hold-to-use prompts (pick, shove, read, free...) go faster with ladder upgrades
+local ProximityPromptService = game:GetService("ProximityPromptService")
+ProximityPromptService.PromptShown:Connect(function(prompt)
+	local base = prompt:GetAttribute("BaseHold")
+	if base == nil then
+		base = prompt.HoldDuration
+		prompt:SetAttribute("BaseHold", base)
+	end
+	prompt.HoldDuration = base * (player:GetAttribute("HoldMult") or 1)
+end)
 -- mouse look (computers): the camera turns as the mouse moves, no button held
 local mouseLook = false
 local lookBtn = button(acts, "\u{1F5B1} Look (M)", { LayoutOrder = 7, Visible = not TOUCH }, function()
@@ -473,9 +494,9 @@ RunService.RenderStepped:Connect(function(dt)
 		local wantRun = runToggle or shiftHeld
 		local candy = os.clock() < candyUntil
 		if wantRun and moving and not tired then
-			hum.WalkSpeed = Config.RUN
+			hum.WalkSpeed = Config.RUN * (player:GetAttribute("RunMult") or 1)
 			if not candy then
-				stamina = math.max(0, stamina - Config.STAMINA_DRAIN * dt)
+				stamina = math.max(0, stamina - Config.STAMINA_DRAIN * dt / (player:GetAttribute("StaminaMult") or 1))
 				if stamina <= 0 then
 					tired = true
 					toast("Puffed out! Walk for a bit.", 2)
@@ -492,7 +513,7 @@ RunService.RenderStepped:Connect(function(dt)
 	runBtn.BackgroundColor3 = (runToggle or shiftHeld) and PUMP or Color3.fromRGB(75, 58, 102)
 	staminaBar.Size = UDim2.fromScale(stamina / 100, 1)
 	staminaBar.BackgroundColor3 = tired and Color3.fromRGB(255, 77, 94) or Color3.fromRGB(123, 227, 107)
-	energyBar.Size = UDim2.fromScale((player:GetAttribute("Energy") or 0) / 100, 1)
+	energyBar.Size = UDim2.fromScale(math.min(1, (player:GetAttribute("Energy") or 0) / 100), 1)
 
 	-- skill countdown: active time, then recharge time
 	local serverNow = workspace:GetServerTimeNow()
@@ -656,7 +677,14 @@ remotes.Results.OnClientEvent:Connect(function(r)
 	resInfo.Text = r.difficulty .. "  \u{00B7}  " .. string.format("%d:%02d", math.floor(r.seconds / 60), r.seconds % 60) .. (r.timeBonus > 0 and ("  \u{00B7}  time bonus +" .. r.timeBonus) or "")
 	local lines = {}
 	for _, row in ipairs(r.players) do
-		table.insert(lines, (row.escaped and "\u{2705} " or "\u{1F512} ") .. row.name .. "  +" .. row.points .. " points")
+		local extra = ""
+		if row.levelUp then
+			extra ..= "  \u{2B06} Level " .. row.levelUp .. "!"
+		end
+		if row.unlocked then
+			extra ..= "  \u{1F513} " .. row.unlocked
+		end
+		table.insert(lines, (row.escaped and "\u{2705} " or "\u{1F512} ") .. row.name .. "  +" .. row.points .. " points" .. extra)
 	end
 	resList.Text = table.concat(lines, "\n")
 	results.Visible = true

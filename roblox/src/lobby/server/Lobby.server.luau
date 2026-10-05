@@ -10,6 +10,9 @@ local TeleportService = game:GetService("TeleportService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
 local Places = require(ReplicatedStorage.Shared.Places)
+local Profile = require(ReplicatedStorage.Shared.Profile)
+local Progress = require(ReplicatedStorage.Shared.Progress)
+local MarketplaceService = game:GetService("MarketplaceService")
 
 -- ---------- the lobby scene: the lane outside the Party House ----------
 local function part(props)
@@ -85,6 +88,11 @@ local SetOption = remote("SetOption") -- (key, value) leader only
 local StartParty = remote("StartParty") -- leader only
 local PartyList = remote("PartyList") -- server -> client: what this player can see
 local Notice = remote("Notice") -- server -> client: a message
+local BuyBoost = remote("BuyBoost") -- (boostId) with points
+local SetLoadout = remote("SetLoadout") -- ({boostId, ...}) up to Progress.MAX_BOOSTS
+local PickUpgrade = remote("PickUpgrade") -- (skill, level, upgradeId)
+local VoteMap = remote("VoteMap") -- (mapId)
+local OpenShop = remote("OpenShop") -- server -> client: the shop stall was used
 
 local parties = {}
 local partyOf = {}
@@ -119,7 +127,29 @@ local function snapshot(party)
 		friendsOnly = party.friendsOnly,
 		difficulty = party.difficulty,
 		spook = party.spook,
+		votes = party.votes,
+		unlocked = (Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked,
 	}
+end
+
+-- the map the party plays: most votes among maps that are ready and the
+-- leader has unlocked; a tie goes to the leader's vote
+local function chosenMap(party)
+	local unlocked = (Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked
+	local tally, best, bestN = {}, "partyhouse", 0
+	for userId, mapId in pairs(party.votes) do
+		local i = Progress.mapIndex(mapId)
+		if i and Progress.MAPS[i].ready and unlocked[mapId] then
+			tally[mapId] = (tally[mapId] or 0) + 1
+		end
+	end
+	local leaderVote = party.votes[tostring(party.leader.UserId)]
+	for mapId, n in pairs(tally) do
+		if n > bestN or (n == bestN and mapId == leaderVote) then
+			best, bestN = mapId, n
+		end
+	end
+	return best
 end
 
 local function broadcast()
@@ -164,14 +194,30 @@ local function start(party)
 		return
 	end
 	party.starting = true
+	local mapId = chosenMap(party)
+	local mapName = Progress.MAPS[Progress.mapIndex(mapId)].name
 	for _, m in ipairs(party.members) do
-		Notice:FireClient(m, "Off to the Party House...")
+		Notice:FireClient(m, "Off to " .. mapName .. "...")
+		-- the boosts each player chose leave their bag now and wait for them in the game
+		local data = Profile.get(m)
+		if data then
+			local kept = {}
+			for _, id in ipairs(data.loadout or {}) do
+				if (data.inv[id] or 0) > 0 then
+					data.inv[id] -= 1
+					table.insert(kept, id)
+				end
+			end
+			data.loadout = kept
+			Profile.save(m)
+			Profile.publish(m)
+		end
 	end
 	local ok, err = pcall(function()
 		local code = TeleportService:ReserveServer(placeId)
 		local options = Instance.new("TeleportOptions")
 		options.ReservedServerAccessCode = code
-		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook })
+		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook, map = mapId })
 		TeleportService:TeleportAsync(placeId, party.members, options)
 	end)
 	if not ok then
@@ -192,6 +238,7 @@ CreateParty.OnServerEvent:Connect(function(plr, solo)
 		friendsOnly = true,
 		difficulty = "normal",
 		spook = "giggly",
+		votes = {},
 	}
 	nextId += 1
 	parties[party.id] = party
@@ -251,11 +298,204 @@ StartParty.OnServerEvent:Connect(function(plr)
 	end
 end)
 
-Players.PlayerAdded:Connect(function()
+VoteMap.OnServerEvent:Connect(function(plr, mapId)
+	local party = partyOf[plr]
+	local i = typeof(mapId) == "string" and Progress.mapIndex(mapId)
+	if not party or not i or party.starting then
+		return
+	end
+	if not Progress.MAPS[i].ready then
+		return Notice:FireClient(plr, Progress.MAPS[i].name .. " is coming soon!")
+	end
+	local unlocked = (Profile.get(party.leader) or { unlocked = {} }).unlocked
+	if not unlocked[mapId] then
+		return Notice:FireClient(plr, "Your leader hasn't unlocked " .. Progress.MAPS[i].name .. " yet - escape the map before it first.")
+	end
+	party.votes[tostring(plr.UserId)] = mapId
+	broadcast()
+end)
+
+-- ---------- the shop ----------
+BuyBoost.OnServerEvent:Connect(function(plr, id)
+	local boost = typeof(id) == "string" and Progress.BOOSTS[id]
+	local data = Profile.get(plr)
+	if not boost or not data then
+		return
+	end
+	if data.points < boost.price then
+		return Notice:FireClient(plr, "You need " .. boost.price .. " points for " .. boost.name .. ".")
+	end
+	data.points -= boost.price
+	data.inv[id] = (data.inv[id] or 0) + 1
+	Profile.publish(plr)
+	Profile.save(plr)
+	Notice:FireClient(plr, boost.icon .. " You bought " .. boost.name .. "!")
+end)
+
+SetLoadout.OnServerEvent:Connect(function(plr, list)
+	local data = Profile.get(plr)
+	if not data or typeof(list) ~= "table" then
+		return
+	end
+	local kept, count = {}, {}
+	for _, id in ipairs(list) do
+		if typeof(id) == "string" and Progress.BOOSTS[id] and #kept < Progress.MAX_BOOSTS then
+			count[id] = (count[id] or 0) + 1
+			if count[id] <= (data.inv[id] or 0) then
+				table.insert(kept, id)
+			end
+		end
+	end
+	data.loadout = kept
+	Profile.publish(plr)
+end)
+
+-- Robux: each Developer Product grants one boost
+local productToBoost = {}
+for id, productId in pairs(Config.ROBUX_PRODUCTS) do
+	if productId and productId > 0 then
+		productToBoost[productId] = id
+	end
+end
+MarketplaceService.ProcessReceipt = function(info)
+	local plr = Players:GetPlayerByUserId(info.PlayerId)
+	local id = productToBoost[info.ProductId]
+	local data = plr and Profile.get(plr)
+	if not id or not data then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+	data.receipts = data.receipts or {}
+	if not data.receipts[info.PurchaseId] then
+		data.receipts[info.PurchaseId] = true
+		data.inv[id] = (data.inv[id] or 0) + 1
+	end
+	if not Profile.save(plr) then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
+	Profile.publish(plr)
+	Notice:FireClient(plr, Progress.BOOSTS[id].icon .. " " .. Progress.BOOSTS[id].name .. " added to your bag!")
+	return Enum.ProductPurchaseDecision.PurchaseGranted
+end
+
+-- ---------- the skill ladder ----------
+PickUpgrade.OnServerEvent:Connect(function(plr, skill, level, upgradeId)
+	local data = Profile.get(plr)
+	if not data or typeof(skill) ~= "string" or typeof(level) ~= "number" or typeof(upgradeId) ~= "string" then
+		return
+	end
+	local options = Progress.choices(skill, level)
+	if not options or Progress.level(data.xp[skill] or 0) < level then
+		return Notice:FireClient(plr, "Play more as this character to reach level " .. tostring(level) .. ".")
+	end
+	for _, opt in ipairs(options) do
+		if opt.id == upgradeId then
+			data.picks[skill] = data.picks[skill] or {}
+			data.picks[skill][tostring(level)] = upgradeId
+			Profile.publish(plr)
+			Profile.save(plr)
+			return Notice:FireClient(plr, "Upgrade chosen: " .. opt.name)
+		end
+	end
+end)
+
+-- ---------- a shop stall in the garden ----------
+local stall = part({ Name = "ShopStall", Size = Vector3.new(10, 4, 4), Position = Vector3.new(-30, 2, 10), Material = Enum.Material.Wood, Color = Color3.fromRGB(122, 74, 30) })
+part({ Name = "StallRoof", Size = Vector3.new(12, 0.6, 6), Position = Vector3.new(-30, 9, 10), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 138, 31) })
+for _, x in ipairs({ -35, -25 }) do
+	part({ Name = "StallPost", Size = Vector3.new(0.5, 5, 0.5), Position = Vector3.new(x, 6.5, 10), Material = Enum.Material.Wood, Color = Color3.fromRGB(90, 60, 30) })
+end
+local stallSign = Instance.new("BillboardGui")
+stallSign.Size = UDim2.fromOffset(160, 40)
+stallSign.StudsOffset = Vector3.new(0, 7, 0)
+stallSign.Parent = stall
+local stallText = Instance.new("TextLabel")
+stallText.Size = UDim2.fromScale(1, 1)
+stallText.BackgroundTransparency = 1
+stallText.Font = Enum.Font.FredokaOne
+stallText.TextScaled = true
+stallText.TextColor3 = Color3.fromRGB(255, 210, 63)
+stallText.Text = "\u{1F6D2} BOOST SHOP"
+stallText.Parent = stallSign
+local stallPrompt = Instance.new("ProximityPrompt")
+stallPrompt.ActionText = "Shop"
+stallPrompt.ObjectText = "Boosts"
+stallPrompt.RequiresLineOfSight = false
+stallPrompt.Parent = stall
+stallPrompt.Triggered:Connect(function(plr)
+	OpenShop:FireClient(plr)
+end)
+
+-- ---------- leaderboards everyone can walk up to ----------
+local function boardPart(title, x)
+	local b = part({ Name = "Leaderboard", Size = Vector3.new(12, 16, 1), Position = Vector3.new(x, 9, -5), Material = Enum.Material.Wood, Color = Color3.fromRGB(40, 28, 46) })
+	local sg = Instance.new("SurfaceGui")
+	sg.Face = Enum.NormalId.Back
+	sg.CanvasSize = Vector2.new(360, 480)
+	sg.LightInfluence = 0
+	sg.Parent = b
+	local head = Instance.new("TextLabel")
+	head.Size = UDim2.new(1, 0, 0, 60)
+	head.BackgroundColor3 = Color3.fromRGB(255, 138, 31)
+	head.Font = Enum.Font.FredokaOne
+	head.TextScaled = true
+	head.TextColor3 = Color3.fromRGB(26, 16, 38)
+	head.Text = title
+	head.Parent = sg
+	local body = Instance.new("TextLabel")
+	body.Size = UDim2.new(1, -20, 1, -70)
+	body.Position = UDim2.fromOffset(10, 66)
+	body.BackgroundTransparency = 1
+	body.Font = Enum.Font.FredokaOne
+	body.TextSize = 26
+	body.TextXAlignment = Enum.TextXAlignment.Left
+	body.TextYAlignment = Enum.TextYAlignment.Top
+	body.TextColor3 = Color3.fromRGB(255, 244, 224)
+	body.Text = "Loading..."
+	body.Parent = sg
+	return body
+end
+local boardPoints = boardPart("\u{1F3C6} Most points", -32)
+local boardFast = boardPart("\u{23F1} Fastest escape (week)", 0)
+local boardRescue = boardPart("\u{1F512} Most rescues", 32)
+local function fill(body, rows, fmt)
+	if #rows == 0 then
+		body.Text = "No scores yet - be the first!"
+		return
+	end
+	local lines = {}
+	for i, r in ipairs(rows) do
+		table.insert(lines, i .. ". " .. r.name .. "  " .. fmt(r.value))
+	end
+	body.Text = table.concat(lines, "\n")
+end
+task.spawn(function()
+	while true do
+		local names = Profile.boardNames("partyhouse", "normal")
+		fill(boardPoints, Profile.top(names.points, 10), function(v)
+			return tostring(v)
+		end)
+		fill(boardFast, Profile.top(names.fastest, 10, true), function(v)
+			return string.format("%d:%02d", math.floor(v / 60), v % 60)
+		end)
+		fill(boardRescue, Profile.top(names.rescues, 10), function(v)
+			return tostring(v)
+		end)
+		task.wait(60)
+	end
+end)
+
+Players.PlayerAdded:Connect(function(plr)
+	Profile.load(plr)
 	task.wait(1)
 	broadcast()
 end)
 Players.PlayerRemoving:Connect(function(plr)
 	leave(plr)
+	Profile.release(plr)
 	broadcast()
+end)
+game:BindToClose(function()
+	for _, plr in ipairs(Players:GetPlayers()) do
+		Profile.save(plr)
+	end
 end)

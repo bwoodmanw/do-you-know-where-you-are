@@ -8,7 +8,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local DataStoreService = game:GetService("DataStoreService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
 local HouseMap = require(ReplicatedStorage.Shared.HouseMap)
@@ -47,6 +46,7 @@ local Boost = remote("Boost") -- server -> one client: "candy" | "stamina"
 local SetDifficulty = remote("SetDifficulty")
 local Results = remote("Results") -- server -> clients: the end-of-round summary
 local Vote = remote("Vote") -- client -> server: "again" | "lobby"
+local UseCandy = remote("UseCandy")
 
 local RoundState = Instance.new("Configuration")
 RoundState.Name = "RoundState"
@@ -68,49 +68,45 @@ effect("Atmosphere", { Density = 0.35, Color = Color3.fromRGB(120, 100, 150), De
 effect("BloomEffect", { Intensity = 0.6, Size = 30, Threshold = 1.4 })
 effect("ColorCorrectionEffect", { Saturation = -0.05, Contrast = 0.12, TintColor = Color3.fromRGB(255, 240, 230) })
 
--- ---------- saving points ----------
-local store
-pcall(function()
-	store = DataStoreService:GetDataStore("DYKWYA_Points_v1")
-end)
+-- ---------- saved progress (shared with the Lobby) ----------
+local Profile = require(ReplicatedStorage.Shared.Profile)
+local Progress = require(ReplicatedStorage.Shared.Progress)
 
 local function setupPlayer(plr)
-	local stats = Instance.new("Folder")
-	stats.Name = "leaderstats"
-	stats.Parent = plr
-	local pts = Instance.new("IntValue")
-	pts.Name = "Points"
-	pts.Parent = stats
-	if store then
-		local ok, v = pcall(function()
-			return store:GetAsync("p" .. plr.UserId)
-		end)
-		if ok and type(v) == "number" then
-			pts.Value = v
-		end
-	end
+	Profile.load(plr)
 	plr:SetAttribute("Skill", "tinker")
 	plr:SetAttribute("Energy", 100)
 end
 
 local function savePlayer(plr)
-	local stats = plr:FindFirstChild("leaderstats")
-	if store and stats then
-		pcall(function()
-			store:SetAsync("p" .. plr.UserId, stats.Points.Value)
-		end)
-	end
+	Profile.release(plr)
 end
 
 local state = {}
 local function addPoints(plr, n)
-	local stats = plr:FindFirstChild("leaderstats")
-	if stats then
-		stats.Points.Value += n
-	end
+	Profile.addPoints(plr, n)
 	if state.earned then
 		state.earned[plr.UserId] = (state.earned[plr.UserId] or 0) + n
 	end
+end
+
+-- The upgrades the player's current character has picked on the skill
+-- ladder, put on the player as attributes the game and their screen read.
+local function applyMods(plr)
+	local data = Profile.get(plr)
+	local skill = plr:GetAttribute("Skill")
+	local m = Progress.mods(skill, data and data.picks[skill], data and data.xp[skill] or 0)
+	plr:SetAttribute("StaminaMult", m.staminaMult)
+	plr:SetAttribute("RunMult", m.runMult)
+	plr:SetAttribute("SightMult", m.sightMult)
+	plr:SetAttribute("HoldMult", m.holdMult)
+	plr:SetAttribute("CooldownMult", m.cooldownMult)
+	plr:SetAttribute("SneakTime", m.sneakTime or 6)
+	plr:SetAttribute("GlowRange", m.glowRange or 24)
+	plr:SetAttribute("HealAmount", m.healAmount or 40)
+	plr:SetAttribute("HealShield", m.healShield == true)
+	plr:SetAttribute("EchoRange", m.echoRange or 70)
+	return m
 end
 
 -- ---------- the round ----------
@@ -227,7 +223,7 @@ local function gear(plr)
 			w.Parent = p
 		end
 		local light = Instance.new("PointLight")
-		light.Color, light.Range, light.Brightness, light.Shadows = Color3.fromRGB(255, 242, 160), 24, 1.6, true
+		light.Color, light.Range, light.Brightness, light.Shadows = Color3.fromRGB(255, 242, 160), plr:GetAttribute("GlowRange") or 24, 1.6, true
 		light.Parent = bulb
 	end
 	local corner = Instance.new("UICorner")
@@ -280,8 +276,42 @@ local function checkEnd()
 	end
 	RoundState:SetAttribute("Status", state.status)
 	local rows = {}
+	local mapId = RoundState:GetAttribute("Map") or "partyhouse"
+	local seconds = math.floor(now - state.startedAt)
 	for _, plr in ipairs(list) do
-		table.insert(rows, { name = plr.DisplayName, points = state.earned[plr.UserId] or 0, escaped = plr:GetAttribute("Escaped") == true, skill = plr:GetAttribute("Skill") })
+		local earned = state.earned[plr.UserId] or 0
+		local skill = plr:GetAttribute("Skill")
+		local out = plr:GetAttribute("Escaped") == true and not plr:GetAttribute("Waiting")
+		local row = { name = plr.DisplayName, points = earned, escaped = out, skill = skill }
+		local pd = Profile.get(plr)
+		if pd then
+			local before = Progress.level(pd.xp[skill] or 0)
+			pd.xp[skill] = (pd.xp[skill] or 0) + earned
+			local after = Progress.level(pd.xp[skill])
+			if after > before then
+				row.levelUp = after
+			end
+			pd.stats.games += 1
+			if out then
+				pd.stats.escapes += 1
+				local key = mapId .. "_" .. state.diff
+				if not pd.best[key] or seconds < pd.best[key] then
+					pd.best[key] = seconds
+				end
+			end
+			if won and out then
+				local i = Progress.mapIndex(mapId)
+				local nextMap = i and Progress.MAPS[i + 1]
+				if nextMap and not pd.unlocked[nextMap.id] then
+					pd.unlocked[nextMap.id] = true
+					row.unlocked = nextMap.name
+				end
+			end
+			Profile.publish(plr)
+			Profile.record(plr, mapId, state.diff, out and seconds or nil)
+			task.spawn(Profile.save, plr)
+		end
+		table.insert(rows, row)
 	end
 	Results:FireAllClients({
 		won = won,
@@ -529,6 +559,10 @@ local function wirePrompts()
 				if freed > 0 then
 					Effects.burst(world.objects.cage.outside, "rescue")
 					addPoints(plr, 20 * freed)
+					local pd = Profile.get(plr)
+					if pd then
+						pd.stats.rescues += freed
+					end
 					say("rescue", plr.DisplayName .. " freed " .. freed .. (freed == 1 and " friend" or " friends") .. " from the cage!")
 				end
 				entry.prompt.Enabled = anyCaged()
@@ -712,6 +746,7 @@ PickSkill.OnServerEvent:Connect(function(plr, id)
 	for _, s in ipairs(Config.SKILLS) do
 		if s.id == id then
 			plr:SetAttribute("Skill", id)
+			applyMods(plr)
 			if not Characters.apply(plr, s.name) then
 				gear(plr)
 			end
@@ -735,21 +770,24 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		return
 	end
 	if skill == "shadow" then
-		plr:SetAttribute("SneakUntil", now + 6)
+		plr:SetAttribute("SneakUntil", now + (plr:GetAttribute("SneakTime") or 6))
 		Effects.at(plr, "sneak")
 		say("sneak", plr.DisplayName .. " is sneaking - the host cannot see or grab them for 6 seconds!", { userId = plr.UserId })
 	elseif skill == "patch" then
 		for _, p in ipairs(Players:GetPlayers()) do
 			local h = hrpOf(p)
 			if h and not p:GetAttribute("Caged") and (h.Position - hrp.Position).Magnitude < 18 then
-				p:SetAttribute("Energy", math.min(100, (p:GetAttribute("Energy") or 0) + 40))
+				p:SetAttribute("Energy", math.min(100, (p:GetAttribute("Energy") or 0) + (plr:GetAttribute("HealAmount") or 40)))
+				if plr:GetAttribute("HealShield") then
+					p:SetAttribute("Shield", true)
+				end
 				Boost:FireClient(p, "stamina")
 			end
 		end
 		Effects.at(plr, "heal")
 		say("heal", "Patch patched up everyone nearby - energy and stamina back!", { userId = plr.UserId })
 	elseif skill == "echo" then
-		if typeof(pos) ~= "Vector3" or (pos - hrp.Position).Magnitude > 70 then
+		if typeof(pos) ~= "Vector3" or (pos - hrp.Position).Magnitude > (plr:GetAttribute("EchoRange") or 70) then
 			return say("info", "Throw it somewhere closer!", nil, plr)
 		end
 		if host and host.model then
@@ -759,7 +797,7 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		Effects.burst(pos + Vector3.new(0, 1, 0), "noise")
 		say("lure", "Echo threw a noise - the host has gone to look!", { pos = pos, userId = plr.UserId })
 	end
-	plr:SetAttribute("CoolUntil", now + cd)
+	plr:SetAttribute("CoolUntil", now + cd * (plr:GetAttribute("CooldownMult") or 1))
 end)
 
 AskClue.OnServerEvent:Connect(function(plr)
@@ -814,6 +852,17 @@ end)
 
 Unhide.OnServerEvent:Connect(unhide)
 
+UseCandy.OnServerEvent:Connect(function(plr)
+	local n = plr:GetAttribute("CandyCharges") or 0
+	if n <= 0 or state.status ~= "playing" then
+		return
+	end
+	plr:SetAttribute("CandyCharges", n - 1)
+	Boost:FireClient(plr, "candy")
+	Effects.at(plr, "boost")
+	say("boost", plr.DisplayName .. " ate Candy Corn - running without getting puffed!", { icon = Config.ITEM_ICONS.candy, userId = plr.UserId, item = "Candy Corn" })
+end)
+
 SetDifficulty.OnServerEvent:Connect(function(_, key)
 	if typeof(key) == "string" and Config.DIFFICULTY[key] and not (host and host.model) then
 		RoundState:SetAttribute("Difficulty", key)
@@ -862,6 +911,7 @@ function round.start()
 	for _, l in ipairs(world.lights) do
 		l.Brightness = spook == "spooky" and 0.45 or 1.2
 	end
+	local extraClues, extraGrace, reveal = 0, 0, false
 	for i, plr in ipairs(Players:GetPlayers()) do
 		plr:SetAttribute("Waiting", false)
 		plr:SetAttribute("Escaped", false)
@@ -875,11 +925,45 @@ function round.start()
 		end
 		setVisible(plr, true)
 		setSpeed(plr, Config.WALK)
+		local mods = applyMods(plr)
+		plr:SetAttribute("Energy", 100 + mods.energyStart)
+		plr:SetAttribute("Shield", mods.shield == true)
+		extraClues += mods.clues
+		reveal = reveal or mods.revealOne == true
+		-- boosts brought from the Lobby shop, used up in this game
+		local pd = Profile.get(plr)
+		if pd and pd.loadout and #pd.loadout > 0 then
+			for _, id in ipairs(pd.loadout) do
+				if id == "shield" then
+					plr:SetAttribute("Shield", true)
+				elseif id == "energy" then
+					plr:SetAttribute("Energy", plr:GetAttribute("Energy") + 50)
+				elseif id == "clue" then
+					extraClues += 1
+				elseif id == "headstart" then
+					extraGrace = 10
+				elseif id == "candy" then
+					plr:SetAttribute("CandyCharges", (plr:GetAttribute("CandyCharges") or 0) + 1)
+				end
+			end
+			pd.loadout = {}
+			Profile.publish(plr)
+			task.spawn(Profile.save, plr)
+		end
 		local s = HouseMap.start[((i - 1) % #HouseMap.start) + 1]
 		teleport(plr, at(s[1], s[2], 0))
 	end
+	if extraClues > 0 then
+		state.cluesLeft += extraClues
+		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+	end
+	if reveal then
+		local k = math.random(1, 3)
+		state.known[k] = state.code[k]
+		RoundState:SetAttribute("Known" .. k, state.code[k])
+	end
 	host = Host.new(world, round)
-	local grace = diff.grace
+	local grace = diff.grace + extraGrace
 	say("start", "Find the way out of the Party House. Don't get caught!", { grace = grace })
 	hostTimer = task.delay(grace, function()
 		hostTimer = nil
@@ -959,6 +1043,9 @@ Players.PlayerAdded:Connect(function(plr)
 		end
 		if data.spook == "giggly" or data.spook == "spooky" then
 			RoundState:SetAttribute("Spook", data.spook)
+		end
+		if typeof(data.map) == "string" and Progress.mapIndex(data.map) then
+			RoundState:SetAttribute("Map", data.map)
 		end
 	end
 	plr.CharacterAdded:Connect(function(char)
