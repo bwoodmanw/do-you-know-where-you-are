@@ -161,6 +161,24 @@ Size: **1024 x 1024**. Filename: `art/sheets/parts-<kind>.png`.
 | `parts-shoes.png` | shoes | trainers, wellies, slippers, roller skates, flippers, cowboy boots, ballet shoes, rocket boots, flip-flops, hiking boots, light-up trainers, socks only, clogs, football boots (no logos), sandals, bunny slippers |
 | `parts-extras.png` | accessory | backpack, scarf, cape, small wings, tail, round glasses, eyepatch, medal, bow tie, necklace, wand, umbrella, balloon on a string, pet mouse on the shoulder, torch, skateboard |
 
+## 6. Boost icons (Robux Developer Products)
+
+Square. Attach `art/roblox-store/icon-512.png` so they match the game icon.
+Start each with:
+
+> Square shop icon for a Roblox horror-escape game, matching the attached
+> style: polished stylised 3D render, glossy, bright, the item large and
+> centred on a round dark-purple glowing badge with an orange rim light. No
+> text, no numbers, no logos.
+
+| Save as `art/roblox-store/...` | Then add |
+|---|---|
+| `boost-candy.png` | A big glossy piece of Halloween candy corn with sparkles and little speed streaks. |
+| `boost-shield.png` | A round party-themed shield with balloon and confetti patterns, glowing with a soft blue force-field shimmer. |
+| `boost-clue.png` | A glowing yellow light bulb with a tiny question-mark spark inside, surrounded by sparkles. |
+| `boost-energy.png` | A small fizzy potion bottle with a lightning bolt on the label, bright green glowing liquid, bubbles. |
+| `boost-headstart.png` | A golden stopwatch with motion lines, as if racing ahead, a small pumpkin charm on the chain. |
+
 ## After saving
 
 Tell Claude which files are in `art/sheets/`. Claude checks each one for

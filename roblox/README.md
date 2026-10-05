@@ -20,7 +20,10 @@ roblox/
 
 ## Getting the code into Studio - two ways
 
-**A. Place files (simplest, no Rojo).** In the game folder:
+**Once characters or furniture are imported, use Rojo only.** Publishing a
+`.rbxlx` replaces the whole place and would wipe ServerStorage.
+
+**A. Place files (first setup only, no Rojo).** In the game folder:
 `EscapeCrew-Lobby.rbxlx` and `EscapeCrew-PartyHouse.rbxlx` (Claude rebuilds
 them after every change). In Studio: **File -> Open from File**, then
 **File -> Publish to Roblox As...** and pick the matching place.
@@ -61,7 +64,8 @@ Settings) - parties stay **Friends only** unless the leader changes it.
 
 ## Settings to set once (Game Settings in each place)
 
-- **Security -> Enable Studio Access to API Services**: on (saves points).
+- **Security -> Enable Studio Access to API Services**: on (saves points). It
+  is one experience-wide setting - set once, it covers both places.
 - **Places -> Server size**: Party House 6; Lobby 30.
 - Creator Hub -> **Maturity & Compliance questionnaire** before going public
   (expected: Mild).

@@ -5,7 +5,7 @@ room by room to reach the final safe area - and their parents - before the
 creature that lives there finds them.**
 
 Status: approved 4 Oct 2026. **Platform changed to Roblox on 5 Oct 2026** - see
-section 0. Sections 6, 7 and 11 describe the web version, which is parked.
+section 0. Current state and next steps: `SESSION_HANDOFF.md`. Sections 6, 7 and 11 describe the web version, which is parked.
 
 ---
 

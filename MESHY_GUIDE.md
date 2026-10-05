@@ -19,6 +19,25 @@ says, look under **Advanced** or **Settings** in the same panel.
 
 ---
 
+## Part 0 - A big, sharp picture first (fixes soft faces)
+
+Meshy cannot add detail that is not in the picture. Glow's inputs were only
+about 485 x 821 pixels, so her face came out soft. For each character, make one
+large front picture in ChatGPT (**portrait / tall**), attaching the character's
+sheet from `art/sheets/`:
+
+> Use the attached character sheet as the exact reference. One single
+> full-body image of this same character, front view, standing in an A-pose
+> (arms angled down and away from the body, legs slightly apart), centred and
+> filling the whole height of the image, plain flat light-grey background,
+> even soft studio lighting with no strong shadows, very sharp and detailed
+> face with clear eyes, same stylised 3D render style, same outfit and colours.
+> No text, no other characters.
+
+Save it as `art/model-input/<name>/front-hd.png` and give Meshy that one
+picture first (add side and back views only if the back comes out wrong).
+In Meshy choose the **highest texture quality** offered and **PBR on**.
+
 ## Part 1 - In Meshy: make the model (about 5 minutes each)
 
 1. Sign in at **meshy.ai** -> **Workspace** -> **Image to 3D**.
@@ -49,36 +68,33 @@ says, look under **Advanced** or **Settings** in the same panel.
 
 ---
 
-## Part 2 - In Roblox Studio: make it a Roblox character (about 5 minutes each)
+## Part 2 - In Roblox Studio: make it a Roblox character (how Glow was done)
 
-1. Open the **Escape Crew** place in Studio.
-2. **File -> Import 3D** (or the **Import 3D** button) -> choose `host.fbx`.
-3. In the importer:
-   - **Rig type: R15** if it asks.
-   - Check the preview faces you. If the character faces away, set
-     **World Forward** to the opposite direction (Roblox wants the front facing
-     -Z).
-   - Press **Import**.
-4. With the imported model selected, open **Avatar** tab -> **Avatar Setup**
-   (or right-click the model -> **Avatar Setup**). Let it run: it adds the R15
-   skeleton, skinning, face animation and splits the body into Roblox parts.
-5. In the Avatar Setup preview, try a **walk** or **run** animation. If arms or
-   legs bend wrongly, tell Claude what you see - a different pose (T instead of
-   A) in Meshy usually fixes it.
-6. **Finish / Add to Workspace.**
-7. **Put it where the game will find it:**
-   - In the Explorer, find **ServerStorage**. Right-click -> **Insert Object** ->
-     **Folder**, and name the folder exactly **Characters**.
-   - Drag the finished model into **ServerStorage -> Characters**.
-   - Rename it exactly: **Host**, **Tinker**, **Shadow**, **Brainy**, **Muscle**,
-     **Glow**, **Patch**, **Echo** or **Bramble**.
-8. **File -> Save to Roblox** (Rojo never touches ServerStorage, so your
-   models are safe).
-9. Tell Claude which ones are in. Claude switches the game to use them: kids
-   play as the chosen character instead of their avatar, and the pumpkin host
-   becomes your model.
+1. Open the **Party House** place (the window title must say Party House):
+   **File -> Open from Roblox -> Escape Crew -> Party House**, or Creator Hub
+   -> Escape Crew -> Places -> **...** next to Party House -> **Edit in Studio**.
+2. **File -> Import** -> choose the `.glb` from `art/models/`.
+3. In the 3D Importer: **Rig Type: No Rig** (if it can be changed - Avatar
+   Setup adds the skeleton). If the preview shows the back, change **World
+   Forward** until the face looks at you. **Add to Workspace: on** -> **Import**.
+4. Select the model in the **Explorer** -> **Avatar** tab -> **Avatar Setup**
+   (if there is no Avatar tab, search "Avatar Setup" in Studio's search box).
+   If it asks what it is, choose **Body**. Let it run; preview a walk.
+5. It may report **"4 Warnings"** about the dynamic head (frown, eyes,
+   mouth). Those only matter for selling on the Avatar Marketplace - click
+   **OK** and ignore them. ("Model resized to ...%" is fine too.)
+6. Finish so the character is added to the Workspace. In the Explorer, the
+   **right** copy contains **Humanoid, HumanoidRootPart, Head, UpperTorso...**
+   (about 15 parts). **Delete** the original imported copy (a single mesh).
+7. **ServerStorage -> Characters** (create the folder once: right-click
+   ServerStorage -> Insert Object -> Folder -> name it `Characters`). Drag the
+   finished character in and rename it exactly: `Host`, `Tinker`, `Shadow`,
+   `Brainy`, `Muscle`, `Glow`, `Patch`, `Echo` or `Bramble`.
+8. **File -> Publish to Roblox.** Test with **Play**: pick the character (or
+   wait for the host) and check it walks and runs. **F9** shows errors.
 
----
+Never publish a `.rbxlx` file over the Party House after this - it would wipe
+ServerStorage. Code updates go in with Rojo (`roblox/README.md`).
 
 ## Order of work
 
