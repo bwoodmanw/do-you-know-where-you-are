@@ -16,6 +16,30 @@ local Host = require(script.Parent.Host)
 local Effects = require(script.Parent.Effects)
 local Characters = require(script.Parent.Characters)
 local Props = require(script.Parent.Props)
+
+-- Players' screens can't see ServerStorage: copy the imported characters to
+-- ReplicatedStorage.Previews (anchored, no scripts) for the select screen.
+do
+	local previews = Instance.new("Folder")
+	previews.Name = "Previews"
+	previews.Parent = ReplicatedStorage
+	local src = game:GetService("ServerStorage"):FindFirstChild("Characters")
+	if src then
+		for _, c in ipairs(src:GetChildren()) do
+			if c:IsA("Model") and c.Name ~= "Host" then
+				local m = c:Clone()
+				for _, d in ipairs(m:GetDescendants()) do
+					if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") then
+						d:Destroy()
+					elseif d:IsA("BasePart") then
+						d.Anchored = true
+					end
+				end
+				m.Parent = previews
+			end
+		end
+	end
+end
 local Places = require(ReplicatedStorage.Shared.Places)
 local TeleportService = game:GetService("TeleportService")
 

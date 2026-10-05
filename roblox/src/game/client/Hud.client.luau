@@ -299,34 +299,161 @@ remotes.Bubble.OnClientEvent:Connect(function(who, idx)
 	end
 end)
 
--- ---------- skill picker ----------
-local picker = frame(gui, { Size = UDim2.fromOffset(620, 430), Position = UDim2.new(0.5, -310, 0.5, -215), ZIndex = 20 })
+-- ---------- character select: a 3D model you can turn, and its skill ----------
+local picker = frame(gui, { Size = UDim2.fromOffset(820, 540), Position = UDim2.new(0.5, -410, 0.5, -270), ZIndex = 20 })
 corner(picker, 16)
-label(picker, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 8), Text = "Escape Crew - pick your character", TextColor3 = PUMP, ZIndex = 21 })
-local cardBox = frame(picker, { Size = UDim2.new(1, -20, 0, 240), Position = UDim2.fromOffset(10, 54), BackgroundTransparency = 1, ZIndex = 21 })
-local cardGrid = Instance.new("UIGridLayout")
-cardGrid.CellSize = UDim2.fromOffset(142, 112)
-cardGrid.CellPadding = UDim2.fromOffset(8, 8)
-cardGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
-cardGrid.Parent = cardBox
-local cards = {}
-for _, s in ipairs(Config.SKILLS) do
-	local b = button(cardBox, s.icon .. " " .. s.name .. "\n" .. s.say, { BackgroundColor3 = s.color, TextColor3 = NIGHT, ZIndex = 22 }, function()
-		remotes.PickSkill:FireServer(s.id)
-	end)
-	cards[s.id] = b
+label(picker, { Size = UDim2.new(1, 0, 0, 36), Position = UDim2.fromOffset(0, 8), Text = "Escape Crew - pick your character", TextColor3 = PUMP, ZIndex = 21 })
+
+local view = Instance.new("ViewportFrame")
+view.Size = UDim2.fromOffset(380, 330)
+view.Position = UDim2.fromOffset(20, 50)
+view.BackgroundColor3 = Color3.fromRGB(40, 26, 58)
+view.Ambient = Color3.fromRGB(170, 160, 190)
+view.LightColor = Color3.fromRGB(255, 240, 220)
+view.LightDirection = Vector3.new(-0.4, -1, -0.6)
+view.ZIndex = 21
+view.Parent = picker
+corner(view, 14)
+local viewWorld = Instance.new("WorldModel")
+viewWorld.Parent = view
+local viewCam = Instance.new("Camera")
+viewCam.FieldOfView = 32
+viewCam.Parent = view
+view.CurrentCamera = viewCam
+local noModel = label(view, { Size = UDim2.fromScale(1, 0.8), Position = UDim2.fromScale(0, 0.1), Text = "", ZIndex = 22 })
+label(view, { Size = UDim2.new(1, 0, 0, 22), Position = UDim2.new(0, 0, 1, -26), Text = "drag to turn", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 22 })
+
+local info = frame(picker, { Size = UDim2.fromOffset(380, 330), Position = UDim2.fromOffset(420, 50), BackgroundColor3 = Color3.fromRGB(43, 29, 64), ZIndex = 21 })
+corner(info, 14)
+local infoIcon = label(info, { Size = UDim2.fromOffset(70, 70), Position = UDim2.fromOffset(14, 12), Text = "", ZIndex = 22 })
+local infoName = label(info, { Size = UDim2.fromOffset(270, 40), Position = UDim2.fromOffset(94, 14), Text = "", TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 22 })
+local infoSay = label(info, { Size = UDim2.fromOffset(270, 26), Position = UDim2.fromOffset(94, 54), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 22 })
+local function para(y, h)
+	return label(info, { Size = UDim2.new(1, -28, 0, h), Position = UDim2.fromOffset(14, y), TextScaled = false, TextSize = 18, TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 22 })
 end
-local function paintCards()
-	local mine = player:GetAttribute("Skill")
-	for id, b in pairs(cards) do
-		b.BorderSizePixel = 0
-		local stroke = b:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", b)
-		stroke.Thickness = id == mine and 4 or 0
-		stroke.Color = Color3.new(1, 1, 1)
+local infoAbout = para(96, 78)
+local infoHow = para(178, 46)
+infoHow.TextColor3 = Color3.fromRGB(123, 227, 107)
+local infoLevel = para(228, 90)
+infoLevel.TextColor3 = Color3.fromRGB(205, 190, 225)
+
+local viewIndex = 1
+local shown, spin, dragging, lastX = nil, 0, false, 0
+local chooseBtn
+
+local function profileData()
+	local json = player:GetAttribute("ProfileJson")
+	if not json then
+		return nil
 	end
+	local ok, data = pcall(function()
+		return game:GetService("HttpService"):JSONDecode(json)
+	end)
+	return ok and data or nil
 end
-player:GetAttributeChangedSignal("Skill"):Connect(paintCards)
-paintCards()
+
+local function showChar()
+	local sk = Config.SKILLS[viewIndex]
+	if shown then
+		shown:Destroy()
+		shown = nil
+	end
+	local previews = ReplicatedStorage:FindFirstChild("Previews")
+	local src = previews and previews:FindFirstChild(sk.name)
+	spin = 0
+	if src then
+		shown = src:Clone()
+		shown.Parent = viewWorld
+		noModel.Visible = false
+	else
+		noModel.Visible = true
+		noModel.Text = sk.icon .. "\n3D model coming soon"
+	end
+	view.BackgroundColor3 = sk.color:Lerp(Color3.fromRGB(26, 16, 38), 0.75)
+	local si = Config.SKILL_INFO[sk.id] or {}
+	infoIcon.Text = sk.icon
+	infoName.Text = sk.name
+	infoSay.Text = sk.say
+	infoAbout.Text = si.about or ""
+	infoHow.Text = si.how and ("\u{1F3AE} " .. si.how) or ""
+	local data = profileData()
+	local xp = data and data.xp and data.xp[sk.id] or 0
+	local level = 1
+	for i, need in ipairs({ 0, 100, 250, 450, 700 }) do
+		if xp >= need then
+			level = i
+		end
+	end
+	local picks = data and data.picks and data.picks[sk.id]
+	local n = 0
+	if picks then
+		for _ in pairs(picks) do
+			n += 1
+		end
+	end
+	infoLevel.Text = "\u{2B50} Level " .. level .. "  (" .. xp .. " XP)\n" .. (n > 0 and (n .. " upgrade" .. (n == 1 and "" or "s") .. " chosen") or "Level up by playing as " .. sk.name .. " - choose upgrades in the Lobby.")
+	local mine = player:GetAttribute("Skill") == sk.id
+	chooseBtn.Text = mine and ("\u{2705} You are " .. sk.name) or ("Choose " .. sk.name)
+	chooseBtn.BackgroundColor3 = mine and Color3.fromRGB(47, 107, 58) or PUMP
+end
+
+button(picker, "\u{25C0}", { Size = UDim2.fromOffset(60, 46), Position = UDim2.fromOffset(20, 390), ZIndex = 22 }, function()
+	viewIndex = (viewIndex - 2) % #Config.SKILLS + 1
+	showChar()
+end)
+button(picker, "\u{25B6}", { Size = UDim2.fromOffset(60, 46), Position = UDim2.fromOffset(340, 390), ZIndex = 22 }, function()
+	viewIndex = viewIndex % #Config.SKILLS + 1
+	showChar()
+end)
+chooseBtn = button(picker, "Choose", { Size = UDim2.fromOffset(240, 46), Position = UDim2.fromOffset(90, 390), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 22 }, function()
+	remotes.PickSkill:FireServer(Config.SKILLS[viewIndex].id)
+end)
+player:GetAttributeChangedSignal("Skill"):Connect(showChar)
+player:GetAttributeChangedSignal("ProfileJson"):Connect(showChar)
+
+-- drag the model round; it faces you to begin with
+view.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging, lastX = true, input.Position.X
+	end
+end)
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		spin += (input.Position.X - lastX) * 0.012
+		lastX = input.Position.X
+	end
+end)
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
+end)
+RunService.RenderStepped:Connect(function()
+	if not shown or not picker.Visible then
+		return
+	end
+	-- Roblox characters face -Z; turn it round to face the camera on +Z
+	shown:PivotTo(CFrame.Angles(0, math.pi + spin, 0))
+	local cf, size = shown:GetBoundingBox()
+	local dist = size.Y * 0.62 / math.tan(math.rad(viewCam.FieldOfView / 2))
+	viewCam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0, size.Y * 0.05, dist), cf.Position)
+end)
+
+local function openPicker()
+	for i, sk in ipairs(Config.SKILLS) do
+		if sk.id == player:GetAttribute("Skill") then
+			viewIndex = i
+		end
+	end
+	showChar()
+end
+picker:GetPropertyChangedSignal("Visible"):Connect(function()
+	if picker.Visible then
+		openPicker()
+	end
+end)
+task.defer(openPicker)
 local giggly = button(picker, "\u{1F604} Giggly", { Size = UDim2.fromOffset(140, 44), Position = UDim2.new(0.5, -290, 1, -56), ZIndex = 22 }, function()
 	remotes.SetSpook:FireServer("giggly")
 end)
@@ -338,7 +465,7 @@ button(picker, "\u{25B6} Play", { Size = UDim2.fromOffset(150, 44), Position = U
 end)
 local diffBtns = {}
 for i, key in ipairs(Config.DIFFICULTY_ORDER) do
-	diffBtns[key] = button(picker, Config.DIFFICULTY[key].name, { Size = UDim2.fromOffset(136, 36), Position = UDim2.new(0, 22 + (i - 1) * 146, 1, -104), ZIndex = 22 }, function()
+	diffBtns[key] = button(picker, Config.DIFFICULTY[key].name, { Size = UDim2.fromOffset(136, 36), Position = UDim2.new(0, 110 + (i - 1) * 146, 1, -104), ZIndex = 22 }, function()
 		remotes.SetDifficulty:FireServer(key)
 	end)
 end
