@@ -75,7 +75,10 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 .toggle { background: #2b1d40; padding: 12px 18px; border-radius: 14px; font-size: 20px; border: 3px solid transparent; }
 .toggle.on { border-color: var(--pump); background: #402a1a; }
 /* story */
-#story { background: radial-gradient(ellipse at 50% 35%, #2c1747 0%, #120a1f 60%, #05030c 100%); }
+#story { background: linear-gradient(rgba(5,3,12,.6), rgba(5,3,12,.85)), url(art/story-door.jpg) center / cover, radial-gradient(ellipse at 50% 35%, #2c1747 0%, #120a1f 60%, #05030c 100%); }
+#roomcard { position: absolute; right: 10px; top: 10px; z-index: 5; display: none; pointer-events: none; width: 230px; padding: 6px; text-align: center; }
+#roomcard img { width: 100%; border-radius: 10px; display: block; }
+#rcName { font-weight: bold; color: #ffb04d; font-size: 18px; padding: 4px 0 2px; }
 #story p { text-shadow: 0 2px 6px #000; font-size: 22px; max-width: 620px; line-height: 1.45; margin: 8px 0; opacity: 0; transition: opacity .8s; }
 #story p.show { opacity: 1; }
 /* game */
@@ -181,6 +184,7 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
     <canvas id="mini"></canvas>
     <div id="say"></div>
     <div id="coach" class="glass"><span id="coachT"></span><button id="coachSkip">Skip tips</button></div>
+    <div id="roomcard" class="glass"><img id="rcImg" alt=""><div id="rcName"></div></div>
     <div id="toast"><canvas width="88" height="88"></canvas><span></span></div>
     <div id="keypad"><div class="dots"><i></i><i></i><i></i></div><div class="keys"></div><button class="pick" id="bPick">&#x1F527; Pick the lock</button></div>
     <div id="over"><h2 id="overT"></h2><div class="pts" id="overP"></div><div class="row" id="overB"></div></div>

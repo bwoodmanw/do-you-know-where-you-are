@@ -75,7 +75,10 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
 .toggle { background: #2b1d40; padding: 12px 18px; border-radius: 14px; font-size: 20px; border: 3px solid transparent; }
 .toggle.on { border-color: var(--pump); background: #402a1a; }
 /* story */
-#story { background: radial-gradient(ellipse at 50% 35%, #2c1747 0%, #120a1f 60%, #05030c 100%); }
+#story { background: linear-gradient(rgba(5,3,12,.6), rgba(5,3,12,.85)), url(art/story-door.jpg) center / cover, radial-gradient(ellipse at 50% 35%, #2c1747 0%, #120a1f 60%, #05030c 100%); }
+#roomcard { position: absolute; right: 10px; top: 10px; z-index: 5; display: none; pointer-events: none; width: 230px; padding: 6px; text-align: center; }
+#roomcard img { width: 100%; border-radius: 10px; display: block; }
+#rcName { font-weight: bold; color: #ffb04d; font-size: 18px; padding: 4px 0 2px; }
 #story p { text-shadow: 0 2px 6px #000; font-size: 22px; max-width: 620px; line-height: 1.45; margin: 8px 0; opacity: 0; transition: opacity .8s; }
 #story p.show { opacity: 1; }
 /* game */
@@ -181,6 +184,7 @@ h2 { font-size: 26px; margin: 6px 0 12px; }
     <canvas id="mini"></canvas>
     <div id="say"></div>
     <div id="coach" class="glass"><span id="coachT"></span><button id="coachSkip">Skip tips</button></div>
+    <div id="roomcard" class="glass"><img id="rcImg" alt=""><div id="rcName"></div></div>
     <div id="toast"><canvas width="88" height="88"></canvas><span></span></div>
     <div id="keypad"><div class="dots"><i></i><i></i><i></i></div><div class="keys"></div><button class="pick" id="bPick">&#x1F527; Pick the lock</button></div>
     <div id="over"><h2 id="overT"></h2><div class="pts" id="overP"></div><div class="row" id="overB"></div></div>
@@ -925,7 +929,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
 (function () {
   'use strict';
 
-  var BUILD = '20261005T0154-9118e4b';
+  var BUILD = '20261005T1036-e57ef16';
   var KEY = 'dykwya.';
   var SHELL_CACHE = 'dykwya-shell-' + BUILD;
   var ART_CACHE = 'dykwya-art';
@@ -1192,7 +1196,11 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
   function portrait(cv, key) {
     var g = cv.getContext('2d'), s = cv.width;
     g.clearRect(0, 0, cv.width, cv.height);
-    if (key === 'creature') {
+    var face = key === 'creature' ? art('host-party-face.png') : null;
+    if (face) {
+      var fh = s * 0.98, fw = fh * face.width / face.height;
+      g.drawImage(face, (s - fw) / 2, s - fh, fw, fh);
+    } else if (key === 'creature') {
       drawCreature(g, s * 0.5, s * 1.55, s * 0.9, { t: 0 });
     } else {
       drawChar(g, s * 0.5, s * 0.94, s * 0.8, key, { t: 0 });
@@ -1376,7 +1384,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     if (T) { T.stop(); }
     T = LocalTransport(st);
     S = st; lastEv = st.evn; sel = 'c0'; rp = {}; kp = null; parts = []; banked = false;
-    bubbles = {}; pings = []; runMode = false; pan = { x: 0, y: 0 };
+    bubbles = {}; pings = []; runMode = false; pan = { x: 0, y: 0 }; seenArea = { 'Front Hall': true };
     $('over').style.display = 'none';
     $('say').style.display = 'none';
     buildBar();
@@ -1431,7 +1439,19 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     if (c) { $('aSkill').textContent = SKILL_BTN[c.char]; }
     $('aHide').textContent = c && c.hidden ? '👀 Come out' : '🙈 Hide';
     var rn = room ? areaName(c) : '';
+    if (rn && !seenArea[rn]) { seenArea[rn] = true; roomCard(rn); }
     $('rname').textContent = rn ? room.name + ' · ' + rn : (room ? room.name : '');
+  }
+  var seenArea = {}, roomTimer = null;
+  var ROOM_ART = { 'Front Hall': 'room-party-hall.jpg', 'Kitchen': 'room-party-kitchen.jpg', 'Library': 'room-party-library.jpg', 'Game Room': 'room-party-gameroom.jpg' };
+  function roomCard(name) {
+    var el = $('roomcard'), file = ROOM_ART[name], img = file ? art(file) : null;
+    $('rcImg').style.display = img ? '' : 'none';
+    if (img) { $('rcImg').src = 'art/' + file; }
+    $('rcName').textContent = name;
+    el.style.display = 'block';
+    clearTimeout(roomTimer);
+    roomTimer = setTimeout(function () { el.style.display = 'none'; }, 2600);
   }
   function areaName(c) {
     var i, f;
@@ -1486,21 +1506,70 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     return Math.abs(p[0] - cam.x) < VW / 2 + TW * 1.5 && p[1] - cam.y > -VH / 2 - TW * 1.5 && p[1] - cam.y < VH / 2 + TW * 3;
   }
 
+  // textures from art/: one pattern per floor kind, laid on the tilted grid
+  var TEX = { carpet: ['tex-carpet-plum.jpg', 2], boards: ['tex-darkwood.jpg', 2], green: ['tex-carpet-green.jpg', 2],
+    tiles: ['tex-tiles.jpg', 8], wood: ['tex-wood.jpg', 2], purple: ['tex-carpet-purple.jpg', 2], door: ['tex-darkwood.jpg', 2] };
+  var pats = {};
+  function floorPat(kind) {
+    var t = TEX[kind], img, p, n, k;
+    if (!t || !window.DOMMatrix) { return null; }
+    p = pats[kind];
+    if (p && p.tw === TW) { return p.pat; }
+    img = art(t[0]);
+    if (!img) { return null; }
+    p = { pat: g.createPattern(img, 'repeat'), tw: TW };
+    if (!p.pat || !p.pat.setTransform) { return null; }
+    n = t[1] / img.width; k = TW / 2;
+    p.pat.setTransform(new DOMMatrix([k * n, k / 2 * n, -k * n, k / 2 * n, 0, 0]));
+    pats[kind] = p;
+    return p.pat;
+  }
+  var wallPats = {};
+  function wallPat(face) {
+    var img = art('tex-wallpaper.jpg'), p = wallPats[face];
+    if (!img || !window.DOMMatrix) { return null; }
+    if (p && p.tw === TW) { return p.pat; }
+    p = { pat: g.createPattern(img, 'repeat'), tw: TW };
+    if (!p.pat || !p.pat.setTransform) { return null; }
+    var s = 1.6 / img.width;
+    p.pat.setTransform(new DOMMatrix(face === 'south' ? [TW / 2 * s, TH / 2 * s, 0, ZP * s * 1.2, 0, 0] : [-TW / 2 * s, TH / 2 * s, 0, ZP * s * 1.2, 0, 0]));
+    wallPats[face] = p;
+    return p.pat;
+  }
   function drawFloor() {
-    var x, y, c, k, col;
+    var x, y, c, k, col, i, f, pat;
+    for (i = 0; i < room.floors.length; i++) {
+      f = room.floors[i];
+      pat = floorPat(f.kind);
+      if (!pat) { continue; }
+      poly([W2(f.x0, f.y0), W2(f.x1 + 1, f.y0), W2(f.x1 + 1, f.y1 + 1), W2(f.x0, f.y1 + 1)], pat);
+    }
     for (y = 0; y < room.h; y++) {
       for (x = 0; x < room.w; x++) {
         c = room.map[y].charAt(x);
         if (c === '#' || c === 'C' || c === 'T') { continue; }
         if (!inView(x + 0.5, y + 0.5)) { continue; }
         k = floorKind[y][x];
-        col = FLOOR[k][(x + y) % 2];
         if (c === 'D') { col = S.doorOpen ? '#ffe9a8' : '#3e2c22'; }
-        if (c === 'H') { col = '#07040b'; }
+        else if (c === 'H') { col = '#07040b'; }
+        else if (floorPat(k)) { if (k !== 'door') { continue; } col = floorPat('door'); }
+        else { col = FLOOR[k][(x + y) % 2]; }
         poly([W2(x, y), W2(x + 1, y), W2(x + 1, y + 1), W2(x, y + 1)], col);
-        if (k === 'wood' || k === 'boards') { line(W2(x, y + 0.5), W2(x + 1, y + 0.5), 'rgba(0,0,0,.15)', 1); }
+        if (!floorPat(k) && (k === 'wood' || k === 'boards')) { line(W2(x, y + 0.5), W2(x + 1, y + 0.5), 'rgba(0,0,0,.15)', 1); }
       }
     }
+  }
+
+  // The party host: the realistic cut-out from art/ when it is there.
+  function drawHost(cx, cy, t, k, moving) {
+    var img = art(k.mode === 'hunt' ? 'host-party-hunt.png' : 'host-party-stand.png');
+    if (!img) { drawCreature(g, cx, cy, TW, { t: t, mode: k.mode, moving: moving, stunned: k.pause > 0 }); return; }
+    var h = TW * 1.95, w = h * img.width / img.height, sway = moving ? Math.sin(t * 9) * 0.05 : Math.sin(t * 1.5) * 0.015;
+    if (k.pause > 0) { sway = Math.sin(t * 18) * 0.12; }
+    g.fillStyle = 'rgba(0,0,0,.45)'; ell(g, cx, cy, TW * 0.45, TW * 0.13); g.fill();
+    g.save(); g.translate(cx, cy); g.rotate(sway);
+    g.drawImage(img, -w / 2, -h + TW * 0.04, w, h);
+    g.restore();
   }
 
   // Everything with height is a sprite, drawn back to front.
@@ -1538,10 +1607,13 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
   function drawWall(x, y, c) {
     var h = wallH(x, y), k;
     box(x, y, 1, 1, h, '#5a4278', '#3d2a55', '#30203f');
-    if (y === 0) {
+    var wp = y === 0 ? wallPat('south') : (x === 0 ? wallPat('east') : null);
+    if (wp && y === 0) { poly([W2(x, y + 1, 0), W2(x + 1, y + 1, 0), W2(x + 1, y + 1, h), W2(x, y + 1, h)], wp); poly([W2(x, y + 1, 0), W2(x + 1, y + 1, 0), W2(x + 1, y + 1, h), W2(x, y + 1, h)], 'rgba(20,8,30,.15)'); }
+    if (wp && x === 0 && y > 0) { poly([W2(x + 1, y + 1, 0), W2(x + 1, y, 0), W2(x + 1, y, h), W2(x + 1, y + 1, h)], wp); poly([W2(x + 1, y + 1, 0), W2(x + 1, y, 0), W2(x + 1, y, h), W2(x + 1, y + 1, h)], 'rgba(20,8,30,.3)'); }
+    if (y === 0 && !wp) {
       for (k = 0; k < 2; k++) { line(W2(x + 0.3 + k * 0.4, y + 1, 0.05), W2(x + 0.3 + k * 0.4, y + 1, h - 0.05), 'rgba(255,138,31,.12)', Math.max(1, TW * 0.05)); }
     }
-    if (x === 0) {
+    if (x === 0 && !wp) {
       for (k = 0; k < 2; k++) { line(W2(x + 1, y + 0.3 + k * 0.4, 0.05), W2(x + 1, y + 0.3 + k * 0.4, h - 0.05), 'rgba(255,138,31,.10)', Math.max(1, TW * 0.05)); }
     }
     if (c === 'C') {
@@ -1771,7 +1843,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       }
       else if (sp.k === 'creature') {
         var kpp = W2(kp.x + 0.5, kp.y + 0.5, 0);
-        drawCreature(g, kpp[0], kpp[1], TW, { t: t, mode: k.mode, moving: Math.abs(kp.x - k.x) + Math.abs(kp.y - k.y) > 0.05, stunned: k.pause > 0 });
+        drawHost(kpp[0], kpp[1], t, k, Math.abs(kp.x - k.x) + Math.abs(kp.y - k.y) > 0.05);
       }
     }
     drawParts(dt);
@@ -1848,7 +1920,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     g.drawImage(dark, 0, 0, VW, VH);
     if (k.active && kp) {
       var e = W2(kp.x + 0.5, kp.y + 0.5, 0), col = k.mode === 'hunt' ? '#ff3b30' : '#ffe14d';
-      var ex = e[0] + ox, ey = e[1] + oy - TW * 1.45;
+      var ex = e[0] + ox, ey = e[1] + oy - (art('host-party-stand.png') ? TW * 1.62 : TW * 1.45);
       g.shadowColor = col; g.shadowBlur = TW * 0.3;
       circ(g, ex - TW * 0.13, ey, TW * 0.045, col); circ(g, ex + TW * 0.13, ey, TW * 0.045, col);
       g.shadowBlur = 0;
@@ -1946,7 +2018,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
       var f = (Date.now() - t0) / 650;
       sg.fillStyle = '#000'; sg.fillRect(0, 0, w, h);
       var sz = Math.min(w, h) * (0.9 + f * 0.6);
-      var si = art('host-party-scare.png');
+      var si = art('host-party-scare.jpg');
       if (si) { cover(sg, si, w, h, 1 + f * 0.25); } else { drawCreature(sg, w / 2, h / 2 + sz * 1.42, sz, { t: f * 3, mode: 'hunt' }); }
       if (f < 1) { requestAnimationFrame(anim); } else { el.style.display = 'none'; }
     })();
@@ -2335,7 +2407,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
         row('Game saved for offline', !!m, m ? 'version ' + BUILD : 'not saved yet', 'Close the game and open it again once, on wifi.');
       }, function () { row('Game saved for offline', false, 'cache error', 'Open with ?fresh=1 on the end of the address, then again without it.'); }));
       pending.push(caches.open(ART_CACHE).then(function (c) { return c.keys(); }).then(function (ks) {
-        row('Art saved for offline', true, ks.length + ' files (none needed yet)');
+        row('Art saved for offline', ks.length > 0 ? true : null, ks.length + ' pictures saved', 'Play one game on wifi so the pictures are saved.');
       }, function () { row('Art saved for offline', false, 'cache error'); }));
     } else {
       row('Game saved for offline', false, 'no cache storage', 'This browser cannot play offline.');
@@ -2408,7 +2480,9 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     var z = zoom || 1, s = Math.max(w / img.width, h / img.height) * z, iw = img.width * s, ih = img.height * s;
     g2.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
   }
-  ['title.png', 'host-party.png', 'host-party-scare.png', 'room-party-hall.png'].forEach(function (n) { art(n); });
+  ['title.jpg', 'host-party-scare.jpg', 'host-party-stand.png', 'host-party-hunt.png', 'host-party-face.png', 'room-party-hall.jpg', 'room-party-kitchen.jpg', 'room-party-library.jpg', 'room-party-gameroom.jpg',
+    'tex-wood.jpg', 'tex-darkwood.jpg', 'tex-carpet-plum.jpg', 'tex-carpet-green.jpg', 'tex-carpet-purple.jpg', 'tex-tiles.jpg', 'tex-wallpaper.jpg'
+  ].forEach(function (n) { art(n); });
 
   // ---- title: a night scene at the end of the lane ----
   var tcv = $('tbg'), tg = tcv.getContext('2d'), TSTARS = [], i0;
@@ -2417,7 +2491,7 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     var w = window.innerWidth, h = window.innerHeight, r = Math.min(2, window.devicePixelRatio || 1), now = Date.now() / 1000, i, s, x, y;
     if (tcv.width !== Math.round(w * r) || tcv.height !== Math.round(h * r)) { tcv.width = Math.round(w * r); tcv.height = Math.round(h * r); }
     var g2 = tg; g2.setTransform(r, 0, 0, r, 0, 0);
-    var img = art('title.png');
+    var img = art('title.jpg');
     if (img) {
       cover(g2, img, w, h, 1.04 + Math.sin(now * 0.1) * 0.02);
     } else {
@@ -2582,9 +2656,9 @@ if (typeof module !== 'undefined' && module.exports) { module.exports = Rules; }
     'Caught? Your team can free you from the cage.', 'Patch frees caged friends twice as fast.',
     'Echo can throw a noise to send the host away.', 'Presents hold boosts - Candy Corn and Party Shields.'];
   function showIntro(done) {
-    var el = $('intro'), img = art('room-party-hall.png'), finished = false;
+    var el = $('intro'), img = art('room-party-hall.jpg'), finished = false;
     $('iTip').textContent = '💡 ' + TIPS[Math.floor(Math.random() * TIPS.length)];
-    el.style.backgroundImage = img ? 'url(art/room-party-hall.png)' : '';
+    el.style.backgroundImage = img ? 'linear-gradient(rgba(5,3,12,.25), rgba(5,3,12,.55)), url(art/room-party-hall.jpg)' : '';
     el.style.display = 'flex';
     function go() {
       if (finished) { return; }
