@@ -135,6 +135,35 @@ local function jumpscare()
 	end)
 end
 
+-- the camera rushes in on the host's face (works with any host model)
+local function hostCloseUp(intense)
+	local host = workspace:FindFirstChild("PartyHost")
+	local head = host and (host:FindFirstChild("Head") or host.PrimaryPart)
+	if not head then
+		return
+	end
+	local cam = workspace.CurrentCamera
+	cam.CameraType = Enum.CameraType.Scriptable
+	local t0 = os.clock()
+	local dur = intense and 1.1 or 0.8
+	local conn
+	conn = RunService.RenderStepped:Connect(function()
+		local f = (os.clock() - t0) / dur
+		if f >= 1 or not head.Parent then
+			conn:Disconnect()
+			cam.CameraType = Enum.CameraType.Custom
+			if intense then
+				jumpscare()
+			end
+			return
+		end
+		local dist = 7 - math.min(1, f * 3) * 4.6
+		local s = intense and 0.35 or 0.12
+		local pos = head.Position + head.CFrame.LookVector * dist + Vector3.new((math.random() - 0.5) * s, 0.2 + (math.random() - 0.5) * s, 0)
+		cam.CFrame = CFrame.lookAt(pos, head.Position)
+	end)
+end
+
 -- ---------- top bar ----------
 local top = frame(gui, { Size = UDim2.new(0.36, 0, 0, 40), Position = UDim2.new(0.4, 0, 0, 8), BackgroundTransparency = 0.25 })
 corner(top, 12)
@@ -629,8 +658,8 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 	local spooky = RoundState:GetAttribute("Spook") == "spooky"
 	if kind == "appear" and spooky then
 		jumpscare()
-	elseif kind == "caught" and spooky and data and data.userId == player.UserId then
-		jumpscare()
+	elseif kind == "caught" and data and data.userId == player.UserId then
+		hostCloseUp(spooky)
 	elseif kind == "spotted" and data and data.userId == player.UserId then
 		local cam = workspace.CurrentCamera
 		for i = 1, 6 do

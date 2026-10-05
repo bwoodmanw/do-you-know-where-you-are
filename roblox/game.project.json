@@ -17,6 +17,10 @@
         "Client": {
           "$path": "src/game/client"
         }
+      },
+      "$properties": {
+        "DevCameraOcclusionMode": "Invisicam",
+        "CameraMaxZoomDistance": 18
       }
     },
     "Lighting": {

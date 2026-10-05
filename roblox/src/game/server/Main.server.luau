@@ -15,6 +15,8 @@ local HouseMap = require(ReplicatedStorage.Shared.HouseMap)
 local House = require(script.Parent.House)
 local Host = require(script.Parent.Host)
 local Effects = require(script.Parent.Effects)
+local Characters = require(script.Parent.Characters)
+local Props = require(script.Parent.Props)
 local Places = require(ReplicatedStorage.Shared.Places)
 local TeleportService = game:GetService("TeleportService")
 
@@ -198,6 +200,36 @@ local function gear(plr)
 	l.TextScaled = true
 	l.Text = skill.icon .. " " .. skill.name
 	l.Parent = tag
+	local oldBulb = head:FindFirstChild("GlowBulb")
+	if oldBulb then
+		oldBulb:Destroy()
+	end
+	if skill.id == "glow" then
+		local bulb = Instance.new("Part")
+		bulb.Name = "GlowBulb"
+		bulb.Shape = Enum.PartType.Ball
+		bulb.Size = Vector3.new(0.45, 0.45, 0.45)
+		bulb.Material = Enum.Material.Neon
+		bulb.Color = Color3.fromRGB(255, 242, 122)
+		bulb.CanCollide, bulb.Massless, bulb.CanQuery = false, true, false
+		bulb.CFrame = head.CFrame * CFrame.new(0, head.Size.Y * 0.95, 0)
+		bulb.Parent = head
+		local stalk = Instance.new("Part")
+		stalk.Name = "Stalk"
+		stalk.Size = Vector3.new(0.08, head.Size.Y * 0.5, 0.08)
+		stalk.Color = Color3.fromRGB(42, 77, 47)
+		stalk.CanCollide, stalk.Massless, stalk.CanQuery = false, true, false
+		stalk.CFrame = head.CFrame * CFrame.new(0, head.Size.Y * 0.7, 0)
+		stalk.Parent = bulb
+		for _, p in ipairs({ bulb, stalk }) do
+			local w = Instance.new("WeldConstraint")
+			w.Part0, w.Part1 = head, p
+			w.Parent = p
+		end
+		local light = Instance.new("PointLight")
+		light.Color, light.Range, light.Brightness, light.Shadows = Color3.fromRGB(255, 242, 160), 24, 1.6, true
+		light.Parent = bulb
+	end
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 10)
 	corner.Parent = l
@@ -680,7 +712,9 @@ PickSkill.OnServerEvent:Connect(function(plr, id)
 	for _, s in ipairs(Config.SKILLS) do
 		if s.id == id then
 			plr:SetAttribute("Skill", id)
-			gear(plr)
+			if not Characters.apply(plr, s.name) then
+				gear(plr)
+			end
 			return
 		end
 	end
@@ -804,6 +838,7 @@ function round.start()
 		host:remove()
 	end
 	world = House.build(HouseMap)
+	Props.place(world)
 	wirePrompts()
 	local code = {}
 	for i = 1, 3 do
@@ -928,6 +963,16 @@ Players.PlayerAdded:Connect(function(plr)
 	end
 	plr.CharacterAdded:Connect(function(char)
 		task.wait(0.2)
+		-- the real character, if this skill's model has been imported
+		if not char:GetAttribute("EscapeCrewChar") then
+			for _, s in ipairs(Config.SKILLS) do
+				if s.id == plr:GetAttribute("Skill") and Characters.has(s.name) then
+					if Characters.apply(plr, s.name) then
+						return -- CharacterAdded fires again for the new model
+					end
+				end
+			end
+		end
 		gear(plr)
 		local hum = char:WaitForChild("Humanoid")
 		hum.WalkSpeed = Config.WALK

@@ -185,7 +185,7 @@ function House.build(map)
 	part(root, { Name = "Flame", Shape = Enum.PartType.Ball, Size = Vector3.new(0.4, 0.4, 0.4), Position = cake.Position + Vector3.new(0, 2.6, 0), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
 
 	-- ceiling, so the house feels like a house
-	part(root, { Name = "Ceiling", Size = Vector3.new(map.w * T, 1, map.h * T), Position = Vector3.new(map.w * T / 2, H + 0.5, map.h * T / 2), Material = Enum.Material.Plaster, Color = Color3.fromRGB(30, 20, 40) })
+	part(root, { Name = "Ceiling", Size = Vector3.new(map.w * T, 4, map.h * T), Position = Vector3.new(map.w * T / 2, H + 2.02, map.h * T / 2), CastShadow = false, Material = Enum.Material.Plaster, Color = Color3.fromRGB(30, 20, 40) })
 
 	House.buildObjects(world)
 	House.buildGarden(world)

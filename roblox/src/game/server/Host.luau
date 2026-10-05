@@ -106,8 +106,38 @@ function Host:spawn(diff)
 	local H = self.world
 	local sx, sy = table.unpack(H.map.spawn)
 	local pos = require(script.Parent.House).at(sx, sy, 0)
-	self.model, self.hum, self.root, self.face, self.arms = buildModel(pos)
-	self.model.Parent = workspace
+	local custom = require(script.Parent.Characters).host()
+	if custom then
+		custom.Name = "PartyHost"
+		self.model, self.hum, self.root, self.face, self.arms = custom, custom:FindFirstChildOfClass("Humanoid"), custom.HumanoidRootPart, {}, {}
+		self.hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+		self.hum.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+		custom:PivotTo(CFrame.new(pos + Vector3.new(0, custom:GetExtentsSize().Y / 2, 0)))
+		custom.Parent = workspace
+		-- Roblox's own R15 walk and run, played as it moves
+		local animator = self.hum:FindFirstChildOfClass("Animator") or Instance.new("Animator", self.hum)
+		local function track(id)
+			local a = Instance.new("Animation")
+			a.AnimationId = id
+			return animator:LoadAnimation(a)
+		end
+		local walk, run = track("rbxassetid://507777826"), track("rbxassetid://507767714")
+		self.hum.Running:Connect(function(speed)
+			if speed > 11 then
+				if walk.IsPlaying then walk:Stop() end
+				if not run.IsPlaying then run:Play() end
+			elseif speed > 0.5 then
+				if run.IsPlaying then run:Stop() end
+				if not walk.IsPlaying then walk:Play() end
+			else
+				walk:Stop()
+				run:Stop()
+			end
+		end)
+	else
+		self.model, self.hum, self.root, self.face, self.arms = buildModel(pos)
+		self.model.Parent = workspace
+	end
 	self.root:SetNetworkOwner(nil)
 	self.diff = diff -- a Config.DIFFICULTY entry
 	self.frenzy = false
