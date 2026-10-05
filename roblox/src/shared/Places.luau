@@ -40,11 +40,22 @@ local function load()
 	return cache
 end
 
+-- The lobby is the start place, which shares the experience's name
+-- ("Escape Crew"), so it is found as the place that is not the Party House.
 function Places.lobby()
 	if RunService:IsStudio() then
 		return nil
 	end
-	return load()[Config.LOBBY_PLACE]
+	local all = load()
+	if all[Config.LOBBY_PLACE] then
+		return all[Config.LOBBY_PLACE]
+	end
+	for name, id in pairs(all) do
+		if name ~= Config.GAME_PLACE then
+			return id
+		end
+	end
+	return nil
 end
 
 function Places.game()

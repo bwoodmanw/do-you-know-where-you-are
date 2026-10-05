@@ -4,7 +4,7 @@ The experience has **two places**:
 
 | Place (exact name) | What it is | Code |
 |---|---|---|
-| **Lobby** (the start place - everyone arrives here) | party up 1-6, friends only, difficulty, Giggly/Spooky, invite friends, Start | `lobby.project.json` -> `src/lobby/` |
+| **Escape Crew** (the start place = the Lobby; everyone arrives here) | party up 1-6, friends only, difficulty, Giggly/Spooky, invite friends, Start | `lobby.project.json` -> `src/lobby/` |
 | **Party House** | the game: a party plays in its own private server | `game.project.json` -> `src/game/` |
 
 Both share `src/shared/` (Config, HouseMap, Places). The names matter: the
@@ -39,8 +39,10 @@ Then in Studio, **Plugins -> Rojo**, set the port, **Connect**.
 1. Open **Escape Crew** in Studio. This existing place becomes the **Lobby**.
 2. **File -> Open from File** -> `EscapeCrew-Lobby.rbxlx` -> **File -> Publish
    to Roblox As...** -> choose *Escape Crew* -> its start place -> overwrite.
-3. **Name the start place "Lobby":** Creator Hub (create.roblox.com) -> your
-   experience -> **Places** -> the start place -> **Configure** -> Name: `Lobby`.
+3. **Leave the start place's name as "Escape Crew".** It shares its name with
+   the whole experience, and the game finds the lobby as "the place that is not
+   the Party House". Check it published: Creator Hub -> Escape Crew -> **Version
+   History** shows a new version with today's time.
 4. **Add the second place:** in Studio open **Window/View -> Asset Manager** ->
    **Places** -> right-click -> **Add New Place**. Name it exactly `Party House`.
 5. Double-click **Party House** to open it. **File -> Open from File** ->
