@@ -227,7 +227,7 @@ local staminaBar = bar(10, Color3.fromRGB(123, 227, 107), "Stamina")
 local energyBar = bar(34, Color3.fromRGB(255, 210, 63), "Energy")
 
 -- ---------- action buttons ----------
-local acts = frame(gui, { Size = UDim2.fromOffset(290, 100), Position = TOUCH and UDim2.new(1, -300, 1, -250) or UDim2.new(1, -300, 1, -110), BackgroundTransparency = 1 })
+local acts = frame(gui, { Size = UDim2.fromOffset(290, 150), Position = TOUCH and UDim2.new(1, -300, 1, -300) or UDim2.new(1, -300, 1, -160), BackgroundTransparency = 1 })
 local grid = Instance.new("UIGridLayout")
 grid.CellSize = UDim2.fromOffset(92, 44)
 grid.CellPadding = UDim2.fromOffset(6, 6)
@@ -246,6 +246,11 @@ local outBtn = button(acts, "\u{1F440} Come out", { LayoutOrder = 4, Visible = f
 end)
 local pickBtn = button(acts, "\u{1F504} Change", { LayoutOrder = 5 })
 clueBtn = button(acts, "\u{1F4A1} Clue (3)", { LayoutOrder = 6 }, askClue)
+-- mouse look (computers): the camera turns as the mouse moves, no button held
+local mouseLook = false
+local lookBtn = button(acts, "\u{1F5B1} Look (M)", { LayoutOrder = 7, Visible = not TOUCH }, function()
+	mouseLook = not mouseLook
+end)
 
 -- ---------- quick-chat phrases ----------
 local sayPanel = frame(gui, { Size = UDim2.fromOffset(420, 250), Position = UDim2.new(0.5, -210, 1, -390), Visible = false })
@@ -404,6 +409,9 @@ end)
 UserInputService.InputBegan:Connect(function(input, processed)
 	if input.KeyCode == Enum.KeyCode.LeftShift then
 		shiftHeld = true
+	end
+	if input.KeyCode == Enum.KeyCode.M and not processed and not TOUCH then
+		mouseLook = not mouseLook
 	end
 	if not aiming or processed then
 		return
@@ -694,4 +702,22 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 		stamina, tired = 100, false
 	end
 	toast(text, (kind == "clue" or kind == "reveal") and 6 or 3.5)
+end)
+
+-- ---------- mouse look: lock the mouse to the centre unless a menu is open ----------
+local locked = false
+RunService.RenderStepped:Connect(function()
+	local menus = picker.Visible or keypad.Visible or sayPanel.Visible or results.Visible or spec.Visible or aiming
+	local want = mouseLook and not menus and not TOUCH
+	if want then
+		UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+		UserInputService.MouseIconEnabled = false
+		locked = true
+	elseif locked then
+		UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+		UserInputService.MouseIconEnabled = true
+		locked = false
+	end
+	lookBtn.Text = mouseLook and "\u{1F5B1} Look: on (M)" or "\u{1F5B1} Look (M)"
+	lookBtn.BackgroundColor3 = mouseLook and PUMP or Color3.fromRGB(75, 58, 102)
 end)
