@@ -4,3 +4,5 @@ node_modules/
 .tools/
 EscapeCrew.rbxlx
 EscapeCrew-*.rbxlx
+*.rbxlx.lock
+*.rbxl.lock
