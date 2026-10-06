@@ -543,7 +543,7 @@ RoundState:GetAttributeChangedSignal("Spook"):Connect(paintSpook)
 paintSpook()
 -- characters are chosen before a game starts: no changing in the middle
 local function midGame()
-	return RoundState:GetAttribute("Status") == "playing" and player:GetAttribute("Skill") ~= nil
+	return RoundState:GetAttribute("Status") == "playing" and RoundState:GetAttribute("HostOut") == true
 end
 local function paintPick()
 	pickBtn.Visible = not midGame()
@@ -552,11 +552,11 @@ local function paintPick()
 	end
 end
 RoundState:GetAttributeChangedSignal("Status"):Connect(paintPick)
-player:GetAttributeChangedSignal("Skill"):Connect(paintPick)
+RoundState:GetAttributeChangedSignal("HostOut"):Connect(paintPick)
 paintPick()
 pickBtn.Activated:Connect(function()
 	if midGame() then
-		return toast("You choose your character at the start of a game.", 3)
+		return toast("The host is out! You can change character before the next game.", 3)
 	end
 	picker.Visible = not picker.Visible
 end)

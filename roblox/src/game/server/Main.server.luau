@@ -935,16 +935,23 @@ PickSkill.OnServerEvent:Connect(function(plr, id)
 	if typeof(id) ~= "string" then
 		return
 	end
-	-- characters are chosen before a game starts, not in the middle of one
-	if state.status == "playing" and plr:GetAttribute("Skill") then
-		return say("info", "You choose your character at the start of a game.", nil, plr)
+	-- choose freely until the host comes out; after that, wait for the next game
+	if state.status == "playing" and RoundState:GetAttribute("HostOut") then
+		return say("info", "The host is out! You can change character before the next game.", nil, plr)
 	end
 	for _, s in ipairs(Config.SKILLS) do
 		if s.id == id then
 			plr:SetAttribute("Skill", id)
 			applyMods(plr)
 			if not Characters.apply(plr, s.name) then
-				gear(plr)
+				local char = plr.Character
+				if char and char:GetAttribute("EscapeCrewChar") then
+					-- leaving a 3D character for one without a model yet:
+					-- back to the player's own avatar (it respawns at the start)
+					plr:LoadCharacter()
+				else
+					gear(plr)
+				end
 			end
 			return
 		end
