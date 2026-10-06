@@ -148,6 +148,21 @@ above the walls, and reaches 4 studs further for kids standing on furniture.
 **Shop:** + buys, - sells a points-bought boost back for its full price.
 **Edit the layout in `tools/make_housemap.py`, never HouseMap.luau by hand.**
 
+Added 6 Oct (latest), untested in Roblox: **a different house every game.**
+Three floor plans (A; B = A mirrored left-right; C = a 3x3 house), one picked
+at random each game by `shared/MapGen.luau`, which also scatters the clue
+and trick balloons, presents, 11 search spots, 8 hiding places and the
+skill puzzles over each plan's checked slots (the plan is sent to screens as
+RoundState `MapJson` for the corner map). `tools/make_housemap.py` checks the
+plans and replays the picking 500 times per plan; the Luau MapGen was also
+run 300 times with `.tools/luau.exe` (no overlaps, all objects placed).
+Furniture spots (Props) come with the plan (A and B; C has none yet).
+**Opened things look opened:** lids lift, drawers slide out, coats swing,
+vases tip, present lids pop off, a gold key floats up where a key is found.
+**Close-up:** aims by the host's body direction (the head part's own
+direction may be backwards on imports), lasts 2-2.6 s, host frozen 2.8 s.
+**No changing character mid-game** (button hidden, server refuses).
+
 ## Brent's to-do list (from the end of this session)
 
 1. **Sync both places with Rojo and publish** (two PowerShell windows,

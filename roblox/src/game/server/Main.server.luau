@@ -10,7 +10,12 @@ local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
-local HouseMap = require(ReplicatedStorage.Shared.HouseMap)
+local Plans = require(ReplicatedStorage.Shared.HouseMap)
+local MapGen = require(ReplicatedStorage.Shared.MapGen)
+local HttpService = game:GetService("HttpService")
+-- this game's house: a floor plan with everything placed at random, remade
+-- at the start of every game
+local HouseMap = MapGen.make(Plans)
 local House = require(script.Parent.House)
 local Host = require(script.Parent.Host)
 local Effects = require(script.Parent.Effects)
@@ -535,7 +540,7 @@ local function wirePrompts()
 				end
 				entry.opened = true
 				entry.prompt.Enabled = false
-				entry.part.Transparency = 0.6
+				House.openObject(entry)
 				if not def.boost then
 					Effects.sound(entry.part.Position, "hide")
 					return say("info", "Empty! Just tissue paper.", nil, plr)
@@ -678,6 +683,7 @@ local function wirePrompts()
 					host:alert(entry.part.Position)
 				end
 				local lock = world.keyIn[id]
+				House.openObject(entry, lock ~= nil)
 				if lock then
 					world.keys[lock] = true
 					RoundState:SetAttribute("Key_" .. lock, true)
@@ -753,7 +759,7 @@ function round.hostCaught(_, plr)
 	end
 	Effects.at(plr, "caught")
 	if host then
-		host:stun(1.8) -- holds still for the close-up
+		host:stun(2.8) -- holds still for the close-up
 	end
 	plr:SetAttribute("Caged", true)
 	teleport(plr, world.objects.cage.inside)
@@ -913,6 +919,10 @@ end)
 PickSkill.OnServerEvent:Connect(function(plr, id)
 	if typeof(id) ~= "string" then
 		return
+	end
+	-- characters are chosen before a game starts, not in the middle of one
+	if state.status == "playing" and plr:GetAttribute("Skill") then
+		return say("info", "You choose your character at the start of a game.", nil, plr)
 	end
 	for _, s in ipairs(Config.SKILLS) do
 		if s.id == id then
@@ -1085,6 +1095,8 @@ function round.start()
 	if host then
 		host:remove()
 	end
+	HouseMap = MapGen.make(Plans)
+	RoundState:SetAttribute("MapJson", HttpService:JSONEncode(MapGen.forClient(HouseMap)))
 	world = House.build(HouseMap)
 	Props.place(world)
 	wirePrompts()

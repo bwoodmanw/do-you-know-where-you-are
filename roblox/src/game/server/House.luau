@@ -5,6 +5,8 @@
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
 local Config = require(ReplicatedStorage.Shared.Config)
 
 local T = Config.TILE
@@ -45,6 +47,17 @@ local function cell(map, x, y)
 		return "#"
 	end
 	return string.sub(map.map[y + 1], x + 1, x + 1)
+end
+
+-- the way an object against a wall faces: away from the wall, into the room
+local function facing(map, x, y)
+	for _, d in ipairs({ { 0, -1 }, { 0, 1 }, { 1, 0 }, { -1, 0 } }) do
+		local behind = cell(map, x + d[1], y + d[2])
+		if (behind == "#" or behind == "T") and cell(map, x - d[1], y - d[2]) == "." then
+			return Vector3.new(-d[1], 0, -d[2])
+		end
+	end
+	return Vector3.new(0, 0, 1)
 end
 
 local function prompt(p, action, object, hold)
@@ -142,10 +155,11 @@ function House.build(map)
 					Color = Color3.fromRGB(70, 46, 96),
 				})
 				if c == "C" then
+					local side = cell(map, x + 1, y) == "." and 1 or -1
 					-- the host's dark doorway, with eyes
-					part(root, { Name = "HostDoor", Size = Vector3.new(0.4, 9, 5), Position = at(x, y, 4.5) + Vector3.new(T / 2 + 0.1, 0, 0), Color = Color3.fromRGB(5, 3, 10), Material = Enum.Material.SmoothPlastic })
+					part(root, { Name = "HostDoor", Size = Vector3.new(0.4, 9, 5), Position = at(x, y, 4.5) + Vector3.new((T / 2 + 0.1) * side, 0, 0), Color = Color3.fromRGB(5, 3, 10), Material = Enum.Material.SmoothPlastic })
 					for i = -1, 1, 2 do
-						part(root, { Name = "Eye", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 0.5, 0.5), Position = at(x, y, 6.5) + Vector3.new(T / 2 + 0.35, 0, i * 0.7), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 50, 50), CanCollide = false })
+						part(root, { Name = "Eye", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 0.5, 0.5), Position = at(x, y, 6.5) + Vector3.new((T / 2 + 0.35) * side, 0, i * 0.7), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 50, 50), CanCollide = false })
 					end
 				end
 			elseif c == "D" or c == "H" or c == "L" then
@@ -219,7 +233,7 @@ function House.buildObjects(world)
 			entry.exit = part(root, { Name = "ExitDoor", Size = Vector3.new(T, 10, 2), Position = base + Vector3.new(0, 5, -T / 2 + 1), Transparency = 1, CanCollide = false })
 		elseif o.kind == "hole" then
 			entry.panel = part(root, { Name = "HolePanel", Size = Vector3.new(T, 10, T), Position = base + Vector3.new(0, 5, 0), Material = Enum.Material.Plaster, Color = Color3.fromRGB(70, 46, 96) })
-			entry.exit = part(root, { Name = "ExitHole", Size = Vector3.new(2, 10, T), Position = base + Vector3.new(T / 2 + 1, 5, 0), Transparency = 1, CanCollide = false })
+			entry.exit = part(root, { Name = "ExitHole", Size = Vector3.new(2, 10, T), Position = base + Vector3.new((T / 2 + 1) * (o.x == 0 and -1 or 1), 5, 0), Transparency = 1, CanCollide = false })
 		elseif o.kind == "cabinet" then
 			entry.part = part(root, { Name = "Cabinet", Size = Vector3.new(T * 0.8, 9, T * 0.9), Position = base + Vector3.new(0, 4.5, 0), Material = Enum.Material.Wood, Color = Color3.fromRGB(107, 66, 38) })
 			entry.prompt = prompt(entry.part, "Shove", "Heavy cabinet - Muscle", 2.5)
@@ -263,6 +277,9 @@ function House.buildObjects(world)
 			local blue = o.boost == "shield" or o.id == "p3"
 			entry.part = part(root, { Name = "Present", Size = Vector3.new(2.2, 2, 2.2), Position = base + Vector3.new(0, 1, 0), Color = blue and Color3.fromRGB(61, 139, 255) or Color3.fromRGB(232, 80, 91) })
 			part(root, { Name = "Ribbon", Size = Vector3.new(2.3, 2.1, 0.4), Position = entry.part.Position, Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
+			entry.lid = part(root, { Name = "PresentLid", Size = Vector3.new(2.5, 0.5, 2.5), Position = base + Vector3.new(0, 2.2, 0), Color = entry.part.Color, CanCollide = false })
+			part(root, { Name = "Bow", Shape = Enum.PartType.Ball, Size = Vector3.new(0.9, 0.9, 0.9), Position = base + Vector3.new(0, 2.6, 0), Color = Color3.fromRGB(255, 210, 63), CanCollide = false }).Parent = entry.lid
+			entry.style = "present"
 			entry.prompt = prompt(entry.part, "Open", "Present")
 		elseif o.kind == "invite" or o.kind == "uv" then
 			local poster = part(root, { Name = o.kind == "invite" and "Invitation" or "GlowWall", Size = Vector3.new(4, 4, 0.2), Position = base + Vector3.new(0, 6, T / 2 + 0.15), Color = o.kind == "invite" and Color3.fromRGB(247, 231, 196) or Color3.fromRGB(60, 40, 85), CanCollide = false })
@@ -315,18 +332,42 @@ function House.buildObjects(world)
 			entry.pickPrompt = prompt(entry.lockPart, "Pick the lock", "Tinker", 4)
 			entry.pickPrompt.KeyboardKeyCode = Enum.KeyCode.F
 		elseif o.kind == "search" then
+			-- size, colour, material, name, how it opens
 			local looks = {
-				drawer = { Vector3.new(5, 4, 3), Color3.fromRGB(120, 80, 50), Enum.Material.Wood, "Chest of drawers" },
-				crate = { Vector3.new(4, 4, 4), Color3.fromRGB(170, 130, 80), Enum.Material.WoodPlanks, "Old crate" },
-				cakebox = { Vector3.new(3.5, 3, 3.5), Color3.fromRGB(255, 190, 210), Enum.Material.Cardboard, "Cake box" },
-				coat = { Vector3.new(3, 8, 3), Color3.fromRGB(60, 80, 60), Enum.Material.Fabric, "Coats" },
-				toybox = { Vector3.new(5, 3, 3.5), Color3.fromRGB(200, 60, 60), Enum.Material.SmoothPlastic, "Toy box" },
-				vase = { Vector3.new(2.6, 4.5, 2.6), Color3.fromRGB(60, 130, 140), Enum.Material.SmoothPlastic, "Big vase" },
-				laundry = { Vector3.new(3.5, 3.5, 3.5), Color3.fromRGB(190, 160, 110), Enum.Material.Fabric, "Laundry basket" },
-				chest = { Vector3.new(5, 3.5, 3.5), Color3.fromRGB(110, 70, 40), Enum.Material.Wood, "Old chest" },
+				drawer = { Vector3.new(5, 4, 3), Color3.fromRGB(120, 80, 50), Enum.Material.Wood, "Chest of drawers", "drawer" },
+				crate = { Vector3.new(4, 4, 4), Color3.fromRGB(170, 130, 80), Enum.Material.WoodPlanks, "Old crate", "lid" },
+				cakebox = { Vector3.new(3.5, 3, 3.5), Color3.fromRGB(255, 190, 210), Enum.Material.Cardboard, "Cake box", "lid" },
+				coat = { Vector3.new(3, 8, 3), Color3.fromRGB(60, 80, 60), Enum.Material.Fabric, "Coats", "coat" },
+				toybox = { Vector3.new(5, 3, 3.5), Color3.fromRGB(200, 60, 60), Enum.Material.SmoothPlastic, "Toy box", "lid" },
+				vase = { Vector3.new(2.6, 4.5, 2.6), Color3.fromRGB(60, 130, 140), Enum.Material.SmoothPlastic, "Big vase", "tip" },
+				laundry = { Vector3.new(3.5, 3.5, 3.5), Color3.fromRGB(190, 160, 110), Enum.Material.Fabric, "Laundry basket", "lid" },
+				chest = { Vector3.new(5, 3.5, 3.5), Color3.fromRGB(110, 70, 40), Enum.Material.Wood, "Old chest", "lid" },
 			}
 			local look = looks[o.look] or looks.crate
-			entry.part = part(root, { Name = "Search " .. o.id, Size = look[1], Position = base + Vector3.new(0, look[1].Y / 2, 0), Color = look[2], Material = look[3] })
+			local size, col, mat = look[1], look[2], look[3]
+			local front = facing(map, o.x, o.y)
+			local cf = CFrame.lookAt(base, base + front) -- -Z (LookVector) is the front
+			entry.style, entry.front, entry.cf, entry.depth = look[5], front, cf, size.Z
+			if look[5] == "lid" then
+				entry.part = part(root, { Name = "Search " .. o.id, Size = size - Vector3.new(0, 0.5, 0), CFrame = cf * CFrame.new(0, (size.Y - 0.5) / 2, 0), Color = col, Material = mat })
+				entry.lid = part(root, { Name = "Lid", Size = Vector3.new(size.X + 0.2, 0.5, size.Z + 0.2), CFrame = cf * CFrame.new(0, size.Y - 0.25, 0), Color = col:Lerp(Color3.new(0, 0, 0), 0.2), Material = mat })
+				entry.hinge = cf * CFrame.new(0, size.Y, (size.Z + 0.2) / 2) -- the back top edge
+			elseif look[5] == "drawer" then
+				entry.part = part(root, { Name = "Search " .. o.id, Size = size, CFrame = cf * CFrame.new(0, size.Y / 2, 0), Color = col, Material = mat })
+				entry.drawer = part(root, { Name = "Drawer", Size = Vector3.new(size.X - 0.6, size.Y * 0.35, size.Z - 0.4), CFrame = cf * CFrame.new(0, size.Y * 0.72, -0.25), Color = col:Lerp(Color3.new(1, 1, 1), 0.15), Material = mat, CanCollide = false })
+				part(root, { Name = "Knob", Shape = Enum.PartType.Ball, Size = Vector3.new(0.4, 0.4, 0.4), CFrame = cf * CFrame.new(0, size.Y * 0.72, -size.Z / 2 - 0.25), Color = Color3.fromRGB(230, 200, 120), CanCollide = false }).Parent = entry.drawer
+				part(root, { Name = "Drawer", Size = Vector3.new(size.X - 0.6, size.Y * 0.35, 0.2), CFrame = cf * CFrame.new(0, size.Y * 0.3, -size.Z / 2 - 0.05), Color = col:Lerp(Color3.new(1, 1, 1), 0.15), Material = mat, CanCollide = false })
+			elseif look[5] == "coat" then
+				entry.part = part(root, { Name = "Search " .. o.id, Size = Vector3.new(0.5, 8, 0.5), CFrame = cf * CFrame.new(0, 4, 0.6), Color = Color3.fromRGB(80, 55, 35), Material = Enum.Material.Wood })
+				entry.coats = {}
+				for i, c in ipairs({ Color3.fromRGB(60, 80, 60), Color3.fromRGB(120, 40, 50) }) do
+					table.insert(entry.coats, part(root, { Name = "Coat", Size = Vector3.new(1.7, 4, 0.9), CFrame = cf * CFrame.new(i == 1 and -0.9 or 0.9, 5, 0), Color = c, Material = Enum.Material.Fabric, CanCollide = false }))
+				end
+			else -- vase: tips over
+				entry.part = part(root, { Name = "Search " .. o.id, Size = size, CFrame = cf * CFrame.new(0, size.Y / 2, 0), Color = col, Material = mat })
+				local neck = part(root, { Name = "VaseNeck", Size = Vector3.new(1.4, 1, 1.4), CFrame = cf * CFrame.new(0, size.Y + 0.5, 0), Color = col, Material = mat, CanCollide = false })
+				entry.tipParts = { entry.part, neck }
+			end
 			entry.prompt = prompt(entry.part, "Search", look[4], 2)
 		elseif o.kind == "hide" then
 			local size, col, mat, y = Vector3.new(T * 0.8, 10, T * 0.6), Color3.fromRGB(78, 47, 26), Enum.Material.Wood, 5
@@ -360,7 +401,15 @@ function House.buildGarden(world)
 	end
 	local gx0, gx1 = doorX - 7, doorX + 8
 	local garden = part(root, { Name = "Garden", Size = Vector3.new((gx1 - gx0) * T, 1, 6 * T), Position = Vector3.new((gx0 + gx1) / 2 * T, -0.5, -3 * T), Material = Enum.Material.Grass, Color = Color3.fromRGB(60, 110, 50) })
-	part(root, { Name = "SidePath", Size = Vector3.new(4 * T, 1, map.h * T), Position = Vector3.new(map.w * T + 2 * T, -0.5, map.h * T / 2), Material = Enum.Material.Grass, Color = Color3.fromRGB(60, 110, 50) })
+	-- the side path runs along whichever side has the hole
+	local holeWest = false
+	for _, o in ipairs(map.objects) do
+		if o.kind == "hole" and o.x == 0 then
+			holeWest = true
+		end
+	end
+	local sideX = holeWest and -2 * T or map.w * T + 2 * T
+	part(root, { Name = "SidePath", Size = Vector3.new(4 * T, 1, map.h * T), Position = Vector3.new(sideX, -0.5, map.h * T / 2), Material = Enum.Material.Grass, Color = Color3.fromRGB(60, 110, 50) })
 	for i = 0, 10 do
 		local pos = Vector3.new(gx0 * T + i * (gx1 - gx0) * T / 10, 9, -5.5 * T)
 		part(root, { Name = "FairyLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.6, 0.6), Position = pos, Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 220, 140), CanCollide = false })
@@ -377,12 +426,69 @@ function House.buildGarden(world)
 	hedge(gx0s, gz, gx0s, 0) -- west side of the garden
 	hedge(gx1s, gz, gx1s, 0) -- east side
 	hedge(gx0s, gz, gx1s, gz) -- far end
-	local px0, px1 = map.w * T, map.w * T + 4 * T
-	hedge(px1, 0, px1, map.h * T) -- outer side of the side path
+	local px0, px1 = sideX - 2 * T, sideX + 2 * T
+	hedge(holeWest and px0 or px1, 0, holeWest and px0 or px1, map.h * T) -- outer side of the side path
 	hedge(px0, 0, px1, 0) -- its two ends
 	hedge(px0, map.h * T, px1, map.h * T)
 	world.gardenSpot = garden.Position + Vector3.new(0, 4, 0)
-	world.gardenSpotSide = Vector3.new(map.w * T + 2 * T, 4, map.h * T / 2)
+	world.gardenSpotSide = Vector3.new(sideX, 4, map.h * T / 2)
+end
+
+-- something searched or opened shows it: lids lift, drawers slide out, coats
+-- swing aside, vases tip over, present lids pop off. withKey: a gold key
+-- floats up out of it.
+function House.openObject(entry, withKey)
+	local info = TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+	if entry.style == "lid" and entry.lid then
+		local target = entry.hinge * CFrame.Angles(math.rad(110), 0, 0) * entry.hinge:Inverse() * entry.lid.CFrame
+		TweenService:Create(entry.lid, info, { CFrame = target }):Play()
+	elseif entry.style == "drawer" and entry.drawer then
+		local knob = entry.drawer:FindFirstChild("Knob")
+		TweenService:Create(entry.drawer, info, { CFrame = entry.drawer.CFrame + entry.front * 2.4 }):Play()
+		if knob then
+			TweenService:Create(knob, info, { CFrame = knob.CFrame + entry.front * 2.4 }):Play()
+		end
+	elseif entry.style == "coat" and entry.coats then
+		for i, c in ipairs(entry.coats) do
+			local hang = c.CFrame * CFrame.new(0, c.Size.Y / 2, 0)
+			TweenService:Create(c, info, { CFrame = hang * CFrame.Angles(0, 0, math.rad(i == 1 and 60 or -60)) * hang:Inverse() * c.CFrame }):Play()
+		end
+	elseif entry.style == "tip" and entry.tipParts then
+		local pivot = entry.cf * CFrame.new(0, 0, -entry.depth / 2)
+		for _, p in ipairs(entry.tipParts) do
+			p.CanCollide = false
+			TweenService:Create(p, TweenInfo.new(0.8, Enum.EasingStyle.Bounce), { CFrame = pivot * CFrame.Angles(math.rad(-80), 0, 0) * pivot:Inverse() * p.CFrame }):Play()
+		end
+	elseif entry.style == "present" and entry.lid then
+		local lid = entry.lid
+		local bow = lid:FindFirstChild("Bow")
+		TweenService:Create(lid, info, { CFrame = lid.CFrame * CFrame.new(1.2, 2.2, 0) * CFrame.Angles(0, 0, math.rad(-35)) }):Play()
+		if bow then
+			TweenService:Create(bow, info, { CFrame = bow.CFrame * CFrame.new(1.2, 2.2, 0) }):Play()
+		end
+		task.delay(1.4, function()
+			for _, p in ipairs({ lid, bow }) do
+				if p and p.Parent then
+					TweenService:Create(p, TweenInfo.new(0.8), { Transparency = 1 }):Play()
+				end
+			end
+		end)
+	end
+	if withKey and entry.part then
+		local top = entry.part.Position + Vector3.new(0, entry.part.Size.Y / 2 + 1.5, 0)
+		local holder = Instance.new("Model")
+		holder.Name = "FoundKey"
+		holder.Parent = workspace
+		local bar = part(holder, { Name = "KeyBar", Size = Vector3.new(0.4, 0.4, 2.2), CFrame = CFrame.new(top), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
+		local bow = part(holder, { Name = "KeyBow", Shape = Enum.PartType.Ball, Size = Vector3.new(1.1, 1.1, 1.1), CFrame = CFrame.new(top + Vector3.new(0, 0, 1.3)), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
+		local l = Instance.new("PointLight")
+		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 220, 120), 10, 2
+		l.Parent = bow
+		for _, p in ipairs({ bar, bow }) do
+			TweenService:Create(p, TweenInfo.new(2, Enum.EasingStyle.Sine), { CFrame = p.CFrame + Vector3.new(0, 3, 0), Transparency = 0.3 }):Play()
+		end
+		Debris:AddItem(holder, 2.6)
+	end
 end
 
 -- ---------- decorations: streamers, pictures, cobwebs, pumpkins, balloon

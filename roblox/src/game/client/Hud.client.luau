@@ -12,10 +12,24 @@ local TextChatService = game:GetService("TextChatService")
 local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
-local HouseMap = require(ReplicatedStorage.Shared.HouseMap)
+local HttpService = game:GetService("HttpService")
 local Progress = require(ReplicatedStorage.Shared.Progress)
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
 local RoundState = ReplicatedStorage:WaitForChild("RoundState")
+-- this game's house, sent by the server (a floor plan with things placed at random)
+local HouseMap = { w = 40, h = 30, map = {}, floors = {}, objects = {} }
+local function readMap()
+	local json = RoundState:GetAttribute("MapJson")
+	if json then
+		local ok, m = pcall(function()
+			return HttpService:JSONDecode(json)
+		end)
+		if ok and type(m) == "table" then
+			HouseMap = m
+		end
+	end
+end
+readMap()
 local player = Players.LocalPlayer
 local T = Config.TILE
 
@@ -193,7 +207,8 @@ local function hostCloseUp(intense)
 	TweenService:Create(redFlash, TweenInfo.new(0.7), { BackgroundTransparency = 1 }):Play()
 	local r = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2
 	local t0 = os.clock()
-	local dur = intense and 1.6 or 1.2
+	local dur = intense and 2.6 or 2
+	local rootPart = host:FindFirstChild("HumanoidRootPart") or head
 	local conn
 	conn = RunService.RenderStepped:Connect(function()
 		local f = (os.clock() - t0) / dur
@@ -208,11 +223,16 @@ local function hostCloseUp(intense)
 			return
 		end
 		-- rush in on the face, then hold it filling the screen, shaking
-		local e = 1 - (1 - math.min(1, f * 2.2)) ^ 3
+		local e = 1 - (1 - math.min(1, f * 1.6)) ^ 3
 		local dist = r + 9 - e * 8
 		cam.FieldOfView = fov - e * 25
 		local s = (intense and 0.3 or 0.1) * e
-		local front = head.Position + head.CFrame.LookVector * dist + Vector3.new(0, r * 0.15, 0)
+		-- the face points the way the host walks (its root); a head part's own
+		-- direction can be backwards on an imported model
+		local look = rootPart.CFrame.LookVector
+		local faceDir = Vector3.new(look.X, 0, look.Z)
+		faceDir = faceDir.Magnitude > 0.1 and faceDir.Unit or Vector3.new(0, 0, -1)
+		local front = head.Position + faceDir * dist + Vector3.new(0, r * 0.15, 0)
 		local shake = Vector3.new((math.random() - 0.5) * s, (math.random() - 0.5) * s, (math.random() - 0.5) * s)
 		cam.CFrame = CFrame.lookAt(front + shake, head.Position)
 	end)
@@ -521,7 +541,23 @@ local function paintSpook()
 end
 RoundState:GetAttributeChangedSignal("Spook"):Connect(paintSpook)
 paintSpook()
+-- characters are chosen before a game starts: no changing in the middle
+local function midGame()
+	return RoundState:GetAttribute("Status") == "playing" and player:GetAttribute("Skill") ~= nil
+end
+local function paintPick()
+	pickBtn.Visible = not midGame()
+	if midGame() then
+		picker.Visible = false
+	end
+end
+RoundState:GetAttributeChangedSignal("Status"):Connect(paintPick)
+player:GetAttributeChangedSignal("Skill"):Connect(paintPick)
+paintPick()
 pickBtn.Activated:Connect(function()
+	if midGame() then
+		return toast("You choose your character at the start of a game.", 3)
+	end
 	picker.Visible = not picker.Visible
 end)
 
@@ -745,16 +781,13 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end)
 
-local roomTiles, found = {}, {}
+local roomTiles, found, viewParts, lockConns = {}, {}, {}, {}
 local function mapRect(x0, y0, x1, y1, color, z)
-	return frame(mapArea, { Position = UDim2.fromOffset(x0 * PX, y0 * PX), Size = UDim2.fromOffset((x1 - x0 + 1) * PX, (y1 - y0 + 1) * PX), BackgroundColor3 = color, BackgroundTransparency = 0, Visible = false, ZIndex = z or 2 })
+	local f = frame(mapArea, { Position = UDim2.fromOffset(x0 * PX, y0 * PX), Size = UDim2.fromOffset((x1 - x0 + 1) * PX, (y1 - y0 + 1) * PX), BackgroundColor3 = color, BackgroundTransparency = 0, Visible = false, ZIndex = z or 2 })
+	table.insert(viewParts, f)
+	return f
 end
 local ROOM_COLOR = Color3.fromRGB(92, 70, 128)
-for _, f in ipairs(HouseMap.floors) do
-	local r = mapRect(f.x0, f.y0, f.x1, f.y1, ROOM_COLOR)
-	label(r, { Size = UDim2.new(1, -4, 0, 12), Position = UDim2.fromOffset(2, 2), Text = f.name, TextColor3 = Color3.fromRGB(230, 215, 245), ZIndex = 3 })
-	roomTiles[f.name] = { r }
-end
 local function floorOf(x, y)
 	for _, f in ipairs(HouseMap.floors) do
 		if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
@@ -763,42 +796,63 @@ local function floorOf(x, y)
 	end
 	return nil
 end
--- doorways: walkable tiles between rooms, shown once a room beside them is found
-for y, row in ipairs(HouseMap.map) do
-	for x = 1, #row do
-		local tx, ty = x - 1, y - 1
-		local ch = string.sub(row, x, x)
-		if (ch == "." or ch == "L") and not floorOf(tx, ty) then
-			local d = mapRect(tx, ty, tx, ty, ROOM_COLOR)
-			-- locked doors show gold until they open
-			for _, o in ipairs(HouseMap.objects) do
-				if o.kind == "lock" and o.x == tx and o.y == ty then
-					local function paint()
-						d.BackgroundColor3 = RoundState:GetAttribute("Lock_" .. o.id) and ROOM_COLOR or Color3.fromRGB(255, 210, 63)
+-- draw this game's house (hidden until each room is found)
+local function buildView()
+	for _, p in ipairs(viewParts) do
+		p:Destroy()
+	end
+	for _, c in ipairs(lockConns) do
+		c:Disconnect()
+	end
+	viewParts, lockConns, roomTiles, found = {}, {}, {}, {}
+	for _, f in ipairs(HouseMap.floors) do
+		local r = mapRect(f.x0, f.y0, f.x1, f.y1, ROOM_COLOR)
+		label(r, { Size = UDim2.new(1, -4, 0, 12), Position = UDim2.fromOffset(2, 2), Text = f.name, TextColor3 = Color3.fromRGB(230, 215, 245), ZIndex = 3 })
+		roomTiles[f.name] = { r }
+	end
+	-- doorways: walkable tiles between rooms, shown once a room beside them is found
+	for y, row in ipairs(HouseMap.map) do
+		for x = 1, #row do
+			local tx, ty = x - 1, y - 1
+			local ch = string.sub(row, x, x)
+			if (ch == "." or ch == "L") and not floorOf(tx, ty) then
+				local d = mapRect(tx, ty, tx, ty, ROOM_COLOR)
+				-- locked doors show gold until they open
+				for _, o in ipairs(HouseMap.objects) do
+					if o.kind == "lock" and o.x == tx and o.y == ty then
+						local function paint()
+							d.BackgroundColor3 = RoundState:GetAttribute("Lock_" .. o.id) and ROOM_COLOR or Color3.fromRGB(255, 210, 63)
+						end
+						table.insert(lockConns, RoundState:GetAttributeChangedSignal("Lock_" .. o.id):Connect(paint))
+						paint()
 					end
-					RoundState:GetAttributeChangedSignal("Lock_" .. o.id):Connect(paint)
-					paint()
 				end
-			end
-			for _, n in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
-				local name = floorOf(tx + n[1], ty + n[2])
-				if name then
-					table.insert(roomTiles[name], d)
+				for _, n in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
+					local name = floorOf(tx + n[1], ty + n[2])
+					if name then
+						table.insert(roomTiles[name], d)
+					end
 				end
 			end
 		end
 	end
-end
--- the way out, once you have seen the room it is in
-for _, o in ipairs(HouseMap.objects) do
-	if o.kind == "door" then
-		local name = floorOf(o.x, o.y + 1)
-		local door = mapRect(o.x - 0.5, o.y, o.x + 0.5, o.y, PUMP, 4)
-		if name then
-			table.insert(roomTiles[name], door)
+	-- the way out, once you have seen the room it is in
+	for _, o in ipairs(HouseMap.objects) do
+		if o.kind == "door" then
+			local name = floorOf(o.x, o.y + 1)
+			local door = mapRect(o.x - 0.5, o.y, o.x + 0.5, o.y, PUMP, 4)
+			if name then
+				table.insert(roomTiles[name], door)
+			end
 		end
 	end
 end
+buildView()
+-- a new game brings a new house
+RoundState:GetAttributeChangedSignal("MapJson"):Connect(function()
+	readMap()
+	buildView()
+end)
 local function discover(name)
 	if name and not found[name] then
 		found[name] = true
@@ -846,17 +900,6 @@ Players.PlayerRemoving:Connect(function(p)
 	if dots[p] then
 		dots[p]:Destroy()
 		dots[p] = nil
-	end
-end)
--- a new round builds a fresh house: forget what was found
-RoundState:GetAttributeChangedSignal("Status"):Connect(function()
-	if RoundState:GetAttribute("Status") == "playing" then
-		found = {}
-		for _, list in pairs(roomTiles) do
-			for _, r in ipairs(list) do
-				r.Visible = false
-			end
-		end
 	end
 end)
 
