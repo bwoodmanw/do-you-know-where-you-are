@@ -122,8 +122,9 @@ function Characters.apply(plr, name)
 end
 
 -- a fresh copy of the imported host, or nil to use the built-from-parts one
-function Characters.host()
-	local t = template("Host")
+function Characters.host(name)
+	name = name or "Host"
+	local t = template(name)
 	if not t then
 		local folder = ServerStorage:FindFirstChild("Characters")
 		local names = {}

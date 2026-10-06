@@ -75,7 +75,7 @@ end
 function CharacterAssets.fill(previews, characters)
 	task.spawn(function()
 		for name, id in pairs(Config.CHARACTER_ASSETS or {}) do
-			local needPreview = name ~= "Host" and previews and not has(previews, name)
+			local needPreview = string.sub(name, 1, 4) ~= "Host" and previews and not has(previews, name)
 			local needChar = characters and not has(characters, name)
 			if typeof(id) == "number" and id > 0 and (needPreview or needChar) then
 				local m = CharacterAssets.load(name, id)

@@ -106,7 +106,8 @@ function Host:spawn(diff)
 	local H = self.world
 	local sx, sy = table.unpack(H.map.spawn)
 	local pos = require(script.Parent.House).at(sx, sy, 0)
-	local custom = require(script.Parent.Characters).host()
+	local info = Config.HOSTS[self.kind or "pumpkin"] or Config.HOSTS.pumpkin
+	local custom = require(script.Parent.Characters).host(info.model)
 	if custom then
 		custom.Name = "PartyHost"
 		self.model, self.hum, self.root, self.face, self.arms = custom, custom:FindFirstChildOfClass("Humanoid"), custom.HumanoidRootPart, {}, {}
@@ -139,13 +140,25 @@ function Host:spawn(diff)
 		end)
 	else
 		self.model, self.hum, self.root, self.face, self.arms = buildModel(pos)
+		-- no model imported for this host yet: the built one in its colour
+		if self.kind and self.kind ~= "pumpkin" then
+			local isFace = {}
+			for _, p in ipairs(self.face) do
+				isFace[p] = true
+			end
+			for _, d in ipairs(self.model:GetDescendants()) do
+				if d:IsA("BasePart") and not isFace[d] and d ~= self.root then
+					d.Color = info.tint
+				end
+			end
+		end
 		self.model.Parent = workspace
 	end
 	self.root:SetNetworkOwner(nil)
 	self.diff = diff -- a Config.DIFFICULTY entry
 	self.frenzy = false
 	self.mode = "patrol"
-	self.skill = "throw" -- the Pumpkin's skill (other hosts arrive with the roster)
+	self.skill = (Config.HOSTS[self.kind or "pumpkin"] or Config.HOSTS.pumpkin).skill
 	self.nextSkill = os.clock() + 8
 	self.path = PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 11, AgentCanJump = false, WaypointSpacing = 6 })
 	return self.model
@@ -264,6 +277,10 @@ function Host:step(dt)
 		if self.skill == "throw" and now >= (self.nextSkill or 0) and bestD >= s.min and bestD <= s.range then
 			self.nextSkill = now + (s.cooldown[string.lower(self.diff.name)] or 15)
 			self:throwAt(best)
+		elseif self.skill == "blackout" and now >= (self.nextSkill or 0) then
+			-- the Robot: lights out in his room when he spots you
+			self.nextSkill = now + (Config.HOST_SKILLS.blackout.cooldown[string.lower(self.diff.name)] or 30)
+			self.round:hostBlackout(self.root.Position)
 		end
 	elseif self.mode == "hunt" and now - self.lastSeen > Config.HOST.lostAfter then
 		self.mode = "search"
@@ -305,6 +322,15 @@ function Host:step(dt)
 				self.round:hostCaught(plr)
 				return
 			end
+		end
+	end
+
+	-- Gummy Bear Man leaves sticky puddles as he goes (the round decides where they may go)
+	if self.skill == "gummy" and now >= (self.nextSkill or 0) then
+		if self.round:hostGummy(self.root.Position, self.model) then
+			self.nextSkill = now + (Config.HOST_SKILLS.gummy.cooldown[string.lower(self.diff.name)] or 10)
+		else
+			self.nextSkill = now + 1
 		end
 	end
 

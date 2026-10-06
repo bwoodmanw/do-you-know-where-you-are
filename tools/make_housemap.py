@@ -36,6 +36,7 @@ class Plan:
         self.exit_style = 'garden'  # 'stairs' on upper floors: the way out is a stairwell
         self.loft = None             # a raised gallery inside a tall room (see plan_bedrooms)
         self.tall = set()            # rooms with a high ceiling
+        self.exit_text = ''          # the sign over an upper floor's way out
 
     def rect(self, x0, y0, x1, y1, ch='#'):
         for y in range(y0, y1 + 1):
@@ -132,7 +133,7 @@ def mirror(a, pid, name):
     p.patrol = [(m(t[0]),) + tuple(t[1:]) for t in a.patrol]
     flip = {'e': 'w', 'w': 'e', 'n': 'n', 's': 's'}
     p.props = [(s[0], W - s[1] - s[3]) + tuple(s[2:6]) + (flip[s[6]],) + tuple(s[7:]) for s in a.props]
-    p.exit_style, p.tall = a.exit_style, set(a.tall)
+    p.exit_style, p.tall, p.exit_text = a.exit_style, set(a.tall), a.exit_text
     if a.loft:
         L = dict(a.loft)
         L['x0'], L['x1'], L['stair_x'] = m(a.loft['x1']), m(a.loft['x0']), m(a.loft['stair_x'])
@@ -140,10 +141,46 @@ def mirror(a, pid, name):
     return p
 
 
+# ---------------------------------------------------------------- floor 3: the Attic
+def plan_attic():
+    p = Plan('attic_a', 'The Party House - Attic')
+    p.exit_style, p.exit_text = 'stairs', 'Out onto the roof!'
+    for x in (13, 26):
+        p.rect(x, 0, x, H - 1)
+    for y in (10, 20):
+        p.rect(0, y, W - 1, y)
+    for x, y in [(13, 24), (26, 25), (19, 20), (13, 14), (26, 12), (36, 20), (6, 20), (26, 4)]:
+        p.put(x, y, '.')
+    p.put(6, 10, 'L')    # L1: Trunk Room -> Clock Room
+    p.put(13, 5, 'L')    # L2: Clock Room -> Rooftop Stairs
+    p.put(19, 0, 'D')
+    p.put(39, 5, 'H')
+    p.put(0, 24, 'C')
+    for x, y in [(17, 13), (22, 13), (17, 17), (22, 17), (17, 3), (22, 3), (17, 7), (22, 7)]:
+        p.put(x, y, '#')             # rafters holding up the roof
+    for f in [(2, 13, 4, 14, 'table'), (8, 17, 10, 17, 'shelf'), (2, 23, 9, 23, 'shelf'), (29, 13, 30, 14, 'bed'),
+              (33, 16, 36, 16, 'shelf'), (16, 23, 18, 24, 'table'), (30, 23, 33, 24, 'bath'), (3, 3, 10, 3, 'shelf'),
+              (3, 6, 9, 6, 'shelf'), (29, 7, 35, 7, 'shelf'), (30, 3, 32, 3, 'piano')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 12, 9, 'boards', 'Clock Room'), (14, 1, 25, 9, 'boards', 'Rooftop Stairs'), (27, 1, 38, 9, 'purple', 'Doll Room'),
+                (1, 11, 12, 19, 'wood', 'Trunk Room'), (14, 11, 25, 19, 'boards', 'Dusty Storage'), (27, 11, 38, 19, 'carpet', 'Old Nursery'),
+                (1, 21, 12, 28, 'boards', 'Box Room'), (14, 21, 25, 28, 'wood', 'Attic Landing'), (27, 21, 38, 28, 'tiles', 'Water Tank Room')]
+    p.fixed = [dict(id='door', kind='door', x=19, y=0), dict(id='hole', kind='hole', x=39, y=5), dict(id='cab', kind='cabinet', x=38, y=5),
+               dict(id='L1', kind='lock', x=6, y=10, name='Clock Room door'), dict(id='L2', kind='lock', x=13, y=5, name='Roof door'),
+               dict(id='cage', kind='cage', x=15, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=3, y=19), dict(id='v1b', kind='vent', pair='v1', x=3, y=21),
+               dict(id='v2a', kind='vent', pair='v2', x=25, y=16), dict(id='v2b', kind='vent', pair='v2', x=27, y=16),
+               dict(id='v3a', kind='vent', pair='v3', x=31, y=19), dict(id='v3b', kind='vent', pair='v3', x=31, y=21)]
+    p.start = [(18, 27), (19, 27), (20, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 24), (17, 23)
+    p.patrol = [(6, 16), (19, 15), (32, 18), (34, 26), (19, 25), (6, 26), (6, 5, 'L1'), (10, 8, 'L1'), (19, 5, 'L2'), (33, 4, 'L2')]
+    return p
+
+
 # ---------------------------------------------------------------- floor 2: the Bedrooms
 def plan_bedrooms():
     p = Plan('bed_a', 'The Party House - Bedrooms')
-    p.exit_style = 'stairs'
+    p.exit_style, p.exit_text = 'stairs', 'Up to the Attic'
     for x in (10, 20, 30):
         p.rect(x, 0, x, H - 1)
     for y in (9, 19):
@@ -443,7 +480,9 @@ def trial(p, floor, wall, rnd):
 plans = []
 a = plan_a()
 bed = plan_bedrooms()
-for p in (a, mirror(a, 'b', 'The Party House'), plan_c(), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms')):
+att = plan_attic()
+for p in (a, mirror(a, 'b', 'The Party House'), plan_c(), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms'),
+          att, mirror(att, 'attic_b', 'The Party House - Attic')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (
@@ -458,7 +497,7 @@ for p in (a, mirror(a, 'b', 'The Party House'), plan_c(), bed, mirror(bed, 'bed_
         print('  ' + ''.join(row))
     if problems:
         raise SystemExit('PLAN %s PROBLEMS:\n  ' % p.id + '\n  '.join(problems))
-    plans.append((p, zone_of, floor, wall, 2 if p.id.startswith('bed') else 1))
+    plans.append((p, zone_of, floor, wall, 2 if p.id.startswith('bed') else 3 if p.id.startswith('attic') else 1))
 
 
 def lua(v):
@@ -478,13 +517,13 @@ out = ['--[[',
        '\tdoor, H the hole behind the cabinet (Muscle), C the host\'s door.',
        '\tReturns floor number -> list of plans.',
        ']]', '', 'return {']
-for fl in (1, 2):
+for fl in (1, 2, 3):
   out.append('\t[%d] = {' % fl)
   for p, zone_of, floor, wall, pfl in plans:
     if pfl != fl:
         continue
     out += ['\t{', '\t\tid = "%s",' % p.id, '\t\tname = "%s",' % p.name, '\t\tw = %d,' % W, '\t\th = %d,' % H,
-            '\t\texitStyle = "%s",' % p.exit_style]
+            '\t\texitStyle = "%s",' % p.exit_style, '\t\texitText = "%s",' % p.exit_text]
     if p.loft:
         L = p.loft
         out.append('\t\tloft = { x0 = %d, y0 = %d, x1 = %d, y1 = %d, h = %d, stairX = %d, stairY0 = %d, stairY1 = %d },' % (

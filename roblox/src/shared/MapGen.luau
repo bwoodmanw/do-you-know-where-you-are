@@ -42,6 +42,7 @@ function MapGen.make(plans, rng)
 		patrol = plan.patrol,
 		props = plan.props,
 		exitStyle = plan.exitStyle,
+		exitText = plan.exitText,
 		loft = plan.loft,
 		objects = {},
 	}

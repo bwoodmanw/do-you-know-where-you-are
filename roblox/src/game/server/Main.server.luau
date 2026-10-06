@@ -37,7 +37,7 @@ do
 	local src = game:GetService("ServerStorage"):FindFirstChild("Characters")
 	if src then
 		for _, c in ipairs(src:GetChildren()) do
-			if c:IsA("Model") and string.lower(c.Name) ~= "host" then
+			if c:IsA("Model") and string.sub(string.lower(c.Name), 1, 4) ~= "host" then
 				local m = c:Clone()
 				-- named as on the select screen whatever its capitals ("muscle" -> "Muscle")
 				for _, sk in ipairs(Config.SKILLS) do
@@ -822,6 +822,139 @@ local function reachable(id)
 	return z == 1 or (z == 2 and world.unlocked.L1) or (z == 3 and world.unlocked.L1 and world.unlocked.L2)
 end
 
+-- Gummy Bear Man's puddles: at most a few, melting, never near a doorway,
+-- locked door, exit, vent or another puddle, so there is always a clean way
+local function cellAt(x, y)
+	local row = HouseMap.map[y + 1]
+	return row and string.sub(row, x + 1, x + 1) or "#"
+end
+local function nearDoorway(x, y)
+	for dx = -2, 2 do
+		for dy = -2, 2 do
+			local cx, cy = x + dx, y + dy
+			local c = cellAt(cx, cy)
+			if c == "L" or c == "D" or c == "H" or c == "C" then
+				return true
+			end
+			if c == "." and ((cellAt(cx - 1, cy) == "#" and cellAt(cx + 1, cy) == "#") or (cellAt(cx, cy - 1) == "#" and cellAt(cx, cy + 1) == "#")) then
+				return true
+			end
+		end
+	end
+	for _, e in pairs(world.objects) do
+		if e.def.kind == "vent" and math.abs(e.def.x - x) <= 2 and math.abs(e.def.y - y) <= 2 then
+			return true
+		end
+	end
+	return false
+end
+function round.hostGummy(_, pos, hostModel)
+	if state.status ~= "playing" then
+		return false
+	end
+	local s = Config.HOST_SKILLS.gummy
+	state.gummies = state.gummies or {}
+	for i = #state.gummies, 1, -1 do
+		if not state.gummies[i].Parent then
+			table.remove(state.gummies, i)
+		end
+	end
+	if #state.gummies >= s.max then
+		return false
+	end
+	local x, y = math.floor(pos.X / T), math.floor(pos.Z / T)
+	if nearDoorway(x, y) then
+		return false
+	end
+	for _, g in ipairs(state.gummies) do
+		if (Vector3.new(g.Position.X, 0, g.Position.Z) - Vector3.new(pos.X, 0, pos.Z)).Magnitude < s.clear * T then
+			return false
+		end
+	end
+	-- the floor under him (the ground or the loft)
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { hostModel }
+	local hit = workspace:Raycast(pos, Vector3.new(0, -40, 0), params)
+	local floorY = hit and hit.Position.Y or 0
+	local g = Instance.new("Part")
+	g.Name = "GummyPuddle"
+	g.Shape = Enum.PartType.Cylinder
+	g.Size = Vector3.new(0.3, 6, 6)
+	g.CFrame = CFrame.new(pos.X, floorY + 0.15, pos.Z) * CFrame.Angles(0, 0, math.rad(90))
+	g.Color = Color3.fromRGB(230, 40, 80)
+	g.Material = Enum.Material.Glass
+	g.Transparency = 0.25
+	g.Anchored, g.CanCollide, g.CanQuery = true, false, false
+	g.Parent = world.root
+	table.insert(state.gummies, g)
+	Effects.sound(g.Position, "pop", 0.5)
+	g.Touched:Connect(function(hitPart)
+		local plr = Players:GetPlayerFromCharacter(hitPart.Parent)
+		if not plr or not g.Parent or state.status ~= "playing" or plr:GetAttribute("Stuck") or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") or plr:GetAttribute("Crawling") then
+			return
+		end
+		g:Destroy()
+		plr:SetAttribute("Stuck", true)
+		plr:SetAttribute("Frozen", true)
+		setSpeed(plr, 0)
+		say("stuck", plr.DisplayName .. " stepped in a gummy puddle - stuck!", { userId = plr.UserId })
+		task.delay(s.stick, function()
+			plr:SetAttribute("Stuck", false)
+			plr:SetAttribute("Frozen", false)
+			if not plr:GetAttribute("Caged") and not plr:GetAttribute("Hidden") then
+				setSpeed(plr, Config.WALK)
+			end
+		end)
+	end)
+	task.delay(s.melt, function()
+		if g.Parent then
+			TweenService:Create(g, TweenInfo.new(1.5), { Transparency = 1 }):Play()
+			task.delay(1.6, function()
+				g:Destroy()
+			end)
+		end
+	end)
+	return true
+end
+
+-- the Robot's blackout: his room goes dark for a few seconds
+function round.hostBlackout(_, pos)
+	if state.status ~= "playing" then
+		return
+	end
+	local x, y = math.floor(pos.X / T), math.floor(pos.Z / T)
+	local name
+	for _, f in ipairs(HouseMap.floors) do
+		if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
+			name = f.name
+		end
+	end
+	local light = name and world.roomLights and world.roomLights[name]
+	if not light then
+		return
+	end
+	light.Enabled = false
+	RoundState:SetAttribute("Blackout", name)
+	local eyes
+	local head = host and host.model and (host.model:FindFirstChild("Head") or host.root)
+	if head then
+		eyes = Instance.new("PointLight")
+		eyes.Color, eyes.Range, eyes.Brightness = Color3.fromRGB(255, 40, 40), 10, 3
+		eyes.Parent = head
+	end
+	say("dark", "The lights just went out in the " .. name .. "!")
+	task.delay(Config.HOST_SKILLS.blackout.seconds, function()
+		light.Enabled = true
+		if RoundState:GetAttribute("Blackout") == name then
+			RoundState:SetAttribute("Blackout", "")
+		end
+		if eyes then
+			eyes:Destroy()
+		end
+	end)
+end
+
 -- hit by a thrown pumpkin: knocked flat for a moment
 function round.hostHit(_, plr)
 	if plr:GetAttribute("Knocked") then
@@ -1335,6 +1468,22 @@ function round.start()
 		RoundState:SetAttribute("Known" .. k, state.code[k])
 	end
 	host = Host.new(world, round)
+	-- tonight's host: half the time the building's own, otherwise another
+	local mapI = Progress.mapIndex(RoundState:GetAttribute("Map") or "partyhouse")
+	local own = Config.BUILDING_HOST[mapI and Progress.MAPS[mapI].building or "partyhouse"] or "pumpkin"
+	local kind = own
+	if math.random() >= 0.5 then
+		local others = {}
+		for k in pairs(Config.HOSTS) do
+			if k ~= own then
+				table.insert(others, k)
+			end
+		end
+		kind = others[math.random(1, #others)]
+	end
+	host.kind = kind
+	RoundState:SetAttribute("HostKind", kind)
+	RoundState:SetAttribute("Blackout", "")
 	local grace = diff.grace + extraGrace
 	say("start", "Find the way out of the Party House. Don't get caught!", { grace = grace })
 	hostTimer = task.delay(grace, function()
@@ -1342,7 +1491,7 @@ function round.start()
 		if state.status == "playing" then
 			host:spawn(Config.DIFFICULTY[state.diff])
 			RoundState:SetAttribute("HostOut", true)
-			say("appear", "Ding dong! Who came to my party?")
+			say("appear", "Ding dong! Who came to my party? (Tonight's host: " .. Config.HOSTS[host.kind or "pumpkin"].name .. ")")
 		end
 	end)
 end

@@ -48,9 +48,23 @@ Config.RESET_POINTS = 500
 Config.HEARTBEAT = false
 -- host skills; cooldowns by difficulty
 Config.HOST_SKILLS = {
+	-- Pumpkin: a pumpkin thrown in a slow arc; a hit knocks you down
 	throw = { min = 12, range = 45, flight = 1.2, radius = 4, knock = 2,
 		cooldown = { easy = 20, normal = 15, hard = 12, nightmare = 9 } },
+	-- Gummy Bear Man: sticky puddles (stuck for a moment); never many, never by doors
+	gummy = { max = 4, melt = 40, stick = 3, clear = 2,
+		cooldown = { easy = 14, normal = 10, hard = 8, nightmare = 6 } },
+	-- Robot: the room he is in goes dark (light still spills in from next door)
+	blackout = { seconds = 8, cooldown = { easy = 40, normal = 30, hard = 25, nightmare = 20 } },
 }
+-- the hosts: the model in ServerStorage/Characters and the skill. Each game
+-- picks one: half the time the building's own, otherwise one of the others.
+Config.HOSTS = {
+	pumpkin = { model = "Host", name = "the Pumpkin Host", skill = "throw", tint = Color3.fromRGB(240, 120, 20) },
+	gummy = { model = "HostGummy", name = "Gummy Bear Man", skill = "gummy", tint = Color3.fromRGB(230, 40, 80) },
+	robot = { model = "HostRobot", name = "the Robot", skill = "blackout", tint = Color3.fromRGB(150, 160, 170) },
+}
+Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot" }
 Config.CLUES = 3
 
 Config.COLORS = { "red", "blue", "yellow", "green" }

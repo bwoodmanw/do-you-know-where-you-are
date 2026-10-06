@@ -56,6 +56,90 @@ for _, x in ipairs({ -20, -8, 8, 20 }) do
 		end
 	end
 end
+-- nobody walks round the house: an invisible wall across the end of the lawn
+part({ Name = "HouseFence", Size = Vector3.new(200, 60, 2), Position = Vector3.new(0, 30, -88), Transparency = 1 })
+-- a realistic house model (ServerStorage/LobbyProps/House) replaces the built front
+do
+	local props = game:GetService("ServerStorage"):FindFirstChild("LobbyProps")
+	local model = props and props:FindFirstChild("House")
+	if model then
+		for _, p in ipairs(workspace:GetChildren()) do
+			if p:IsA("BasePart") and (p.Name == "HouseFront" or p.Name == "Roof" or p.Name == "Door") then
+				p.Transparency, p.CanCollide = 1, false
+			end
+		end
+		local m = model:Clone()
+		for _, d in ipairs(m:GetDescendants()) do
+			if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") then
+				d:Destroy()
+			elseif d:IsA("BasePart") then
+				d.Anchored = true
+			end
+		end
+		local _, size = m:GetBoundingBox()
+		if size.X > 0 then
+			m:ScaleTo(m:GetScale() * 70 / size.X)
+		end
+		local cf2, size2 = m:GetBoundingBox()
+		-- front face on the fence line, standing on the ground, centred on the lane
+		m:PivotTo(m:GetPivot() + (Vector3.new(0, size2.Y / 2, -90 - size2.Z / 2) - cf2.Position))
+		m.Parent = workspace
+	end
+end
+-- now and then the host peeks out of a window, or its shadow does
+task.spawn(function()
+	local head
+	local id = Config.CHARACTER_ASSETS and Config.CHARACTER_ASSETS.Host
+	if id and id > 0 then
+		local m = require(ReplicatedStorage.Shared.CharacterAssets).load("Host", id)
+		local h = m and m:FindFirstChild("Head")
+		if h and h:IsA("BasePart") then
+			head = h:Clone()
+			for _, c in ipairs(head:GetChildren()) do
+				if not (c:IsA("SurfaceAppearance") or c:IsA("SpecialMesh") or c:IsA("Decal")) then
+					c:Destroy()
+				end
+			end
+			head.Anchored, head.CanCollide, head.CanQuery = true, false, false
+		end
+		if m then
+			m:Destroy()
+		end
+	end
+	while true do
+		task.wait(math.random(18, 40))
+		local windows = {}
+		for _, w in ipairs(workspace:GetChildren()) do
+			if w.Name == "Window" and w:IsA("BasePart") then
+				table.insert(windows, w)
+			end
+		end
+		local w = windows[math.random(1, math.max(1, #windows))]
+		if w then
+			local old = w.Color
+			w.Color = Color3.fromRGB(200, 60, 40)
+			if head and math.random() < 0.6 then
+				-- a close-up face, filling the window for a moment
+				local h = head:Clone()
+				h.Size = h.Size * (5.5 / math.max(h.Size.X, h.Size.Y))
+				h.CFrame = CFrame.new(w.Position + Vector3.new(0, 0, 0.9)) * CFrame.Angles(0, math.pi, 0)
+				h.Parent = workspace
+				task.wait(0.5)
+				h:Destroy()
+			else
+				-- a shadow standing behind the glass
+				local shadow = Instance.new("Model")
+				shadow.Name = "WindowShadow"
+				part({ Name = "ShadowHead", Shape = Enum.PartType.Ball, Size = Vector3.new(2.6, 2.6, 0.2), Position = w.Position + Vector3.new(0, 1.6, 0.3), Color = Color3.new(0, 0, 0), Transparency = 0.15, CanCollide = false }).Parent = shadow
+				part({ Name = "ShadowBody", Size = Vector3.new(4.2, 3.2, 0.2), Position = w.Position + Vector3.new(0, -1.8, 0.3), Color = Color3.new(0, 0, 0), Transparency = 0.15, CanCollide = false }).Parent = shadow
+				shadow.Parent = workspace
+				task.wait(1.2)
+				shadow:Destroy()
+			end
+			w.Color = old
+		end
+	end
+end)
 -- a silhouette at the top window
 part({ Name = "Watcher", Shape = Enum.PartType.Ball, Size = Vector3.new(3, 3, 3), Position = Vector3.new(20, 27, -89.4), Material = Enum.Material.Neon, Color = Color3.fromRGB(230, 110, 20) })
 -- the gate with balloons, and lamps along the lane

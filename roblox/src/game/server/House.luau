@@ -149,6 +149,8 @@ function House.build(map)
 		-- a warm light per room, dimmed for Spooky games later
 		local l = light(root, Vector3.new(centre.X, (f.tall and HT or H) - 2, centre.Z), Color3.fromRGB(255, 196, 120), math.min(60, math.max(w, d) * 0.75), 1.2)
 		table.insert(world.lights, l)
+		world.roomLights = world.roomLights or {}
+		world.roomLights[f.name] = l
 	end
 
 	-- doorway floors, walls, furniture
@@ -483,7 +485,7 @@ function House.buildGarden(world)
 		t.TextScaled = true
 		t.Font = Enum.Font.FredokaOne
 		t.TextColor3 = Color3.fromRGB(255, 210, 63)
-		t.Text = "\u{2B06} Up to the next floor"
+		t.Text = "\u{2B06} " .. ((map.exitText and map.exitText ~= "") and map.exitText or "Up to the next floor")
 		t.Parent = sg
 	end
 	-- the side path runs along whichever side has the hole

@@ -957,6 +957,12 @@ end)
 -- the host breathes: a looping sound on its head, louder the closer you are
 local breathFor
 
+-- the Robot's blackout: only the room it happened in goes dark
+local LightingService = game:GetService("Lighting")
+local normalLight = { Ambient = LightingService.Ambient, OutdoorAmbient = LightingService.OutdoorAmbient, Brightness = LightingService.Brightness }
+local darkLight = { Ambient = Color3.new(0, 0, 0), OutdoorAmbient = Color3.new(0, 0, 0), Brightness = 0 }
+local inBlackout = false
+
 local function roomAt(pos)
 	local x, y = math.floor(pos.X / T), math.floor(pos.Z / T)
 	for _, f in ipairs(HouseMap.floors) do
@@ -1033,6 +1039,12 @@ RunService.RenderStepped:Connect(function(dt)
 
 	-- where am I, and how close is the host?
 	local r = roomAt(hrp.Position)
+	local dark = RoundState:GetAttribute("Blackout")
+	local nowDark = dark ~= nil and dark ~= "" and r == dark
+	if nowDark ~= inBlackout then
+		inBlackout = nowDark
+		TweenService:Create(LightingService, TweenInfo.new(0.4), nowDark and darkLight or normalLight):Play()
+	end
 	roomName.Text = r and ("The Party House \u{00B7} " .. r) or "The Party House"
 	local host = workspace:FindFirstChild("PartyHost")
 	if host ~= breathFor then

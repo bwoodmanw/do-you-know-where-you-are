@@ -36,12 +36,20 @@ Brent approved this plan as written; build in order, asking before each step.
   stairwell landing; Studio Play builds `Config.STUDIO_MAP`; Lobby board
   "Most floors escaped"; Frozen Pop boost (freezes the host 10 s).
 
-## Step 3 - the host roster
+## Step 3 - the host roster (built 6 Oct)
 - A random host each floor (50% the building's own): Pumpkin (throw),
   Gummy Bear Man (gummy puddles: stuck 3 s, max 4, melt after 40 s, never
   near doors), Robot (blackout of his room 8 s, cooldown 30 s). Models
   imported as ServerStorage/Characters/Host, HostGummy, HostRobot.
 - Then Floor 3 (Attic).
+- Built as: `Config.HOSTS` / `Config.BUILDING_HOST` / `Config.HOST_SKILLS`;
+  Host:spawn loads `Characters.host(model)` (a built host in the host's
+  colour until imported); gummy puddles and blackout live in Main
+  (`round.hostGummy`, `round.hostBlackout`), the client darkens Lighting
+  while you stand in the blacked-out room. Attic plans `attic_a` + mirror
+  (3 vents, rafters, "Out onto the roof!"). Lobby: realistic house model
+  slot (ServerStorage/LobbyProps/House), invisible fence at z -88, the
+  host's face or shadow in a window every 18-40 s.
 
 ## Step 4 - Gummy Bounce House (building 2)
 - Bounce Hall, Candy Factory, Jelly Vault; unlocks after Party House floor 2.
