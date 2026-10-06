@@ -76,6 +76,7 @@ function Profile.load(plr)
 		end
 	end
 	data = fill(data)
+	plr:SetAttribute("MusicVolume", (data.settings and data.settings.music) or 0.5)
 	cache[plr.UserId] = data
 	Profile.publish(plr)
 	return data
@@ -118,6 +119,17 @@ function Profile.publish(plr)
 		pts.Parent = stats
 	end
 	stats.Points.Value = data.points
+end
+
+-- a player's music volume (0, 0.25, 0.5 or 1)
+function Profile.setMusic(plr, v)
+	local data = cache[plr.UserId]
+	if not data or typeof(v) ~= "number" or v < 0 or v > 1 then
+		return
+	end
+	data.settings = data.settings or {}
+	data.settings.music = v
+	plr:SetAttribute("MusicVolume", v)
 end
 
 function Profile.addPoints(plr, n)

@@ -98,6 +98,10 @@ local Results = remote("Results") -- server -> clients: the end-of-round summary
 local Vote = remote("Vote") -- client -> server: "again" | "lobby"
 local UseCandy = remote("UseCandy")
 local UseBoost = remote("UseBoost") -- (boostId) tap a boost from the bag
+local SetMusic = remote("SetMusic") -- (volume 0..1)
+SetMusic.OnServerEvent:Connect(function(plr, v)
+	require(ReplicatedStorage.Shared.Profile).setMusic(plr, v)
+end)
 
 local RoundState = Instance.new("Configuration")
 RoundState.Name = "RoundState"

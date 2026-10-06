@@ -167,6 +167,15 @@ Config.BOOST_IMAGES = {
 
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }
 Config.IMAGES = {}
+-- background music: audio asset ids (Creator Store or your own uploads).
+-- Each list is shuffled; players set the volume with the music button.
+Config.MUSIC = {
+	lobby = { 113264055867754 }, -- Transmission - When Bears and Lions Attack
+	game = { 113264055867754 },
+}
+-- where the Lobby house model's windows are, as fractions of its width (from
+-- the middle) and height, for the host's peeks
+Config.LOBBY_HOUSE_WINDOWS = { { -0.33, 0.62 }, { -0.12, 0.62 }, { 0.12, 0.62 }, { 0.33, 0.62 }, { -0.3, 0.33 }, { 0.3, 0.33 } }
 -- Sounds: Roblox's licensed sound library (ProSoundEffects, free to use).
 -- Swap any id for another from Studio's Toolbox -> Audio.
 Config.SOUNDS = {

@@ -61,6 +61,7 @@ part({ Name = "HouseFence", Size = Vector3.new(200, 60, 2), Position = Vector3.n
 -- a realistic house model (ServerStorage/LobbyProps/House in THIS place) replaces
 -- the built front. It is only scenery: imported with File > Import, no Avatar
 -- Setup needed (a rig from Avatar Setup is removed here anyway).
+local customHouse = false
 local function placeHouse()
 	local props = game:GetService("ServerStorage"):FindFirstChild("LobbyProps")
 	local model = props and props:FindFirstChild("House")
@@ -104,6 +105,26 @@ local function placeHouse()
 			p2.Transparency, p2.CanCollide = 1, false
 		end
 	end
+	-- the old built windows become invisible spots on the model's own windows
+	customHouse = true
+	local spots = Config.LOBBY_HOUSE_WINDOWS or {}
+	local n = 0
+	for _, w in ipairs(workspace:GetChildren()) do
+		if w:IsA("BasePart") and w.Name == "Window" then
+			n += 1
+			local s = spots[n]
+			w.Transparency, w.CanCollide = 1, false
+			local l = w:FindFirstChildOfClass("PointLight")
+			if l then
+				l.Brightness = 0.6
+			end
+			if s then
+				w.Position = Vector3.new(s[1] * size2.X, s[2] * size2.Y, -89.4)
+			else
+				w.Name = "UnusedWindow"
+			end
+		end
+	end
 	print(string.format("Lobby house: placed LobbyProps/House, %d parts, %.0f x %.0f x %.0f studs", parts, size2.X, size2.Y, size2.Z))
 end
 local okHouse, houseErr = pcall(placeHouse)
@@ -142,7 +163,7 @@ task.spawn(function()
 		if w then
 			local old = w.Color
 			w.Color = Color3.fromRGB(200, 60, 40)
-			if head and math.random() < 0.6 then
+			if head and (customHouse or math.random() < 0.6) then
 				-- a close-up face, filling the window for a moment
 				local h = head:Clone()
 				h.Size = h.Size * (5.5 / math.max(h.Size.X, h.Size.Y))
@@ -213,6 +234,10 @@ local Notice = remote("Notice") -- server -> client: a message
 local BuyBoost = remote("BuyBoost") -- (boostId) with points
 local SellBoost = remote("SellBoost") -- (boostId) back for its points
 local ResetLadder = remote("ResetLadder") -- (skill, "points" | "robux")
+local SetMusic = remote("SetMusic") -- (volume 0..1)
+SetMusic.OnServerEvent:Connect(function(plr, v)
+	Profile.setMusic(plr, v)
+end)
 local SetLoadout = remote("SetLoadout") -- ({boostId, ...}) up to Progress.MAX_BOOSTS
 local PickUpgrade = remote("PickUpgrade") -- (skill, level, upgradeId)
 local VoteMap = remote("VoteMap") -- (mapId)

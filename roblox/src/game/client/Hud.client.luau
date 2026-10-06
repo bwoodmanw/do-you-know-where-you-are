@@ -962,6 +962,9 @@ workspace.DescendantAdded:Connect(function(d)
 	end
 end)
 
+-- ---------- music ----------
+require(ReplicatedStorage.Shared.MusicPlayer).start("game", gui, UDim2.new(0.77, 0, 0, 10), remotes:WaitForChild("SetMusic"))
+
 -- ---------- running and stamina ----------
 local stamina, tired, candyUntil = 100, false, 0
 remotes.Boost.OnClientEvent:Connect(function(kind)

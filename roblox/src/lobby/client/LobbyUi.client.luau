@@ -576,6 +576,9 @@ charsBtn.Activated:Connect(function()
 end)
 readProfile()
 
+-- ---------- music ----------
+require(ReplicatedStorage.Shared.MusicPlayer).start("lobby", gui, UDim2.new(1, -116, 0, 104), remotes:WaitForChild("SetMusic"))
+
 -- ---------- the trampoline: bounce high (here, where the character's physics run) ----------
 task.spawn(function()
 	local fun = workspace:WaitForChild("LobbyFun", 30)
