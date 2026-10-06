@@ -1015,18 +1015,16 @@ local function paintPlayers()
 	for i, p in ipairs(list) do
 		local state = p:GetAttribute("Escaped") and "\u{2705}" or p:GetAttribute("Caged") and "\u{1F512}" or p:GetAttribute("Hidden") and "\u{1F648}" or "\u{1F3C3}"
 		local row = label(playersBox, {
-			Size = UDim2.new(1, -20, 0, 18),
-			Position = UDim2.fromOffset(12, 36 + (i - 1) * 22),
-			TextScaled = false,
-			TextSize = 15,
+			Size = UDim2.new(1, -20, 0, 26),
+			Position = UDim2.fromOffset(10, 36 + (i - 1) * 28),
 			Text = (SKILL_ICON[p:GetAttribute("Skill")] or "") .. " " .. p.DisplayName .. "  " .. state .. "  " .. tostring(p:GetAttribute("GameEarned") or 0) .. " \u{2B50}",
 			TextXAlignment = Enum.TextXAlignment.Left,
-			TextColor3 = p == player and PUMP or CREAM,
+			TextColor3 = p == player and Color3.fromRGB(120, 200, 255) or CREAM,
 			ZIndex = 7,
 		})
 		table.insert(playerRows, row)
 	end
-	playersBox.Size = UDim2.fromOffset(260, 42 + #list * 22)
+	playersBox.Size = UDim2.fromOffset(260, 44 + #list * 28)
 end
 playersBtn.Activated:Connect(function()
 	playersBox.Visible = not playersBox.Visible
