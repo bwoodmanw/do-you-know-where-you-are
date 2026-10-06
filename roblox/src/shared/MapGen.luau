@@ -78,7 +78,7 @@ function MapGen.make(plans, rng)
 	local function pick(zones, kind, limit)
 		local cands = {}
 		for _, s in ipairs(plan.floorSlots) do
-			if zones[s[3]] and ok(s) then
+			if zones[s[3]] and ok(s) and not (kind == "balloon" and (s[5] or 0) > 0) then
 				table.insert(cands, s)
 			end
 		end

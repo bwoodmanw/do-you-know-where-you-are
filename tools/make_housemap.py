@@ -480,7 +480,7 @@ def pick_all(floor, wall, rnd):
         return all((s[0] + dx, s[1] + dy) not in taken for dx in (-1, 0, 1) for dy in (-1, 0, 1))
 
     def pick(pool, zones, kind=None, room_limit=None):
-        cands = [s for s in pool if s[2] in zones and ok(s)]
+        cands = [s for s in pool if s[2] in zones and ok(s) and not (kind == 'balloon' and len(s) > 4 and s[4] > 0)]
         if kind and room_limit is not None:
             fresh = [s for s in cands if used_rooms.get((kind, s[3]), 0) < room_limit]
             if fresh:

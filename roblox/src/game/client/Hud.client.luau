@@ -526,6 +526,12 @@ local function openPicker()
 	end
 	showChar()
 end
+-- a new game: choose (or keep) your character
+RoundState:GetAttributeChangedSignal("Status"):Connect(function()
+	if RoundState:GetAttribute("Status") == "playing" and not RoundState:GetAttribute("HostOut") then
+		picker.Visible = true
+	end
+end)
 picker:GetPropertyChangedSignal("Visible"):Connect(function()
 	if picker.Visible then
 		openPicker()
@@ -1414,7 +1420,6 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 	elseif (kind == "sneak" or kind == "heal" or kind == "lure") and data and data.userId == player.UserId then
 		popUp(skillIcon(player:GetAttribute("Skill")), kind == "sneak" and "Sneaking!" or kind == "heal" and "Shields up!" or "Noise!")
 	elseif kind == "start" then
-		picker.Visible = true
 		keypad.Visible = false
 		stamina, tired = 100, false
 	end
