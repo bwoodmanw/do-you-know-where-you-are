@@ -909,8 +909,14 @@ RunService.Heartbeat:Connect(function()
 		if p ~= player then
 			local dot = dots[p]
 			if not dot then
-				dot = frame(mapArea, { Size = UDim2.fromOffset(8, 8), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 0, ZIndex = 5 })
-				corner(dot, 4)
+				-- a round marker in the character's colour, with their initial
+				dot = frame(mapArea, { Size = UDim2.fromOffset(14, 14), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 0, ZIndex = 5 })
+				corner(dot, 7)
+				local ring = Instance.new("UIStroke")
+				ring.Color = Color3.new(0, 0, 0)
+				ring.Thickness = 1.5
+				ring.Parent = dot
+				label(dot, { Name = "Initial", Size = UDim2.fromScale(1, 1), Text = string.upper(string.sub(p.DisplayName, 1, 1)), TextColor3 = Color3.new(0, 0, 0), ZIndex = 6 })
 				dots[p] = dot
 			end
 			local h = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
@@ -918,6 +924,10 @@ RunService.Heartbeat:Connect(function()
 			if h then
 				dot.Position = onMap(h.Position)
 				dot.BackgroundColor3 = p:GetAttribute("Caged") and Color3.fromRGB(255, 77, 94) or SKILL_COLOR[p:GetAttribute("Skill")] or CREAM
+				local initial = dot:FindFirstChild("Initial")
+				if initial then
+					initial.Text = p:GetAttribute("Caged") and "\u{1F512}" or string.upper(string.sub(p.DisplayName, 1, 1))
+				end
 			end
 		end
 	end
@@ -1215,12 +1225,18 @@ local spec = frame(gui, { Size = UDim2.fromOffset(380, 46), Position = UDim2.new
 corner(spec, 12)
 local specName = label(spec, { Size = UDim2.new(0.5, 0, 0.8, 0), Position = UDim2.fromScale(0.2, 0.1), Text = "", ZIndex = 26 })
 local specIndex = 0
+-- who you can watch: teammates still in the house, then the host himself
 local function teammates()
 	local list = {}
 	for _, p in ipairs(Players:GetPlayers()) do
 		if p ~= player and p.Character and p.Character:FindFirstChildOfClass("Humanoid") and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
-			table.insert(list, p)
+			table.insert(list, { name = p.DisplayName, hum = p.Character:FindFirstChildOfClass("Humanoid") })
 		end
+	end
+	local host = workspace:FindFirstChild("PartyHost")
+	local hostHum = host and host:FindFirstChildOfClass("Humanoid")
+	if hostHum then
+		table.insert(list, { name = "The host", hum = hostHum })
 	end
 	return list
 end
@@ -1233,13 +1249,14 @@ local function watch(step)
 		if mine then
 			cam.CameraSubject = mine
 		end
-		specName.Text = #list == 0 and "Nobody left to watch" or "Your view"
+		specName.Text = #list == 0 and "Nobody else to watch" or "Your view"
 		return
 	end
 	specIndex = ((specIndex - 1 + step) % #list) + 1
 	local who = list[specIndex]
-	cam.CameraSubject = who.Character:FindFirstChildOfClass("Humanoid")
-	specName.Text = "\u{1F440} " .. who.DisplayName
+	cam.CameraType = Enum.CameraType.Custom
+	cam.CameraSubject = who.hum
+	specName.Text = "\u{1F440} " .. who.name
 end
 button(spec, "\u{25C0}", { Size = UDim2.new(0.16, 0, 0.8, 0), Position = UDim2.fromScale(0.02, 0.1), ZIndex = 26 }, function()
 	watch(-1)
@@ -1261,6 +1278,20 @@ local function paintSpectate()
 end
 player:GetAttributeChangedSignal("Caged"):Connect(paintSpectate)
 player:GetAttributeChangedSignal("Escaped"):Connect(paintSpectate)
+player.CharacterAdded:Connect(function()
+	task.defer(paintSpectate)
+end)
+-- keyboard: left / right arrows (or Q / E) switch who you watch
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed or not spec.Visible then
+		return
+	end
+	if input.KeyCode == Enum.KeyCode.Left or input.KeyCode == Enum.KeyCode.Q then
+		watch(-1)
+	elseif input.KeyCode == Enum.KeyCode.Right or input.KeyCode == Enum.KeyCode.E then
+		watch(1)
+	end
+end)
 RoundState:GetAttributeChangedSignal("Status"):Connect(paintSpectate)
 
 -- ---------- end of round: results ----------

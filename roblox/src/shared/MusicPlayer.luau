@@ -45,28 +45,34 @@ function MusicPlayer.start(listName, gui, position, setRemote)
 		sound.Volume = BASE * level
 	end
 
-	-- a shuffled playlist that goes round and round
+	-- a shuffled playlist that goes round and round (a fresh shuffle every
+	-- visit: Random.new() is seeded differently each time)
+	local rng = Random.new()
 	local order = table.clone(ids)
 	for i = #order, 2, -1 do
-		local j = math.random(1, i)
+		local j = rng:NextInteger(1, i)
 		order[i], order[j] = order[j], order[i]
 	end
 	local index = 0
+	local startedAt = os.clock()
 	local function nextSong()
 		if #order == 0 then
 			return
 		end
 		index = index % #order + 1
+		startedAt = os.clock()
 		sound.SoundId = "rbxassetid://" .. order[index]
 		sound.TimePosition = 0
 		sound:Play()
 	end
 	sound.Ended:Connect(nextSong)
-	-- a song that will not load (not allowed in this game): skip it
+	-- a song that still has not loaded after 20 seconds (not allowed in this
+	-- game, or not approved yet): skip it. Long songs can take a while to load.
 	task.spawn(function()
 		while sound.Parent do
-			task.wait(5)
-			if #order > 1 and sound.IsLoaded == false and sound.TimeLength == 0 then
+			task.wait(2)
+			if #order > 1 and not sound.IsLoaded and os.clock() - startedAt > 20 then
+				warn("Music: skipping " .. sound.SoundId .. " (did not load)")
 				nextSong()
 			end
 		end
