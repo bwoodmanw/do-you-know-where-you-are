@@ -209,7 +209,7 @@ Config.MUSIC = {
 -- where the Lobby house model's windows are, as fractions of its width (from
 -- the middle) and height, for the host's peeks
 Config.LOBBY_HOUSE_WINDOWS = { { -0.18, 0.52 }, { 0.03, 0.52 }, { 0.27, 0.52 }, { 0.48, 0.52 }, { -0.15, 0.23 }, { 0.45, 0.23 } }
--- seconds between the host's peeks (Studio tests peek much more often)
+-- seconds between the host's peeks, and how long the face stays
 Config.LOBBY_PEEK_GAP = { 18, 40 }
 Config.LOBBY_PEEK_SECONDS = 2.5
 -- Sounds: Roblox's licensed sound library (ProSoundEffects, free to use).

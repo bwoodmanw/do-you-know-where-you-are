@@ -162,7 +162,7 @@ task.spawn(function()
 		end
 	end
 	while true do
-		local gap = game:GetService("RunService"):IsStudio() and { 4, 8 } or Config.LOBBY_PEEK_GAP
+		local gap = Config.LOBBY_PEEK_GAP
 		task.wait(math.random(gap[1], gap[2]))
 		local windows = {}
 		for _, w in ipairs(workspace:GetChildren()) do
