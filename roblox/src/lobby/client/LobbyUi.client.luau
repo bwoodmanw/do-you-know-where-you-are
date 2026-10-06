@@ -310,7 +310,7 @@ player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 local shop = frame(gui, { Size = UDim2.fromOffset(620, 610), Position = UDim2.new(0.5, -310, 0.5, -305), Visible = false, ZIndex = 10 })
 corner(shop, 18)
 label(shop, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "\u{1F6D2} Boost Shop", TextColor3 = PUMP, ZIndex = 11 })
-label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "+ buys, \u{2212} sells back. Tap Take on up to " .. Progress.MAX_BOOSTS .. " to bring into your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "+ buys, - sells back. Tap Take on up to " .. Progress.MAX_BOOSTS .. " to bring into your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 local shopRows = {}
 for i, id in ipairs(Progress.BOOST_ORDER) do
 	local b = Progress.BOOSTS[id]
@@ -334,7 +334,7 @@ for i, id in ipairs(Progress.BOOST_ORDER) do
 	button(row, "+ " .. b.price .. " \u{2B50}", { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(282, 30 - 18 + 14), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, function()
 		remotes.BuyBoost:FireServer(id)
 	end)
-	local minus = button(row, "\u{2212}", { Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(370, 26), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
+	local minus = button(row, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(370, 26), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
 		remotes.SellBoost:FireServer(id)
 	end)
 	local productId = Config.ROBUX_PRODUCTS[id] or 0
@@ -463,10 +463,10 @@ for level = 2, 5 do
 	end
 end
 -- choices are for keeps; a reset clears this character's whole ladder
-button(right, "\u{21BA} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(92, 448), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 11 }, function()
+button(right, "\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(92, 448), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 11 }, function()
 	remotes.ResetLadder:FireServer(selected, "points")
 end)
-button(right, "\u{21BA} Reset upgrades: R$ 49", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(364, 448), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 11, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
+button(right, "\u{1F504} Reset upgrades: R$ 49", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(364, 448), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 11, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
 	remotes.ResetLadder:FireServer(selected, "robux")
 	MarketplaceService:PromptProductPurchase(player, Config.ROBUX_PRODUCTS.reset)
 end)

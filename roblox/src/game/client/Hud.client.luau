@@ -378,7 +378,7 @@ workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(fitPick
 fitPicker()
 label(picker, { Size = UDim2.new(1, -120, 0, 36), Position = UDim2.fromOffset(60, 12), Text = "Escape Crew - pick your character", TextColor3 = PUMP, ZIndex = 21 })
 -- back out without changing anything
-button(picker, "\u{2715}", { Size = UDim2.fromOffset(44, 40), Position = UDim2.new(1, -58, 0, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 22 }, function()
+button(picker, "X", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(44, 40), Position = UDim2.new(1, -58, 0, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 22 }, function()
 	picker.Visible = false
 end)
 
@@ -792,7 +792,7 @@ local function showMap(open)
 	mapBox.Visible = open
 	mapOpenBtn.Visible = not open
 end
-button(mapBox, "\u{2715}", { Size = UDim2.fromOffset(28, 22), Position = UDim2.new(1, -32, 0, 3) }, function()
+button(mapBox, "X", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(28, 22), Position = UDim2.new(1, -32, 0, 3), BackgroundColor3 = Color3.fromRGB(150, 60, 70) }, function()
 	showMap(false)
 end)
 mapOpenBtn.Activated:Connect(function()
@@ -896,7 +896,7 @@ local function discover(name)
 		end
 	end
 end
-local me = label(mapArea, { Size = UDim2.fromOffset(14, 14), AnchorPoint = Vector2.new(0.5, 0.5), Text = "\u{25B2}", TextColor3 = Color3.fromRGB(255, 255, 255), TextStrokeTransparency = 0, ZIndex = 6 })
+local me = label(mapArea, { Size = UDim2.fromOffset(14, 14), AnchorPoint = Vector2.new(0.5, 0.5), Text = "\u{1F53A}", TextColor3 = Color3.fromRGB(255, 255, 255), TextStrokeTransparency = 0, ZIndex = 6 })
 local dots = {}
 local SKILL_COLOR = {}
 for _, sk in ipairs(Config.SKILLS) do
@@ -996,10 +996,10 @@ for _, sk in ipairs(Config.SKILLS) do
 	SKILL_ICON[sk.id] = sk.icon
 end
 local playersBtn = button(gui, "\u{1F465} Players", { Size = UDim2.fromOffset(96, 36), Position = UDim2.new(0.77, 0, 0, 52), ZIndex = 5 })
-local playersBox = frame(gui, { Size = UDim2.fromOffset(250, 60), Position = UDim2.new(0.77, -258, 0, 52), Visible = false, ZIndex = 6 })
+local playersBox = frame(gui, { Size = UDim2.fromOffset(260, 60), Position = UDim2.new(0.77, -268, 0, 52), Visible = false, ZIndex = 6 })
 corner(playersBox, 12)
-label(playersBox, { Size = UDim2.new(1, -44, 0, 24), Position = UDim2.fromOffset(10, 6), Text = "\u{1F465} In this game", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 7 })
-button(playersBox, "\u{2715}", { Size = UDim2.fromOffset(28, 24), Position = UDim2.new(1, -34, 0, 6), ZIndex = 7 }, function()
+label(playersBox, { Size = UDim2.new(1, -50, 0, 22), Position = UDim2.fromOffset(10, 7), Text = "\u{1F465} In this game", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 7 })
+button(playersBox, "X", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(28, 24), Position = UDim2.new(1, -34, 0, 6), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 7 }, function()
 	playersBox.Visible = false
 end)
 local playerRows = {}
@@ -1015,8 +1015,10 @@ local function paintPlayers()
 	for i, p in ipairs(list) do
 		local state = p:GetAttribute("Escaped") and "\u{2705}" or p:GetAttribute("Caged") and "\u{1F512}" or p:GetAttribute("Hidden") and "\u{1F648}" or "\u{1F3C3}"
 		local row = label(playersBox, {
-			Size = UDim2.new(1, -20, 0, 26),
-			Position = UDim2.fromOffset(10, 34 + (i - 1) * 28),
+			Size = UDim2.new(1, -20, 0, 18),
+			Position = UDim2.fromOffset(12, 36 + (i - 1) * 22),
+			TextScaled = false,
+			TextSize = 15,
 			Text = (SKILL_ICON[p:GetAttribute("Skill")] or "") .. " " .. p.DisplayName .. "  " .. state .. "  " .. tostring(p:GetAttribute("GameEarned") or 0) .. " \u{2B50}",
 			TextXAlignment = Enum.TextXAlignment.Left,
 			TextColor3 = p == player and PUMP or CREAM,
@@ -1024,7 +1026,7 @@ local function paintPlayers()
 		})
 		table.insert(playerRows, row)
 	end
-	playersBox.Size = UDim2.fromOffset(250, 40 + #list * 28)
+	playersBox.Size = UDim2.fromOffset(260, 42 + #list * 22)
 end
 playersBtn.Activated:Connect(function()
 	playersBox.Visible = not playersBox.Visible
