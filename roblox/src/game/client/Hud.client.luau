@@ -965,6 +965,74 @@ end)
 -- ---------- music ----------
 require(ReplicatedStorage.Shared.MusicPlayer).start("game", gui, UDim2.new(0.77, 0, 0, 10), remotes:WaitForChild("SetMusic"))
 
+-- ---------- who is playing, and their points this game ----------
+local SKILL_ICON = {}
+for _, sk in ipairs(Config.SKILLS) do
+	SKILL_ICON[sk.id] = sk.icon
+end
+local playersBtn = button(gui, "\u{1F465} Players", { Size = UDim2.fromOffset(96, 36), Position = UDim2.new(0.77, 0, 0, 52), ZIndex = 5 })
+local playersBox = frame(gui, { Size = UDim2.fromOffset(250, 60), Position = UDim2.new(0.77, -258, 0, 52), Visible = false, ZIndex = 6 })
+corner(playersBox, 12)
+label(playersBox, { Size = UDim2.new(1, -44, 0, 24), Position = UDim2.fromOffset(10, 6), Text = "\u{1F465} In this game", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 7 })
+button(playersBox, "\u{2715}", { Size = UDim2.fromOffset(28, 24), Position = UDim2.new(1, -34, 0, 6), ZIndex = 7 }, function()
+	playersBox.Visible = false
+end)
+local playerRows = {}
+local function paintPlayers()
+	for _, r in ipairs(playerRows) do
+		r:Destroy()
+	end
+	playerRows = {}
+	local list = Players:GetPlayers()
+	table.sort(list, function(a, b)
+		return (a:GetAttribute("GameEarned") or 0) > (b:GetAttribute("GameEarned") or 0)
+	end)
+	for i, p in ipairs(list) do
+		local state = p:GetAttribute("Escaped") and "\u{2705}" or p:GetAttribute("Caged") and "\u{1F512}" or p:GetAttribute("Hidden") and "\u{1F648}" or "\u{1F3C3}"
+		local row = label(playersBox, {
+			Size = UDim2.new(1, -20, 0, 26),
+			Position = UDim2.fromOffset(10, 34 + (i - 1) * 28),
+			Text = (SKILL_ICON[p:GetAttribute("Skill")] or "") .. " " .. p.DisplayName .. "  " .. state .. "  " .. tostring(p:GetAttribute("GameEarned") or 0) .. " \u{2B50}",
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextColor3 = p == player and PUMP or CREAM,
+			ZIndex = 7,
+		})
+		table.insert(playerRows, row)
+	end
+	playersBox.Size = UDim2.fromOffset(250, 40 + #list * 28)
+end
+playersBtn.Activated:Connect(function()
+	playersBox.Visible = not playersBox.Visible
+	if playersBox.Visible then
+		paintPlayers()
+	end
+end)
+task.spawn(function()
+	while true do
+		task.wait(0.5)
+		if playersBox.Visible then
+			paintPlayers()
+		end
+	end
+end)
+
+-- ---------- leave for the Lobby (asks first) ----------
+local leaveBtn = button(gui, "\u{1F6AA} Lobby", { Size = UDim2.fromOffset(96, 36), Position = UDim2.new(0.77, 0, 0, 94), ZIndex = 5 })
+local leaveBox = frame(gui, { Size = UDim2.fromOffset(360, 140), Position = UDim2.new(0.5, -180, 0.4, -70), Visible = false, ZIndex = 45 })
+corner(leaveBox, 16)
+label(leaveBox, { Size = UDim2.new(1, -30, 0, 60), Position = UDim2.fromOffset(15, 10), Text = "Leave this game and go back to the Lobby?", TextWrapped = true, ZIndex = 46 })
+button(leaveBox, "Go to Lobby", { Size = UDim2.fromOffset(150, 44), Position = UDim2.fromOffset(20, 82), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 46 }, function()
+	leaveBox.Visible = false
+	remotes.LeaveToLobby:FireServer()
+	toast("Off to the Lobby...", 3)
+end)
+button(leaveBox, "Stay", { Size = UDim2.fromOffset(150, 44), Position = UDim2.new(1, -170, 0, 82), ZIndex = 46 }, function()
+	leaveBox.Visible = false
+end)
+leaveBtn.Activated:Connect(function()
+	leaveBox.Visible = true
+end)
+
 -- ---------- running and stamina ----------
 local stamina, tired, candyUntil = 100, false, 0
 remotes.Boost.OnClientEvent:Connect(function(kind)

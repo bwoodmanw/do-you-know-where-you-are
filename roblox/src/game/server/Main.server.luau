@@ -1086,6 +1086,15 @@ local function toLobby(list)
 	return ok
 end
 
+-- a player leaves the game for the Lobby at any time (their boosts go back
+-- to their bag and their points are saved when they leave)
+local LeaveToLobby = remote("LeaveToLobby")
+LeaveToLobby.OnServerEvent:Connect(function(plr)
+	if not toLobby({ plr }) then
+		say("info", "Going back to the Lobby only works in the published game (not in a Studio test).", nil, plr)
+	end
+end)
+
 function round.startVote()
 	votes = {}
 	voting = true

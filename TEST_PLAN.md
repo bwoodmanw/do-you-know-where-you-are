@@ -39,6 +39,8 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 - [ ] Caught: close-up of the host's face (the right way round), then the cage
 - [ ] Boosts in the bag: Candy, Second Wind, Extra Clue, Frozen Pop work when tapped
 - [ ] Music and the music button
+- [ ] Players button: list of everyone with character, state and points; closes with X
+- [ ] Lobby button asks first; live it takes you back to the Lobby (Studio says it only works live)
 
 Per floor:
 - [ ] Ground: garden exit; Muscle's hole in the Music Room
