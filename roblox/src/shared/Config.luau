@@ -102,18 +102,21 @@ Config.GAME_PLACE = "Party House"
 -- the two places' ids (Creator Hub), so each script can tell it is in the right one
 Config.PLACE_IDS = { lobby = 115501124890066, game = 110069561824739 }
 Config.VOTE_SECONDS = 10
+-- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
+Config.STUDIO_MAP = "partyhouse_2"
 Config.MAX_PARTY = 6
 
 -- Robux prices for boosts: the Developer Product id for each boost, created in
 -- Creator Hub -> Escape Crew -> Monetization -> Developer Products. 0 = not on
 -- sale for Robux (points only). Every boost can always be bought with points.
 Config.ROBUX_PRODUCTS = {
-	candy = 0,
-	shield = 0,
-	clue = 0,
-	energy = 0,
-	headstart = 0,
-	reset = 0, -- resets one character's skill ladder (49 Robux)
+	candy = 3716922790, -- 25 Robux
+	shield = 3716924173, -- 60
+	clue = 3716923841, -- 40
+	energy = 3716924026, -- Second Wind, 25
+	headstart = 3716924113, -- 50
+	freeze = 0, -- Frozen Pop, 50 (product not made yet)
+	reset = 3716924568, -- resets one character's skill ladder, 49
 }
 
 -- Characters saved to Roblox (Studio: right-click the character in
@@ -142,6 +145,7 @@ Config.BOOST_IMAGES = {
 	clue = 101410393070554,
 	energy = 86003322408140,
 	headstart = 129479504189534,
+	freeze = 0,
 }
 
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }

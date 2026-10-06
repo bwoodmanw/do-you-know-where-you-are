@@ -501,8 +501,8 @@ stallPrompt.Triggered:Connect(function(plr)
 end)
 Scene.dropOff()
 Scene.fun()
-local boards = Scene.boards({ "\u{1F3C6} Most points earned", "\u{1F6AA} Most escapes", "\u{1F512} Most rescues", "\u{23F1} Fastest escapes this week" })
-local boardPoints, boardEscapes, boardRescue, boardFast = boards[1], boards[2], boards[3], boards[4]
+local boards = Scene.boards({ "\u{1F3C6} Most points earned", "\u{1F6AA} Most escapes", "\u{1F3E2} Most floors escaped", "\u{1F512} Most rescues", "\u{23F1} Fastest escapes this week" })
+local boardPoints, boardEscapes, boardFloors, boardRescue, boardFast = boards[1], boards[2], boards[3], boards[4], boards[5]
 local function fill(body, rows, fmt)
 	if #rows == 0 then
 		body.Text = "No scores yet - be the first!"
@@ -525,6 +525,9 @@ task.spawn(function()
 			return tostring(v)
 		end)
 		fill(boardEscapes, Profile.top(names.escapes, 10), function(v)
+			return tostring(v)
+		end)
+		fill(boardFloors, Profile.top(names.floors, 10), function(v)
 			return tostring(v)
 		end)
 		-- two lines a row: the time, then where it was set

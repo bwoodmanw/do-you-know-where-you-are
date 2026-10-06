@@ -6,12 +6,43 @@
 
 local Progress = {}
 
--- Maps, in unlock order. Escaping one (any difficulty) unlocks the next.
+-- Buildings are stacks of floors; one game is one floor. Escaping a floor
+-- (any difficulty) unlocks the next floor up, and escaping floor 2 also
+-- unlocks the next building's first floor.
 Progress.MAPS = {
-	{ id = "partyhouse", name = "The Party House", icon = "\u{1F383}", ready = true },
-	{ id = "gummy", name = "Gummy Bounce House", icon = "\u{1F36C}", ready = false },
-	{ id = "hospital", name = "Abandoned Hospital", icon = "\u{1F3E5}", ready = false },
+	{ id = "partyhouse", building = "partyhouse", floor = 1, name = "Party House: Ground", icon = "\u{1F383}", ready = true },
+	{ id = "partyhouse_2", building = "partyhouse", floor = 2, name = "Party House: Bedrooms", icon = "\u{1F6CF}", ready = true },
+	{ id = "partyhouse_3", building = "partyhouse", floor = 3, name = "Party House: Attic", icon = "\u{1F578}", ready = false },
+	{ id = "gummy", building = "gummy", floor = 1, name = "Gummy Bounce House", icon = "\u{1F36C}", ready = false },
+	{ id = "hospital", building = "hospital", floor = 1, name = "Abandoned Hospital", icon = "\u{1F3E5}", ready = false },
 }
+
+-- what escaping this floor unlocks
+function Progress.unlocksAfter(id)
+	local out = {}
+	local i = Progress.mapIndex(id)
+	local m = i and Progress.MAPS[i]
+	if not m then
+		return out
+	end
+	for _, n in ipairs(Progress.MAPS) do
+		if n.building == m.building and n.floor == m.floor + 1 then
+			table.insert(out, n)
+		end
+	end
+	if m.floor == 2 then
+		local seen = false
+		for _, n in ipairs(Progress.MAPS) do
+			if n.building == m.building then
+				seen = true
+			elseif seen and n.floor == 1 then
+				table.insert(out, n)
+				break
+			end
+		end
+	end
+	return out
+end
 
 function Progress.mapIndex(id)
 	for i, m in ipairs(Progress.MAPS) do
@@ -25,12 +56,13 @@ end
 -- Boosts: bought in the Lobby shop, up to MAX_BOOSTS taken into a game.
 -- robux = the price shown if a Developer Product exists for it (Config.ROBUX_PRODUCTS).
 Progress.MAX_BOOSTS = 2
-Progress.BOOST_ORDER = { "candy", "shield", "clue", "energy", "headstart" }
+Progress.BOOST_ORDER = { "candy", "shield", "clue", "energy", "headstart", "freeze" }
 Progress.BOOSTS = {
 	candy = { name = "Candy Corn", icon = "\u{1F36C}", say = "Tap in the game: run without tiring for 20 s", tap = true, price = 60 },
 	shield = { name = "Party Shield", icon = "\u{1F6E1}", say = "Automatic: saves you from one grab", price = 120 },
 	clue = { name = "Extra Clue", icon = "\u{1F4A1}", say = "Tap in the game: +1 clue for the team", tap = true, price = 80 },
 	energy = { name = "Second Wind", icon = "\u{1F4A8}", say = "Tap in the game: all your stamina back", tap = true, price = 50 },
+	freeze = { name = "Frozen Pop", icon = "\u{1F9CA}", say = "Tap in the game: freezes the host for 10 s", tap = true, price = 150 },
 	headstart = { name = "Head Start", icon = "\u{23F1}", say = "Automatic: the host waits 10 s longer", price = 100 },
 }
 

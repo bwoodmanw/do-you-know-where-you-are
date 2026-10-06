@@ -13,6 +13,17 @@ local T = Config.TILE
 local H = Config.WALL_H
 
 local House = {}
+local HT = 24 -- ceiling height of tall rooms (the Gallery with its loft)
+
+-- inside, or in the wall ring round, a tall room
+local function tallAt(map, x, y, ring)
+	for _, f in ipairs(map.floors) do
+		if f.tall and x >= f.x0 - (ring and 1 or 0) and x <= f.x1 + (ring and 1 or 0) and y >= f.y0 - (ring and 1 or 0) and y <= f.y1 + (ring and 1 or 0) then
+			return true
+		end
+	end
+	return false
+end
 
 local FLOOR = {
 	carpet = { Enum.Material.Carpet, Color3.fromRGB(122, 39, 65) },
@@ -136,7 +147,7 @@ function House.build(map)
 			part(root, { Name = "Floor " .. f.name, Size = Vector3.new(w, 1, d), Position = centre, Material = mat[1], Color = mat[2] })
 		end
 		-- a warm light per room, dimmed for Spooky games later
-		local l = light(root, Vector3.new(centre.X, H - 2, centre.Z), Color3.fromRGB(255, 196, 120), math.min(60, math.max(w, d) * 0.75), 1.2)
+		local l = light(root, Vector3.new(centre.X, (f.tall and HT or H) - 2, centre.Z), Color3.fromRGB(255, 196, 120), math.min(60, math.max(w, d) * 0.75), 1.2)
 		table.insert(world.lights, l)
 	end
 
@@ -146,11 +157,15 @@ function House.build(map)
 			local c = cell(map, x, y)
 			if c == "." and floorKind(map, x, y) == "door" then
 				part(root, { Name = "Doorway", Size = Vector3.new(T, 1, T), Position = at(x, y, -0.5), Material = FLOOR.door[1], Color = FLOOR.door[2] })
+				if tallAt(map, x, y, true) then
+					-- close the gap above a doorway into a tall room
+					part(root, { Name = "TallLintel", Size = Vector3.new(T, HT - H, T), Position = at(x, y, H + (HT - H) / 2), Material = Enum.Material.Plaster, Color = Color3.fromRGB(70, 46, 96) })
+				end
 			elseif c == "#" or c == "C" then
 				part(root, {
 					Name = "Wall",
-					Size = Vector3.new(T, H, T),
-					Position = at(x, y, H / 2),
+					Size = Vector3.new(T, tallAt(map, x, y, true) and HT or H, T),
+					Position = at(x, y, (tallAt(map, x, y, true) and HT or H) / 2),
 					Material = Enum.Material.Plaster,
 					Color = Color3.fromRGB(70, 46, 96),
 				})
@@ -176,6 +191,14 @@ function House.build(map)
 				elseif kind == "counter" then
 					part(root, { Name = "Counter", Size = Vector3.new(T, 4, T), Position = at(x, y, 2), Material = Enum.Material.Wood, Color = Color3.fromRGB(139, 106, 79) })
 					part(root, { Name = "CounterTop", Size = Vector3.new(T, 0.4, T), Position = at(x, y, 4.2), Material = Enum.Material.Marble, Color = Color3.fromRGB(207, 200, 187) })
+				elseif kind == "bed" then
+					part(root, { Name = "Bed", Size = Vector3.new(T, 2.4, T), Position = at(x, y, 1.2), Material = Enum.Material.Fabric, Color = Color3.fromRGB(200, 190, 230) })
+					part(root, { Name = "Pillow", Size = Vector3.new(T * 0.7, 0.8, 2), Position = at(x, y, 2.8), Material = Enum.Material.Fabric, Color = Color3.fromRGB(245, 240, 250), CanCollide = false })
+				elseif kind == "desk" then
+					part(root, { Name = "Desk", Size = Vector3.new(T, 0.5, T * 0.7), Position = at(x, y, 3.6), Material = Enum.Material.Wood, Color = Color3.fromRGB(120, 80, 50) })
+					part(root, { Name = "DeskBody", Size = Vector3.new(T * 0.9, 3.4, T * 0.6), Position = at(x, y, 1.7), Material = Enum.Material.Wood, Color = Color3.fromRGB(100, 66, 40) })
+				elseif kind == "bath" then
+					part(root, { Name = "Bath", Size = Vector3.new(T, 3, T), Position = at(x, y, 1.5), Material = Enum.Material.Marble, Color = Color3.fromRGB(235, 235, 240) })
 				elseif kind == "planter" then
 					part(root, { Name = "Planter", Size = Vector3.new(T, 3, T * 0.7), Position = at(x, y, 1.5), Material = Enum.Material.Brick, Color = Color3.fromRGB(150, 80, 60) })
 					for i = -1, 1 do
@@ -209,7 +232,29 @@ function House.build(map)
 	part(root, { Name = "Flame", Shape = Enum.PartType.Ball, Size = Vector3.new(0.4, 0.4, 0.4), Position = cake.Position + Vector3.new(0, 2.6, 0), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
 
 	-- ceiling, so the house feels like a house
-	part(root, { Name = "Ceiling", Size = Vector3.new(map.w * T, 4, map.h * T), Position = Vector3.new(map.w * T / 2, H + 2.02, map.h * T / 2), CastShadow = false, Material = Enum.Material.Plaster, Color = Color3.fromRGB(30, 20, 40) })
+	local function ceiling(x0, y0, x1, y1, height)
+		if x1 < x0 or y1 < y0 then
+			return
+		end
+		part(root, { Name = "Ceiling", Size = Vector3.new((x1 - x0 + 1) * T, 4, (y1 - y0 + 1) * T), Position = Vector3.new((x0 + x1 + 1) / 2 * T, height + 2.02, (y0 + y1 + 1) / 2 * T), CastShadow = false, Material = Enum.Material.Plaster, Color = Color3.fromRGB(30, 20, 40) })
+	end
+	local tall
+	for _, f in ipairs(map.floors) do
+		if f.tall then
+			tall = f
+		end
+	end
+	if tall then
+		-- a high ceiling over the tall room, the normal one everywhere else
+		ceiling(0, 0, map.w - 1, tall.y0 - 1, H)
+		ceiling(0, tall.y1 + 1, map.w - 1, map.h - 1, H)
+		ceiling(0, tall.y0, tall.x0 - 1, tall.y1, H)
+		ceiling(tall.x1 + 1, tall.y0, map.w - 1, tall.y1, H)
+		ceiling(tall.x0, tall.y0, tall.x1, tall.y1, HT)
+	else
+		ceiling(0, 0, map.w - 1, map.h - 1, H)
+	end
+	House.buildLoft(world)
 
 	House.buildObjects(world)
 	House.buildGarden(world)
@@ -220,7 +265,7 @@ end
 function House.buildObjects(world)
 	local root, map = world.root, world.map
 	for _, o in ipairs(map.objects) do
-		local base = at(o.x, o.y, 0)
+		local base = at(o.x, o.y, o.h or 0)
 		local entry = { def = o }
 		world.objects[o.id] = entry
 		if o.kind == "door" then
@@ -417,7 +462,30 @@ function House.buildGarden(world)
 		end
 	end
 	local gx0, gx1 = doorX - 7, doorX + 8
-	local garden = part(root, { Name = "Garden", Size = Vector3.new((gx1 - gx0) * T, 1, 6 * T), Position = Vector3.new((gx0 + gx1) / 2 * T, -0.5, -3 * T), Material = Enum.Material.Grass, Color = Color3.fromRGB(60, 110, 50) })
+	-- upper floors: the way out is a stairwell landing (wood, walls, stairs up) instead of the garden
+	local stairs = map.exitStyle == "stairs"
+	local groundMat, groundCol = Enum.Material.Grass, Color3.fromRGB(60, 110, 50)
+	if stairs then
+		groundMat, groundCol = Enum.Material.WoodPlanks, Color3.fromRGB(110, 75, 48)
+	end
+	local garden = part(root, { Name = "Garden", Size = Vector3.new((gx1 - gx0) * T, 1, 6 * T), Position = Vector3.new((gx0 + gx1) / 2 * T, -0.5, -3 * T), Material = groundMat, Color = groundCol })
+	if stairs then
+		for i = 1, 8 do
+			part(root, { Name = "StairUp", Size = Vector3.new(16, i * 1.5, 3), Position = Vector3.new(doorX * T + T / 2, i * 0.75, -16 - i * 3), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(95, 62, 40), CanCollide = false })
+		end
+		local sign = part(root, { Name = "UpSign", Size = Vector3.new(10, 3, 0.3), Position = Vector3.new(doorX * T + T / 2, 14, -5.9 * T), Color = Color3.fromRGB(40, 28, 46), CanCollide = false })
+		local sg = Instance.new("SurfaceGui")
+		sg.Face = Enum.NormalId.Back
+		sg.Parent = sign
+		local t = Instance.new("TextLabel")
+		t.Size = UDim2.fromScale(1, 1)
+		t.BackgroundTransparency = 1
+		t.TextScaled = true
+		t.Font = Enum.Font.FredokaOne
+		t.TextColor3 = Color3.fromRGB(255, 210, 63)
+		t.Text = "\u{2B06} Up to the next floor"
+		t.Parent = sg
+	end
 	-- the side path runs along whichever side has the hole
 	local holeWest = false
 	for _, o in ipairs(map.objects) do
@@ -436,7 +504,8 @@ function House.buildGarden(world)
 	local function hedge(x0, z0, x1, z1)
 		local size = Vector3.new(math.max(2, math.abs(x1 - x0)), 6, math.max(2, math.abs(z1 - z0)))
 		local centre = Vector3.new((x0 + x1) / 2, 3, (z0 + z1) / 2)
-		part(root, { Name = "Hedge", Size = size, Position = centre, Material = Enum.Material.LeafyGrass, Color = Color3.fromRGB(40, 80, 38) })
+		part(root, { Name = "Hedge", Size = stairs and Vector3.new(size.X, 16, size.Z) or size, Position = stairs and centre + Vector3.new(0, 5, 0) or centre,
+			Material = stairs and Enum.Material.Plaster or Enum.Material.LeafyGrass, Color = stairs and Color3.fromRGB(70, 46, 96) or Color3.fromRGB(40, 80, 38) })
 		part(root, { Name = "Boundary", Size = Vector3.new(size.X, 40, size.Z), Position = centre + Vector3.new(0, 20, 0), Transparency = 1 })
 	end
 	local gx0s, gx1s, gz = gx0 * T, gx1 * T, -6 * T
@@ -449,6 +518,34 @@ function House.buildGarden(world)
 	hedge(px0, map.h * T, px1, map.h * T)
 	world.gardenSpot = garden.Position + Vector3.new(0, 4, 0)
 	world.gardenSpotSide = Vector3.new(sideX, 4, map.h * T / 2)
+end
+
+-- the loft: a raised gallery along one side of a tall room, a railing, and a
+-- ramp down (a ramp, so the host can follow you up)
+function House.buildLoft(world)
+	local L = world.map.loft
+	if not L then
+		return
+	end
+	local root = world.root
+	local x0, z0, x1, z1 = L.x0 * T, L.y0 * T, (L.x1 + 1) * T, (L.y1 + 1) * T
+	part(root, { Name = "Loft", Size = Vector3.new(x1 - x0, 1, z1 - z0), Position = Vector3.new((x0 + x1) / 2, L.h - 0.5, (z0 + z1) / 2), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(110, 72, 44) })
+	for x = L.x0, L.x1 do
+		if x ~= L.stairX then
+			part(root, { Name = "Rail", Size = Vector3.new(T, 3, 0.4), Position = at(x, L.y1, L.h + 1.5) + Vector3.new(0, 0, T / 2 - 0.2), Material = Enum.Material.Wood, Color = Color3.fromRGB(70, 45, 30) })
+		end
+	end
+	-- the ramp rises northwards (-Z) from the floor to the loft's edge
+	local run = (L.stairY1 - L.stairY0 + 1) * T
+	local ramp = Instance.new("WedgePart")
+	ramp.Name = "LoftRamp"
+	ramp.Anchored = true
+	ramp.Size = Vector3.new(T - 1, L.h, run)
+	-- a WedgePart is tallest at its back (+Z); turned round, tallest towards the loft
+	ramp.CFrame = CFrame.new(L.stairX * T + T / 2, L.h / 2, L.stairY0 * T + run / 2) * CFrame.Angles(0, math.pi, 0)
+	ramp.Material = Enum.Material.WoodPlanks
+	ramp.Color = Color3.fromRGB(110, 72, 44)
+	ramp.Parent = root
 end
 
 -- something searched or opened shows it: lids lift, drawers slide out, coats
@@ -565,8 +662,9 @@ function House.decorate(world)
 		local x0, z0, x1, z1 = f.x0 * T, f.y0 * T, (f.x1 + 1) * T, (f.y1 + 1) * T
 		-- two swags of party flags across the ceiling
 		for s = 0, 1 do
-			local a = Vector3.new(x0 + 1, H - 1.2, s == 0 and z0 + 1 or z1 - 1)
-			local b = Vector3.new(x1 - 1, H - 1.2, s == 0 and z1 - 1 or z0 + 1)
+			local top = (f.tall and HT or H) - 1.2
+			local a = Vector3.new(x0 + 1, top, s == 0 and z0 + 1 or z1 - 1)
+			local b = Vector3.new(x1 - 1, top, s == 0 and z1 - 1 or z0 + 1)
 			local n = math.max(2, math.floor((b - a).Magnitude / 2.6))
 			local side = (b - a).Unit:Cross(Vector3.yAxis)
 			for i = 0, n do

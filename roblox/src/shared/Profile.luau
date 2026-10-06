@@ -151,6 +151,7 @@ function Profile.boardNames()
 	return {
 		points = "EC_TopEarned",
 		escapes = "EC_TopEscapes",
+		floors = "EC_TopFloors", -- how many different floors escaped
 		rescues = "EC_TopRescues",
 		fastest = "EC_FastAll_w" .. Profile.week(),
 	}
@@ -170,6 +171,16 @@ function Profile.record(plr, mapId, difficulty, escapedSeconds)
 		if p then
 			pcall(function()
 				p:SetAsync(key, math.floor(data.stats.earned or data.points))
+			end)
+		end
+		local fl = board(names.floors)
+		if fl then
+			local n = 0
+			for _ in pairs(data.cleared or {}) do
+				n += 1
+			end
+			pcall(function()
+				fl:SetAsync(key, n)
 			end)
 		end
 		local e = board(names.escapes)

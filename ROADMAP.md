@@ -21,13 +21,20 @@ Brent approved this plan as written; build in order, asking before each step.
 - Lobby: comic-shop cashier shopkeeper, a drive-in car facing the boards,
   trampoline, kick ball, giant pumpkin, bell.
 
-## Step 2 - buildings of floors
+## Step 2 - buildings of floors (built 6 Oct)
 - A building is a stack of floors; one game = one floor; escaping a floor
   unlocks the next. Party House: Ground, Bedrooms, Attic (+ secret Basement
   later). Lobby votes building + floor. Boards per building and floor, plus
   "highest floor reached".
 - Floor 2 (Bedrooms) with stairwell exit and a loft half-level in one plan;
   the corner map follows the level you are on.
+- Built as: `Progress.MAPS` entries carry building + floor
+  (`partyhouse`, `partyhouse_2`, `partyhouse_3` coming soon, `gummy`,
+  `hospital`); `Progress.unlocksAfter`; `HouseMap` is floor -> plans
+  (Bedrooms plans `bed_a` + mirror `bed_b`); the Gallery is a tall room
+  (ceiling 24) with a loft 7 studs up and a ramp; upper floors exit into a
+  stairwell landing; Studio Play builds `Config.STUDIO_MAP`; Lobby board
+  "Most floors escaped"; Frozen Pop boost (freezes the host 10 s).
 
 ## Step 3 - the host roster
 - A random host each floor (50% the building's own): Pumpkin (throw),

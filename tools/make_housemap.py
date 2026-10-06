@@ -33,6 +33,9 @@ class Plan:
             self.grid[y][0] = self.grid[y][W - 1] = '#'
         self.floors, self.furniture, self.fixed, self.patrol, self.props = [], [], [], [], []
         self.start, self.spawn, self.cake = [], None, None
+        self.exit_style = 'garden'  # 'stairs' on upper floors: the way out is a stairwell
+        self.loft = None             # a raised gallery inside a tall room (see plan_bedrooms)
+        self.tall = set()            # rooms with a high ceiling
 
     def rect(self, x0, y0, x1, y1, ch='#'):
         for y in range(y0, y1 + 1):
@@ -129,6 +132,56 @@ def mirror(a, pid, name):
     p.patrol = [(m(t[0]),) + tuple(t[1:]) for t in a.patrol]
     flip = {'e': 'w', 'w': 'e', 'n': 'n', 's': 's'}
     p.props = [(s[0], W - s[1] - s[3]) + tuple(s[2:6]) + (flip[s[6]],) + tuple(s[7:]) for s in a.props]
+    p.exit_style, p.tall = a.exit_style, set(a.tall)
+    if a.loft:
+        L = dict(a.loft)
+        L['x0'], L['x1'], L['stair_x'] = m(a.loft['x1']), m(a.loft['x0']), m(a.loft['stair_x'])
+        p.loft = L
+    return p
+
+
+# ---------------------------------------------------------------- floor 2: the Bedrooms
+def plan_bedrooms():
+    p = Plan('bed_a', 'The Party House - Bedrooms')
+    p.exit_style = 'stairs'
+    for x in (10, 20, 30):
+        p.rect(x, 0, x, H - 1)
+    for y in (9, 19):
+        p.rect(0, y, W - 1, y)
+    for y in range(1, H - 1):
+        p.grid[y][0] = '#'
+        p.grid[y][W - 1] = '#'
+    p.rect(20, 10, 20, 18, '.')     # the Gallery spans B and C, two storeys high
+    for x, y in [(10, 24), (20, 25), (30, 24), (15, 19), (25, 19), (10, 15), (30, 14), (35, 19), (5, 19), (10, 4), (30, 4)]:
+        p.put(x, y, '.')
+    p.put(5, 9, 'L')     # L1: Kids' Bedroom -> Master Bedroom
+    p.put(20, 4, 'L')    # L2: Study -> Stairwell Hall
+    p.put(25, 0, 'D')
+    p.put(39, 5, 'H')
+    p.put(0, 14, 'C')
+    for x, y in [(23, 3), (27, 3), (23, 6), (27, 6)]:
+        p.put(x, y, '#')
+    p.rect(27, 21, 27, 23)          # bathroom stall
+    for f in [(2, 11, 3, 12, 'bed'), (6, 11, 7, 12, 'bed'), (3, 2, 6, 4, 'bed'), (13, 2, 15, 2, 'desk'), (12, 6, 17, 6, 'shelf'),
+              (33, 3, 34, 4, 'table'), (14, 15, 17, 16, 'table'), (33, 11, 35, 12, 'bed'), (2, 21, 3, 22, 'bed'),
+              (22, 21, 25, 22, 'bath'), (32, 23, 36, 23, 'shelf')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 9, 8, 'carpet', 'Master Bedroom'), (11, 1, 19, 8, 'green', 'Study'), (21, 1, 29, 8, 'boards', 'Stairwell Hall'),
+                (31, 1, 38, 8, 'purple', 'Playroom'), (1, 10, 9, 18, 'carpet', "Kids' Bedroom"), (11, 10, 29, 18, 'wood', 'Gallery'),
+                (31, 10, 38, 18, 'green', 'Guest Room'), (1, 20, 9, 28, 'purple', 'Nursery'), (11, 20, 19, 28, 'boards', 'Landing'),
+                (21, 20, 29, 28, 'tiles', 'Bathroom'), (31, 20, 38, 28, 'wood', 'Linen Room')]
+    p.tall = {'Gallery'}
+    # the loft: rows 10-12 of the Gallery, 7 studs up, a ramp down at x 28
+    p.loft = dict(x0=11, y0=10, x1=29, y1=12, h=7, stair_x=28, stair_y0=13, stair_y1=16)
+    p.fixed = [dict(id='door', kind='door', x=25, y=0), dict(id='hole', kind='hole', x=39, y=5), dict(id='cab', kind='cabinet', x=38, y=5),
+               dict(id='L1', kind='lock', x=5, y=9, name='Master Bedroom door'), dict(id='L2', kind='lock', x=20, y=4, name='Stairwell door'),
+               dict(id='cage', kind='cage', x=12, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=9, y=26), dict(id='v1b', kind='vent', pair='v1', x=11, y=26),
+               dict(id='v2a', kind='vent', pair='v2', x=31, y=17), dict(id='v2b', kind='vent', pair='v2', x=29, y=17)]
+    p.start = [(14, 27), (15, 27), (16, 27), (17, 27), (18, 27), (19, 27)]
+    p.spawn, p.cake = (1, 14), (15, 15)
+    p.patrol = [(5, 15), (20, 15), (35, 15), (35, 26), (25, 25), (15, 24), (5, 25),
+                (5, 5, 'L1'), (15, 4, 'L1'), (25, 5, 'L2'), (35, 6, 'L2')]
     return p
 
 
@@ -290,6 +343,16 @@ def slots(p, zone_of, allopen):
                 for dx in (-1, 0, 1):
                     for dy in (-1, 0, 1):
                         keep.add((x + dx, y + dy))
+    under_loft = set()
+    if p.loft:
+        L = p.loft
+        for y in range(L['y0'], L['y1'] + 1):
+            for x in range(L['x0'], L['x1'] + 1):
+                under_loft.add((x, y))
+        keep |= under_loft
+        for y in range(L['stair_y0'] - 1, L['stair_y1'] + 2):
+            for dx in (-1, 0, 1):
+                keep.add((L['stair_x'] + dx, y))
     floor, wall = [], []
     for y in range(1, H - 1):
         for x in range(1, W - 1):
@@ -299,11 +362,19 @@ def slots(p, zone_of, allopen):
                 # never in a one-tile-wide aisle (between a wall and a shelf)
                 aisle = (p.c(x, y - 1) in '#T' and p.c(x, y + 1) in '#T') or (p.c(x - 1, y) in '#T' and p.c(x + 1, y) in '#T')
                 if against and not aisle:
-                    floor.append((x, y, zone_of[r], r))
+                    floor.append((x, y, zone_of[r], r, 0))
+    # up on the loft: the back two rows (the front row stays a walkway)
+    if p.loft:
+        L = p.loft
+        for y in range(L['y0'], L['y1']):
+            for x in range(L['x0'], L['x1'] + 1):
+                if abs(x - L['stair_x']) > 1:
+                    r = room_of(p, x, y)
+                    floor.append((x, y, zone_of[r], r, L['h']))
     for y in range(0, H - 1):
         for x in range(W):
             r = room_of(p, x, y + 1)
-            if p.c(x, y) == '#' and p.c(x, y + 1) == '.' and r and (x, y + 1) not in keep and (x, y) not in keep:
+            if p.c(x, y) == '#' and p.c(x, y + 1) == '.' and r and (x, y + 1) not in keep and (x, y) not in keep and (x, y + 1) not in under_loft:
                 wall.append((x, y, zone_of[r], r))
     return floor, wall
 
@@ -371,7 +442,8 @@ def trial(p, floor, wall, rnd):
 # ---------------------------------------------------------------- run
 plans = []
 a = plan_a()
-for p in (a, mirror(a, 'b', 'The Party House'), plan_c()):
+bed = plan_bedrooms()
+for p in (a, mirror(a, 'b', 'The Party House'), plan_c(), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (
@@ -386,7 +458,7 @@ for p in (a, mirror(a, 'b', 'The Party House'), plan_c()):
         print('  ' + ''.join(row))
     if problems:
         raise SystemExit('PLAN %s PROBLEMS:\n  ' % p.id + '\n  '.join(problems))
-    plans.append((p, zone_of, floor, wall))
+    plans.append((p, zone_of, floor, wall, 2 if p.id.startswith('bed') else 1))
 
 
 def lua(v):
@@ -404,12 +476,23 @@ out = ['--[[',
        '\tobjects over its checked slots { x, y, zone, room }.',
        '\tMap key: # wall, . floor, T furniture, L locked door, D the big exit',
        '\tdoor, H the hole behind the cabinet (Muscle), C the host\'s door.',
+       '\tReturns floor number -> list of plans.',
        ']]', '', 'return {']
-for p, zone_of, floor, wall in plans:
-    out += ['\t{', '\t\tid = "%s",' % p.id, '\t\tname = "%s",' % p.name, '\t\tw = %d,' % W, '\t\th = %d,' % H, '\t\tmap = {']
+for fl in (1, 2):
+  out.append('\t[%d] = {' % fl)
+  for p, zone_of, floor, wall, pfl in plans:
+    if pfl != fl:
+        continue
+    out += ['\t{', '\t\tid = "%s",' % p.id, '\t\tname = "%s",' % p.name, '\t\tw = %d,' % W, '\t\th = %d,' % H,
+            '\t\texitStyle = "%s",' % p.exit_style]
+    if p.loft:
+        L = p.loft
+        out.append('\t\tloft = { x0 = %d, y0 = %d, x1 = %d, y1 = %d, h = %d, stairX = %d, stairY0 = %d, stairY1 = %d },' % (
+            L['x0'], L['y0'], L['x1'], L['y1'], L['h'], L['stair_x'], L['stair_y0'], L['stair_y1']))
+    out += ['\t\tmap = {']
     out += ['\t\t\t"%s",' % ''.join(r) for r in p.grid]
     out += ['\t\t},', '\t\tfloors = {']
-    out += ['\t\t\t{ x0 = %d, y0 = %d, x1 = %d, y1 = %d, kind = "%s", name = "%s", zone = %d },' % (f + (zone_of[f[5]],)) for f in p.floors]
+    out += ['\t\t\t{ x0 = %d, y0 = %d, x1 = %d, y1 = %d, kind = "%s", name = "%s", zone = %d%s },' % (f + (zone_of[f[5]], ', tall = true' if f[5] in p.tall else '')) for f in p.floors]
     out += ['\t\t},', '\t\tfurniture = {']
     out += ['\t\t\t{ x0 = %d, y0 = %d, x1 = %d, y1 = %d, kind = "%s" },' % f for f in p.furniture]
     out += ['\t\t},',
@@ -424,10 +507,11 @@ for p, zone_of, floor, wall in plans:
     for s in p.props:
         out.append('\t\t\t{ name = "%s", x = %d, y = %d, w = %d, d = %d, h = %s, face = "%s"%s },' % (s[0], s[1], s[2], s[3], s[4], s[5], s[6], ', hang = true' if len(s) > 7 else ''))
     out += ['\t\t},', '\t\tfloorSlots = {']
-    out += ['\t\t\t{ %d, %d, %d, "%s" },' % s for s in floor]
+    out += ['\t\t\t{ %d, %d, %d, "%s", %d },' % s for s in floor]
     out += ['\t\t},', '\t\twallSlots = {']
     out += ['\t\t\t{ %d, %d, %d, "%s" },' % s for s in wall]
     out += ['\t\t},', '\t},']
+  out.append('\t},')
 out += ['}', '']
 path = os.path.join(os.path.dirname(__file__), '..', 'roblox', 'src', 'shared', 'HouseMap.luau')
 open(path, 'w', encoding='utf-8', newline='\n').write('\n'.join(out))

@@ -41,6 +41,8 @@ function MapGen.make(plans, rng)
 		cake = plan.cake,
 		patrol = plan.patrol,
 		props = plan.props,
+		exitStyle = plan.exitStyle,
+		loft = plan.loft,
 		objects = {},
 	}
 	local zoneOf = {}
@@ -101,6 +103,9 @@ function MapGen.make(plans, rng)
 	local function add(o, s)
 		if s then
 			o.x, o.y, o.zone = s[1], s[2], s[3]
+			if s[5] and s[5] > 0 then
+				o.h = s[5] -- up on the loft
+			end
 			table.insert(map.objects, o)
 		end
 	end
@@ -158,7 +163,7 @@ function MapGen.forClient(map)
 	for _, o in ipairs(map.objects) do
 		table.insert(objects, { id = o.id, kind = o.kind, x = o.x, y = o.y, n = o.n, zone = o.zone, name = o.name })
 	end
-	return { id = map.id, w = map.w, h = map.h, map = map.map, floors = map.floors, objects = objects }
+	return { id = map.id, w = map.w, h = map.h, map = map.map, floors = map.floors, objects = objects, loft = map.loft }
 end
 
 return MapGen

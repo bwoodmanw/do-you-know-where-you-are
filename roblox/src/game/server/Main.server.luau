@@ -21,7 +21,7 @@ local MapGen = require(ReplicatedStorage.Shared.MapGen)
 local HttpService = game:GetService("HttpService")
 -- this game's house: a floor plan with everything placed at random, remade
 -- at the start of every game
-local HouseMap = MapGen.make(Plans)
+local HouseMap = MapGen.make(Plans[1])
 local House = require(script.Parent.House)
 local Host = require(script.Parent.Host)
 local Effects = require(script.Parent.Effects)
@@ -375,11 +375,17 @@ local function checkEnd()
 				end
 			end
 			if won and out then
-				local i = Progress.mapIndex(mapId)
-				local nextMap = i and Progress.MAPS[i + 1]
-				if nextMap and not pd.unlocked[nextMap.id] then
-					pd.unlocked[nextMap.id] = true
-					row.unlocked = nextMap.name
+				pd.cleared = pd.cleared or {}
+				pd.cleared[mapId] = true
+				local names = {}
+				for _, nextMap in ipairs(Progress.unlocksAfter(mapId)) do
+					if not pd.unlocked[nextMap.id] then
+						pd.unlocked[nextMap.id] = true
+						table.insert(names, nextMap.name)
+					end
+				end
+				if #names > 0 then
+					row.unlocked = table.concat(names, " + ")
 				end
 			end
 			Profile.publish(plr)
@@ -485,13 +491,13 @@ local function anyCaged()
 end
 
 -- nearest walkable tile beside a spot, for stepping out of hiding
-local function besideTile(x, y)
+local function besideTile(x, y, h)
 	local map = HouseMap.map
 	for _, d in ipairs({ { 0, 1 }, { 1, 0 }, { -1, 0 }, { 0, -1 }, { 1, 1 }, { -1, 1 } }) do
 		local nx, ny = x + d[1], y + d[2]
 		local row = map[ny + 1]
 		if row and string.sub(row, nx + 1, nx + 1) == "." then
-			return at(nx, ny, 0)
+			return at(nx, ny, h or 0)
 		end
 	end
 	return at(x, y, 0)
@@ -761,7 +767,7 @@ local function wirePrompts()
 				end)
 			end)
 		elseif def.kind == "hide" then
-			entry.outside = besideTile(def.x, def.y)
+			entry.outside = besideTile(def.x, def.y, def.h)
 			entry.prompt.Triggered:Connect(function(plr)
 				if plr:GetAttribute("Hidden") then
 					return unhide(plr)
@@ -1178,6 +1184,19 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 		Boost:FireClient(plr, "candy")
 	elseif id == "energy" then
 		Boost:FireClient(plr, "stamina")
+	elseif id == "freeze" then
+		if host and host.model then
+			host:stun(10)
+			local ice = Instance.new("Highlight")
+			ice.FillColor = Color3.fromRGB(140, 220, 255)
+			ice.OutlineColor = Color3.new(1, 1, 1)
+			ice.FillTransparency = 0.35
+			ice.Parent = host.model
+			Effects.burst(host.root.Position, "reveal")
+			task.delay(10, function()
+				ice:Destroy()
+			end)
+		end
 	elseif id == "clue" then
 		state.cluesLeft += 1
 		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
@@ -1213,7 +1232,10 @@ function round.start()
 	if host then
 		host:remove()
 	end
-	HouseMap = MapGen.make(Plans)
+	-- the floor this server plays (the Lobby's choice; Config.STUDIO_MAP in Studio)
+	local mapIdx = Progress.mapIndex(RoundState:GetAttribute("Map") or "partyhouse")
+	local floorNo = mapIdx and Progress.MAPS[mapIdx].floor or 1
+	HouseMap = MapGen.make(Plans[floorNo] or Plans[1])
 	RoundState:SetAttribute("MapJson", HttpService:JSONEncode(MapGen.forClient(HouseMap)))
 	world = House.build(HouseMap)
 	Props.place(world)
@@ -1393,6 +1415,9 @@ Players.PlayerAdded:Connect(function(plr)
 		end
 		if data.spook == "giggly" or data.spook == "spooky" then
 			RoundState:SetAttribute("Spook", data.spook)
+		end
+		if RunService:IsStudio() and not RoundState:GetAttribute("Map") then
+			RoundState:SetAttribute("Map", Config.STUDIO_MAP)
 		end
 		if typeof(data.map) == "string" and Progress.mapIndex(data.map) then
 			RoundState:SetAttribute("Map", data.map)

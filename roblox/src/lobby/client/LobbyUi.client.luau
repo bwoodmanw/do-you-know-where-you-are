@@ -170,7 +170,7 @@ local function opt(key, value)
 end
 local mapBox = frame(partyBox, { Size = UDim2.new(1, -40, 0, 80), Position = UDim2.fromOffset(20, 210), BackgroundTransparency = 1 })
 local mapGrid = Instance.new("UIGridLayout")
-mapGrid.CellSize = UDim2.fromOffset(128, 76)
+mapGrid.CellSize = UDim2.new(1 / #Progress.MAPS, -7, 0, 76)
 mapGrid.CellPadding = UDim2.fromOffset(8, 0)
 mapGrid.Parent = mapBox
 local mapBtns = {}
@@ -307,7 +307,7 @@ end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 
 -- ---------- the shop ----------
-local shop = frame(gui, { Size = UDim2.fromOffset(620, 540), Position = UDim2.new(0.5, -310, 0.5, -270), Visible = false, ZIndex = 10 })
+local shop = frame(gui, { Size = UDim2.fromOffset(620, 610), Position = UDim2.new(0.5, -310, 0.5, -305), Visible = false, ZIndex = 10 })
 corner(shop, 18)
 label(shop, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "\u{1F6D2} Boost Shop", TextColor3 = PUMP, ZIndex = 11 })
 label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "+ buys, \u{2212} sells back. Tap Take on up to " .. Progress.MAX_BOOSTS .. " to bring into your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
@@ -367,7 +367,7 @@ for i, id in ipairs(Progress.BOOST_ORDER) do
 	shopRows[id] = { owned = owned, take = take, minus = minus }
 end
 -- what is packed for the next game
-local packed = frame(shop, { Size = UDim2.new(1, -24, 0, 46), Position = UDim2.fromOffset(12, 432), BackgroundColor3 = Color3.fromRGB(47, 107, 58), BackgroundTransparency = 0.4, ZIndex = 11 })
+local packed = frame(shop, { Size = UDim2.new(1, -24, 0, 46), Position = UDim2.fromOffset(12, 502), BackgroundColor3 = Color3.fromRGB(47, 107, 58), BackgroundTransparency = 0.4, ZIndex = 11 })
 corner(packed, 12)
 local packedText = label(packed, { Size = UDim2.new(1, -20, 1, -12), Position = UDim2.fromOffset(10, 6), ZIndex = 12 })
 button(shop, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -54), ZIndex = 11 }, function()

@@ -771,7 +771,7 @@ local mapAt = TOUCH and UDim2.fromOffset(10, 152) or UDim2.new(0, 10, 1, -94 - M
 local mapBox = frame(gui, { Size = UDim2.fromOffset(MAP_W + 8, MAP_H + 32), Position = mapAt, BackgroundTransparency = 0.25 })
 corner(mapBox, 10)
 local mapArea = frame(mapBox, { Size = UDim2.fromOffset(MAP_W, MAP_H), Position = UDim2.fromOffset(4, 28), BackgroundColor3 = Color3.fromRGB(10, 6, 16), BackgroundTransparency = 0, ClipsDescendants = true })
-label(mapBox, { Size = UDim2.new(1, -44, 0, 20), Position = UDim2.fromOffset(8, 4), Text = "\u{1F5FA} Map" .. (TOUCH and "" or " (N)"), TextXAlignment = Enum.TextXAlignment.Left })
+local mapTitle = label(mapBox, { Size = UDim2.new(1, -44, 0, 20), Position = UDim2.fromOffset(8, 4), Text = "\u{1F5FA} Map" .. (TOUCH and "" or " (N)"), TextXAlignment = Enum.TextXAlignment.Left })
 local mapOpenBtn = button(gui, "\u{1F5FA} Map" .. (TOUCH and "" or " (N)"), { Size = UDim2.fromOffset(110, 36), Position = mapAt, Visible = false })
 local function showMap(open)
 	mapBox.Visible = open
@@ -790,6 +790,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
 end)
 
 local roomTiles, found, viewParts, lockConns = {}, {}, {}, {}
+local loftView -- the loft, drawn over its room; bright when you are up there
 local function mapRect(x0, y0, x1, y1, color, z)
 	local f = frame(mapArea, { Position = UDim2.fromOffset(x0 * PX, y0 * PX), Size = UDim2.fromOffset((x1 - x0 + 1) * PX, (y1 - y0 + 1) * PX), BackgroundColor3 = color, BackgroundTransparency = 0, Visible = false, ZIndex = z or 2 })
 	table.insert(viewParts, f)
@@ -813,6 +814,7 @@ local function buildView()
 		c:Disconnect()
 	end
 	viewParts, lockConns, roomTiles, found = {}, {}, {}, {}
+	loftView = nil
 	for _, f in ipairs(HouseMap.floors) do
 		local r = mapRect(f.x0, f.y0, f.x1, f.y1, ROOM_COLOR)
 		label(r, { Size = UDim2.new(1, -4, 0, 12), Position = UDim2.fromOffset(2, 2), Text = f.name, TextColor3 = Color3.fromRGB(230, 215, 245), ZIndex = 3 })
@@ -842,6 +844,16 @@ local function buildView()
 					end
 				end
 			end
+		end
+	end
+	if HouseMap.loft then
+		local L = HouseMap.loft
+		loftView = mapRect(L.x0, L.y0, L.x1, L.y1, Color3.fromRGB(190, 150, 90), 3)
+		loftView.BackgroundTransparency = 0.8
+		label(loftView, { Size = UDim2.new(1, -4, 1, 0), Position = UDim2.fromOffset(2, 0), Text = "Loft", TextColor3 = Color3.fromRGB(255, 240, 200), ZIndex = 4 })
+		local name = floorOf(L.x0, L.y0)
+		if name then
+			table.insert(roomTiles[name], loftView)
 		end
 	end
 	-- the way out, once you have seen the room it is in
@@ -884,6 +896,12 @@ RunService.Heartbeat:Connect(function()
 	if hrp then
 		discover(floorOf(math.floor(hrp.Position.X / T), math.floor(hrp.Position.Z / T)))
 		me.Position = onMap(hrp.Position)
+		-- up on the loft or down on the floor: the map follows you
+		local up = HouseMap.loft and hrp.Position.Y > HouseMap.loft.h + 1
+		mapTitle.Text = "\u{1F5FA} Map \u{00B7} " .. (up and "Loft" or "Ground") .. (TOUCH and "" or " (N)")
+		if loftView then
+			loftView.BackgroundTransparency = up and 0.15 or 0.8
+		end
 		local lv = hrp.CFrame.LookVector
 		me.Rotation = math.deg(math.atan2(lv.X, -lv.Z))
 	end
