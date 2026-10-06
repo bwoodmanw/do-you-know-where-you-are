@@ -68,7 +68,7 @@ local GENERIC = {
 local SPECIAL = {
 	tinker = {
 		[3] = {
-			{ id = "fingers", name = "Quick Fingers", say = "Pick the lock 40% faster", mods = { holdMult = 0.6 } },
+			{ id = "fingers", name = "Quick Fingers", say = "Pick locked doors 40% faster", mods = { holdMult = 0.6 } },
 			{ id = "lucky", name = "Lucky Guess", say = "Your team starts knowing one colour of the code", mods = { revealOne = true } },
 		},
 		[5] = {

@@ -393,7 +393,6 @@ local function openDoor(plr, how)
 	door.CanCollide = false
 	TweenService:Create(door, TweenInfo.new(1.2), { Position = door.Position + Vector3.new(0, 9.5, 0) }):Play()
 	world.objects.door.usePrompt.Enabled = false
-	world.objects.door.pickPrompt.Enabled = false
 	addPoints(plr, 25)
 	say("open", how == "pick" and ("Click! " .. plr.DisplayName .. " picked the lock! Everybody out!") or "The big door is open! Everybody out!")
 end
@@ -467,6 +466,32 @@ local function besideTile(x, y)
 	return at(x, y, 0)
 end
 
+local NOTHING = {
+	"Nothing but old socks.",
+	"Just crumbs and a sticky sweet. No key.",
+	"A spider! But no key.",
+	"Dusty party hats. No key here.",
+	"Empty... the key must be somewhere else.",
+}
+
+-- a locked inner door opens (with its key, or Tinker picks it)
+local function openLock(plr, id, how)
+	if world.unlocked[id] then
+		return
+	end
+	world.unlocked[id] = true
+	RoundState:SetAttribute("Lock_" .. id, true)
+	local entry = world.objects[id]
+	entry.part.CanCollide = false
+	entry.unlockPrompt.Enabled = false
+	entry.pickPrompt.Enabled = false
+	Effects.sound(entry.lockPart.Position, "unlock", 1)
+	TweenService:Create(entry.part, TweenInfo.new(1), { Position = entry.part.Position + Vector3.new(0, 13, 0) }):Play()
+	entry.lockPart:Destroy()
+	addPoints(plr, 15)
+	say("open", (how == "pick" and ("Click! " .. plr.DisplayName .. " picked the lock on the ") or (plr.DisplayName .. " unlocked the ")) .. entry.def.name .. "!")
+end
+
 local function wirePrompts()
 	local o = world.objects
 	for id, entry in pairs(o) do
@@ -478,6 +503,16 @@ local function wirePrompts()
 				end
 				entry.popped = true
 				entry.prompt.Enabled = false
+				if def.decoy then
+					entry.part.Transparency = 1
+					entry.label.Text = ""
+					Effects.burst(entry.part.Position, "pop")
+					say("pop", "POP! Just air - that balloon was a trick. And it was LOUD...", nil, plr)
+					if host then
+						host:alert(entry.part.Position)
+					end
+					return
+				end
 				local col = state.code[def.n]
 				state.known[def.n] = col
 				RoundState:SetAttribute("Known" .. def.n, col)
@@ -501,6 +536,10 @@ local function wirePrompts()
 				entry.opened = true
 				entry.prompt.Enabled = false
 				entry.part.Transparency = 0.6
+				if not def.boost then
+					Effects.sound(entry.part.Position, "hide")
+					return say("info", "Empty! Just tissue paper.", nil, plr)
+				end
 				addPoints(plr, 5)
 				if def.boost == "shield" then
 					plr:SetAttribute("Shield", true)
@@ -570,13 +609,6 @@ local function wirePrompts()
 					OpenKeypad:FireClient(plr)
 				end
 			end)
-			entry.pickPrompt.Triggered:Connect(function(plr)
-				if plr:GetAttribute("Skill") ~= "tinker" then
-					return need(plr, "tinker", "Only Tinker can pick this lock. Try the colour code instead!")
-				end
-				Effects.burst(entry.keypad.Position, "pick")
-				openDoor(plr, "pick")
-			end)
 			entry.exit.Touched:Connect(function(hit)
 				local plr = Players:GetPlayerFromCharacter(hit.Parent)
 				if plr and state.doorOpen and state.status == "playing" then
@@ -613,6 +645,49 @@ local function wirePrompts()
 				end
 				entry.prompt.Enabled = anyCaged()
 			end)
+		elseif def.kind == "lock" then
+			entry.unlockPrompt.Triggered:Connect(function(plr)
+				if state.status ~= "playing" or world.unlocked[id] then
+					return
+				end
+				if not world.keys[id] then
+					return need(plr, "tinker", "Locked! The key is hidden in something you can search - drawers, boxes, coats... Or bring Tinker to pick it.")
+				end
+				openLock(plr, id, "key")
+			end)
+			entry.pickPrompt.Triggered:Connect(function(plr)
+				if state.status ~= "playing" or world.unlocked[id] then
+					return
+				end
+				if plr:GetAttribute("Skill") ~= "tinker" then
+					return need(plr, "tinker", "Only Tinker can pick a lock. Everyone else needs the key!")
+				end
+				Effects.burst(entry.lockPart.Position, "pick")
+				openLock(plr, id, "pick")
+			end)
+		elseif def.kind == "search" then
+			entry.prompt.Triggered:Connect(function(plr)
+				if state.status ~= "playing" or entry.searched then
+					return
+				end
+				entry.searched = true
+				entry.prompt.Enabled = false
+				Effects.sound(entry.part.Position, "hide")
+				-- rummaging is noisy
+				if host and math.random() < 0.5 then
+					host:alert(entry.part.Position)
+				end
+				local lock = world.keyIn[id]
+				if lock then
+					world.keys[lock] = true
+					RoundState:SetAttribute("Key_" .. lock, true)
+					Effects.burst(entry.part.Position, "boost")
+					addPoints(plr, 10)
+					say("key", plr.DisplayName .. " found the key to the " .. world.objects[lock].def.name .. "!", { icon = "\u{1F511}", userId = plr.UserId, item = "Key" })
+				else
+					say("info", NOTHING[math.random(1, #NOTHING)], nil, plr)
+				end
+			end)
 		elseif def.kind == "hide" then
 			entry.outside = besideTile(def.x, def.y)
 			entry.prompt.Triggered:Connect(function(plr)
@@ -622,7 +697,7 @@ local function wirePrompts()
 				if plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 					return
 				end
-				if hideSpotCount(id) >= 2 then
+				if hideSpotCount(id) >= (def.cap or 2) then
 					return say("info", "No room in there!", nil, plr)
 				end
 				plr:SetAttribute("Hidden", true)
@@ -649,6 +724,26 @@ end
 function round.hostSniff()
 	say("sniff", "Sniff sniff... I smell birthday cake.")
 end
+-- the room an object is in (wall pictures count as the room below them)
+local function roomOf(id)
+	local e = world and world.objects[id]
+	if not e then
+		return "house"
+	end
+	local d = e.def
+	local y = (d.kind == "door" or d.kind == "invite" or d.kind == "uv") and d.y + 1 or d.y
+	for _, f in ipairs(HouseMap.floors) do
+		if d.x >= f.x0 and d.x <= f.x1 and y >= f.y0 and y <= f.y1 then
+			return f.name
+		end
+	end
+	return "house"
+end
+local function reachable(id)
+	local z = world.objects[id] and world.objects[id].def.zone or 1
+	return z == 1 or (z == 2 and world.unlocked.L1) or (z == 3 and world.unlocked.L1 and world.unlocked.L2)
+end
+
 function round.hostCaught(_, plr)
 	unhide(plr)
 	if plr:GetAttribute("Shield") then
@@ -664,23 +759,20 @@ function round.hostCaught(_, plr)
 	teleport(plr, world.objects.cage.inside)
 	setSpeed(plr, 0)
 	world.objects.cage.prompt.Enabled = true
-	say("caught", plr.DisplayName .. " was caught! Free them from the cage in the Front Hall!", { userId = plr.UserId })
+	say("caught", plr.DisplayName .. " was caught! Free them from the cage in the " .. roomOf("cage") .. "!", { userId = plr.UserId })
 	checkEnd()
 end
 
 local function hintFor()
 	local o = world.objects
 	if anyCaged() then
-		return "cage", "Free your friend! Stand by the cage in the Front Hall."
+		return "cage", "Free your friend! Stand by the cage in the " .. roomOf("cage") .. "."
 	end
 	if state.doorOpen then
 		return "door", "The big door is open - everybody out!"
 	end
 	if state.holeOpen then
-		return "hole", "The secret hole in the Game Room is open - squeeze through!"
-	end
-	if state.known[1] and state.known[2] and state.known[3] then
-		return "door", "You know the colours! Use the keypad by the big door in the Corridor."
+		return "hole", "The secret hole in the " .. roomOf("cab") .. " is open - squeeze through!"
 	end
 	local skills = {}
 	for _, p in ipairs(playersInRound()) do
@@ -688,27 +780,55 @@ local function hintFor()
 			skills[p:GetAttribute("Skill")] = true
 		end
 	end
-	if skills.tinker then
-		return "door", "Tinker can pick the lock on the big door in the Corridor."
+	local function lockHint(id)
+		local name = o[id].def.name
+		if skills.tinker then
+			return id, "Tinker can pick the lock on the " .. name .. "."
+		end
+		if world.keys[id] then
+			return id, "You found the key - unlock the " .. name .. "!"
+		end
+		for sid, lock in pairs(world.keyIn) do
+			if lock == id and not o[sid].searched then
+				return sid, "The key to the " .. name .. " is hidden in the " .. roomOf(sid) .. "."
+			end
+		end
+		return id, "The " .. name .. " is locked. Search drawers and boxes for the key!"
 	end
-	if skills.muscle then
-		return "cab", "That cabinet in the Game Room hides something. Muscle can shove it!"
+	local known = state.known[1] and state.known[2] and state.known[3]
+	if known then
+		if not world.unlocked.L1 then
+			return lockHint("L1")
+		end
+		if not world.unlocked.L2 then
+			return lockHint("L2")
+		end
+		return "door", "You know the colours! Use the keypad by the big door in the " .. roomOf("door") .. "."
 	end
-	if skills.brainy and o.invite.prompt.Enabled then
-		return "invite", "Brainy can read the twisty invitation in the Parlour."
+	if skills.brainy and o.invite.prompt.Enabled and reachable("invite") then
+		return "invite", "Brainy can read the twisty invitation in the " .. roomOf("invite") .. "."
 	end
-	if skills.glow and o.uv.prompt.Enabled then
-		return "uv", "Glow can light up the painted wall in the Library."
+	if skills.glow and o.uv.prompt.Enabled and reachable("uv") then
+		return "uv", "Glow can light up the painted wall in the " .. roomOf("uv") .. "."
 	end
-	if skills.bramble and o.plant.prompt.Enabled then
-		return "plant", "Bramble can ask the big plant in the Library."
+	if skills.bramble and o.plant.prompt.Enabled and reachable("plant") then
+		return "plant", "Bramble can ask the big plant in the " .. roomOf("plant") .. "."
 	end
 	for _, id in ipairs({ "b0", "b1", "b2" }) do
-		if not o[id].popped then
-			return id, "Pop the numbered balloons - each one shows a colour of the door code."
+		if o[id] and not o[id].popped and reachable(id) then
+			return id, "Pop balloon " .. o[id].def.n .. " in the " .. roomOf(id) .. " - it shows a colour of the door code. Careful: some balloons are tricks!"
 		end
 	end
-	return "door", "Try the keypad by the big door."
+	if not world.unlocked.L1 then
+		return lockHint("L1")
+	end
+	if not world.unlocked.L2 then
+		return lockHint("L2")
+	end
+	if skills.muscle then
+		return "cab", "That cabinet in the " .. roomOf("cab") .. " hides something. Muscle can shove it!"
+	end
+	return "door", "Try the keypad by the big door in the " .. roomOf("door") .. "."
 end
 
 -- ---------- after a round: play again or go back to the lobby ----------
@@ -968,6 +1088,21 @@ function round.start()
 	world = House.build(HouseMap)
 	Props.place(world)
 	wirePrompts()
+	-- each locked door hides its key in a random searchable thing on its near side
+	world.unlocked, world.keys, world.keyIn = {}, {}, {}
+	for _, lock in ipairs({ { "L1", 1 }, { "L2", 2 } }) do
+		local choices = {}
+		for oid, e in pairs(world.objects) do
+			if e.def.kind == "search" and e.def.zone == lock[2] then
+				table.insert(choices, oid)
+			end
+		end
+		if #choices > 0 and world.objects[lock[1]] then
+			world.keyIn[choices[math.random(1, #choices)]] = lock[1]
+		end
+		RoundState:SetAttribute("Lock_" .. lock[1], false)
+		RoundState:SetAttribute("Key_" .. lock[1], false)
+	end
 	local code = {}
 	for i = 1, 3 do
 		code[i] = Config.COLORS[math.random(1, #Config.COLORS)]

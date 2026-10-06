@@ -31,10 +31,10 @@ Config.HOST = {
 -- the escape reward.
 Config.DIFFICULTY_ORDER = { "easy", "normal", "hard", "nightmare" }
 Config.DIFFICULTY = {
-	easy = { name = "Easy", grace = 30, timer = 480, hunt = 10, sight = 26, catch = 4, clues = 5, bonus = 1 },
-	normal = { name = "Normal", grace = 20, timer = 360, hunt = 12, sight = 32, catch = 4.5, clues = 3, bonus = 1.5 },
-	hard = { name = "Hard", grace = 12, timer = 270, hunt = 14, sight = 40, catch = 5, clues = 2, bonus = 2 },
-	nightmare = { name = "Nightmare", grace = 6, timer = 210, hunt = 16, sight = 48, catch = 5.5, clues = 1, bonus = 3 },
+	easy = { name = "Easy", grace = 30, timer = 600, hunt = 10, sight = 26, catch = 4, clues = 5, bonus = 1 },
+	normal = { name = "Normal", grace = 20, timer = 480, hunt = 12, sight = 32, catch = 4.5, clues = 3, bonus = 1.5 },
+	hard = { name = "Hard", grace = 12, timer = 360, hunt = 14, sight = 40, catch = 5, clues = 2, bonus = 2 },
+	nightmare = { name = "Nightmare", grace = 6, timer = 300, hunt = 16, sight = 48, catch = 5.5, clues = 1, bonus = 3 },
 }
 
 Config.CLUE_COST = 30
@@ -63,14 +63,14 @@ Config.COOLDOWN = { shadow = 20, patch = 30, echo = 25 }
 
 -- what each skill does, and how you use it, for the character select screen
 Config.SKILL_INFO = {
-	tinker = { about = "Picks the lock on the big door, so the team can escape without the colour code.", how = "Walk up to the keypad and hold F." },
+	tinker = { about = "Picks the locked doors inside the house, so the team never needs to hunt for their keys. (The big exit door still needs the colour code.)", how = "Walk up to a locked door and hold F." },
 	shadow = { about = "Sneaks: for a few seconds the host can't see or grab Shadow. Shadow is also harder to spot than anyone.", how = "Press the Sneak button. It recharges." },
 	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as much energy.", how = "Find the invitation in the Parlour and press E." },
-	muscle = { about = "Shoves the heavy cabinet in the Game Room aside, opening a secret way out.", how = "Hold E at the cabinet." },
+	muscle = { about = "Shoves the heavy cabinet in the Music Room aside, opening a secret way out.", how = "Hold E at the cabinet." },
 	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.", how = "Press E at the painted wall in the Library." },
 	patch = { about = "Heals everyone nearby with energy and stamina, and frees every caged friend at once.", how = "Press the Heal button. Hold E at the cage." },
 	echo = { about = "Hears the host coming from further away, and throws a noise that sends the host to look somewhere else.", how = "Press Noise, then tap where to throw it." },
-	bramble = { about = "Talks to plants: the big plant in the Library whispers the door code to Bramble.", how = "Press E at the plant." },
+	bramble = { about = "Talks to plants: the big plant in the Conservatory whispers the door code to Bramble.", how = "Press E at the plant." },
 }
 
 Config.PHRASES = {

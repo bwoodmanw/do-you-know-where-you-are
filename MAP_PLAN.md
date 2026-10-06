@@ -1,7 +1,7 @@
 # Party House v2 - more rooms, locked doors, keys (proposal, 6 Oct 2026)
 
 Brent asked for more rooms per map, more walls, objects and decorations to
-distract from the clues, and a fairer Tinker. Not built yet - waiting for a yes.
+distract from the clues, and a fairer Tinker. **Built 6 Oct 2026** (2 locked doors, 3 clue balloons, as Brent chose). Layout source: `tools/make_housemap.py` (generates and checks `HouseMap.luau`); plan picture: `art/reference/maps/partyhouse-v2-plan.png`.
 
 ## Tinker, redone
 

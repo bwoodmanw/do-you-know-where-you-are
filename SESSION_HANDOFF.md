@@ -135,6 +135,19 @@ difficulty (new board names, so they start empty). Next big build waits for
 a yes: `MAP_PLAN.md` (bigger house, locked doors and keys, Tinker no longer
 opens the exit).
 
+Built 6 Oct (later), untested in Roblox: **Party House v2** (`MAP_PLAN.md`):
+11 rooms on 40x30, two locked inner doors (Library door, Corridor door) -
+Tinker picks them, everyone else finds the key hidden at random in one of
+12 searchable things; Tinker no longer opens the exit; decoy balloons and
+empty presents; hiding spots hold 1 or 2 ("Fits 1/2"), 8 of them, some rooms
+none; decorations (flags, pictures, cobwebs, pumpkins, balloon bunches,
+rugs); hints name rooms and point at keys; furniture spots redrawn; timers
++2 min. **Host fixes:** placed by its real bounding box (it had been put
+half into the ceiling and walked on the roof), sent home if it ever ends up
+above the walls, and reaches 4 studs further for kids standing on furniture.
+**Shop:** + buys, - sells a points-bought boost back for its full price.
+**Edit the layout in `tools/make_housemap.py`, never HouseMap.luau by hand.**
+
 ## Brent's to-do list (from the end of this session)
 
 1. **Sync both places with Rojo and publish** (two PowerShell windows,

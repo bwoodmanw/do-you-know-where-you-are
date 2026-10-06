@@ -112,8 +112,11 @@ function Host:spawn(diff)
 		self.model, self.hum, self.root, self.face, self.arms = custom, custom:FindFirstChildOfClass("Humanoid"), custom.HumanoidRootPart, {}, {}
 		self.hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 		self.hum.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
-		custom:PivotTo(CFrame.new(pos + Vector3.new(0, custom:GetExtentsSize().Y / 2, 0)))
 		custom.Parent = workspace
+		-- stand it on the floor by its real box (its pivot can be anywhere,
+		-- and a host placed too high ends up walking on the roof)
+		local cf, size = custom:GetBoundingBox()
+		custom:PivotTo(custom:GetPivot() + (pos + Vector3.new(0, size.Y / 2 + 0.05, 0) - cf.Position))
 		-- Roblox's own R15 walk and run, played as it moves
 		local animator = self.hum:FindFirstChildOfClass("Animator") or Instance.new("Animator", self.hum)
 		local function track(id)
@@ -220,6 +223,15 @@ function Host:step(dt)
 	if not self.model or not self.model.Parent then
 		return
 	end
+	-- never stuck on the roof or under the floor: back to its door
+	local rootY = self.root.Position.Y
+	if rootY > Config.WALL_H or rootY < -10 then
+		local sx, sy = table.unpack(self.world.map.spawn)
+		local p = require(script.Parent.House).at(sx, sy, 0)
+		local cf, size = self.model:GetBoundingBox()
+		self.model:PivotTo(self.model:GetPivot() + (p + Vector3.new(0, size.Y / 2 + 0.05, 0) - cf.Position))
+		self.mode = "patrol"
+	end
 	if self.pause > 0 then
 		self.pause -= dt
 		self.hum:MoveTo(self.root.Position)
@@ -277,7 +289,9 @@ function Host:step(dt)
 			and (plr:GetAttribute("SneakUntil") or 0) <= workspace:GetServerTimeNow() then
 			local flat = Vector3.new(hrp.Position.X - self.root.Position.X, 0, hrp.Position.Z - self.root.Position.Z)
 			-- in a frenzy it searches hiding places it walks right up to
-			if flat.Magnitude < (hidden and 3.5 or self.diff.catch) then
+			-- it reaches up: standing on a table or furniture is no escape
+			local reach = (hidden and 3.5 or self.diff.catch) + (hrp.Position.Y > 4.5 and 4 or 0)
+			if flat.Magnitude < reach then
 				self.pause = 2.5
 				self.mode = "patrol"
 				self.round:hostCaught(plr)
@@ -289,7 +303,16 @@ function Host:step(dt)
 	-- where to walk
 	local goal
 	if self.mode == "patrol" then
-		local wp = self.world.map.patrol[self.wp]
+		-- skip patrol points behind doors that are still locked
+		local list = self.world.map.patrol
+		for _ = 1, #list do
+			local w = list[self.wp]
+			if not w.lock or (self.world.unlocked and self.world.unlocked[w.lock]) then
+				break
+			end
+			self.wp = self.wp % #list + 1
+		end
+		local wp = list[self.wp]
 		local p = require(script.Parent.House).at(wp[1], wp[2], 0)
 		if (Vector3.new(p.X, 0, p.Z) - Vector3.new(self.root.Position.X, 0, self.root.Position.Z)).Magnitude < 4 then
 			self.wp = self.wp % #self.world.map.patrol + 1

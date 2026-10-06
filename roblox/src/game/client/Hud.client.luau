@@ -586,9 +586,22 @@ skillBtn.Activated:Connect(function()
 	elseif SKILL_TEXT[s] then
 		remotes.UseSkill:FireServer()
 	else
-		local tips = { tinker = "Walk up to the big door's keypad and hold F to pick the lock.", brainy = "Find the twisty invitation in the Parlour and press E to read it.",
-			muscle = "Find the heavy cabinet in the Game Room and hold E to shove it.", glow = "Find the painted wall in the Library and press E to light it up.",
-			bramble = "Find the big plant in the Library and press E to ask it." }
+		local function roomOfObj(id)
+			for _, o in ipairs(HouseMap.objects) do
+				if o.id == id then
+					local y = (o.kind == "invite" or o.kind == "uv") and o.y + 1 or o.y
+					for _, f in ipairs(HouseMap.floors) do
+						if o.x >= f.x0 and o.x <= f.x1 and y >= f.y0 and y <= f.y1 then
+							return f.name
+						end
+					end
+				end
+			end
+			return "house"
+		end
+		local tips = { tinker = "Walk up to a locked door and hold F to pick it - no key needed.", brainy = "Find the twisty invitation in the " .. roomOfObj("invite") .. " and press E to read it.",
+			muscle = "Find the heavy cabinet in the " .. roomOfObj("cab") .. " and hold E to shove it.", glow = "Find the painted wall in the " .. roomOfObj("uv") .. " and press E to light it up.",
+			bramble = "Find the big plant in the " .. roomOfObj("plant") .. " and press E to ask it." }
 		toast(tips[s] or "Walk up to things and press E.", 4)
 	end
 end)
@@ -754,8 +767,19 @@ end
 for y, row in ipairs(HouseMap.map) do
 	for x = 1, #row do
 		local tx, ty = x - 1, y - 1
-		if string.sub(row, x, x) == "." and not floorOf(tx, ty) then
+		local ch = string.sub(row, x, x)
+		if (ch == "." or ch == "L") and not floorOf(tx, ty) then
 			local d = mapRect(tx, ty, tx, ty, ROOM_COLOR)
+			-- locked doors show gold until they open
+			for _, o in ipairs(HouseMap.objects) do
+				if o.kind == "lock" and o.x == tx and o.y == ty then
+					local function paint()
+						d.BackgroundColor3 = RoundState:GetAttribute("Lock_" .. o.id) and ROOM_COLOR or Color3.fromRGB(255, 210, 63)
+					end
+					RoundState:GetAttributeChangedSignal("Lock_" .. o.id):Connect(paint)
+					paint()
+				end
+			end
 			for _, n in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
 				local name = floorOf(tx + n[1], ty + n[2])
 				if name then

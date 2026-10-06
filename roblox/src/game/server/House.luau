@@ -148,9 +148,11 @@ function House.build(map)
 						part(root, { Name = "Eye", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 0.5, 0.5), Position = at(x, y, 6.5) + Vector3.new(T / 2 + 0.35, 0, i * 0.7), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 50, 50), CanCollide = false })
 					end
 				end
-			elseif c == "D" or c == "H" then
+			elseif c == "D" or c == "H" or c == "L" then
+				-- locked doors are tall enough for the host once open
+				local top = c == "L" and 13 or 10
 				part(root, { Name = "DoorFloor", Size = Vector3.new(T, 1, T), Position = at(x, y, -0.5), Material = FLOOR.door[1], Color = FLOOR.door[2] })
-				part(root, { Name = "Lintel", Size = Vector3.new(T, H - 10, T), Position = at(x, y, 10 + (H - 10) / 2), Material = Enum.Material.Plaster, Color = Color3.fromRGB(70, 46, 96) })
+				part(root, { Name = "Lintel", Size = Vector3.new(T, H - top, T), Position = at(x, y, top + (H - top) / 2), Material = Enum.Material.Plaster, Color = Color3.fromRGB(70, 46, 96) })
 			elseif c == "T" then
 				local f = furnitureAt(map, x, y)
 				local kind = f and f.kind or "table"
@@ -160,6 +162,14 @@ function House.build(map)
 				elseif kind == "counter" then
 					part(root, { Name = "Counter", Size = Vector3.new(T, 4, T), Position = at(x, y, 2), Material = Enum.Material.Wood, Color = Color3.fromRGB(139, 106, 79) })
 					part(root, { Name = "CounterTop", Size = Vector3.new(T, 0.4, T), Position = at(x, y, 4.2), Material = Enum.Material.Marble, Color = Color3.fromRGB(207, 200, 187) })
+				elseif kind == "planter" then
+					part(root, { Name = "Planter", Size = Vector3.new(T, 3, T * 0.7), Position = at(x, y, 1.5), Material = Enum.Material.Brick, Color = Color3.fromRGB(150, 80, 60) })
+					for i = -1, 1 do
+						part(root, { Name = "Leaves", Shape = Enum.PartType.Ball, Size = Vector3.new(3.2, 3.2, 3.2), Position = at(x, y, 4) + Vector3.new(i * 2.4, 0, 0), Material = Enum.Material.Grass, Color = (x + i) % 2 == 0 and Color3.fromRGB(58, 125, 68) or Color3.fromRGB(95, 179, 90), CanCollide = false })
+					end
+				elseif kind == "piano" then
+					part(root, { Name = "Piano", Size = Vector3.new(T, 5, T * 0.7), Position = at(x, y, 2.5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(20, 18, 24) })
+					part(root, { Name = "Keys", Size = Vector3.new(T, 0.3, 1.4), Position = at(x, y, 4.2) + Vector3.new(0, 0, T * 0.35 + 0.7), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(240, 240, 235) })
 				else
 					part(root, { Name = "Shelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.Wood, Color = Color3.fromRGB(92, 58, 34) })
 					local cols = { Color3.fromRGB(232, 80, 91), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(138, 107, 209) }
@@ -180,7 +190,7 @@ function House.build(map)
 	end
 
 	-- the party cake on the hall table
-	local cake = part(root, { Name = "Cake", Shape = Enum.PartType.Cylinder, Size = Vector3.new(2.4, 3.4, 3.4), CFrame = CFrame.new(at(14, 13, 0) + Vector3.new(T / 2, 4.9, T / 2)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(247, 198, 217), Material = Enum.Material.SmoothPlastic })
+	local cake = part(root, { Name = "Cake", Shape = Enum.PartType.Cylinder, Size = Vector3.new(2.4, 3.4, 3.4), CFrame = CFrame.new(at(map.cake[1], map.cake[2], 0) + Vector3.new(T / 2, 4.9, T / 2)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(247, 198, 217), Material = Enum.Material.SmoothPlastic })
 	part(root, { Name = "Candle", Size = Vector3.new(0.3, 1.2, 0.3), Position = cake.Position + Vector3.new(0, 1.8, 0), Color = Color3.new(1, 1, 1) })
 	part(root, { Name = "Flame", Shape = Enum.PartType.Ball, Size = Vector3.new(0.4, 0.4, 0.4), Position = cake.Position + Vector3.new(0, 2.6, 0), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
 
@@ -189,6 +199,7 @@ function House.build(map)
 
 	House.buildObjects(world)
 	House.buildGarden(world)
+	House.decorate(world)
 	return world
 end
 
@@ -205,8 +216,6 @@ function House.buildObjects(world)
 				part(root, { Name = "Key", Size = Vector3.new(0.5, 0.5, 0.1), Position = entry.keypad.Position + Vector3.new(((i - 1) % 2) * 0.7 - 0.35, 0.4 - math.floor((i - 1) / 2) * 0.7, 0.18), Material = Enum.Material.Neon, Color = Config.COLOR3[col], CanCollide = false })
 			end
 			entry.usePrompt = prompt(entry.keypad, "Use keypad", "Big door")
-			entry.pickPrompt = prompt(entry.keypad, "Pick the lock", "Tinker", 5)
-			entry.pickPrompt.KeyboardKeyCode = Enum.KeyCode.F
 			entry.exit = part(root, { Name = "ExitDoor", Size = Vector3.new(T, 10, 2), Position = base + Vector3.new(0, 5, -T / 2 + 1), Transparency = 1, CanCollide = false })
 		elseif o.kind == "hole" then
 			entry.panel = part(root, { Name = "HolePanel", Size = Vector3.new(T, 10, T), Position = base + Vector3.new(0, 5, 0), Material = Enum.Material.Plaster, Color = Color3.fromRGB(70, 46, 96) })
@@ -251,7 +260,7 @@ function House.buildObjects(world)
 			entry.part, entry.label = b, label
 			entry.prompt = prompt(b, "Pop", "Balloon " .. o.n)
 		elseif o.kind == "present" then
-			local blue = o.boost == "shield"
+			local blue = o.boost == "shield" or o.id == "p3"
 			entry.part = part(root, { Name = "Present", Size = Vector3.new(2.2, 2, 2.2), Position = base + Vector3.new(0, 1, 0), Color = blue and Color3.fromRGB(61, 139, 255) or Color3.fromRGB(232, 80, 91) })
 			part(root, { Name = "Ribbon", Size = Vector3.new(2.3, 2.1, 0.4), Position = entry.part.Position, Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
 			entry.prompt = prompt(entry.part, "Open", "Present")
@@ -282,6 +291,43 @@ function House.buildObjects(world)
 			end
 			entry.part = pot
 			entry.prompt = prompt(pot, "Ask the plant", "Big plant - Bramble", 1.5)
+		elseif o.kind == "lock" then
+			-- walls left and right: the door spans X, otherwise Z
+			local alongX = cell(map, o.x - 1, o.y) ~= "."
+			entry.part = part(root, { Name = "LockedDoor", Size = alongX and Vector3.new(T, 13, 1) or Vector3.new(1, 13, T), Position = base + Vector3.new(0, 6.5, 0), Material = Enum.Material.Wood, Color = Color3.fromRGB(96, 52, 30) })
+			entry.lockPart = part(root, { Name = "Lock", Size = alongX and Vector3.new(1, 1.2, 1.6) or Vector3.new(1.6, 1.2, 1), Position = base + Vector3.new(0, 4.5, 0), Material = Enum.Material.Metal, Color = Color3.fromRGB(255, 210, 63) })
+			for _, face in ipairs(alongX and { Enum.NormalId.Front, Enum.NormalId.Back } or { Enum.NormalId.Left, Enum.NormalId.Right }) do
+				local sg = Instance.new("SurfaceGui")
+				sg.Face = face
+				sg.CanvasSize = Vector2.new(400, 650)
+				sg.Parent = entry.part
+				local txt = Instance.new("TextLabel")
+				txt.Size = UDim2.new(1, -40, 0.22, 0)
+				txt.Position = UDim2.new(0, 20, 0.08, 0)
+				txt.BackgroundTransparency = 1
+				txt.TextScaled = true
+				txt.Font = Enum.Font.FredokaOne
+				txt.TextColor3 = Color3.fromRGB(255, 210, 63)
+				txt.Text = "\u{1F512} " .. (o.name or "Locked door")
+				txt.Parent = sg
+			end
+			entry.unlockPrompt = prompt(entry.lockPart, "Unlock", o.name or "Locked door", 0.5)
+			entry.pickPrompt = prompt(entry.lockPart, "Pick the lock", "Tinker", 4)
+			entry.pickPrompt.KeyboardKeyCode = Enum.KeyCode.F
+		elseif o.kind == "search" then
+			local looks = {
+				drawer = { Vector3.new(5, 4, 3), Color3.fromRGB(120, 80, 50), Enum.Material.Wood, "Chest of drawers" },
+				crate = { Vector3.new(4, 4, 4), Color3.fromRGB(170, 130, 80), Enum.Material.WoodPlanks, "Old crate" },
+				cakebox = { Vector3.new(3.5, 3, 3.5), Color3.fromRGB(255, 190, 210), Enum.Material.Cardboard, "Cake box" },
+				coat = { Vector3.new(3, 8, 3), Color3.fromRGB(60, 80, 60), Enum.Material.Fabric, "Coats" },
+				toybox = { Vector3.new(5, 3, 3.5), Color3.fromRGB(200, 60, 60), Enum.Material.SmoothPlastic, "Toy box" },
+				vase = { Vector3.new(2.6, 4.5, 2.6), Color3.fromRGB(60, 130, 140), Enum.Material.SmoothPlastic, "Big vase" },
+				laundry = { Vector3.new(3.5, 3.5, 3.5), Color3.fromRGB(190, 160, 110), Enum.Material.Fabric, "Laundry basket" },
+				chest = { Vector3.new(5, 3.5, 3.5), Color3.fromRGB(110, 70, 40), Enum.Material.Wood, "Old chest" },
+			}
+			local look = looks[o.look] or looks.crate
+			entry.part = part(root, { Name = "Search " .. o.id, Size = look[1], Position = base + Vector3.new(0, look[1].Y / 2, 0), Color = look[2], Material = look[3] })
+			entry.prompt = prompt(entry.part, "Search", look[4], 2)
 		elseif o.kind == "hide" then
 			local size, col, mat, y = Vector3.new(T * 0.8, 10, T * 0.6), Color3.fromRGB(78, 47, 26), Enum.Material.Wood, 5
 			if o.look == "curtain" then
@@ -296,7 +342,7 @@ function House.buildObjects(world)
 			end
 			entry.part = part(root, { Name = "Hide " .. o.id, Size = size, Position = base + Vector3.new(0, y, 0), Color = col, Material = mat })
 			entry.inside = base + Vector3.new(0, 3, 0)
-			entry.prompt = prompt(entry.part, "Hide", "")
+			entry.prompt = prompt(entry.part, "Hide", "Fits " .. (o.cap or 2))
 			entry.prompt.HoldDuration = 0.2
 		end
 	end
@@ -306,7 +352,13 @@ function House.buildGarden(world)
 	local root, map = world.root, world.map
 	-- the safe area: the back garden beyond the big door (north) and round
 	-- the side past the hole (east)
-	local gx0, gx1 = 8, 22
+	local doorX = 15
+	for _, o in ipairs(map.objects) do
+		if o.kind == "door" then
+			doorX = o.x
+		end
+	end
+	local gx0, gx1 = doorX - 7, doorX + 8
 	local garden = part(root, { Name = "Garden", Size = Vector3.new((gx1 - gx0) * T, 1, 6 * T), Position = Vector3.new((gx0 + gx1) / 2 * T, -0.5, -3 * T), Material = Enum.Material.Grass, Color = Color3.fromRGB(60, 110, 50) })
 	part(root, { Name = "SidePath", Size = Vector3.new(4 * T, 1, map.h * T), Position = Vector3.new(map.w * T + 2 * T, -0.5, map.h * T / 2), Material = Enum.Material.Grass, Color = Color3.fromRGB(60, 110, 50) })
 	for i = 0, 10 do
@@ -331,6 +383,120 @@ function House.buildGarden(world)
 	hedge(px0, map.h * T, px1, map.h * T)
 	world.gardenSpot = garden.Position + Vector3.new(0, 4, 0)
 	world.gardenSpotSide = Vector3.new(map.w * T + 2 * T, 4, map.h * T / 2)
+end
+
+-- ---------- decorations: streamers, pictures, cobwebs, pumpkins, balloon
+-- bunches, rugs. None of it is solid or blocks the host's eyes. ----------
+local DECOR = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(138, 107, 209), Color3.fromRGB(255, 138, 31) }
+local PICTURES = { "\u{1F383}", "\u{1F47B}", "\u{1F987}", "\u{1F578}", "\u{1F382}", "\u{1F388}", "\u{1F315}", "\u{1F36D}" }
+
+function House.decorate(world)
+	local root, map = world.root, world.map
+	local busy = {}
+	for _, o in ipairs(map.objects) do
+		busy[o.x .. "," .. o.y] = true
+	end
+	for _, s in ipairs(map.start) do
+		busy[s[1] .. "," .. s[2]] = true
+	end
+	local function gap(x, y)
+		local c = cell(map, x, y)
+		return (c == "." or c == "L") and ((cell(map, x - 1, y) == "#" and cell(map, x + 1, y) == "#") or (cell(map, x, y - 1) == "#" and cell(map, x, y + 1) == "#"))
+	end
+	local function free(x, y)
+		if cell(map, x, y) ~= "." or busy[x .. "," .. y] then
+			return false
+		end
+		for _, d in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
+			if gap(x + d[1], y + d[2]) then
+				return false
+			end
+		end
+		return true
+	end
+	local function deco(props, class)
+		local p = Instance.new(class or "Part")
+		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+		p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		for k, v in pairs(props) do
+			p[k] = v
+		end
+		p.Parent = root
+		return p
+	end
+	local function emoji(p, face, text)
+		local sg = Instance.new("SurfaceGui")
+		sg.Face = face
+		sg.CanvasSize = Vector2.new(200, 200)
+		sg.LightInfluence = 0.6
+		sg.Parent = p
+		local t = Instance.new("TextLabel")
+		t.Size = UDim2.fromScale(1, 1)
+		t.BackgroundTransparency = 1
+		t.TextScaled = true
+		t.Text = text
+		t.TextTransparency = 0.15
+		t.Parent = sg
+	end
+	for r, f in ipairs(map.floors) do
+		local x0, z0, x1, z1 = f.x0 * T, f.y0 * T, (f.x1 + 1) * T, (f.y1 + 1) * T
+		-- two swags of party flags across the ceiling
+		for s = 0, 1 do
+			local a = Vector3.new(x0 + 1, H - 1.2, s == 0 and z0 + 1 or z1 - 1)
+			local b = Vector3.new(x1 - 1, H - 1.2, s == 0 and z1 - 1 or z0 + 1)
+			local n = math.max(2, math.floor((b - a).Magnitude / 2.6))
+			local side = (b - a).Unit:Cross(Vector3.yAxis)
+			for i = 0, n do
+				local t = i / n
+				local p = a:Lerp(b, t) - Vector3.new(0, math.sin(t * math.pi) * 2.5, 0)
+				deco({ Name = "Flag", Size = Vector3.new(1.3, 1.5, 0.08), CFrame = CFrame.lookAt(p, p + side), Color = DECOR[(i + r) % #DECOR + 1], Material = Enum.Material.Fabric })
+			end
+		end
+		-- pictures on the north wall, facing into the room
+		local hung = 0
+		for _, x in ipairs({ f.x0 + 2, f.x1 - 2, math.floor((f.x0 + f.x1) / 2) }) do
+			if hung < 2 and cell(map, x, f.y0 - 1) == "#" and not busy[x .. "," .. (f.y0 - 1)] and cell(map, x, f.y0) ~= "#" then
+				hung += 1
+				local pic = deco({ Name = "Picture", Size = Vector3.new(3.4, 2.8, 0.2), Position = at(x, f.y0 - 1, 7.5) + Vector3.new(0, 0, T / 2 + 0.15), Color = Color3.fromRGB(110, 80, 40), Material = Enum.Material.Wood })
+				local inner = deco({ Name = "Painting", Size = Vector3.new(2.8, 2.2, 0.05), Position = pic.Position + Vector3.new(0, 0, 0.12), Color = Color3.fromRGB(40, 30, 55) })
+				emoji(inner, Enum.NormalId.Back, PICTURES[(x + r) % #PICTURES + 1])
+			end
+		end
+		-- cobwebs in two top corners
+		for _, c in ipairs({ { x0, z0, 45 }, { x1, z1, 45 } }) do
+			local web = deco({ Name = "Cobweb", Size = Vector3.new(4.5, 4.5, 0.05), CFrame = CFrame.new(c[1] + (c[1] == x0 and 1.4 or -1.4), H - 1.8, c[2] + (c[2] == z0 and 1.4 or -1.4)) * CFrame.Angles(0, math.rad(c[3]), 0), Transparency = 1 })
+			emoji(web, Enum.NormalId.Front, "\u{1F578}")
+			emoji(web, Enum.NormalId.Back, "\u{1F578}")
+		end
+		-- a rug in the middle (not in the kitchen: it has its tiles)
+		if f.kind ~= "tiles" then
+			local w, d = (f.x1 - f.x0 + 1) * T * 0.4, (f.y1 - f.y0 + 1) * T * 0.4
+			deco({ Name = "Rug", Size = Vector3.new(w, 0.1, d), Position = Vector3.new((x0 + x1) / 2, 0.06, (z0 + z1) / 2), Color = DECOR[r % #DECOR + 1], Material = Enum.Material.Fabric, Transparency = 0.15 })
+		end
+		-- a glowing pumpkin and a balloon bunch in free corners
+		local corners = { { f.x0, f.y1 }, { f.x1, f.y0 }, { f.x1, f.y1 }, { f.x0, f.y0 } }
+		local placed = 0
+		for _, c in ipairs(corners) do
+			if placed < 2 and free(c[1], c[2]) then
+				placed += 1
+				busy[c[1] .. "," .. c[2]] = true
+				local base = at(c[1], c[2], 0)
+				if placed == 1 then
+					local pk = deco({ Name = "Pumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2, 2.4), Position = base + Vector3.new(0, 1, 0), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
+					deco({ Name = "Stem", Size = Vector3.new(0.3, 0.6, 0.3), Position = base + Vector3.new(0, 2.2, 0), Color = Color3.fromRGB(70, 110, 40) })
+					local l = Instance.new("PointLight")
+					l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 140, 40), 9, 1
+					l.Parent = pk
+				else
+					for i = 0, 2 do
+						local off = Vector3.new(math.cos(i * 2.1) * 0.9, 7 + i * 0.6, math.sin(i * 2.1) * 0.9)
+						deco({ Name = "PartyBalloon", Shape = Enum.PartType.Ball, Size = Vector3.new(1.8, 2.1, 1.8), Position = base + off, Color = DECOR[(i + r + c[1]) % #DECOR + 1], Material = Enum.Material.SmoothPlastic })
+						deco({ Name = "String", Size = Vector3.new(0.06, off.Y - 1, 0.06), Position = base + Vector3.new(off.X / 2, (off.Y - 1) / 2, off.Z / 2), Color = Color3.fromRGB(220, 220, 220) })
+					end
+				end
+			end
+		end
+	end
 end
 
 return House

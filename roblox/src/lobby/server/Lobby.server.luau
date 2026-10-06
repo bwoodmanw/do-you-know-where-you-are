@@ -89,6 +89,7 @@ local StartParty = remote("StartParty") -- leader only
 local PartyList = remote("PartyList") -- server -> client: what this player can see
 local Notice = remote("Notice") -- server -> client: a message
 local BuyBoost = remote("BuyBoost") -- (boostId) with points
+local SellBoost = remote("SellBoost") -- (boostId) back for its points
 local SetLoadout = remote("SetLoadout") -- ({boostId, ...}) up to Progress.MAX_BOOSTS
 local PickUpgrade = remote("PickUpgrade") -- (skill, level, upgradeId)
 local VoteMap = remote("VoteMap") -- (mapId)
@@ -326,10 +327,40 @@ BuyBoost.OnServerEvent:Connect(function(plr, id)
 		return Notice:FireClient(plr, "You need " .. boost.price .. " points for " .. boost.name .. ".")
 	end
 	data.points -= boost.price
+	data.paid = data.paid or table.clone(data.inv) -- older profiles: all bought with points
+	data.paid[id] = (data.paid[id] or 0) + 1
 	data.inv[id] = (data.inv[id] or 0) + 1
 	Profile.publish(plr)
 	Profile.save(plr)
 	Notice:FireClient(plr, boost.icon .. " You bought " .. boost.name .. "!")
+end)
+
+-- the - button: a boost bought with points goes back for its full price
+SellBoost.OnServerEvent:Connect(function(plr, id)
+	local boost = typeof(id) == "string" and Progress.BOOSTS[id]
+	local data = Profile.get(plr)
+	if not boost or not data then
+		return
+	end
+	data.paid = data.paid or table.clone(data.inv)
+	local taking = 0
+	for _, x in ipairs(data.loadout or {}) do
+		if x == id then
+			taking += 1
+		end
+	end
+	if (data.inv[id] or 0) - taking <= 0 then
+		return Notice:FireClient(plr, "Tap \u{2705} Taking first to put " .. boost.name .. " back.")
+	end
+	if (data.paid[id] or 0) <= 0 then
+		return Notice:FireClient(plr, "That " .. boost.name .. " was bought with Robux, so it can't be sold for points.")
+	end
+	data.inv[id] -= 1
+	data.paid[id] -= 1
+	data.points += boost.price
+	Profile.publish(plr)
+	Profile.save(plr)
+	Notice:FireClient(plr, "Sold back " .. boost.name .. ": +" .. boost.price .. " points.")
 end)
 
 SetLoadout.OnServerEvent:Connect(function(plr, list)

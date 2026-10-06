@@ -305,10 +305,10 @@ end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 
 -- ---------- the shop ----------
-local shop = frame(gui, { Size = UDim2.fromOffset(560, 540), Position = UDim2.new(0.5, -280, 0.5, -270), Visible = false, ZIndex = 10 })
+local shop = frame(gui, { Size = UDim2.fromOffset(620, 540), Position = UDim2.new(0.5, -310, 0.5, -270), Visible = false, ZIndex = 10 })
 corner(shop, 18)
 label(shop, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "\u{1F6D2} Boost Shop", TextColor3 = PUMP, ZIndex = 11 })
-label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "Buy boosts, then tap Take on up to " .. Progress.MAX_BOOSTS .. " to bring into your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "+ buys, \u{2212} sells back. Tap Take on up to " .. Progress.MAX_BOOSTS .. " to bring into your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 local shopRows = {}
 for i, id in ipairs(Progress.BOOST_ORDER) do
 	local b = Progress.BOOSTS[id]
@@ -329,16 +329,19 @@ for i, id in ipairs(Progress.BOOST_ORDER) do
 	label(row, { Size = UDim2.fromOffset(200, 26), Position = UDim2.fromOffset(60, 6), Text = b.name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
 	label(row, { Size = UDim2.fromOffset(220, 22), Position = UDim2.fromOffset(60, 34), Text = b.say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
 	local owned = label(row, { Size = UDim2.fromOffset(84, 20), Position = UDim2.fromOffset(282, 4), Text = "You have 0", ZIndex = 12 })
-	button(row, b.price .. " \u{2B50}", { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(282, 30 - 18 + 14), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, function()
+	button(row, "+ " .. b.price .. " \u{2B50}", { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(282, 30 - 18 + 14), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, function()
 		remotes.BuyBoost:FireServer(id)
+	end)
+	local minus = button(row, "\u{2212}", { Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(370, 26), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
+		remotes.SellBoost:FireServer(id)
 	end)
 	local productId = Config.ROBUX_PRODUCTS[id] or 0
 	if productId > 0 then
-		button(row, "R$", { Size = UDim2.fromOffset(46, 40), Position = UDim2.fromOffset(372, 26), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 12 }, function()
+		button(row, "R$", { Size = UDim2.fromOffset(46, 40), Position = UDim2.fromOffset(414, 26), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 12 }, function()
 			MarketplaceService:PromptProductPurchase(player, productId)
 		end)
 	end
-	local take = button(row, "", { Size = UDim2.fromOffset(92, 40), Position = UDim2.fromOffset(424, 12), ZIndex = 12 }, function()
+	local take = button(row, "", { Size = UDim2.fromOffset(92, 40), Position = UDim2.fromOffset(496, 12), ZIndex = 12 }, function()
 		local list, have = {}, false
 		for _, x in ipairs(profile.loadout or {}) do
 			if x == id and not have then
@@ -359,7 +362,7 @@ for i, id in ipairs(Progress.BOOST_ORDER) do
 		repaintShop()
 		remotes.SetLoadout:FireServer(list)
 	end)
-	shopRows[id] = { owned = owned, take = take }
+	shopRows[id] = { owned = owned, take = take, minus = minus }
 end
 -- what is packed for the next game
 local packed = frame(shop, { Size = UDim2.new(1, -24, 0, 46), Position = UDim2.fromOffset(12, 432), BackgroundColor3 = Color3.fromRGB(47, 107, 58), BackgroundTransparency = 0.4, ZIndex = 11 })
@@ -376,6 +379,7 @@ repaintShop = function()
 		r.take.Text = taking and "\u{2705} Taking" or "Take"
 		r.take.BackgroundColor3 = taking and Color3.fromRGB(47, 107, 58) or PLUM
 		r.take.Visible = n > 0
+		r.minus.Visible = n > 0
 	end
 	local names = {}
 	for _, id in ipairs(profile.loadout or {}) do
