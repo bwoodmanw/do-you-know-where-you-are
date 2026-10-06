@@ -86,6 +86,8 @@ Config.ITEM_ICONS = { candy = "\u{1F36C}", shield = "\u{1F6E1}", balloon = "\u{1
 -- time, so no ids need copying.
 Config.LOBBY_PLACE = "Lobby"
 Config.GAME_PLACE = "Party House"
+-- the two places' ids (Creator Hub), so each script can tell it is in the right one
+Config.PLACE_IDS = { lobby = 115501124890066, game = 110069561824739 }
 Config.VOTE_SECONDS = 10
 Config.MAX_PARTY = 6
 

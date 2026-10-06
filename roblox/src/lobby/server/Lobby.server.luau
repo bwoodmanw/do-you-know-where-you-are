@@ -9,6 +9,12 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TeleportService = game:GetService("TeleportService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+
+-- the Lobby code synced into the Party House by mistake: say so and stop
+if game.PlaceId == Config.PLACE_IDS.game then
+	warn("WRONG PLACE: this is the Lobby code, but this is the Party House place. In Rojo, connect the Party House to port 34872 (game.project.json).")
+	return
+end
 local Places = require(ReplicatedStorage.Shared.Places)
 local Profile = require(ReplicatedStorage.Shared.Profile)
 local Progress = require(ReplicatedStorage.Shared.Progress)

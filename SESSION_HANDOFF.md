@@ -261,5 +261,10 @@ the ladder.
   one script `Lobby` (+ LobbyScene); Party House has Main, Characters, Effects,
   Host, House, Props) before publishing. Both places were once synced with the
   wrong project this way; it was caught before publishing.
+- **Rojo is now locked to the right place** (6 Oct): `servePlaceIds` in each
+  project file (Party House 110069561824739, Escape Crew/Lobby
+  115501124890066) makes Rojo refuse to connect to the wrong place, and
+  Main/Lobby scripts warn "WRONG PLACE" in F9 and stop if they ever land in
+  the other place (`Config.PLACE_IDS`).
 - **"Failed to fetch place info" in Studio:** log out, close Studio fully,
   log back in (a known Roblox issue).

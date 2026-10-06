@@ -10,6 +10,12 @@ local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+
+-- the Party House code synced into the Lobby by mistake: say so and stop
+if game.PlaceId == Config.PLACE_IDS.lobby then
+	warn("WRONG PLACE: this is the Party House code, but this is the Escape Crew (Lobby) place. In Rojo, connect the Lobby to port 34873 (lobby.project.json). Not publishing this is fine - nothing was lost.")
+	return
+end
 local Plans = require(ReplicatedStorage.Shared.HouseMap)
 local MapGen = require(ReplicatedStorage.Shared.MapGen)
 local HttpService = game:GetService("HttpService")

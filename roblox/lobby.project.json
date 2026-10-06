@@ -1,5 +1,8 @@
 {
   "name": "EscapeCrewLobby",
+  "servePlaceIds": [
+    115501124890066
+  ],
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
