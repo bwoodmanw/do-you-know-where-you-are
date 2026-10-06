@@ -401,7 +401,7 @@ remotes.OpenShop.OnClientEvent:Connect(function()
 end)
 
 -- ---------- characters and the skill ladder ----------
-local chars = frame(gui, { Size = UDim2.fromOffset(900, 520), Position = UDim2.new(0.5, -450, 0.5, -260), Visible = false, ZIndex = 10 })
+local chars = frame(gui, { Size = UDim2.fromOffset(900, 560), Position = UDim2.new(0.5, -450, 0.5, -280), Visible = false, ZIndex = 10 })
 corner(chars, 18)
 label(chars, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "Characters & skill ladder", TextColor3 = PUMP, ZIndex = 11 })
 -- left: the character in 3D (drag to turn) and what their skill does
@@ -462,7 +462,15 @@ for level = 2, 5 do
 		end)
 	end
 end
-button(chars, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, -80, 1, -50), ZIndex = 11 }, function()
+-- choices are for keeps; a reset clears this character's whole ladder
+button(right, "\u{21BA} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(92, 448), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 11 }, function()
+	remotes.ResetLadder:FireServer(selected, "points")
+end)
+button(right, "\u{21BA} Reset upgrades: R$ 49", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(364, 448), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 11, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
+	remotes.ResetLadder:FireServer(selected, "robux")
+	MarketplaceService:PromptProductPurchase(player, Config.ROBUX_PRODUCTS.reset)
+end)
+button(chars, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, -80, 1, -46), ZIndex = 11 }, function()
 	chars.Visible = false
 end)
 local shown, spin, dragging, lastX, shownFor = nil, 0, false, 0, nil
@@ -554,9 +562,10 @@ repaintChars = function()
 		for i, side in ipairs({ "a", "b" }) do
 			local opt = options[i]
 			local chosen = picks[tostring(level)] == opt.id
-			row[side].Text = (chosen and "\u{2705} " or "") .. opt.name .. "\n" .. opt.say
-			row[side].BackgroundColor3 = chosen and Color3.fromRGB(47, 107, 58) or (reached and PLUM or Color3.fromRGB(45, 40, 55))
-			row[side].TextTransparency = reached and 0 or 0.5
+			local other = picks[tostring(level)] ~= nil and not chosen -- the one not taken: locked out
+			row[side].Text = (chosen and "\u{2705} " or other and "\u{1F512} " or "") .. opt.name .. "\n" .. opt.say
+			row[side].BackgroundColor3 = chosen and Color3.fromRGB(47, 107, 58) or ((reached and not other) and PLUM or Color3.fromRGB(45, 40, 55))
+			row[side].TextTransparency = (reached and not other) and 0 or 0.5
 		end
 		row.tag.Text = reached and ("Lv " .. level) or ("\u{1F512} " .. level)
 	end
@@ -566,6 +575,34 @@ charsBtn.Activated:Connect(function()
 	repaintChars()
 end)
 readProfile()
+
+-- ---------- the trampoline: bounce high (here, where the character's physics run) ----------
+task.spawn(function()
+	local fun = workspace:WaitForChild("LobbyFun", 30)
+	local tramp = fun and fun:WaitForChild("Trampoline", 10)
+	if not tramp then
+		return
+	end
+	local last = 0
+	tramp.Touched:Connect(function(hit)
+		local char = player.Character
+		if not char or not hit:IsDescendantOf(char) or os.clock() - last < 0.5 then
+			return
+		end
+		local hrp = char:FindFirstChild("HumanoidRootPart")
+		if not hrp then
+			return
+		end
+		last = os.clock()
+		local v = hrp.AssemblyLinearVelocity
+		hrp.AssemblyLinearVelocity = Vector3.new(v.X, 85, v.Z)
+		local s = Instance.new("Sound")
+		s.SoundId = "rbxassetid://" .. Config.SOUNDS.bounce
+		s.Parent = tramp
+		s:Play()
+		game:GetService("Debris"):AddItem(s, 2)
+	end)
+end)
 
 -- ---------- how to play ----------
 local help = frame(gui, { Size = UDim2.fromOffset(520, 420), Position = UDim2.new(0.5, -260, 0.5, -210), Visible = false, ZIndex = 10 })
@@ -584,7 +621,7 @@ label(help, {
 		.. "\u{1F388} Pop the numbered balloons (E) to learn the door code, or use your character's skill.\n"
 		.. "\u{1F648} Hide in wardrobes, curtains and boxes (E). Jump to come out.\n"
 		.. "\u{1F3C3} Run with Shift or the Run button - it uses stamina.\n"
-		.. "\u{1F4A1} Clues show the next step but cost energy.\n"
+		.. "\u{1F4A1} Clues show the next step but cost points you earned in that game.\n"
 		.. "\u{1F512} Caught? A teammate frees you from the cage - or watch your team.\n"
 		.. "\u{1F333} Everyone out to the garden = you win!",
 })

@@ -331,6 +331,23 @@ function House.buildObjects(world)
 			entry.unlockPrompt = prompt(entry.lockPart, "Unlock", o.name or "Locked door", 0.5)
 			entry.pickPrompt = prompt(entry.lockPart, "Pick the lock", "Tinker", 4)
 			entry.pickPrompt.KeyboardKeyCode = Enum.KeyCode.F
+		elseif o.kind == "vent" then
+			-- a grate low on the wall towards the other end
+			local dir = Vector3.new(0, 0, 0)
+			for _, d in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
+				if cell(map, o.x + d[1], o.y + d[2]) == "#" and cell(map, o.x + 2 * d[1], o.y + 2 * d[2]) == "." then
+					for _, p in ipairs(map.objects) do
+						if p.kind == "vent" and p.pair == o.pair and p.x == o.x + 2 * d[1] and p.y == o.y + 2 * d[2] then
+							dir = Vector3.new(d[1], 0, d[2])
+						end
+					end
+				end
+			end
+			local alongX = dir.X ~= 0
+			local spot = base + dir * (T / 2 - 0.15) + Vector3.new(0, 1.6, 0)
+			part(root, { Name = "VentHole", Size = alongX and Vector3.new(0.2, 3, 3.8) or Vector3.new(3.8, 3, 0.2), Position = spot, Color = Color3.fromRGB(8, 6, 10), CanCollide = false })
+			entry.part = part(root, { Name = "Vent", Size = alongX and Vector3.new(0.3, 3.2, 4) or Vector3.new(4, 3.2, 0.3), Position = spot - dir * 0.2, Color = Color3.fromRGB(150, 150, 160), Material = Enum.Material.DiamondPlate, Transparency = 0.3, CanCollide = false })
+			entry.prompt = prompt(entry.part, "Crawl", "Vent", 0.5)
 		elseif o.kind == "search" then
 			-- size, colour, material, name, how it opens
 			local looks = {

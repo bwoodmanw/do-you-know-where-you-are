@@ -244,7 +244,8 @@ corner(top, 12)
 local roomName -- placed with the bars below
 local steps = {}
 for i = 1, 5 do
-	steps[i] = label(top, { Position = UDim2.new(0.02 + (i - 1) * 0.065, 0, 0.2, 0), Size = UDim2.new(0.065, 0, 0.6, 0), Text = "\u{1F463}", TextTransparency = 0.8 })
+	-- footprints are off: only the host's breathing gives it away
+	steps[i] = label(top, { Position = UDim2.new(0.02 + (i - 1) * 0.065, 0, 0.2, 0), Size = UDim2.new(0.065, 0, 0.6, 0), Text = "\u{1F463}", TextTransparency = 0.8, Visible = false })
 end
 local timerLabel = label(top, { Size = UDim2.new(0.26, 0, 0.7, 0), Position = UDim2.fromScale(0.36, 0.15), Text = "\u{23F1} --:--" })
 local codeLabel = label(top, { Size = UDim2.new(0.36, 0, 0.7, 0), Position = UDim2.fromScale(0.62, 0.15), RichText = true, Text = "Code: ? ? ?" })
@@ -263,7 +264,13 @@ local function paintCode()
 		parts[i] = k and ('<font color="' .. hex(Config.COLOR3[k]) .. '">\u{25CF}</font>') or "?"
 	end
 	codeLabel.Text = "Code: " .. table.concat(parts, " ")
-	if clueBtn then clueBtn.Text = "\u{1F4A1} Clue (" .. tostring(RoundState:GetAttribute("CluesLeft") or 0) .. ")" end
+	if clueBtn then
+		local cost = RoundState:GetAttribute("ClueCost") or 10
+		if player:GetAttribute("Skill") == "brainy" then
+			cost = math.ceil(cost / 2)
+		end
+		clueBtn.Text = "\u{1F4A1} Clue " .. cost .. "\u{2B50} (" .. tostring(RoundState:GetAttribute("CluesLeft") or 0) .. ")"
+	end
 end
 RoundState.AttributeChanged:Connect(paintCode)
 paintCode()
@@ -281,7 +288,8 @@ local function bar(y, color, name)
 	return fill
 end
 local staminaBar = bar(10, Color3.fromRGB(123, 227, 107), "Stamina")
-local energyBar = bar(34, Color3.fromRGB(255, 210, 63), "Energy")
+-- points earned in this game (clues are paid from these)
+local gameEarned = label(bars, { Size = UDim2.new(1, -16, 0, 18), Position = UDim2.fromOffset(8, 30), Text = "\u{2B50} 0 points this game", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 210, 63) })
 
 -- ---------- action buttons ----------
 local acts = frame(gui, { Size = UDim2.fromOffset(290, 150), Position = TOUCH and UDim2.new(1, -300, 1, -300) or UDim2.new(1, -300, 1, -160), BackgroundTransparency = 1 })
@@ -601,7 +609,7 @@ end)
 
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
-local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F497} Heal", echo = "\u{1F3A7} Noise" }
+local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise" }
 local function paintSkill()
 	local s = player:GetAttribute("Skill")
 	local icon = "\u{2B50}"
@@ -917,7 +925,7 @@ end)
 local dangerLevel = 0
 task.spawn(function()
 	while true do
-		if dangerLevel >= 2 and not player:GetAttribute("Escaped") and not player:GetAttribute("Caged") then
+		if Config.HEARTBEAT and dangerLevel >= 2 and not player:GetAttribute("Escaped") and not player:GetAttribute("Caged") then
 			local vol = 0.2 + dangerLevel * 0.15
 			playLocal("heart", vol)
 			task.wait(0.22)
@@ -974,7 +982,7 @@ RunService.RenderStepped:Connect(function(dt)
 	runBtn.BackgroundColor3 = (runToggle or shiftHeld) and PUMP or Color3.fromRGB(75, 58, 102)
 	staminaBar.Size = UDim2.fromScale(stamina / 100, 1)
 	staminaBar.BackgroundColor3 = tired and Color3.fromRGB(255, 77, 94) or Color3.fromRGB(123, 227, 107)
-	energyBar.Size = UDim2.fromScale(math.min(1, (player:GetAttribute("Energy") or 0) / 100), 1)
+	gameEarned.Text = "\u{2B50} " .. tostring(player:GetAttribute("GameEarned") or 0) .. " points this game"
 
 	-- skill countdown: active time, then recharge time
 	local serverNow = workspace:GetServerTimeNow()
@@ -1201,7 +1209,7 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 	elseif (kind == "boost" or kind == "pop") and data and data.userId == player.UserId then
 		popUp(data.icon or "\u{2B50}", data.item or "")
 	elseif (kind == "sneak" or kind == "heal" or kind == "lure") and data and data.userId == player.UserId then
-		popUp(skillIcon(player:GetAttribute("Skill")), kind == "sneak" and "Sneaking!" or kind == "heal" and "Healed!" or "Noise!")
+		popUp(skillIcon(player:GetAttribute("Skill")), kind == "sneak" and "Sneaking!" or kind == "heal" and "Shields up!" or "Noise!")
 	elseif kind == "start" then
 		picker.Visible = true
 		keypad.Visible = false

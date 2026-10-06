@@ -43,7 +43,7 @@
         "GlobalShadows": true,
         "Technology": "Future",
         "EnvironmentDiffuseScale": 0.6,
-        "EnvironmentSpecularScale": 1
+        "EnvironmentSpecularScale": 0.5
       }
     }
   }

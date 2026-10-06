@@ -10,7 +10,7 @@ over that plan's checked SLOTS. This script:
   - works out the slots (floor tiles against a wall or furniture, clear of
     doorways, starts, patrol points, the cage and the cabinet; wall tiles
     with a room to their south for the posters);
-  - plays MapGen's picking 500 times per plan and checks every result: every
+  - plays MapGen's picking 2000 times per plan and checks every result: every
     room still reachable, every object can be walked up to.
 
 Map key: # wall, . floor, T furniture, L locked door, D the big exit door,
@@ -84,7 +84,10 @@ def plan_a():
                 (11, 20, 29, 28, 'wood', 'Front Hall'), (31, 20, 38, 28, 'tiles', 'Bathroom')]
     p.fixed = [dict(id='door', kind='door', x=25, y=0), dict(id='hole', kind='hole', x=39, y=6), dict(id='cab', kind='cabinet', x=38, y=6),
                dict(id='L1', kind='lock', x=15, y=9, name='Library door'), dict(id='L2', kind='lock', x=20, y=5, name='Corridor door'),
-               dict(id='cage', kind='cage', x=12, y=27)]
+               dict(id='cage', kind='cage', x=12, y=27),
+               # crawl vents: through a wall between two rooms of the same zone
+               dict(id='v1a', kind='vent', pair='v1', x=9, y=17), dict(id='v1b', kind='vent', pair='v1', x=11, y=17),
+               dict(id='v2a', kind='vent', pair='v2', x=29, y=11), dict(id='v2b', kind='vent', pair='v2', x=31, y=11)]
     p.start = [(17, 27), (18, 27), (19, 27), (21, 27), (22, 27), (23, 27)]
     p.spawn, p.cake = (1, 14), (14, 13)
     p.patrol = [(5, 13), (15, 16), (24, 17), (34, 16), (35, 25), (24, 21), (13, 26), (5, 27),
@@ -157,7 +160,9 @@ def plan_c():
                 (1, 21, 12, 28, 'boards', 'Pantry'), (14, 21, 25, 28, 'wood', 'Front Hall'), (27, 21, 38, 28, 'tiles', 'Bathroom')]
     p.fixed = [dict(id='door', kind='door', x=19, y=0), dict(id='hole', kind='hole', x=39, y=5), dict(id='cab', kind='cabinet', x=38, y=5),
                dict(id='L1', kind='lock', x=6, y=10, name='Library door'), dict(id='L2', kind='lock', x=13, y=5, name='Corridor door'),
-               dict(id='cage', kind='cage', x=15, y=27)]
+               dict(id='cage', kind='cage', x=15, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=12, y=18), dict(id='v1b', kind='vent', pair='v1', x=14, y=18),
+               dict(id='v2a', kind='vent', pair='v2', x=36, y=19), dict(id='v2b', kind='vent', pair='v2', x=36, y=21)]
     p.start = [(18, 27), (19, 27), (20, 27), (21, 27), (22, 27), (23, 27)]
     p.spawn, p.cake = (1, 24), (32, 14)
     p.patrol = [(6, 14), (19, 16), (32, 17), (33, 25), (19, 24), (6, 27), (6, 4, 'L1'), (10, 8, 'L1'), (19, 5, 'L2'), (33, 6, 'L2')]
@@ -227,6 +232,24 @@ def check(p):
     for o in p.fixed:
         if o['kind'] in ('cage', 'cabinet') and not any((o['x'] + dx, o['y'] + dy) in allopen for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
             problems.append('%s cannot be reached' % o['id'])
+    # vents: floor at both ends, one wall between, same zone (no way round a lock)
+    zone_tiles = {n: reach(p, set(l)) for n, l in ((1, ()), (2, ('L1',)), (3, ('L1', 'L2')))}
+    def zone_at(t):
+        return 1 if t in zone_tiles[1] else 2 if t in zone_tiles[2] else 3
+    pairs = {}
+    for o in p.fixed:
+        if o['kind'] == 'vent':
+            pairs.setdefault(o['pair'], []).append((o['x'], o['y']))
+    for pid, ends in pairs.items():
+        if len(ends) != 2:
+            problems.append('vent %s needs two ends' % pid)
+            continue
+        (ax, ay), (bx, by) = ends
+        mid = ((ax + bx) // 2, (ay + by) // 2)
+        if abs(ax - bx) + abs(ay - by) != 2 or p.c(*mid) != '#':
+            problems.append('vent %s ends must be two tiles apart with a wall between' % pid)
+        if zone_at(ends[0]) != zone_at(ends[1]):
+            problems.append('vent %s would skip a locked door' % pid)
     cage = [o for o in p.fixed if o['kind'] == 'cage'][0]
     if (cage['x'] + 1, cage['y']) not in allopen:
         problems.append('the cage has no outside tile')
@@ -257,6 +280,16 @@ def slots(p, zone_of, allopen):
         for yy in range(s[2], s[2] + s[4]):
             for xx in range(s[1], s[1] + s[3]):
                 keep.add((xx, yy))
+    # one-tile-wide aisles (between a wall and a shelf), and the tiles round
+    # them: something there could seal a little pocket off
+    def is_aisle(x, y):
+        return p.c(x, y) == '.' and ((p.c(x, y - 1) in '#T' and p.c(x, y + 1) in '#T') or (p.c(x - 1, y) in '#T' and p.c(x + 1, y) in '#T'))
+    for y in range(H):
+        for x in range(W):
+            if is_aisle(x, y) and not gap(p, x, y):
+                for dx in (-1, 0, 1):
+                    for dy in (-1, 0, 1):
+                        keep.add((x + dx, y + dy))
     floor, wall = [], []
     for y in range(1, H - 1):
         for x in range(1, W - 1):
@@ -345,7 +378,7 @@ for p in (a, mirror(a, 'b', 'The Party House'), plan_c()):
         p.id, {z: sorted(r for r in zone_of if zone_of[r] == z) for z in (1, 2, 3)}, len(floor), len(wall), sum(1 for s in wall if s[2] == 2)))
     rnd = random.Random(1)
     seen = set()
-    for _ in range(500):
+    for _ in range(2000):
         for prob in trial(p, floor, wall, rnd):
             seen.add(prob)
     problems += sorted(seen)
@@ -386,7 +419,7 @@ for p, zone_of, floor, wall in plans:
             '\t\tpatrol = { %s },' % ', '.join(('{ %d, %d, lock = "%s" }' % t) if len(t) == 3 else ('{ %d, %d }' % t) for t in p.patrol),
             '\t\tfixed = {']
     for o in p.fixed:
-        out.append('\t\t\t{ %s },' % ', '.join('%s = %s' % (k, lua(o[k])) for k in ('id', 'kind', 'name', 'x', 'y') if k in o))
+        out.append('\t\t\t{ %s },' % ', '.join('%s = %s' % (k, lua(o[k])) for k in ('id', 'kind', 'name', 'pair', 'x', 'y') if k in o))
     out += ['\t\t},', '\t\tprops = {']
     for s in p.props:
         out.append('\t\t\t{ name = "%s", x = %d, y = %d, w = %d, d = %d, h = %s, face = "%s"%s },' % (s[0], s[1], s[2], s[3], s[4], s[5], s[6], ', hang = true' if len(s) > 7 else ''))

@@ -31,13 +31,26 @@ Config.HOST = {
 -- the escape reward.
 Config.DIFFICULTY_ORDER = { "easy", "normal", "hard", "nightmare" }
 Config.DIFFICULTY = {
-	easy = { name = "Easy", grace = 30, timer = 600, hunt = 10, sight = 26, catch = 4, clues = 5, bonus = 1 },
-	normal = { name = "Normal", grace = 20, timer = 480, hunt = 12, sight = 32, catch = 4.5, clues = 3, bonus = 1.5 },
-	hard = { name = "Hard", grace = 12, timer = 360, hunt = 14, sight = 40, catch = 5, clues = 2, bonus = 2 },
-	nightmare = { name = "Nightmare", grace = 6, timer = 300, hunt = 16, sight = 48, catch = 5.5, clues = 1, bonus = 3 },
+	easy = { name = "Easy", grace = 30, timer = 600, hunt = 13, sight = 26, catch = 4, clues = 5, bonus = 1 },
+	normal = { name = "Normal", grace = 20, timer = 480, hunt = 14, sight = 32, catch = 4.5, clues = 3, bonus = 1.5 },
+	hard = { name = "Hard", grace = 12, timer = 360, hunt = 15.5, sight = 40, catch = 5, clues = 2, bonus = 2 },
+	nightmare = { name = "Nightmare", grace = 6, timer = 300, hunt = 17, sight = 48, catch = 5.5, clues = 1, bonus = 3 },
 }
 
-Config.CLUE_COST = 30
+-- clues cost points earned in this game: the team's 1st, 2nd, 3rd+ clue
+-- (Brainy pays half). Points from a game are scaled by POINT_SCALE.
+Config.CLUE_COSTS = { 10, 20, 30 }
+Config.POINT_SCALE = 0.67
+-- reset one character's skill ladder (the Robux price is set on the
+-- Developer Product: 49)
+Config.RESET_POINTS = 500
+-- the heartbeat that speeds up near the host (off: only the breathing tells)
+Config.HEARTBEAT = false
+-- host skills; cooldowns by difficulty
+Config.HOST_SKILLS = {
+	throw = { min = 12, range = 45, flight = 1.2, radius = 4, knock = 2,
+		cooldown = { easy = 20, normal = 15, hard = 12, nightmare = 9 } },
+}
 Config.CLUES = 3
 
 Config.COLORS = { "red", "blue", "yellow", "green" }
@@ -54,21 +67,21 @@ Config.SKILLS = {
 	{ id = "brainy", name = "Brainy", icon = "\u{1F9E0}", say = "Cracks codes", color = Color3.fromRGB(79, 179, 232) },
 	{ id = "muscle", name = "Muscle", icon = "\u{1F4AA}", say = "Shoves heavy things", color = Color3.fromRGB(232, 80, 91) },
 	{ id = "glow", name = "Glow", icon = "\u{1F4A1}", say = "Lights up secrets", color = Color3.fromRGB(184, 224, 90) },
-	{ id = "patch", name = "Patch", icon = "\u{1F497}", say = "Heals and rescues", color = Color3.fromRGB(255, 179, 199) },
+	{ id = "patch", name = "Patch", icon = "\u{1F497}", say = "Shields and rescues", color = Color3.fromRGB(255, 179, 199) },
 	{ id = "echo", name = "Echo", icon = "\u{1F3A7}", say = "Throws a noise", color = Color3.fromRGB(255, 210, 63) },
 	{ id = "bramble", name = "Bramble", icon = "\u{1F33F}", say = "Talks to plants", color = Color3.fromRGB(143, 209, 106) },
 }
 
-Config.COOLDOWN = { shadow = 20, patch = 30, echo = 25 }
+Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25 }
 
 -- what each skill does, and how you use it, for the character select screen
 Config.SKILL_INFO = {
 	tinker = { about = "Picks the locked doors inside the house, so the team never needs to hunt for their keys. (The big exit door still needs the colour code.)", how = "Walk up to a locked door and hold F." },
 	shadow = { about = "Sneaks: for a few seconds the host can't see or grab Shadow. Shadow is also harder to spot than anyone.", how = "Press the Sneak button. It recharges." },
-	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as much energy.", how = "Find the invitation in the Parlour and press E." },
+	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as many points.", how = "Find the invitation in the Parlour and press E." },
 	muscle = { about = "Shoves the heavy cabinet in the Music Room aside, opening a secret way out.", how = "Hold E at the cabinet." },
 	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.", how = "Press E at the painted wall in the Library." },
-	patch = { about = "Heals everyone nearby with energy and stamina, and frees every caged friend at once.", how = "Press the Heal button. Hold E at the cage." },
+	patch = { about = "Gives a nearby friend a Party Shield (one grab) and everyone nearby their breath back. Frees every caged friend at once, twice as fast.", how = "Press the Shield button. Hold E at the cage." },
 	echo = { about = "Hears the host coming from further away, and throws a noise that sends the host to look somewhere else.", how = "Press Noise, then tap where to throw it." },
 	bramble = { about = "Talks to plants: the big plant in the Conservatory whispers the door code to Bramble.", how = "Press E at the plant." },
 }
@@ -100,6 +113,7 @@ Config.ROBUX_PRODUCTS = {
 	clue = 0,
 	energy = 0,
 	headstart = 0,
+	reset = 0, -- resets one character's skill ladder (49 Robux)
 }
 
 -- Characters saved to Roblox (Studio: right-click the character in
@@ -116,6 +130,8 @@ Config.CHARACTER_ASSETS = {
 	Echo = 0,
 	Bramble = 0,
 	Host = 80775740181256,
+	HostGummy = 0,
+	HostRobot = 0,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
@@ -144,7 +160,11 @@ Config.SOUNDS = {
 	plant = 9114518077, -- Foliage Movement 1
 	present = 9126073001, -- Synth Sparkle bell ding
 	candy = 9113959343, -- Crack Egg Crunchy 11
-	energy = 9114172109, -- Drinking gulping 6
+	energy = 9114172109, -- Drinking gulping 6 (Second Wind)
+	bounce = 9113380196, -- Beach Ball 11
+	bell = 9113421646, -- Bell Rings 1
+	bonk = 9113484620, -- Body Hit 4
+	throw = 9126229255, -- Whoosh by fast
 	beep = 9119717523, -- Switch click
 	wrong = 9113085764, -- Alarm Buzzer 5
 	cage = 9114885296, -- Jail Cell Door 7

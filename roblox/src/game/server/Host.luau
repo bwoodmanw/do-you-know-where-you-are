@@ -145,6 +145,8 @@ function Host:spawn(diff)
 	self.diff = diff -- a Config.DIFFICULTY entry
 	self.frenzy = false
 	self.mode = "patrol"
+	self.skill = "throw" -- the Pumpkin's skill (other hosts arrive with the roster)
+	self.nextSkill = os.clock() + 8
 	self.path = PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 11, AgentCanJump = false, WaypointSpacing = 6 })
 	return self.model
 end
@@ -180,7 +182,7 @@ function Host:canSee(char)
 		return false
 	end
 	local plr = Players:GetPlayerFromCharacter(char)
-	if not plr or plr:GetAttribute("Hidden") or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
+	if not plr or plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling") or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return false
 	end
 	if (plr:GetAttribute("SneakUntil") or 0) > workspace:GetServerTimeNow() then
@@ -257,6 +259,12 @@ function Host:step(dt)
 		self.target = best
 		self.goal = best.Character.HumanoidRootPart.Position
 		self.lastSeen = now
+		-- throw a pumpkin at someone in sight, not too close, not too far
+		local s = Config.HOST_SKILLS.throw
+		if self.skill == "throw" and now >= (self.nextSkill or 0) and bestD >= s.min and bestD <= s.range then
+			self.nextSkill = now + (s.cooldown[string.lower(self.diff.name)] or 15)
+			self:throwAt(best)
+		end
 	elseif self.mode == "hunt" and now - self.lastSeen > Config.HOST.lostAfter then
 		self.mode = "search"
 		self.round:hostLost()
@@ -284,7 +292,7 @@ function Host:step(dt)
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local char = plr.Character
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
-		local hidden = plr:GetAttribute("Hidden")
+		local hidden = plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling")
 		if hrp and (not hidden or self.frenzy) and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
 			and (plr:GetAttribute("SneakUntil") or 0) <= workspace:GetServerTimeNow() then
 			local flat = Vector3.new(hrp.Position.X - self.root.Position.X, 0, hrp.Position.Z - self.root.Position.Z)
@@ -330,6 +338,50 @@ function Host:step(dt)
 	if goal then
 		self:moveTo(goal)
 	end
+end
+
+-- the Pumpkin's throw: a slow arc you can see coming and dodge
+function Host:throwAt(plr)
+	local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+	local head = self.model and (self.model:FindFirstChild("Head") or self.root)
+	if not hrp or not head then
+		return
+	end
+	local Effects = require(script.Parent.Effects)
+	local s = Config.HOST_SKILLS.throw
+	local from = head.Position + Vector3.new(0, 1, 0)
+	local to = Vector3.new(hrp.Position.X, 1, hrp.Position.Z)
+	local ball = Instance.new("Part")
+	ball.Name = "ThrownPumpkin"
+	ball.Shape = Enum.PartType.Ball
+	ball.Size = Vector3.new(2.4, 2.2, 2.4)
+	ball.Color = Color3.fromRGB(240, 120, 20)
+	ball.Material = Enum.Material.SmoothPlastic
+	ball.Anchored, ball.CanCollide, ball.CanQuery, ball.CanTouch = true, false, false, false
+	ball.Position = from
+	ball.Parent = workspace
+	Effects.sound(from, "throw")
+	local peak = math.max(6, (to - from).Magnitude * 0.25)
+	local t0 = os.clock()
+	local conn
+	conn = game:GetService("RunService").Heartbeat:Connect(function()
+		local f = math.min(1, (os.clock() - t0) / s.flight)
+		ball.CFrame = CFrame.new(from:Lerp(to, f) + Vector3.new(0, math.sin(f * math.pi) * peak, 0)) * CFrame.Angles(f * 8, 0, 0)
+		if f < 1 then
+			return
+		end
+		conn:Disconnect()
+		ball:Destroy()
+		Effects.burst(to, "shove")
+		Effects.sound(to, "bonk", 1)
+		for _, p in ipairs(Players:GetPlayers()) do
+			local h = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+			if h and not p:GetAttribute("Hidden") and not p:GetAttribute("Crawling") and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped")
+				and (Vector3.new(h.Position.X, 0, h.Position.Z) - Vector3.new(to.X, 0, to.Z)).Magnitude < s.radius then
+				self.round:hostHit(p)
+			end
+		end
+	end)
 end
 
 function Host:stun(seconds)

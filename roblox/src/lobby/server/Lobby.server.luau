@@ -104,6 +104,7 @@ local PartyList = remote("PartyList") -- server -> client: what this player can 
 local Notice = remote("Notice") -- server -> client: a message
 local BuyBoost = remote("BuyBoost") -- (boostId) with points
 local SellBoost = remote("SellBoost") -- (boostId) back for its points
+local ResetLadder = remote("ResetLadder") -- (skill, "points" | "robux")
 local SetLoadout = remote("SetLoadout") -- ({boostId, ...}) up to Progress.MAX_BOOSTS
 local PickUpgrade = remote("PickUpgrade") -- (skill, level, upgradeId)
 local VoteMap = remote("VoteMap") -- (mapId)
@@ -398,12 +399,33 @@ end)
 -- Robux: each Developer Product grants one boost
 local productToBoost = {}
 for id, productId in pairs(Config.ROBUX_PRODUCTS) do
-	if productId and productId > 0 then
+	if productId and productId > 0 and Progress.BOOSTS[id] then
 		productToBoost[productId] = id
 	end
 end
+local function resetLadder(data, skill)
+	data.picks[skill] = {}
+end
 MarketplaceService.ProcessReceipt = function(info)
 	local plr = Players:GetPlayerByUserId(info.PlayerId)
+	-- the skill-ladder reset, for the character chosen before buying
+	if (Config.ROBUX_PRODUCTS.reset or 0) > 0 and info.ProductId == Config.ROBUX_PRODUCTS.reset then
+		local d = plr and Profile.get(plr)
+		if not d then
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+		d.receipts = d.receipts or {}
+		if not d.receipts[info.PurchaseId] and d.pendingReset then
+			d.receipts[info.PurchaseId] = true
+			resetLadder(d, d.pendingReset)
+		end
+		if not Profile.save(plr) then
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+		Profile.publish(plr)
+		Notice:FireClient(plr, "Upgrades reset - choose again!")
+		return Enum.ProductPurchaseDecision.PurchaseGranted
+	end
 	local id = productToBoost[info.ProductId]
 	local data = plr and Profile.get(plr)
 	if not id or not data then
@@ -423,6 +445,29 @@ MarketplaceService.ProcessReceipt = function(info)
 end
 
 -- ---------- the skill ladder ----------
+-- reset one character's upgrades: with points now, or Robux (the product
+-- prompt opens on the player's screen; ProcessReceipt finishes it)
+ResetLadder.OnServerEvent:Connect(function(plr, skill, how)
+	local data = Profile.get(plr)
+	if not data or typeof(skill) ~= "string" or not Progress.choices(skill, 3) then
+		return
+	end
+	if not data.picks[skill] or next(data.picks[skill]) == nil then
+		return Notice:FireClient(plr, "Nothing to reset yet.")
+	end
+	if how == "robux" then
+		data.pendingReset = skill
+		return
+	end
+	if data.points < Config.RESET_POINTS then
+		return Notice:FireClient(plr, "A reset costs " .. Config.RESET_POINTS .. " points.")
+	end
+	data.points -= Config.RESET_POINTS
+	resetLadder(data, skill)
+	Profile.publish(plr)
+	Profile.save(plr)
+	Notice:FireClient(plr, "Upgrades reset - choose again!")
+end)
 PickUpgrade.OnServerEvent:Connect(function(plr, skill, level, upgradeId)
 	local data = Profile.get(plr)
 	if not data or typeof(skill) ~= "string" or typeof(level) ~= "number" or typeof(upgradeId) ~= "string" then
@@ -431,6 +476,11 @@ PickUpgrade.OnServerEvent:Connect(function(plr, skill, level, upgradeId)
 	local options = Progress.choices(skill, level)
 	if not options or Progress.level(data.xp[skill] or 0) < level then
 		return Notice:FireClient(plr, "Play more as this character to reach level " .. tostring(level) .. ".")
+	end
+	-- a choice is for keeps: changing needs a reset of the whole ladder
+	local chosen = data.picks[skill] and data.picks[skill][tostring(level)]
+	if chosen then
+		return Notice:FireClient(plr, chosen == upgradeId and "Already chosen!" or ("Locked in! Reset this character's upgrades for " .. Config.RESET_POINTS .. " points (or Robux) to choose again."))
 	end
 	for _, opt in ipairs(options) do
 		if opt.id == upgradeId then
@@ -450,6 +500,7 @@ stallPrompt.Triggered:Connect(function(plr)
 	OpenShop:FireClient(plr)
 end)
 Scene.dropOff()
+Scene.fun()
 local boards = Scene.boards({ "\u{1F3C6} Most points earned", "\u{1F6AA} Most escapes", "\u{1F512} Most rescues", "\u{23F1} Fastest escapes this week" })
 local boardPoints, boardEscapes, boardRescue, boardFast = boards[1], boards[2], boards[3], boards[4]
 local function fill(body, rows, fmt)

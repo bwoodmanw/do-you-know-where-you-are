@@ -30,12 +30,12 @@ Progress.BOOSTS = {
 	candy = { name = "Candy Corn", icon = "\u{1F36C}", say = "Tap in the game: run without tiring for 20 s", tap = true, price = 60 },
 	shield = { name = "Party Shield", icon = "\u{1F6E1}", say = "Automatic: saves you from one grab", price = 120 },
 	clue = { name = "Extra Clue", icon = "\u{1F4A1}", say = "Tap in the game: +1 clue for the team", tap = true, price = 80 },
-	energy = { name = "Energy Drink", icon = "\u{26A1}", say = "Tap in the game: +50 energy", tap = true, price = 50 },
+	energy = { name = "Second Wind", icon = "\u{1F4A8}", say = "Tap in the game: all your stamina back", tap = true, price = 50 },
 	headstart = { name = "Head Start", icon = "\u{23F1}", say = "Automatic: the host waits 10 s longer", price = 100 },
 }
 
 -- Character levels: XP comes from points earned while playing that character.
-Progress.LEVEL_XP = { 0, 100, 250, 450, 700 } -- XP needed for levels 1..5
+Progress.LEVEL_XP = { 0, 300, 800, 1600, 3000 } -- XP needed for levels 1..5
 
 function Progress.level(xp)
 	local lvl = 1
@@ -58,7 +58,7 @@ end
 local GENERIC = {
 	[2] = {
 		{ id = "lungs", name = "Big Lungs", say = "20% more stamina", mods = { staminaMult = 1.2 } },
-		{ id = "snack", name = "Party Snack", say = "Start with 20 extra energy", mods = { energyStart = 20 } },
+		{ id = "nimble", name = "Nimble Hands", say = "Hold things 15% faster", mods = { holdMult = 0.85 } },
 	},
 	[4] = {
 		{ id = "quick", name = "Quick Feet", say = "Run 10% faster", mods = { runMult = 1.1 } },
@@ -118,11 +118,11 @@ local SPECIAL = {
 	},
 	patch = {
 		[3] = {
-			{ id = "bigheal", name = "Big Heal", say = "Heal gives 70 energy", mods = { healAmount = 70 } },
-			{ id = "quickheal", name = "Quick Heal", say = "Heal recharges 40% faster", mods = { cooldownMult = 0.6 } },
+			{ id = "bigheal", name = "Shields for All", say = "Shield every friend nearby, not just one", mods = { healShield = true } },
+			{ id = "quickheal", name = "Quick Shield", say = "Shield recharges 40% faster", mods = { cooldownMult = 0.6 } },
 		},
 		[5] = {
-			{ id = "guardian", name = "Guardian", say = "Heal also gives everyone nearby a Party Shield", mods = { healShield = true } },
+			{ id = "guardian", name = "Guardian", say = "Shield recharges twice as fast", mods = { cooldownMult = 0.5 } },
 			{ id = "medic", name = "Field Medic", say = "Free friends from the cage twice as fast", mods = { holdMult = 0.5 } },
 		},
 	},

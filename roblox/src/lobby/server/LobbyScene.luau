@@ -196,6 +196,10 @@ function Scene.stall(position)
 		desc.LeftArmColor, desc.RightArmColor = desc.HeadColor, desc.HeadColor
 		desc.TorsoColor = Color3.fromRGB(110, 60, 160)
 		desc.LeftLegColor, desc.RightLegColor = Color3.fromRGB(40, 30, 50), Color3.fromRGB(40, 30, 50)
+		desc.TorsoColor = Color3.fromRGB(46, 120, 80) -- store-green shirt
+		desc.Head = 12939347925 -- Know-It-All Grin (Roblox)
+		desc.FaceAccessory = "62690529" -- Thick Rimmed Glasses 3.0 (Roblox)
+		desc.HatAccessory = "96678344" -- LOL Day Cap (Roblox)
 		local ok, npc = pcall(function()
 			return Players:CreateHumanoidModelFromDescription(desc, Enum.HumanoidRigType.R15)
 		end)
@@ -210,14 +214,6 @@ function Scene.stall(position)
 		hum.DisplayName = "Shopkeeper"
 		hum.NameDisplayDistance = 40
 		npc.Parent = m
-		local head = npc:FindFirstChild("Head")
-		if head then
-			local hat = part(npc, { Name = "PartyHat", Size = Vector3.new(0.9, 1.3, 0.9), CFrame = head.CFrame * CFrame.new(0.2, 1, 0) * CFrame.Angles(0, 0, math.rad(-15)), Color = Color3.fromRGB(123, 227, 107), Material = Enum.Material.SmoothPlastic, CanCollide = false })
-			hat.Anchored = false
-			local w = Instance.new("WeldConstraint")
-			w.Part0, w.Part1 = head, hat
-			w.Parent = hat
-		end
 		local animator = hum:FindFirstChildOfClass("Animator") or Instance.new("Animator", hum)
 		local wave = Instance.new("Animation")
 		wave.AnimationId = "rbxassetid://507770239"
@@ -299,6 +295,107 @@ function Scene.dropOff()
 	bench(Vector3.new(-20, 0, 22), math.rad(-90))
 	bench(Vector3.new(20, 0, 22), math.rad(90))
 	bench(Vector3.new(-20, 0, -4), math.rad(-90))
+	-- the "drive-in": a car parked facing the leaderboards, to sit and watch
+	car(Vector3.new(24, 0, 8.5), -math.pi / 2, Color3.fromRGB(230, 170, 40))
+end
+
+-- ---------- things to play with while waiting ----------
+local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+local TweenService = game:GetService("TweenService")
+local Debris = game:GetService("Debris")
+
+local function sound(at, name, volume)
+	local id = Config.SOUNDS[name]
+	if not id then
+		return
+	end
+	local s = Instance.new("Sound")
+	s.SoundId = "rbxassetid://" .. id
+	s.Volume = volume or 0.8
+	s.RollOffMaxDistance = 80
+	s.Parent = at
+	s:Play()
+	Debris:AddItem(s, 4)
+end
+
+local function promptOn(p, action, object)
+	local pp = Instance.new("ProximityPrompt")
+	pp.ActionText = action
+	pp.ObjectText = object
+	pp.RequiresLineOfSight = false
+	pp.MaxActivationDistance = 10
+	pp.Parent = p
+	return pp
+end
+
+function Scene.fun()
+	local folder = Instance.new("Folder")
+	folder.Name = "LobbyFun"
+	folder.Parent = workspace
+
+	-- trampoline (the bounce itself happens on each player's screen: LobbyUi)
+	part(folder, { Name = "TrampolineRim", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1, 10, 10), CFrame = CFrame.new(-14, 0.5, 40) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(60, 60, 70), Material = Enum.Material.Metal })
+	part(folder, { Name = "Trampoline", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.3, 8.6, 8.6), CFrame = CFrame.new(-14, 1.1, 40) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(61, 139, 255), Material = Enum.Material.Fabric })
+
+	-- a ball to kick about; it comes back if it rolls away
+	local home = Vector3.new(12, 3, 44)
+	local ball = part(folder, { Name = "KickBall", Shape = Enum.PartType.Ball, Size = Vector3.new(3, 3, 3), Position = home, Color = Color3.fromRGB(255, 77, 94), Material = Enum.Material.SmoothPlastic, Anchored = false })
+	ball.CustomPhysicalProperties = PhysicalProperties.new(0.3, 0.4, 0.8)
+	local lastBoing = 0
+	ball.Touched:Connect(function(hit)
+		if hit.Parent and hit.Parent:FindFirstChildOfClass("Humanoid") and os.clock() - lastBoing > 0.4 then
+			lastBoing = os.clock()
+			sound(ball, "bounce", 0.7)
+		end
+	end)
+	task.spawn(function()
+		while ball.Parent do
+			task.wait(2)
+			local p = ball.Position
+			if p.Y < -20 or math.abs(p.X) > 90 or math.abs(p.Z) > 90 then
+				ball.AssemblyLinearVelocity = Vector3.zero
+				ball.Position = home
+			end
+		end
+	end)
+
+	-- a giant pumpkin that giggles and glows when you poke it
+	local pumpkin = part(folder, { Name = "GiantPumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(6, 5, 6), Position = Vector3.new(16, 2.5, 54), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
+	part(folder, { Name = "Stem", Size = Vector3.new(0.6, 1.2, 0.6), Position = Vector3.new(16, 5.4, 54), Color = Color3.fromRGB(70, 110, 40) })
+	local glow = Instance.new("PointLight")
+	glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 140, 40), 14, 0
+	glow.Parent = pumpkin
+	local poke = promptOn(pumpkin, "Poke", "Giant pumpkin")
+	local busy = false
+	poke.Triggered:Connect(function()
+		if busy then
+			return
+		end
+		busy = true
+		sound(pumpkin, "giggle", 1)
+		TweenService:Create(glow, TweenInfo.new(0.3), { Brightness = 4 }):Play()
+		TweenService:Create(pumpkin, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, true), { Size = Vector3.new(6.8, 5.8, 6.8) }):Play()
+		task.wait(1.6)
+		TweenService:Create(glow, TweenInfo.new(0.8), { Brightness = 0 }):Play()
+		task.wait(1)
+		busy = false
+	end)
+
+	-- a bell on a post: ring it
+	part(folder, { Name = "BellPost", Size = Vector3.new(0.6, 9, 0.6), Position = Vector3.new(-12, 4.5, 54), Color = Color3.fromRGB(70, 50, 40), Material = Enum.Material.Wood })
+	part(folder, { Name = "BellArm", Size = Vector3.new(2.6, 0.4, 0.4), Position = Vector3.new(-11, 8.8, 54), Color = Color3.fromRGB(70, 50, 40), Material = Enum.Material.Wood })
+	local bell = part(folder, { Name = "Bell", Shape = Enum.PartType.Ball, Size = Vector3.new(1.8, 1.8, 1.8), Position = Vector3.new(-10, 7.6, 54), Color = Color3.fromRGB(230, 190, 70), Material = Enum.Material.Metal })
+	local ring = promptOn(bell, "Ring", "Bell")
+	local hang = CFrame.new(-10, 8.6, 54)
+	local rest = bell.CFrame
+	ring.Triggered:Connect(function()
+		sound(bell, "bell", 0.9)
+		for _, a in ipairs({ 30, -25, 15, 0 }) do
+			local tw = TweenService:Create(bell, TweenInfo.new(0.18), { CFrame = hang * CFrame.Angles(0, 0, math.rad(a)) * hang:Inverse() * rest })
+			tw:Play()
+			tw.Completed:Wait()
+		end
+	end)
 end
 
 return Scene

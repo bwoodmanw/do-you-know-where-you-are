@@ -154,9 +154,13 @@ end
 
 local state = {}
 local function addPoints(plr, n)
+	if n > 0 then
+		n = math.max(1, math.floor(n * Config.POINT_SCALE + 0.5))
+	end
 	Profile.addPoints(plr, n)
 	if state.earned then
 		state.earned[plr.UserId] = (state.earned[plr.UserId] or 0) + n
+		plr:SetAttribute("GameEarned", state.earned[plr.UserId])
 	end
 end
 
@@ -169,7 +173,8 @@ local function applyMods(plr)
 	plr:SetAttribute("StaminaMult", m.staminaMult)
 	plr:SetAttribute("RunMult", m.runMult)
 	plr:SetAttribute("SightMult", m.sightMult)
-	plr:SetAttribute("HoldMult", m.holdMult)
+	-- Patch frees caged friends (and holds everything) twice as fast
+	plr:SetAttribute("HoldMult", m.holdMult * (skill == "patch" and 0.5 or 1))
 	plr:SetAttribute("CooldownMult", m.cooldownMult)
 	plr:SetAttribute("SneakTime", m.sneakTime or 6)
 	plr:SetAttribute("GlowRange", m.glowRange or 24)
@@ -715,6 +720,46 @@ local function wirePrompts()
 					say("info", NOTHING[math.random(1, #NOTHING)], nil, plr)
 				end
 			end)
+		elseif def.kind == "vent" then
+			-- crawl through to the other end; the host cannot follow
+			entry.prompt.Triggered:Connect(function(plr)
+				if state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") or plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling") then
+					return
+				end
+				local other
+				for oid, e in pairs(world.objects) do
+					if e.def.kind == "vent" and e.def.pair == def.pair and oid ~= id then
+						other = e
+					end
+				end
+				if not other then
+					return
+				end
+				state.ventCool = state.ventCool or {}
+				local nowT = os.clock()
+				if (state.ventCool[def.pair] or 0) > nowT then
+					return say("info", "Someone just crawled through - wait a moment.", nil, plr)
+				end
+				state.ventCool[def.pair] = nowT + 10
+				plr:SetAttribute("Crawling", true)
+				local h = hrpOf(plr)
+				if h then
+					h.Anchored = true
+				end
+				setVisible(plr, false)
+				Effects.sound(entry.part.Position, "hide")
+				say("info", "Crawling through the vent...", nil, plr)
+				task.delay(1.6, function()
+					teleport(plr, at(other.def.x, other.def.y, 0))
+					local h2 = hrpOf(plr)
+					if h2 then
+						h2.Anchored = false
+					end
+					setVisible(plr, true)
+					plr:SetAttribute("Crawling", false)
+					Effects.sound(other.part.Position, "hide")
+				end)
+			end)
 		elseif def.kind == "hide" then
 			entry.outside = besideTile(def.x, def.y)
 			entry.prompt.Triggered:Connect(function(plr)
@@ -769,6 +814,31 @@ end
 local function reachable(id)
 	local z = world.objects[id] and world.objects[id].def.zone or 1
 	return z == 1 or (z == 2 and world.unlocked.L1) or (z == 3 and world.unlocked.L1 and world.unlocked.L2)
+end
+
+-- hit by a thrown pumpkin: knocked flat for a moment
+function round.hostHit(_, plr)
+	if plr:GetAttribute("Knocked") then
+		return
+	end
+	plr:SetAttribute("Knocked", true)
+	plr:SetAttribute("Frozen", true)
+	setSpeed(plr, 0)
+	local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+	if hum then
+		hum.PlatformStand = true
+	end
+	say("bonk", "BONK! " .. plr.DisplayName .. " was hit by a flying pumpkin!", { userId = plr.UserId })
+	task.delay(Config.HOST_SKILLS.throw.knock, function()
+		if hum and hum.Parent then
+			hum.PlatformStand = false
+		end
+		plr:SetAttribute("Knocked", false)
+		plr:SetAttribute("Frozen", false)
+		if not plr:GetAttribute("Caged") and not plr:GetAttribute("Hidden") then
+			setSpeed(plr, Config.WALK)
+		end
+	end)
 end
 
 function round.hostCaught(_, plr)
@@ -983,18 +1053,34 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		Effects.at(plr, "sneak")
 		say("sneak", plr.DisplayName .. " is sneaking - the host cannot see or grab them for 6 seconds!", { userId = plr.UserId })
 	elseif skill == "patch" then
+		-- a Party Shield for the nearest friend (all nearby with Shields for
+		-- All), everyone's breath back; alone, Patch shields herself
+		local nearest, nd, given = nil, math.huge, 0
 		for _, p in ipairs(Players:GetPlayers()) do
 			local h = hrpOf(p)
-			if h and not p:GetAttribute("Caged") and (h.Position - hrp.Position).Magnitude < 18 then
-				p:SetAttribute("Energy", math.min(100, (p:GetAttribute("Energy") or 0) + (plr:GetAttribute("HealAmount") or 40)))
-				if plr:GetAttribute("HealShield") then
-					p:SetAttribute("Shield", true)
+			if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
+				local d = (h.Position - hrp.Position).Magnitude
+				if d < 18 then
+					Boost:FireClient(p, "stamina")
+					if plr:GetAttribute("HealShield") then
+						p:SetAttribute("Shield", true)
+						given += 1
+					elseif d < nd then
+						nearest, nd = p, d
+					end
 				end
-				Boost:FireClient(p, "stamina")
 			end
 		end
+		if nearest then
+			nearest:SetAttribute("Shield", true)
+			given += 1
+		end
+		if given == 0 then
+			plr:SetAttribute("Shield", true)
+		end
+		Boost:FireClient(plr, "stamina")
 		Effects.at(plr, "heal")
-		say("heal", "Patch patched up everyone nearby - energy and stamina back!", { userId = plr.UserId })
+		say("heal", given == 0 and "Patch gave herself a Party Shield!" or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!"), { userId = plr.UserId })
 	elseif skill == "echo" then
 		if typeof(pos) ~= "Vector3" or (pos - hrp.Position).Magnitude > (plr:GetAttribute("EchoRange") or 70) then
 			return say("info", "Throw it somewhere closer!", nil, plr)
@@ -1013,12 +1099,19 @@ AskClue.OnServerEvent:Connect(function(plr)
 	if state.status ~= "playing" or state.cluesLeft <= 0 then
 		return
 	end
-	local cost = plr:GetAttribute("Skill") == "brainy" and Config.CLUE_COST / 2 or Config.CLUE_COST
-	local energy = plr:GetAttribute("Energy") or 0
-	if energy < cost then
-		return say("info", "Not enough energy for a clue.", nil, plr)
+	-- a clue costs points earned in this game: 10, then 20, then 30 (Brainy half)
+	local used = state.cluesUsed or 0
+	local cost = Config.CLUE_COSTS[math.min(used + 1, #Config.CLUE_COSTS)]
+	if plr:GetAttribute("Skill") == "brainy" then
+		cost = math.ceil(cost / 2)
 	end
-	plr:SetAttribute("Energy", energy - cost)
+	local have = (state.earned and state.earned[plr.UserId]) or 0
+	if have < cost then
+		return say("info", "A clue costs " .. cost .. " points from this game - you have " .. have .. ". Pop balloons, open presents and search to earn some!", nil, plr)
+	end
+	addPoints(plr, -cost)
+	state.cluesUsed = used + 1
+	RoundState:SetAttribute("ClueCost", Config.CLUE_COSTS[math.min(state.cluesUsed + 1, #Config.CLUE_COSTS)])
 	state.cluesLeft -= 1
 	RoundState:SetAttribute("CluesLeft", state.cluesLeft)
 	local id, text = hintFor()
@@ -1079,15 +1172,12 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 		return
 	end
 	local boost = Progress.BOOSTS[id]
-	if id == "energy" and (plr:GetAttribute("Energy") or 0) >= 100 then
-		return say("info", "Your energy is full - save the Energy Drink for later.", nil, plr)
-	end
 	table.remove(bag, i)
 	paintBag(plr)
 	if id == "candy" then
 		Boost:FireClient(plr, "candy")
 	elseif id == "energy" then
-		plr:SetAttribute("Energy", math.min(100, (plr:GetAttribute("Energy") or 0) + 50))
+		Boost:FireClient(plr, "stamina")
 	elseif id == "clue" then
 		state.cluesLeft += 1
 		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
@@ -1153,6 +1243,10 @@ function round.start()
 	state = { status = "playing", code = code, known = {}, entry = {}, doorOpen = false, holeOpen = false, cluesLeft = diff.clues,
 		diff = diffKey, earned = {}, startedAt = now, endsAt = now + diff.timer, frenzy = false }
 	RoundState:SetAttribute("Status", "playing")
+	RoundState:SetAttribute("ClueCost", Config.CLUE_COSTS[1])
+	for _, p in ipairs(Players:GetPlayers()) do
+		p:SetAttribute("GameEarned", 0)
+	end
 	RoundState:SetAttribute("DoorOpen", false)
 	RoundState:SetAttribute("CluesLeft", diff.clues)
 	RoundState:SetAttribute("EndsAt", state.endsAt)
