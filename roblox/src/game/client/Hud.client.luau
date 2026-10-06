@@ -365,13 +365,26 @@ remotes.Bubble.OnClientEvent:Connect(function(who, idx)
 end)
 
 -- ---------- character select: a 3D model you can turn, and its skill ----------
-local picker = frame(gui, { Size = UDim2.fromOffset(820, 540), Position = UDim2.new(0.5, -410, 0.5, -270), ZIndex = 20 })
+local picker = frame(gui, { Size = UDim2.fromOffset(860, 576), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), ZIndex = 20 })
 corner(picker, 16)
-label(picker, { Size = UDim2.new(1, 0, 0, 36), Position = UDim2.fromOffset(0, 8), Text = "Escape Crew - pick your character", TextColor3 = PUMP, ZIndex = 21 })
+-- shrink the whole panel on small screens so nothing is cut off
+local pickerScale = Instance.new("UIScale")
+pickerScale.Parent = picker
+local function fitPicker()
+	local vs = workspace.CurrentCamera.ViewportSize
+	pickerScale.Scale = math.min(1, (vs.Y - 40) / 576, (vs.X - 20) / 860)
+end
+workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(fitPicker)
+fitPicker()
+label(picker, { Size = UDim2.new(1, -120, 0, 36), Position = UDim2.fromOffset(60, 12), Text = "Escape Crew - pick your character", TextColor3 = PUMP, ZIndex = 21 })
+-- back out without changing anything
+button(picker, "\u{2715}", { Size = UDim2.fromOffset(44, 40), Position = UDim2.new(1, -58, 0, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 22 }, function()
+	picker.Visible = false
+end)
 
 local view = Instance.new("ViewportFrame")
-view.Size = UDim2.fromOffset(380, 330)
-view.Position = UDim2.fromOffset(20, 50)
+view.Size = UDim2.fromOffset(400, 300)
+view.Position = UDim2.fromOffset(20, 64)
 view.BackgroundColor3 = Color3.fromRGB(40, 26, 58)
 view.Ambient = Color3.fromRGB(170, 160, 190)
 view.LightColor = Color3.fromRGB(255, 240, 220)
@@ -388,7 +401,7 @@ view.CurrentCamera = viewCam
 local noModel = label(view, { Size = UDim2.fromScale(1, 0.8), Position = UDim2.fromScale(0, 0.1), Text = "", ZIndex = 22 })
 label(view, { Size = UDim2.new(1, 0, 0, 22), Position = UDim2.new(0, 0, 1, -26), Text = "drag to turn", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 22 })
 
-local info = frame(picker, { Size = UDim2.fromOffset(380, 330), Position = UDim2.fromOffset(420, 50), BackgroundColor3 = Color3.fromRGB(43, 29, 64), ZIndex = 21 })
+local info = frame(picker, { Size = UDim2.fromOffset(400, 300), Position = UDim2.fromOffset(440, 64), BackgroundColor3 = Color3.fromRGB(43, 29, 64), ZIndex = 21 })
 corner(info, 14)
 local infoIcon = label(info, { Size = UDim2.fromOffset(70, 70), Position = UDim2.fromOffset(14, 12), Text = "", ZIndex = 22 })
 local infoName = label(info, { Size = UDim2.fromOffset(270, 40), Position = UDim2.fromOffset(94, 14), Text = "", TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 22 })
@@ -463,15 +476,15 @@ local function showChar()
 	chooseBtn.BackgroundColor3 = mine and Color3.fromRGB(47, 107, 58) or PUMP
 end
 
-button(picker, "\u{25C0}", { Size = UDim2.fromOffset(60, 46), Position = UDim2.fromOffset(20, 390), ZIndex = 22 }, function()
+button(picker, "\u{25C0}", { Size = UDim2.fromOffset(70, 48), Position = UDim2.fromOffset(20, 384), ZIndex = 22 }, function()
 	viewIndex = (viewIndex - 2) % #Config.SKILLS + 1
 	showChar()
 end)
-button(picker, "\u{25B6}", { Size = UDim2.fromOffset(60, 46), Position = UDim2.fromOffset(340, 390), ZIndex = 22 }, function()
+button(picker, "\u{25B6}", { Size = UDim2.fromOffset(70, 48), Position = UDim2.fromOffset(350, 384), ZIndex = 22 }, function()
 	viewIndex = viewIndex % #Config.SKILLS + 1
 	showChar()
 end)
-chooseBtn = button(picker, "Choose", { Size = UDim2.fromOffset(240, 46), Position = UDim2.fromOffset(90, 390), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 22 }, function()
+chooseBtn = button(picker, "Choose", { Size = UDim2.fromOffset(230, 48), Position = UDim2.fromOffset(105, 384), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 22 }, function()
 	remotes.PickSkill:FireServer(Config.SKILLS[viewIndex].id)
 end)
 player:GetAttributeChangedSignal("Skill"):Connect(showChar)
@@ -519,18 +532,20 @@ picker:GetPropertyChangedSignal("Visible"):Connect(function()
 	end
 end)
 task.defer(openPicker)
-local giggly = button(picker, "\u{1F604} Giggly", { Size = UDim2.fromOffset(140, 44), Position = UDim2.new(0.5, -290, 1, -56), ZIndex = 22 }, function()
+label(picker, { Size = UDim2.fromOffset(150, 40), Position = UDim2.fromOffset(20, 450), Text = "Difficulty", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 21 })
+label(picker, { Size = UDim2.fromOffset(150, 44), Position = UDim2.fromOffset(20, 506), Text = "Mood", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 21 })
+local giggly = button(picker, "\u{1F604} Giggly", { Size = UDim2.fromOffset(160, 44), Position = UDim2.fromOffset(180, 506), ZIndex = 22 }, function()
 	remotes.SetSpook:FireServer("giggly")
 end)
-local spooky = button(picker, "\u{1F47B} Spooky", { Size = UDim2.fromOffset(140, 44), Position = UDim2.new(0.5, -142, 1, -56), ZIndex = 22 }, function()
+local spooky = button(picker, "\u{1F47B} Spooky", { Size = UDim2.fromOffset(160, 44), Position = UDim2.fromOffset(356, 506), ZIndex = 22 }, function()
 	remotes.SetSpook:FireServer("spooky")
 end)
-button(picker, "\u{25B6} Play", { Size = UDim2.fromOffset(150, 44), Position = UDim2.new(0.5, 140, 1, -56), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 22 }, function()
+button(picker, "\u{25B6} Play", { Size = UDim2.fromOffset(240, 52), Position = UDim2.new(1, -260, 0, 502), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 22 }, function()
 	picker.Visible = false
 end)
 local diffBtns = {}
 for i, key in ipairs(Config.DIFFICULTY_ORDER) do
-	diffBtns[key] = button(picker, Config.DIFFICULTY[key].name, { Size = UDim2.fromOffset(136, 36), Position = UDim2.new(0, 110 + (i - 1) * 146, 1, -104), ZIndex = 22 }, function()
+	diffBtns[key] = button(picker, Config.DIFFICULTY[key].name, { Size = UDim2.fromOffset(150, 40), Position = UDim2.fromOffset(180 + (i - 1) * 166, 450), ZIndex = 22 }, function()
 		remotes.SetDifficulty:FireServer(key)
 	end)
 end
