@@ -144,11 +144,18 @@ end
 -- now and then the host peeks out of a window, or its shadow does
 task.spawn(function()
 	local head
+	local faceDir = Vector3.new(0, 0, -1)
 	local id = Config.CHARACTER_ASSETS and Config.CHARACTER_ASSETS.Host
 	if id and id > 0 then
 		local m = require(ReplicatedStorage.Shared.CharacterAssets).load("Host", id)
 		local h = m and m:FindFirstChild("Head")
+		local root = m and m:FindFirstChild("HumanoidRootPart")
 		if h and h:IsA("BasePart") then
+			-- which way the face looks, in the head's own terms: the way the body
+			-- faces when it walks (its root), which we know is right
+			if root then
+				faceDir = h.CFrame:VectorToObjectSpace(root.CFrame.LookVector)
+			end
 			head = h:Clone()
 			for _, c in ipairs(head:GetChildren()) do
 				if not (c:IsA("SurfaceAppearance") or c:IsA("SpecialMesh") or c:IsA("Decal")) then
@@ -179,8 +186,20 @@ task.spawn(function()
 				-- The imported head's own front is its +Z, so it faces the lawn as it is.
 				local h = head:Clone()
 				h.Size = h.Size * (6 / math.max(h.Size.X, h.Size.Y))
-				local shown = CFrame.new(w.Position + Vector3.new(0, 0, 1.2))
+				-- turn the head so its face points out at the lawn (+Z)
+				local turn, best = 0, -2
+				for i = 0, 71 do
+					local a = i / 72 * math.pi * 2
+					local z = CFrame.Angles(0, a, 0):VectorToWorldSpace(faceDir).Z
+					if z > best then
+						turn, best = a, z
+					end
+				end
+				local shown = CFrame.new(w.Position + Vector3.new(0, 0, 1.2)) * CFrame.Angles(0, turn, 0)
 				local hidden = shown - Vector3.new(0, 4, 0)
+				if game:GetService("RunService"):IsStudio() then
+					print(string.format("Lobby peek: window at %.0f, %.0f; face turned %d degrees", w.Position.X, w.Position.Y, math.deg(turn)))
+				end
 				h.CFrame = hidden
 				h.Transparency = 1
 				local glow = Instance.new("PointLight")
