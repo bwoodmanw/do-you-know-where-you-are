@@ -6,3 +6,6 @@ EscapeCrew.rbxlx
 EscapeCrew-*.rbxlx
 *.rbxlx.lock
 *.rbxl.lock
+
+# input pictures with real brand logos stay local (public repo)
+art/model-input/muscle/a-pose-front.png
