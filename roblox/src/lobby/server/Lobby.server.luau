@@ -162,7 +162,8 @@ task.spawn(function()
 		end
 	end
 	while true do
-		task.wait(math.random(18, 40))
+		local gap = game:GetService("RunService"):IsStudio() and { 4, 8 } or Config.LOBBY_PEEK_GAP
+		task.wait(math.random(gap[1], gap[2]))
 		local windows = {}
 		for _, w in ipairs(workspace:GetChildren()) do
 			if w.Name == "Window" and w:IsA("BasePart") then
@@ -174,12 +175,23 @@ task.spawn(function()
 			local old = w.Color
 			w.Color = Color3.fromRGB(200, 60, 40)
 			if head and (customHouse or math.random() < 0.6) then
-				-- a close-up face, filling the window for a moment
+				-- the host's face rises into the window, stares, and sinks away.
+				-- The imported head's own front is its +Z, so it faces the lawn as it is.
 				local h = head:Clone()
-				h.Size = h.Size * (5.5 / math.max(h.Size.X, h.Size.Y))
-				h.CFrame = CFrame.new(w.Position + Vector3.new(0, 0, 0.9)) * CFrame.Angles(0, math.pi, 0)
+				h.Size = h.Size * (6 / math.max(h.Size.X, h.Size.Y))
+				local shown = CFrame.new(w.Position + Vector3.new(0, 0, 1.2))
+				local hidden = shown - Vector3.new(0, 4, 0)
+				h.CFrame = hidden
+				h.Transparency = 1
+				local glow = Instance.new("PointLight")
+				glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 150, 60), 10, 2.5
+				glow.Parent = h
 				h.Parent = workspace
-				task.wait(0.5)
+				local TweenService = game:GetService("TweenService")
+				TweenService:Create(h, TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { CFrame = shown, Transparency = 0 }):Play()
+				task.wait(0.7 + Config.LOBBY_PEEK_SECONDS)
+				TweenService:Create(h, TweenInfo.new(0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { CFrame = hidden, Transparency = 1 }):Play()
+				task.wait(0.75)
 				h:Destroy()
 			else
 				-- a shadow standing behind the glass
@@ -188,7 +200,7 @@ task.spawn(function()
 				part({ Name = "ShadowHead", Shape = Enum.PartType.Ball, Size = Vector3.new(2.6, 2.6, 0.2), Position = w.Position + Vector3.new(0, 1.6, 0.3), Color = Color3.new(0, 0, 0), Transparency = 0.15, CanCollide = false }).Parent = shadow
 				part({ Name = "ShadowBody", Size = Vector3.new(4.2, 3.2, 0.2), Position = w.Position + Vector3.new(0, -1.8, 0.3), Color = Color3.new(0, 0, 0), Transparency = 0.15, CanCollide = false }).Parent = shadow
 				shadow.Parent = workspace
-				task.wait(1.2)
+				task.wait(Config.LOBBY_PEEK_SECONDS)
 				shadow:Destroy()
 			end
 			w.Color = old
