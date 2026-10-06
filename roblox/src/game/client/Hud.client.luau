@@ -541,6 +541,9 @@ local spooky = button(picker, "\u{1F47B} Spooky", { Size = UDim2.fromOffset(160,
 	remotes.SetSpook:FireServer("spooky")
 end)
 button(picker, "\u{25B6} Play", { Size = UDim2.fromOffset(240, 52), Position = UDim2.new(1, -260, 0, 502), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 22 }, function()
+	if not player:GetAttribute("Skill") then
+		remotes.PickSkill:FireServer(Config.SKILLS[viewIndex].id)
+	end
 	picker.Visible = false
 end)
 local diffBtns = {}
@@ -1056,6 +1059,25 @@ button(leaveBox, "Stay", { Size = UDim2.fromOffset(150, 44), Position = UDim2.ne
 end)
 leaveBtn.Activated:Connect(function()
 	leaveBox.Visible = true
+end)
+
+-- ---------- waiting for everyone to choose a character ----------
+local pickBanner = label(gui, { Size = UDim2.fromOffset(560, 40), Position = UDim2.new(0.5, -280, 0, 56), BackgroundTransparency = 0.2, BackgroundColor3 = NIGHT, TextColor3 = PUMP, Visible = false, ZIndex = 8 })
+corner(pickBanner, 10)
+task.spawn(function()
+	while true do
+		task.wait(0.5)
+		local waiting = RoundState:GetAttribute("WaitingToPick") or 0
+		local deadline = RoundState:GetAttribute("PickDeadline")
+		local show = RoundState:GetAttribute("Status") == "playing" and not RoundState:GetAttribute("HostOut") and deadline ~= nil and waiting > 0
+		pickBanner.Visible = show
+		if show then
+			local left = math.max(0, math.floor(deadline - workspace:GetServerTimeNow()))
+			local mine = player:GetAttribute("Skill") == nil
+			pickBanner.Text = (mine and "Choose your character! " or "Waiting for friends to choose... ")
+				.. waiting .. " still choosing \u{00B7} starts anyway in " .. string.format("%d:%02d", math.floor(left / 60), left % 60)
+		end
+	end
 end)
 
 -- ---------- running and stamina ----------

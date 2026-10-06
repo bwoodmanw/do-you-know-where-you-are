@@ -28,6 +28,7 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 - [ ] Live only: Start takes the party to the chosen floor
 
 ## Party House place (Rojo port 34872), each floor
+- [ ] Nobody starts as Tinker; the banner waits for everyone to choose; the timer and host start only then (or after 2 min, undecided players get a random character)
 - [ ] Picking a character works until the host comes out; then Change is hidden
 - [ ] Every imported character looks right; faces smooth, no flickering shadows
 - [ ] The corner map draws this floor; N toggles it; Loft / Ground switches on loft floors

@@ -116,6 +116,8 @@ Config.GAME_PLACE = "Party House"
 -- the two places' ids (Creator Hub), so each script can tell it is in the right one
 Config.PLACE_IDS = { lobby = 115501124890066, game = 110069561824739 }
 Config.VOTE_SECONDS = 10
+-- the host waits until everyone has chosen a character, or this many seconds
+Config.PICK_WAIT = 120
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
 Config.STUDIO_MAP = "gummy" -- partyhouse, partyhouse_2, partyhouse_3, gummy
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)

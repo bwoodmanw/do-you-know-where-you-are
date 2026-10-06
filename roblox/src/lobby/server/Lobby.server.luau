@@ -168,6 +168,7 @@ task.spawn(function()
 			m:Destroy()
 		end
 	end
+	print(head and ("Lobby peek: host head loaded (" .. head.ClassName .. ", " .. tostring(head.Size) .. ")") or "Lobby peek: no host head - peeks show a shadow instead")
 	while true do
 		local gap = Config.LOBBY_PEEK_GAP
 		task.wait(math.random(gap[1], gap[2]))

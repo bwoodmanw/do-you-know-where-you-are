@@ -129,7 +129,6 @@ local Progress = require(ReplicatedStorage.Shared.Progress)
 
 local function setupPlayer(plr)
 	Profile.load(plr)
-	plr:SetAttribute("Skill", "tinker")
 	plr:SetAttribute("Energy", 100)
 end
 
@@ -1159,6 +1158,19 @@ Press.OnServerEvent:Connect(function(plr, colour)
 	end
 end)
 
+local function pickFor(plr, s)
+	plr:SetAttribute("Skill", s.id)
+	applyMods(plr)
+	if not Characters.apply(plr, s.name) then
+		local char = plr.Character
+		if char and char:GetAttribute("EscapeCrewChar") then
+			plr:LoadCharacter()
+		else
+			gear(plr)
+		end
+	end
+end
+
 PickSkill.OnServerEvent:Connect(function(plr, id)
 	if typeof(id) ~= "string" then
 		return
@@ -1502,8 +1514,45 @@ function round.start()
 	RoundState:SetAttribute("HostKind", kind)
 	RoundState:SetAttribute("Blackout", "")
 	local grace = diff.grace + extraGrace
-	say("start", "Find the way out of " .. (HouseMap.name or "the Party House") .. ". Don't get caught!", { grace = grace })
-	hostTimer = task.delay(grace, function()
+	-- nothing starts until everyone has chosen a character (or PICK_WAIT runs out)
+	state.endsAt = math.huge
+	RoundState:SetAttribute("EndsAt", nil)
+	local deadline = workspace:GetServerTimeNow() + Config.PICK_WAIT
+	RoundState:SetAttribute("PickDeadline", deadline)
+	hostTimer = task.spawn(function()
+		while state.status == "playing" do
+			local waiting = 0
+			for _, p in ipairs(Players:GetPlayers()) do
+				if not p:GetAttribute("Skill") and not p:GetAttribute("Waiting") then
+					waiting += 1
+				end
+			end
+			RoundState:SetAttribute("WaitingToPick", waiting)
+			if waiting == 0 or workspace:GetServerTimeNow() >= deadline then
+				break
+			end
+			task.wait(0.5)
+		end
+		if state.status ~= "playing" then
+			return
+		end
+		-- still undecided after the wait: a random character each
+		for _, p in ipairs(Players:GetPlayers()) do
+			if not p:GetAttribute("Skill") then
+				local s = Config.SKILLS[math.random(1, #Config.SKILLS)]
+				pickFor(p, s)
+				say("info", "Time's up for choosing - you're " .. s.name .. " this game!", nil, p)
+			end
+		end
+		RoundState:SetAttribute("WaitingToPick", 0)
+		RoundState:SetAttribute("PickDeadline", nil)
+		-- the escape timer starts now
+		local t0 = workspace:GetServerTimeNow()
+		state.startedAt = t0
+		state.endsAt = t0 + diff.timer
+		RoundState:SetAttribute("EndsAt", state.endsAt)
+		say("start", "Find the way out of " .. (HouseMap.name or "the Party House") .. ". Don't get caught!", { grace = grace })
+		task.wait(grace)
 		hostTimer = nil
 		if state.status == "playing" then
 			host:spawn(Config.DIFFICULTY[state.diff])
