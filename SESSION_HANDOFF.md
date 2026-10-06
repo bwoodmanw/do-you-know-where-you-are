@@ -190,7 +190,16 @@ door, you as an arrow and teammates as dots (red = caged).
 - **Glow's face is ~60 pixels wide in her 1024x1024 texture** (checked 5 Oct):
   Meshy gives the face a tiny patch of one texture, and Roblox caps a
   texture at 1024. A bigger input picture helps detail inside that patch;
-  the real fix is a head with its own texture (needs Blender, not installed).
+  Tried without Blender (`tools/face_boost.py` re-lays the texture so the
+  head gets ~40% of it; `tools/face_render.py` renders the face as Roblox
+  would): the Host's face gained 1.7x the pixels but looks almost the same,
+  and Glow none (her texture is only 1024) - see
+  `art/reference/face-check/`. **The limit is how blurry Meshy's own texture
+  is, not Roblox's 1024 cap.** Sharper faces need a sharper source: Meshy at
+  its highest texture setting from a big front picture (what made the Host
+  good), or projecting a high-res face portrait onto the head (not built).
+- **The imported Host works live** (5 Oct, Brent: "Host is awesome"); raised
+  from 10.5 to 12 studs at his ask (rooms are 14).
 - **Soft faces on Meshy models come from small input pictures** (Glow's were
   ~485x821). Use one big front picture.
 - **Rojo started from Claude's shell dies after 2 hours;** Brent runs it in

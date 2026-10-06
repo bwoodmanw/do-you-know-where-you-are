@@ -10,7 +10,7 @@ local ServerStorage = game:GetService("ServerStorage")
 local Characters = {}
 
 local KID_HEIGHT = 5.4 -- studs; the host is about twice that
-local HOST_HEIGHT = 10.5
+local HOST_HEIGHT = 12 -- rooms are 14 tall
 
 local function rigged(m)
 	if m:FindFirstChildOfClass("Humanoid") then
