@@ -929,6 +929,39 @@ Players.PlayerRemoving:Connect(function(p)
 	end
 end)
 
+-- ---------- bounce pads (Gummy Bounce House): boing! ----------
+local lastBounce = 0
+local function watchPad(pad)
+	pad.Touched:Connect(function(hit)
+		local char = player.Character
+		if not char or not hit:IsDescendantOf(char) or os.clock() - lastBounce < 0.5 or player:GetAttribute("Frozen") then
+			return
+		end
+		local hrp = char:FindFirstChild("HumanoidRootPart")
+		if not hrp then
+			return
+		end
+		lastBounce = os.clock()
+		local v = hrp.AssemblyLinearVelocity
+		hrp.AssemblyLinearVelocity = Vector3.new(v.X, 70, v.Z)
+		local s = Instance.new("Sound")
+		s.SoundId = "rbxassetid://" .. Config.SOUNDS.bounce
+		s.Parent = pad
+		s:Play()
+		game:GetService("Debris"):AddItem(s, 2)
+	end)
+end
+for _, d in ipairs(workspace:GetDescendants()) do
+	if d.Name == "BouncePad" and d:IsA("BasePart") then
+		watchPad(d)
+	end
+end
+workspace.DescendantAdded:Connect(function(d)
+	if d.Name == "BouncePad" and d:IsA("BasePart") then
+		watchPad(d)
+	end
+end)
+
 -- ---------- running and stamina ----------
 local stamina, tired, candyUntil = 100, false, 0
 remotes.Boost.OnClientEvent:Connect(function(kind)
@@ -1045,7 +1078,8 @@ RunService.RenderStepped:Connect(function(dt)
 		inBlackout = nowDark
 		TweenService:Create(LightingService, TweenInfo.new(0.4), nowDark and darkLight or normalLight):Play()
 	end
-	roomName.Text = r and ("The Party House \u{00B7} " .. r) or "The Party House"
+	local where = HouseMap.name or "The Party House"
+	roomName.Text = r and (where .. " \u{00B7} " .. r) or where
 	local host = workspace:FindFirstChild("PartyHost")
 	if host ~= breathFor then
 		breathFor = host

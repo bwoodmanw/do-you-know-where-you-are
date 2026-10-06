@@ -21,7 +21,7 @@ local MapGen = require(ReplicatedStorage.Shared.MapGen)
 local HttpService = game:GetService("HttpService")
 -- this game's house: a floor plan with everything placed at random, remade
 -- at the start of every game
-local HouseMap = MapGen.make(Plans[1])
+local HouseMap = MapGen.make(Plans.partyhouse[1])
 local House = require(script.Parent.House)
 local Host = require(script.Parent.Host)
 local Effects = require(script.Parent.Effects)
@@ -1367,8 +1367,9 @@ function round.start()
 	end
 	-- the floor this server plays (the Lobby's choice; Config.STUDIO_MAP in Studio)
 	local mapIdx = Progress.mapIndex(RoundState:GetAttribute("Map") or "partyhouse")
-	local floorNo = mapIdx and Progress.MAPS[mapIdx].floor or 1
-	HouseMap = MapGen.make(Plans[floorNo] or Plans[1])
+	local mapInfo = mapIdx and Progress.MAPS[mapIdx]
+	local floors = Plans[mapInfo and mapInfo.building or "partyhouse"] or Plans.partyhouse
+	HouseMap = MapGen.make(floors[mapInfo and mapInfo.floor or 1] or Plans.partyhouse[1])
 	RoundState:SetAttribute("MapJson", HttpService:JSONEncode(MapGen.forClient(HouseMap)))
 	world = House.build(HouseMap)
 	Props.place(world)
@@ -1485,7 +1486,7 @@ function round.start()
 	RoundState:SetAttribute("HostKind", kind)
 	RoundState:SetAttribute("Blackout", "")
 	local grace = diff.grace + extraGrace
-	say("start", "Find the way out of the Party House. Don't get caught!", { grace = grace })
+	say("start", "Find the way out of " .. (HouseMap.name or "the Party House") .. ". Don't get caught!", { grace = grace })
 	hostTimer = task.delay(grace, function()
 		hostTimer = nil
 		if state.status == "playing" then

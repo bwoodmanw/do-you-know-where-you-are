@@ -51,7 +51,12 @@ Brent approved this plan as written; build in order, asking before each step.
   slot (ServerStorage/LobbyProps/House), invisible fence at z -88, the
   host's face or shadow in a window every 18-40 s.
 
-## Step 4 - Gummy Bounce House (building 2)
+## Step 4 - Gummy Bounce House (building 2) - floor 1 built 6 Oct
 - Bounce Hall, Candy Factory, Jelly Vault; unlocks after Party House floor 2.
+- Built: Bounce Hall (plans gum_a + mirror): candy theme (pink walls, mint /
+  lilac / caramel / pink-tile floors, candy pictures, gumdrops), gumdrop ball
+  pit, Slide Tower with a loft, Bounce Room with 3 bounce pads, exit to the
+  cotton-candy clouds. HouseMap is now building -> floor -> plans.
+  Candy Factory and Jelly Vault: next.
 
 Later: "Tower Run" (several floors in one game).

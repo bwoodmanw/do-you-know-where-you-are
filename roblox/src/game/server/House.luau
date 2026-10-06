@@ -13,6 +13,12 @@ local T = Config.TILE
 local H = Config.WALL_H
 
 local House = {}
+-- the building's look (set by House.build from map.theme)
+local wallColor = Color3.fromRGB(70, 46, 96)
+local THEMES = {
+	party = { wall = Color3.fromRGB(70, 46, 96), light = Color3.fromRGB(255, 196, 120), ceiling = Color3.fromRGB(30, 20, 40) },
+	gummy = { wall = Color3.fromRGB(255, 150, 200), light = Color3.fromRGB(255, 200, 225), ceiling = Color3.fromRGB(255, 205, 225) },
+}
 local HT = 24 -- ceiling height of tall rooms (the Gallery with its loft)
 
 -- inside, or in the wall ring round, a tall room
@@ -32,6 +38,10 @@ local FLOOR = {
 	tiles = { Enum.Material.CeramicTiles, Color3.fromRGB(214, 207, 191) },
 	wood = { Enum.Material.WoodPlanks, Color3.fromRGB(150, 98, 52) },
 	purple = { Enum.Material.Carpet, Color3.fromRGB(75, 53, 112) },
+	mint = { Enum.Material.SmoothPlastic, Color3.fromRGB(160, 230, 200) },
+	lilac = { Enum.Material.SmoothPlastic, Color3.fromRGB(205, 175, 240) },
+	caramel = { Enum.Material.SmoothPlastic, Color3.fromRGB(210, 140, 70) },
+	pinktiles = { Enum.Material.CeramicTiles, Color3.fromRGB(255, 190, 215) },
 	door = { Enum.Material.WoodPlanks, Color3.fromRGB(62, 44, 34) },
 }
 
@@ -112,6 +122,8 @@ local function furnitureAt(map, x, y)
 end
 
 function House.build(map)
+	local theme = THEMES[map.theme or "party"] or THEMES.party
+	wallColor = theme.wall
 	local old = workspace:FindFirstChild("PartyHouse")
 	if old then
 		old:Destroy()
@@ -126,7 +138,8 @@ function House.build(map)
 		local w, d = (f.x1 - f.x0 + 1) * T, (f.y1 - f.y0 + 1) * T
 		local centre = Vector3.new((f.x0 + f.x1 + 1) / 2 * T, -0.5, (f.y0 + f.y1 + 1) / 2 * T)
 		local mat = FLOOR[f.kind]
-		if f.kind == "tiles" then
+		if f.kind == "tiles" or f.kind == "pinktiles" then
+			local pink = f.kind == "pinktiles"
 			for y = f.y0, f.y1 do
 				for x = f.x0, f.x1 do
 					for qy = 0, 1 do
@@ -137,7 +150,7 @@ function House.build(map)
 								Size = Vector3.new(T / 2, 1, T / 2),
 								Position = Vector3.new(x * T + qx * T / 2 + T / 4, -0.5, y * T + qy * T / 2 + T / 4),
 								Material = Enum.Material.CeramicTiles,
-								Color = dark and Color3.fromRGB(40, 40, 46) or Color3.fromRGB(226, 220, 205),
+								Color = pink and (dark and Color3.fromRGB(255, 150, 190) or Color3.fromRGB(255, 240, 245)) or (dark and Color3.fromRGB(40, 40, 46) or Color3.fromRGB(226, 220, 205)),
 							})
 						end
 					end
@@ -147,7 +160,7 @@ function House.build(map)
 			part(root, { Name = "Floor " .. f.name, Size = Vector3.new(w, 1, d), Position = centre, Material = mat[1], Color = mat[2] })
 		end
 		-- a warm light per room, dimmed for Spooky games later
-		local l = light(root, Vector3.new(centre.X, (f.tall and HT or H) - 2, centre.Z), Color3.fromRGB(255, 196, 120), math.min(60, math.max(w, d) * 0.75), 1.2)
+		local l = light(root, Vector3.new(centre.X, (f.tall and HT or H) - 2, centre.Z), theme.light, math.min(60, math.max(w, d) * 0.75), 1.2)
 		table.insert(world.lights, l)
 		world.roomLights = world.roomLights or {}
 		world.roomLights[f.name] = l
@@ -161,7 +174,7 @@ function House.build(map)
 				part(root, { Name = "Doorway", Size = Vector3.new(T, 1, T), Position = at(x, y, -0.5), Material = FLOOR.door[1], Color = FLOOR.door[2] })
 				if tallAt(map, x, y, true) then
 					-- close the gap above a doorway into a tall room
-					part(root, { Name = "TallLintel", Size = Vector3.new(T, HT - H, T), Position = at(x, y, H + (HT - H) / 2), Material = Enum.Material.Plaster, Color = Color3.fromRGB(70, 46, 96) })
+					part(root, { Name = "TallLintel", Size = Vector3.new(T, HT - H, T), Position = at(x, y, H + (HT - H) / 2), Material = Enum.Material.Plaster, Color = wallColor })
 				end
 			elseif c == "#" or c == "C" then
 				part(root, {
@@ -169,7 +182,7 @@ function House.build(map)
 					Size = Vector3.new(T, tallAt(map, x, y, true) and HT or H, T),
 					Position = at(x, y, (tallAt(map, x, y, true) and HT or H) / 2),
 					Material = Enum.Material.Plaster,
-					Color = Color3.fromRGB(70, 46, 96),
+					Color = wallColor,
 				})
 				if c == "C" then
 					local side = cell(map, x + 1, y) == "." and 1 or -1
@@ -183,7 +196,7 @@ function House.build(map)
 				-- locked doors are tall enough for the host once open
 				local top = c == "L" and 13 or 10
 				part(root, { Name = "DoorFloor", Size = Vector3.new(T, 1, T), Position = at(x, y, -0.5), Material = FLOOR.door[1], Color = FLOOR.door[2] })
-				part(root, { Name = "Lintel", Size = Vector3.new(T, H - top, T), Position = at(x, y, top + (H - top) / 2), Material = Enum.Material.Plaster, Color = Color3.fromRGB(70, 46, 96) })
+				part(root, { Name = "Lintel", Size = Vector3.new(T, H - top, T), Position = at(x, y, top + (H - top) / 2), Material = Enum.Material.Plaster, Color = wallColor })
 			elseif c == "T" then
 				local f = furnitureAt(map, x, y)
 				local kind = f and f.kind or "table"
@@ -193,6 +206,13 @@ function House.build(map)
 				elseif kind == "counter" then
 					part(root, { Name = "Counter", Size = Vector3.new(T, 4, T), Position = at(x, y, 2), Material = Enum.Material.Wood, Color = Color3.fromRGB(139, 106, 79) })
 					part(root, { Name = "CounterTop", Size = Vector3.new(T, 0.4, T), Position = at(x, y, 4.2), Material = Enum.Material.Marble, Color = Color3.fromRGB(207, 200, 187) })
+				elseif kind == "pit" then
+					-- the gumdrop ball pit: a low padded rim full of colourful balls
+					part(root, { Name = "Pit", Size = Vector3.new(T, 1.6, T), Position = at(x, y, 0.8), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 120, 170) })
+					local cols = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(190, 110, 230) }
+					for i = 1, 6 do
+						part(root, { Name = "Gumdrop", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.6, 1.6), Position = at(x, y, 2) + Vector3.new(math.cos(i) * 2.2, (i % 2) * 0.4, math.sin(i * 1.7) * 2.2), Color = cols[(x + y + i) % 5 + 1], Material = Enum.Material.Glass, CanCollide = false })
+					end
 				elseif kind == "bed" then
 					part(root, { Name = "Bed", Size = Vector3.new(T, 2.4, T), Position = at(x, y, 1.2), Material = Enum.Material.Fabric, Color = Color3.fromRGB(200, 190, 230) })
 					part(root, { Name = "Pillow", Size = Vector3.new(T * 0.7, 0.8, 2), Position = at(x, y, 2.8), Material = Enum.Material.Fabric, Color = Color3.fromRGB(245, 240, 250), CanCollide = false })
@@ -238,7 +258,7 @@ function House.build(map)
 		if x1 < x0 or y1 < y0 then
 			return
 		end
-		part(root, { Name = "Ceiling", Size = Vector3.new((x1 - x0 + 1) * T, 4, (y1 - y0 + 1) * T), Position = Vector3.new((x0 + x1 + 1) / 2 * T, height + 2.02, (y0 + y1 + 1) / 2 * T), CastShadow = false, Material = Enum.Material.Plaster, Color = Color3.fromRGB(30, 20, 40) })
+		part(root, { Name = "Ceiling", Size = Vector3.new((x1 - x0 + 1) * T, 4, (y1 - y0 + 1) * T), Position = Vector3.new((x0 + x1 + 1) / 2 * T, height + 2.02, (y0 + y1 + 1) / 2 * T), CastShadow = false, Material = Enum.Material.Plaster, Color = theme.ceiling })
 	end
 	local tall
 	for _, f in ipairs(map.floors) do
@@ -259,6 +279,10 @@ function House.build(map)
 	House.buildLoft(world)
 
 	House.buildObjects(world)
+	-- bounce pads: boing (the bounce itself happens on each player's screen)
+	for _, pad in ipairs(map.pads or {}) do
+		part(root, { Name = "BouncePad", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 6, 6), CFrame = CFrame.new(at(pad[1], pad[2], 0.2)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(255, 90, 170), Material = Enum.Material.Neon })
+	end
 	House.buildGarden(world)
 	House.decorate(world)
 	return world
@@ -279,7 +303,7 @@ function House.buildObjects(world)
 			entry.usePrompt = prompt(entry.keypad, "Use keypad", "Big door")
 			entry.exit = part(root, { Name = "ExitDoor", Size = Vector3.new(T, 10, 2), Position = base + Vector3.new(0, 5, -T / 2 + 1), Transparency = 1, CanCollide = false })
 		elseif o.kind == "hole" then
-			entry.panel = part(root, { Name = "HolePanel", Size = Vector3.new(T, 10, T), Position = base + Vector3.new(0, 5, 0), Material = Enum.Material.Plaster, Color = Color3.fromRGB(70, 46, 96) })
+			entry.panel = part(root, { Name = "HolePanel", Size = Vector3.new(T, 10, T), Position = base + Vector3.new(0, 5, 0), Material = Enum.Material.Plaster, Color = wallColor })
 			entry.exit = part(root, { Name = "ExitHole", Size = Vector3.new(2, 10, T), Position = base + Vector3.new((T / 2 + 1) * (o.x == 0 and -1 or 1), 5, 0), Transparency = 1, CanCollide = false })
 		elseif o.kind == "cabinet" then
 			entry.part = part(root, { Name = "Cabinet", Size = Vector3.new(T * 0.8, 9, T * 0.9), Position = base + Vector3.new(0, 4.5, 0), Material = Enum.Material.Wood, Color = Color3.fromRGB(107, 66, 38) })
@@ -466,9 +490,12 @@ function House.buildGarden(world)
 	local gx0, gx1 = doorX - 7, doorX + 8
 	-- upper floors: the way out is a stairwell landing (wood, walls, stairs up) instead of the garden
 	local stairs = map.exitStyle == "stairs"
+	local clouds = map.exitStyle == "clouds"
 	local groundMat, groundCol = Enum.Material.Grass, Color3.fromRGB(60, 110, 50)
 	if stairs then
 		groundMat, groundCol = Enum.Material.WoodPlanks, Color3.fromRGB(110, 75, 48)
+	elseif clouds then
+		groundMat, groundCol = Enum.Material.SmoothPlastic, Color3.fromRGB(255, 215, 232)
 	end
 	local garden = part(root, { Name = "Garden", Size = Vector3.new((gx1 - gx0) * T, 1, 6 * T), Position = Vector3.new((gx0 + gx1) / 2 * T, -0.5, -3 * T), Material = groundMat, Color = groundCol })
 	if stairs then
@@ -496,7 +523,7 @@ function House.buildGarden(world)
 		end
 	end
 	local sideX = holeWest and -2 * T or map.w * T + 2 * T
-	part(root, { Name = "SidePath", Size = Vector3.new(4 * T, 1, map.h * T), Position = Vector3.new(sideX, -0.5, map.h * T / 2), Material = Enum.Material.Grass, Color = Color3.fromRGB(60, 110, 50) })
+	part(root, { Name = "SidePath", Size = Vector3.new(4 * T, 1, map.h * T), Position = Vector3.new(sideX, -0.5, map.h * T / 2), Material = groundMat, Color = groundCol })
 	for i = 0, 10 do
 		local pos = Vector3.new(gx0 * T + i * (gx1 - gx0) * T / 10, 9, -5.5 * T)
 		part(root, { Name = "FairyLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.6, 0.6), Position = pos, Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 220, 140), CanCollide = false })
@@ -507,7 +534,8 @@ function House.buildGarden(world)
 		local size = Vector3.new(math.max(2, math.abs(x1 - x0)), 6, math.max(2, math.abs(z1 - z0)))
 		local centre = Vector3.new((x0 + x1) / 2, 3, (z0 + z1) / 2)
 		part(root, { Name = "Hedge", Size = stairs and Vector3.new(size.X, 16, size.Z) or size, Position = stairs and centre + Vector3.new(0, 5, 0) or centre,
-			Material = stairs and Enum.Material.Plaster or Enum.Material.LeafyGrass, Color = stairs and Color3.fromRGB(70, 46, 96) or Color3.fromRGB(40, 80, 38) })
+			Material = stairs and Enum.Material.Plaster or clouds and Enum.Material.SmoothPlastic or Enum.Material.LeafyGrass,
+			Color = stairs and wallColor or clouds and Color3.fromRGB(255, 240, 248) or Color3.fromRGB(40, 80, 38) })
 		part(root, { Name = "Boundary", Size = Vector3.new(size.X, 40, size.Z), Position = centre + Vector3.new(0, 20, 0), Transparency = 1 })
 	end
 	local gx0s, gx1s, gz = gx0 * T, gx1 * T, -6 * T
@@ -610,10 +638,12 @@ end
 -- ---------- decorations: streamers, pictures, cobwebs, pumpkins, balloon
 -- bunches, rugs. None of it is solid or blocks the host's eyes. ----------
 local DECOR = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(138, 107, 209), Color3.fromRGB(255, 138, 31) }
+local CANDY_PICTURES = { "\u{1F36C}", "\u{1F36D}", "\u{1F9C1}", "\u{1F369}", "\u{1F36B}", "\u{1F370}", "\u{1F366}", "\u{1F388}" }
 local PICTURES = { "\u{1F383}", "\u{1F47B}", "\u{1F987}", "\u{1F578}", "\u{1F382}", "\u{1F388}", "\u{1F315}", "\u{1F36D}" }
 
 function House.decorate(world)
 	local root, map = world.root, world.map
+	local candy = map.theme == "gummy"
 	local busy = {}
 	for _, o in ipairs(map.objects) do
 		busy[o.x .. "," .. o.y] = true
@@ -682,11 +712,12 @@ function House.decorate(world)
 				hung += 1
 				local pic = deco({ Name = "Picture", Size = Vector3.new(3.4, 2.8, 0.2), Position = at(x, f.y0 - 1, 7.5) + Vector3.new(0, 0, T / 2 + 0.15), Color = Color3.fromRGB(110, 80, 40), Material = Enum.Material.Wood })
 				local inner = deco({ Name = "Painting", Size = Vector3.new(2.8, 2.2, 0.05), Position = pic.Position + Vector3.new(0, 0, 0.12), Color = Color3.fromRGB(40, 30, 55) })
-				emoji(inner, Enum.NormalId.Back, PICTURES[(x + r) % #PICTURES + 1])
+				local pics = candy and CANDY_PICTURES or PICTURES
+				emoji(inner, Enum.NormalId.Back, pics[(x + r) % #pics + 1])
 			end
 		end
 		-- cobwebs in two top corners
-		for _, c in ipairs({ { x0, z0, 45 }, { x1, z1, 45 } }) do
+		for _, c in ipairs(candy and {} or { { x0, z0, 45 }, { x1, z1, 45 } }) do
 			local web = deco({ Name = "Cobweb", Size = Vector3.new(4.5, 4.5, 0.05), CFrame = CFrame.new(c[1] + (c[1] == x0 and 1.4 or -1.4), H - 1.8, c[2] + (c[2] == z0 and 1.4 or -1.4)) * CFrame.Angles(0, math.rad(c[3]), 0), Transparency = 1 })
 			emoji(web, Enum.NormalId.Front, "\u{1F578}")
 			emoji(web, Enum.NormalId.Back, "\u{1F578}")
@@ -705,7 +736,9 @@ function House.decorate(world)
 				busy[c[1] .. "," .. c[2]] = true
 				local base = at(c[1], c[2], 0)
 				if placed == 1 then
-					local pk = deco({ Name = "Pumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2, 2.4), Position = base + Vector3.new(0, 1, 0), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
+					-- a glowing pumpkin, or in the Gummy Bounce House a giant gumdrop
+					local pk = deco({ Name = candy and "Gumdrop" or "Pumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2, 2.4), Position = base + Vector3.new(0, 1, 0),
+						Color = candy and Color3.fromRGB(120, 220, 140) or Color3.fromRGB(240, 120, 20), Material = candy and Enum.Material.Glass or Enum.Material.SmoothPlastic })
 					deco({ Name = "Stem", Size = Vector3.new(0.3, 0.6, 0.3), Position = base + Vector3.new(0, 2.2, 0), Color = Color3.fromRGB(70, 110, 40) })
 					local l = Instance.new("PointLight")
 					l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 140, 40), 9, 1

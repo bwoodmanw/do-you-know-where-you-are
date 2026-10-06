@@ -43,6 +43,8 @@ function MapGen.make(plans, rng)
 		props = plan.props,
 		exitStyle = plan.exitStyle,
 		exitText = plan.exitText,
+		theme = plan.theme,
+		pads = plan.pads,
 		loft = plan.loft,
 		objects = {},
 	}
@@ -164,7 +166,7 @@ function MapGen.forClient(map)
 	for _, o in ipairs(map.objects) do
 		table.insert(objects, { id = o.id, kind = o.kind, x = o.x, y = o.y, n = o.n, zone = o.zone, name = o.name })
 	end
-	return { id = map.id, w = map.w, h = map.h, map = map.map, floors = map.floors, objects = objects, loft = map.loft }
+	return { id = map.id, name = map.name, w = map.w, h = map.h, map = map.map, floors = map.floors, objects = objects, loft = map.loft }
 end
 
 return MapGen

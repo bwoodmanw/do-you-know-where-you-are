@@ -13,7 +13,9 @@ Progress.MAPS = {
 	{ id = "partyhouse", building = "partyhouse", floor = 1, name = "Party House: Ground", icon = "\u{1F383}", ready = true },
 	{ id = "partyhouse_2", building = "partyhouse", floor = 2, name = "Party House: Bedrooms", icon = "\u{1F6CF}", ready = true },
 	{ id = "partyhouse_3", building = "partyhouse", floor = 3, name = "Party House: Attic", icon = "\u{1F578}", ready = true },
-	{ id = "gummy", building = "gummy", floor = 1, name = "Gummy Bounce House", icon = "\u{1F36C}", ready = false },
+	{ id = "gummy", building = "gummy", floor = 1, name = "Gummy: Bounce Hall", icon = "\u{1F36C}", ready = true },
+	{ id = "gummy_2", building = "gummy", floor = 2, name = "Gummy: Candy Factory", icon = "\u{1F36D}", ready = false },
+	{ id = "gummy_3", building = "gummy", floor = 3, name = "Gummy: Jelly Vault", icon = "\u{1F36F}", ready = false },
 	{ id = "hospital", building = "hospital", floor = 1, name = "Abandoned Hospital", icon = "\u{1F3E5}", ready = false },
 }
 

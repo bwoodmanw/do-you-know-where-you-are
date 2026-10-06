@@ -117,7 +117,7 @@ Config.GAME_PLACE = "Party House"
 Config.PLACE_IDS = { lobby = 115501124890066, game = 110069561824739 }
 Config.VOTE_SECONDS = 10
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "partyhouse_2"
+Config.STUDIO_MAP = "gummy" -- partyhouse, partyhouse_2, partyhouse_3, gummy
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 Config.MAX_PARTY = 6
