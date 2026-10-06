@@ -71,6 +71,7 @@ local SetDifficulty = remote("SetDifficulty")
 local Results = remote("Results") -- server -> clients: the end-of-round summary
 local Vote = remote("Vote") -- client -> server: "again" | "lobby"
 local UseCandy = remote("UseCandy")
+local UseBoost = remote("UseBoost") -- (boostId) tap a boost from the bag
 
 local RoundState = Instance.new("Configuration")
 RoundState.Name = "RoundState"
@@ -102,7 +103,26 @@ local function setupPlayer(plr)
 	plr:SetAttribute("Energy", 100)
 end
 
+-- Tap-to-use boosts brought from the Lobby wait in a bag for the whole visit
+-- (Play again keeps them). Whatever is left goes back into the player's
+-- saved boosts when they leave, so nothing bought is lost.
+local bags = {} -- [userId] = { boostId, ... }
+local function paintBag(plr)
+	plr:SetAttribute("Bag", table.concat(bags[plr.UserId] or {}, ","))
+end
+local function returnBag(plr)
+	local bag = bags[plr.UserId]
+	local data = Profile.get(plr)
+	if bag and data then
+		for _, id in ipairs(bag) do
+			data.inv[id] = (data.inv[id] or 0) + 1
+		end
+	end
+	bags[plr.UserId] = nil
+end
+
 local function savePlayer(plr)
+	returnBag(plr)
 	Profile.release(plr)
 end
 
@@ -887,6 +907,30 @@ UseCandy.OnServerEvent:Connect(function(plr)
 	say("boost", plr.DisplayName .. " ate Candy Corn - running without getting puffed!", { icon = Config.ITEM_ICONS.candy, userId = plr.UserId, item = "Candy Corn" })
 end)
 
+UseBoost.OnServerEvent:Connect(function(plr, id)
+	local bag = bags[plr.UserId]
+	local i = bag and typeof(id) == "string" and table.find(bag, id)
+	if not i or state.status ~= "playing" or plr:GetAttribute("Escaped") then
+		return
+	end
+	local boost = Progress.BOOSTS[id]
+	if id == "energy" and (plr:GetAttribute("Energy") or 0) >= 100 then
+		return say("info", "Your energy is full - save the Energy Drink for later.", nil, plr)
+	end
+	table.remove(bag, i)
+	paintBag(plr)
+	if id == "candy" then
+		Boost:FireClient(plr, "candy")
+	elseif id == "energy" then
+		plr:SetAttribute("Energy", math.min(100, (plr:GetAttribute("Energy") or 0) + 50))
+	elseif id == "clue" then
+		state.cluesLeft += 1
+		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+	end
+	Effects.at(plr, "boost")
+	say("boost", plr.DisplayName .. " used " .. boost.name .. "!", { icon = boost.icon, userId = plr.UserId, item = boost.name })
+end)
+
 SetDifficulty.OnServerEvent:Connect(function(_, key)
 	if typeof(key) == "string" and Config.DIFFICULTY[key] and not (host and host.model) then
 		RoundState:SetAttribute("Difficulty", key)
@@ -956,24 +1000,26 @@ function round.start()
 		reveal = reveal or mods.revealOne == true
 		-- boosts brought from the Lobby shop, used up in this game
 		local pd = Profile.get(plr)
+		local on = {}
+		bags[plr.UserId] = bags[plr.UserId] or {}
 		if pd and pd.loadout and #pd.loadout > 0 then
 			for _, id in ipairs(pd.loadout) do
 				if id == "shield" then
 					plr:SetAttribute("Shield", true)
-				elseif id == "energy" then
-					plr:SetAttribute("Energy", plr:GetAttribute("Energy") + 50)
-				elseif id == "clue" then
-					extraClues += 1
+					table.insert(on, id)
 				elseif id == "headstart" then
 					extraGrace = 10
-				elseif id == "candy" then
-					plr:SetAttribute("CandyCharges", (plr:GetAttribute("CandyCharges") or 0) + 1)
+					table.insert(on, id)
+				elseif Progress.BOOSTS[id] then
+					table.insert(bags[plr.UserId], id)
 				end
 			end
 			pd.loadout = {}
 			Profile.publish(plr)
 			task.spawn(Profile.save, plr)
 		end
+		plr:SetAttribute("BoostsOn", table.concat(on, ","))
+		paintBag(plr)
 		local s = HouseMap.start[((i - 1) % #HouseMap.start) + 1]
 		teleport(plr, at(s[1], s[2], 0))
 	end

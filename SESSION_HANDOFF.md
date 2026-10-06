@@ -114,13 +114,25 @@ votes, boosts, XP and level-ups, unlocks, leaderboard boards), the 3D
 character select screen, furniture placement (no Props imported yet), the
 host model in game, and friends joining a party (blocked by the age review).
 
+Added 5 Oct (late), also untested in Roblox: the shop's Take/Taking toggle
+answers at once and shows "Next game: ..." (max 2, a third tap explains);
+in the game, boosts arrive as a **bag**: Candy, Energy Drink and Extra Clue
+are tap-to-use buttons above the action buttons (keys 1 and 2), Shield and
+Head Start are automatic ON badges; unused bag boosts carry over on Play
+again and go back to the saved boosts when the player leaves. A **corner
+map** (N or the Map button) shows rooms as you find them, doorways, the exit
+door, you as an arrow and teammates as dots (red = caged).
+
 ## Brent's to-do list (from the end of this session)
 
 1. **Sync both places with Rojo and publish** (two PowerShell windows,
    commands in `roblox/README.md`), then test and send photos and F9 errors.
 2. **Import the host:** `art/models/host.glb` -> Party House, same steps as
    Glow, name it `Host` (steps in `MESHY_GUIDE.md`).
-3. Make the **5 boost icons** in ChatGPT (prompts in the session chat and in
+3. Boost icons are made (`art/roblox-store/boost-*-512.png`): upload them
+   in Studio's Asset Manager and send the five Image ids for
+   `Config.BOOST_IMAGES`; the same pictures go on the Developer Products.
+   (Old step:) Make the **5 boost icons** in ChatGPT (prompts in the session chat and in
    `ART_PROMPTS.md`), then the **Developer Products** (Creator Hub ->
    Monetization) and send the product ids. Suggested prices: Candy 25,
    Energy 25, Clue 40, Head Start 50, Shield 60 Robux (not yet confirmed).
@@ -175,6 +187,10 @@ host model in game, and friends joining a party (blocked by the age review).
   review; an inaccurate questionnaire gets rejected and restarts the review.
 - **Swapping a player's character can leave the camera on the old avatar:**
   the client re-attaches it on CharacterAdded.
+- **Glow's face is ~60 pixels wide in her 1024x1024 texture** (checked 5 Oct):
+  Meshy gives the face a tiny patch of one texture, and Roblox caps a
+  texture at 1024. A bigger input picture helps detail inside that patch;
+  the real fix is a head with its own texture (needs Blender, not installed).
 - **Soft faces on Meshy models come from small input pictures** (Glow's were
   ~485x821). Use one big front picture.
 - **Rojo started from Claude's shell dies after 2 hours;** Brent runs it in

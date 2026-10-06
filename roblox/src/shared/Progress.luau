@@ -27,11 +27,11 @@ end
 Progress.MAX_BOOSTS = 2
 Progress.BOOST_ORDER = { "candy", "shield", "clue", "energy", "headstart" }
 Progress.BOOSTS = {
-	candy = { name = "Candy Corn", icon = "\u{1F36C}", say = "Run without tiring for 20 seconds (tap it in the game)", price = 60 },
-	shield = { name = "Party Shield", icon = "\u{1F6E1}", say = "Saves you from one grab", price = 120 },
-	clue = { name = "Extra Clue", icon = "\u{1F4A1}", say = "+1 clue for the whole team", price = 80 },
-	energy = { name = "Energy Drink", icon = "\u{26A1}", say = "Start with 50 extra energy", price = 50 },
-	headstart = { name = "Head Start", icon = "\u{23F1}", say = "The host waits 10 seconds longer", price = 100 },
+	candy = { name = "Candy Corn", icon = "\u{1F36C}", say = "Tap in the game: run without tiring for 20 s", tap = true, price = 60 },
+	shield = { name = "Party Shield", icon = "\u{1F6E1}", say = "Automatic: saves you from one grab", price = 120 },
+	clue = { name = "Extra Clue", icon = "\u{1F4A1}", say = "Tap in the game: +1 clue for the team", tap = true, price = 80 },
+	energy = { name = "Energy Drink", icon = "\u{26A1}", say = "Tap in the game: +50 energy", tap = true, price = 50 },
+	headstart = { name = "Head Start", icon = "\u{23F1}", say = "Automatic: the host waits 10 s longer", price = 100 },
 }
 
 -- Character levels: XP comes from points earned while playing that character.

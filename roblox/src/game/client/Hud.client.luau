@@ -13,6 +13,7 @@ local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
 local HouseMap = require(ReplicatedStorage.Shared.HouseMap)
+local Progress = require(ReplicatedStorage.Shared.Progress)
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
 local RoundState = ReplicatedStorage:WaitForChild("RoundState")
 local player = Players.LocalPlayer
@@ -584,6 +585,217 @@ end)
 UserInputService.JumpRequest:Connect(function()
 	if player:GetAttribute("Hidden") then
 		remotes.Unhide:FireServer()
+	end
+end)
+
+-- ---------- boosts brought from the Lobby ----------
+-- Tap boosts (Candy, Energy Drink, Extra Clue) sit in the bag until used;
+-- keys 1 and 2 on a keyboard. Shield and Head Start work by themselves and
+-- show as ON badges (the shield greys out once it has saved you).
+local boostBar = frame(gui, { Size = UDim2.fromOffset(290, 56), Position = TOUCH and UDim2.new(1, -300, 1, -362) or UDim2.new(1, -300, 1, -222), BackgroundTransparency = 1 })
+local boostList = Instance.new("UIListLayout")
+boostList.FillDirection = Enum.FillDirection.Horizontal
+boostList.HorizontalAlignment = Enum.HorizontalAlignment.Right
+boostList.VerticalAlignment = Enum.VerticalAlignment.Center
+boostList.Padding = UDim.new(0, 6)
+boostList.SortOrder = Enum.SortOrder.LayoutOrder
+boostList.Parent = boostBar
+local function split(s)
+	local out = {}
+	for id in string.gmatch(s or "", "[^,]+") do
+		table.insert(out, id)
+	end
+	return out
+end
+local function boostSlot(id, order, tag, onClick)
+	local b = Progress.BOOSTS[id]
+	local img = Config.BOOST_IMAGES[id] or 0
+	local slot
+	if img > 0 then
+		slot = Instance.new("ImageButton")
+		slot.Image = "rbxassetid://" .. img
+		slot.BackgroundColor3 = NIGHT
+		slot.BackgroundTransparency = 0.3
+		slot.Size = UDim2.fromOffset(52, 52)
+		slot.LayoutOrder = order
+		corner(slot, 26)
+		slot.Parent = boostBar
+		if onClick then
+			slot.Activated:Connect(onClick)
+		end
+	else
+		slot = button(boostBar, b.icon, { Size = UDim2.fromOffset(52, 52), LayoutOrder = order }, onClick)
+	end
+	label(slot, { Size = UDim2.new(1, 0, 0, 16), Position = UDim2.new(0, 0, 1, -12), Text = tag, TextStrokeTransparency = 0.2 })
+	return slot
+end
+local function paintBoosts()
+	for _, c in ipairs(boostBar:GetChildren()) do
+		if c:IsA("GuiObject") then
+			c:Destroy()
+		end
+	end
+	for i, id in ipairs(split(player:GetAttribute("Bag"))) do
+		boostSlot(id, i, i <= 2 and not TOUCH and ("Tap \u{00B7} " .. i) or "Tap", function()
+			remotes.UseBoost:FireServer(id)
+		end)
+	end
+	for i, id in ipairs(split(player:GetAttribute("BoostsOn"))) do
+		local used = id == "shield" and not player:GetAttribute("Shield")
+		local s = boostSlot(id, 10 + i, used and "Used" or "ON")
+		if s:IsA("ImageButton") then
+			s.ImageTransparency = used and 0.6 or 0
+		else
+			s.TextTransparency = used and 0.6 or 0
+		end
+		s.AutoButtonColor = false
+	end
+end
+player:GetAttributeChangedSignal("Bag"):Connect(paintBoosts)
+player:GetAttributeChangedSignal("BoostsOn"):Connect(paintBoosts)
+player:GetAttributeChangedSignal("Shield"):Connect(paintBoosts)
+paintBoosts()
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then
+		return
+	end
+	local n = input.KeyCode == Enum.KeyCode.One and 1 or input.KeyCode == Enum.KeyCode.Two and 2 or nil
+	local id = n and split(player:GetAttribute("Bag"))[n]
+	if id then
+		remotes.UseBoost:FireServer(id)
+	end
+end)
+
+-- ---------- map of the rooms you have found ----------
+-- A small map in the corner, north up, the exit door at the top. Rooms appear
+-- as you walk into them; you are the arrow, teammates are dots (red = caged).
+-- N or the Map button opens and closes it.
+local MAP_W = 196
+local PX = MAP_W / HouseMap.w
+local MAP_H = math.floor(PX * HouseMap.h + 0.5)
+local mapAt = TOUCH and UDim2.fromOffset(10, 152) or UDim2.new(0, 10, 1, -94 - MAP_H - 40)
+local mapBox = frame(gui, { Size = UDim2.fromOffset(MAP_W + 8, MAP_H + 32), Position = mapAt, BackgroundTransparency = 0.25 })
+corner(mapBox, 10)
+local mapArea = frame(mapBox, { Size = UDim2.fromOffset(MAP_W, MAP_H), Position = UDim2.fromOffset(4, 28), BackgroundColor3 = Color3.fromRGB(10, 6, 16), BackgroundTransparency = 0, ClipsDescendants = true })
+label(mapBox, { Size = UDim2.new(1, -44, 0, 20), Position = UDim2.fromOffset(8, 4), Text = "\u{1F5FA} Map" .. (TOUCH and "" or " (N)"), TextXAlignment = Enum.TextXAlignment.Left })
+local mapOpenBtn = button(gui, "\u{1F5FA} Map" .. (TOUCH and "" or " (N)"), { Size = UDim2.fromOffset(110, 36), Position = mapAt, Visible = false })
+local function showMap(open)
+	mapBox.Visible = open
+	mapOpenBtn.Visible = not open
+end
+button(mapBox, "\u{2715}", { Size = UDim2.fromOffset(28, 22), Position = UDim2.new(1, -32, 0, 3) }, function()
+	showMap(false)
+end)
+mapOpenBtn.Activated:Connect(function()
+	showMap(true)
+end)
+UserInputService.InputBegan:Connect(function(input, processed)
+	if input.KeyCode == Enum.KeyCode.N and not processed then
+		showMap(not mapBox.Visible)
+	end
+end)
+
+local roomTiles, found = {}, {}
+local function mapRect(x0, y0, x1, y1, color, z)
+	return frame(mapArea, { Position = UDim2.fromOffset(x0 * PX, y0 * PX), Size = UDim2.fromOffset((x1 - x0 + 1) * PX, (y1 - y0 + 1) * PX), BackgroundColor3 = color, BackgroundTransparency = 0, Visible = false, ZIndex = z or 2 })
+end
+local ROOM_COLOR = Color3.fromRGB(92, 70, 128)
+for _, f in ipairs(HouseMap.floors) do
+	local r = mapRect(f.x0, f.y0, f.x1, f.y1, ROOM_COLOR)
+	label(r, { Size = UDim2.new(1, -4, 0, 12), Position = UDim2.fromOffset(2, 2), Text = f.name, TextColor3 = Color3.fromRGB(230, 215, 245), ZIndex = 3 })
+	roomTiles[f.name] = { r }
+end
+local function floorOf(x, y)
+	for _, f in ipairs(HouseMap.floors) do
+		if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
+			return f.name
+		end
+	end
+	return nil
+end
+-- doorways: walkable tiles between rooms, shown once a room beside them is found
+for y, row in ipairs(HouseMap.map) do
+	for x = 1, #row do
+		local tx, ty = x - 1, y - 1
+		if string.sub(row, x, x) == "." and not floorOf(tx, ty) then
+			local d = mapRect(tx, ty, tx, ty, ROOM_COLOR)
+			for _, n in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
+				local name = floorOf(tx + n[1], ty + n[2])
+				if name then
+					table.insert(roomTiles[name], d)
+				end
+			end
+		end
+	end
+end
+-- the way out, once you have seen the room it is in
+for _, o in ipairs(HouseMap.objects) do
+	if o.kind == "door" then
+		local name = floorOf(o.x, o.y + 1)
+		local door = mapRect(o.x - 0.5, o.y, o.x + 0.5, o.y, PUMP, 4)
+		if name then
+			table.insert(roomTiles[name], door)
+		end
+	end
+end
+local function discover(name)
+	if name and not found[name] then
+		found[name] = true
+		for _, r in ipairs(roomTiles[name] or {}) do
+			r.Visible = true
+		end
+	end
+end
+local me = label(mapArea, { Size = UDim2.fromOffset(14, 14), AnchorPoint = Vector2.new(0.5, 0.5), Text = "\u{25B2}", TextColor3 = Color3.fromRGB(255, 255, 255), TextStrokeTransparency = 0, ZIndex = 6 })
+local dots = {}
+local SKILL_COLOR = {}
+for _, sk in ipairs(Config.SKILLS) do
+	SKILL_COLOR[sk.id] = sk.color
+end
+local function onMap(pos)
+	return UDim2.fromOffset(pos.X / T * PX, pos.Z / T * PX)
+end
+RunService.Heartbeat:Connect(function()
+	local char = player.Character
+	local hrp = char and char:FindFirstChild("HumanoidRootPart")
+	if hrp then
+		discover(floorOf(math.floor(hrp.Position.X / T), math.floor(hrp.Position.Z / T)))
+		me.Position = onMap(hrp.Position)
+		local lv = hrp.CFrame.LookVector
+		me.Rotation = math.deg(math.atan2(lv.X, -lv.Z))
+	end
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= player then
+			local dot = dots[p]
+			if not dot then
+				dot = frame(mapArea, { Size = UDim2.fromOffset(8, 8), AnchorPoint = Vector2.new(0.5, 0.5), BackgroundTransparency = 0, ZIndex = 5 })
+				corner(dot, 4)
+				dots[p] = dot
+			end
+			local h = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+			dot.Visible = h ~= nil and not p:GetAttribute("Escaped")
+			if h then
+				dot.Position = onMap(h.Position)
+				dot.BackgroundColor3 = p:GetAttribute("Caged") and Color3.fromRGB(255, 77, 94) or SKILL_COLOR[p:GetAttribute("Skill")] or CREAM
+			end
+		end
+	end
+end)
+Players.PlayerRemoving:Connect(function(p)
+	if dots[p] then
+		dots[p]:Destroy()
+		dots[p] = nil
+	end
+end)
+-- a new round builds a fresh house: forget what was found
+RoundState:GetAttributeChangedSignal("Status"):Connect(function()
+	if RoundState:GetAttribute("Status") == "playing" then
+		found = {}
+		for _, list in pairs(roomTiles) do
+			for _, r in ipairs(list) do
+				r.Visible = false
+			end
+		end
 	end
 end)
 
