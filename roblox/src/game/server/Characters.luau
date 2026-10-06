@@ -35,7 +35,24 @@ local function template(name)
 			return rigged(c)
 		end
 	end
+	-- a near miss ("Muscle1", "muscle_rig", "Muscle "): use it, and say so
+	for _, c in ipairs(folder:GetChildren()) do
+		if c:IsA("Model") and string.find(string.lower(c.Name), want, 1, true) then
+			warn("Using ServerStorage/Characters/" .. c.Name .. " for " .. name .. " - rename it exactly " .. name)
+			return rigged(c)
+		end
+	end
 	return nil
+end
+
+-- what is in the Characters folder, for messages when something is missing
+local function contents()
+	local folder = ServerStorage:FindFirstChild("Characters")
+	local names = {}
+	for _, c in ipairs(folder and folder:GetChildren() or {}) do
+		table.insert(names, c.Name .. " (" .. c.ClassName .. ")")
+	end
+	return #names > 0 and table.concat(names, ", ") or "nothing"
 end
 
 -- free or imported models must not run their own code in our game
@@ -62,7 +79,13 @@ end
 function Characters.apply(plr, name)
 	local t = template(name)
 	local old = plr.Character
-	if not t or not old then
+	if not t then
+		if name ~= "Host" then
+			warn("No imported " .. name .. ": ServerStorage/Characters has " .. contents() .. ". Keeping the player's own avatar.")
+		end
+		return false
+	end
+	if not old then
 		return false
 	end
 	if old:GetAttribute("EscapeCrewChar") == name then
