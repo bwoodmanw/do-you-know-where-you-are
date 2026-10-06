@@ -174,8 +174,24 @@ Config.IMAGES = {}
 -- background music: audio asset ids (Creator Store or your own uploads).
 -- Each list is shuffled; players set the volume with the music button.
 Config.MUSIC = {
-	lobby = { 113264055867754 }, -- Transmission - When Bears and Lions Attack
-	game = { 113264055867754 },
+	lobby = {
+		76200647114315, -- Go up - yeah!
+		110219102405339, -- Turn me up right
+		104532983177380, -- Run it like a crown
+		81622815713100, -- Sweet but violent
+		114943415877728, -- Shadow self
+	},
+	game = {
+		103218912557232, -- Transmission
+		118449494725489, -- Dead Frequency
+		123797473965749, -- Sweet but violent
+		91340190574155, -- Null Reckoning
+		127026458726333, -- Override
+		129518539620106, -- Teeth in
+		136562208725905, -- I am the monster (Remastered)
+		124336285623807, -- Hollow Veil
+		118983463747469, -- Unknown Caller
+	},
 }
 -- where the Lobby house model's windows are, as fractions of its width (from
 -- the middle) and height, for the host's peeks
