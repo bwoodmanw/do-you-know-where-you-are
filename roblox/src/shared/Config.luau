@@ -118,6 +118,8 @@ Config.PLACE_IDS = { lobby = 115501124890066, game = 110069561824739 }
 Config.VOTE_SECONDS = 10
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
 Config.STUDIO_MAP = "partyhouse_2"
+-- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
+Config.LOBBY_HOUSE_TURN = 180
 Config.MAX_PARTY = 6
 
 -- Robux prices for boosts: the Developer Product id for each boost, created in
@@ -129,7 +131,7 @@ Config.ROBUX_PRODUCTS = {
 	clue = 3716923841, -- 40
 	energy = 3716924026, -- Second Wind, 25
 	headstart = 3716924113, -- 50
-	freeze = 0, -- Frozen Pop, 50 (product not made yet)
+	freeze = 3716936312, -- Frozen Pop, 50
 	reset = 3716924568, -- resets one character's skill ladder, 49
 }
 
@@ -138,28 +140,29 @@ Config.ROBUX_PRODUCTS = {
 -- Lobby shows these in 3D; the Party House uses them for any character not
 -- imported there. 0 = not saved yet.
 Config.CHARACTER_ASSETS = {
-	Glow = 0,
-	Patch = 77714233647329,
-	Muscle = 74999955541128,
-	Tinker = 0,
-	Shadow = 0,
-	Brainy = 0,
-	Echo = 0,
-	Bramble = 0,
-	Host = 80775740181256,
-	HostGummy = 0,
-	HostRobot = 0,
+	Glow = 74307875851069,
+	Patch = 120375206872909,
+	Muscle = 116831403539618,
+	Tinker = 115806881502179,
+	Shadow = 85123632229176,
+	Brainy = 96432127418740,
+	Echo = 121427930738516,
+	Bramble = 83770262810721,
+	Host = 135742994182895,
+	HostGummy = 106903651525041,
+	HostRobot = 95188395596101,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
 -- (art/roblox-store/boost-*-512.png). 0 = show the emoji instead.
 Config.BOOST_IMAGES = {
-	candy = 129315639528838,
-	shield = 118951370092761,
-	clue = 101410393070554,
-	energy = 86003322408140,
-	headstart = 129479504189534,
-	freeze = 0,
+	candy = 122983417837830,
+	shield = 121621852449445,
+	clue = 123355295075279,
+	energy = 101843924821215, -- Second Wind
+	headstart = 109500734027827,
+	freeze = 77471024527802,
+	reset = 137033892267668,
 }
 
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }

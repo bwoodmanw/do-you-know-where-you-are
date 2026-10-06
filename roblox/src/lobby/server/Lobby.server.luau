@@ -58,33 +58,57 @@ for _, x in ipairs({ -20, -8, 8, 20 }) do
 end
 -- nobody walks round the house: an invisible wall across the end of the lawn
 part({ Name = "HouseFence", Size = Vector3.new(200, 60, 2), Position = Vector3.new(0, 30, -88), Transparency = 1 })
--- a realistic house model (ServerStorage/LobbyProps/House) replaces the built front
-do
+-- a realistic house model (ServerStorage/LobbyProps/House in THIS place) replaces
+-- the built front. It is only scenery: imported with File > Import, no Avatar
+-- Setup needed (a rig from Avatar Setup is removed here anyway).
+local function placeHouse()
 	local props = game:GetService("ServerStorage"):FindFirstChild("LobbyProps")
 	local model = props and props:FindFirstChild("House")
-	if model then
-		for _, p in ipairs(workspace:GetChildren()) do
-			if p:IsA("BasePart") and (p.Name == "HouseFront" or p.Name == "Roof" or p.Name == "Door") then
-				p.Transparency, p.CanCollide = 1, false
-			end
-		end
-		local m = model:Clone()
-		for _, d in ipairs(m:GetDescendants()) do
-			if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") then
-				d:Destroy()
-			elseif d:IsA("BasePart") then
-				d.Anchored = true
-			end
-		end
-		local _, size = m:GetBoundingBox()
-		if size.X > 0 then
-			m:ScaleTo(m:GetScale() * 70 / size.X)
-		end
-		local cf2, size2 = m:GetBoundingBox()
-		-- front face on the fence line, standing on the ground, centred on the lane
-		m:PivotTo(m:GetPivot() + (Vector3.new(0, size2.Y / 2, -90 - size2.Z / 2) - cf2.Position))
-		m.Parent = workspace
+	if not model then
+		return
 	end
+	local m = model:Clone()
+	if not m:IsA("Model") then
+		local wrap = Instance.new("Model")
+		m.Parent = wrap
+		m = wrap
+	end
+	local parts = 0
+	for _, d in ipairs(m:GetDescendants()) do
+		if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") or d:IsA("Humanoid") or d:IsA("Motor6D") or d:IsA("Bone") then
+			d:Destroy()
+		end
+	end
+	for _, d in ipairs(m:GetDescendants()) do
+		if d:IsA("BasePart") then
+			d.Anchored = true
+			parts += 1
+		end
+	end
+	if parts == 0 then
+		return warn("Lobby house: LobbyProps/House has no parts to show")
+	end
+	-- face the lawn (Meshy models face the other way: turned by Config.LOBBY_HOUSE_TURN)
+	m:PivotTo(CFrame.Angles(0, math.rad(Config.LOBBY_HOUSE_TURN or 180), 0))
+	local _, size = m:GetBoundingBox()
+	if size.X > 0 then
+		m:ScaleTo(m:GetScale() * 70 / size.X)
+	end
+	local cf2, size2 = m:GetBoundingBox()
+	-- front on the fence line, standing on the ground, centred on the lane
+	m:PivotTo(m:GetPivot() + (Vector3.new(0, size2.Y / 2, -90 - size2.Z / 2) - cf2.Position))
+	m.Name = "LobbyHouse"
+	m.Parent = workspace
+	for _, p2 in ipairs(workspace:GetChildren()) do
+		if p2:IsA("BasePart") and (p2.Name == "HouseFront" or p2.Name == "Roof" or p2.Name == "Door" or p2.Name == "Watcher") then
+			p2.Transparency, p2.CanCollide = 1, false
+		end
+	end
+	print(string.format("Lobby house: placed LobbyProps/House, %d parts, %.0f x %.0f x %.0f studs", parts, size2.X, size2.Y, size2.Z))
+end
+local okHouse, houseErr = pcall(placeHouse)
+if not okHouse then
+	warn("Lobby house: could not place it - " .. tostring(houseErr))
 end
 -- now and then the host peeks out of a window, or its shadow does
 task.spawn(function()
