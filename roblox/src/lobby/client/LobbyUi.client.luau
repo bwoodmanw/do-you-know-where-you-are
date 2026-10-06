@@ -12,6 +12,8 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local Progress = require(ReplicatedStorage.Shared.Progress)
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 local remotes = ReplicatedStorage:WaitForChild("LobbyRemotes")
 local player = Players.LocalPlayer
 
@@ -399,10 +401,33 @@ remotes.OpenShop.OnClientEvent:Connect(function()
 end)
 
 -- ---------- characters and the skill ladder ----------
-local chars = frame(gui, { Size = UDim2.fromOffset(640, 500), Position = UDim2.new(0.5, -320, 0.5, -250), Visible = false, ZIndex = 10 })
+local chars = frame(gui, { Size = UDim2.fromOffset(900, 520), Position = UDim2.new(0.5, -450, 0.5, -260), Visible = false, ZIndex = 10 })
 corner(chars, 18)
 label(chars, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "Characters & skill ladder", TextColor3 = PUMP, ZIndex = 11 })
-local charRow = frame(chars, { Size = UDim2.new(1, -20, 0, 50), Position = UDim2.fromOffset(10, 56), BackgroundTransparency = 1, ZIndex = 11 })
+-- left: the character in 3D (drag to turn) and what their skill does
+local view = Instance.new("ViewportFrame")
+view.Size = UDim2.fromOffset(230, 270)
+view.Position = UDim2.fromOffset(14, 56)
+view.BackgroundColor3 = Color3.fromRGB(40, 26, 58)
+view.Ambient = Color3.fromRGB(170, 160, 190)
+view.LightColor = Color3.fromRGB(255, 240, 220)
+view.LightDirection = Vector3.new(-0.4, -1, -0.6)
+view.ZIndex = 11
+view.Parent = chars
+corner(view, 14)
+local viewWorld = Instance.new("WorldModel")
+viewWorld.Parent = view
+local viewCam = Instance.new("Camera")
+viewCam.FieldOfView = 32
+viewCam.Parent = view
+view.CurrentCamera = viewCam
+local noModel = label(view, { Size = UDim2.fromScale(1, 0.7), Position = UDim2.fromScale(0, 0.12), Text = "", ZIndex = 12 })
+label(view, { Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -24), Text = "drag to turn", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 12 })
+local skillAbout = label(chars, { Size = UDim2.fromOffset(230, 120), Position = UDim2.fromOffset(14, 334), TextScaled = false, TextSize = 16, TextWrapped = true,
+	TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 11 })
+-- right: picking a character, their level and the skill ladder
+local right = frame(chars, { Size = UDim2.new(1, -256, 1, -60), Position = UDim2.fromOffset(250, 0), BackgroundTransparency = 1, ZIndex = 11 })
+local charRow = frame(right, { Size = UDim2.new(1, -20, 0, 50), Position = UDim2.fromOffset(10, 56), BackgroundTransparency = 1, ZIndex = 11 })
 local charGrid = Instance.new("UIGridLayout")
 charGrid.CellSize = UDim2.fromOffset(72, 46)
 charGrid.CellPadding = UDim2.fromOffset(6, 0)
@@ -415,17 +440,17 @@ for _, sk in ipairs(Config.SKILLS) do
 		repaintChars()
 	end)
 end
-local charTitle = label(chars, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.fromOffset(10, 114), Text = "", ZIndex = 11 })
-local xpBack = frame(chars, { Size = UDim2.new(1, -40, 0, 14), Position = UDim2.fromOffset(20, 150), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 11 })
+local charTitle = label(right, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.fromOffset(10, 114), Text = "", ZIndex = 11 })
+local xpBack = frame(right, { Size = UDim2.new(1, -40, 0, 14), Position = UDim2.fromOffset(20, 150), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 11 })
 corner(xpBack, 7)
 local xpFill = frame(xpBack, { Size = UDim2.fromScale(0, 1), BackgroundColor3 = Color3.fromRGB(123, 227, 107), BackgroundTransparency = 0, ZIndex = 12 })
 corner(xpFill, 7)
 local ladder = {}
 for level = 2, 5 do
 	local y = 176 + (level - 2) * 68
-	local tag = label(chars, { Size = UDim2.fromOffset(70, 56), Position = UDim2.fromOffset(16, y), Text = "Lv " .. level, ZIndex = 11 })
-	local a = button(chars, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(92, y), ZIndex = 11 })
-	local b = button(chars, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(364, y), ZIndex = 11 })
+	local tag = label(right, { Size = UDim2.fromOffset(70, 56), Position = UDim2.fromOffset(16, y), Text = "Lv " .. level, ZIndex = 11 })
+	local a = button(right, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(92, y), ZIndex = 11 })
+	local b = button(right, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(364, y), ZIndex = 11 })
 	ladder[level] = { tag = tag, a = a, b = b }
 	for _, side in ipairs({ "a", "b" }) do
 		ladder[level][side].Activated:Connect(function()
@@ -440,6 +465,70 @@ end
 button(chars, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, -80, 1, -50), ZIndex = 11 }, function()
 	chars.Visible = false
 end)
+local shown, spin, dragging, lastX, shownFor = nil, 0, false, 0, nil
+local function showModel(sk)
+	if shownFor == sk.id and shown then
+		return
+	end
+	if shown then
+		shown:Destroy()
+		shown = nil
+	end
+	spin = 0
+	local previews = ReplicatedStorage:FindFirstChild("Previews")
+	local src = previews and previews:FindFirstChild(sk.name)
+	if src then
+		shown = src:Clone()
+		shown.Parent = viewWorld
+		shownFor = sk.id
+		noModel.Visible = false
+	else
+		shownFor = nil
+		noModel.Visible = true
+		noModel.Text = sk.icon .. "\n3D model coming soon"
+	end
+	local info = Config.SKILL_INFO[sk.id]
+	skillAbout.Text = sk.say .. (info and (": " .. info.about) or "")
+end
+-- models load in the background: show one as soon as it arrives
+task.spawn(function()
+	local previews = ReplicatedStorage:WaitForChild("Previews", 30)
+	if previews then
+		previews.ChildAdded:Connect(function()
+			if chars.Visible and repaintChars then
+				shownFor = nil
+				repaintChars()
+			end
+		end)
+	end
+end)
+view.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging, lastX = true, input.Position.X
+	end
+end)
+UserInputService.InputChanged:Connect(function(input)
+	if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		spin += (input.Position.X - lastX) * 0.012
+		lastX = input.Position.X
+	end
+end)
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
+end)
+RunService.RenderStepped:Connect(function()
+	if not shown or not chars.Visible then
+		return
+	end
+	-- characters face -Z; turn it round to face the camera on +Z
+	shown:PivotTo(CFrame.Angles(0, math.pi + spin, 0))
+	local cf, size = shown:GetBoundingBox()
+	local dist = size.Y * 0.62 / math.tan(math.rad(viewCam.FieldOfView / 2))
+	viewCam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0, size.Y * 0.05, dist), cf.Position)
+end)
+
 repaintChars = function()
 	local sk
 	for _, x in ipairs(Config.SKILLS) do
@@ -450,6 +539,7 @@ repaintChars = function()
 		stroke.Thickness = x.id == selected and 3 or 0
 		stroke.Color = Color3.new(1, 1, 1)
 	end
+	showModel(sk)
 	local xp = (profile.xp and profile.xp[selected]) or 0
 	local lvl = Progress.level(xp)
 	local nextNeed = Progress.LEVEL_XP[lvl + 1]

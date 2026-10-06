@@ -12,6 +12,14 @@ local Config = require(ReplicatedStorage.Shared.Config)
 local Places = require(ReplicatedStorage.Shared.Places)
 local Profile = require(ReplicatedStorage.Shared.Profile)
 local Progress = require(ReplicatedStorage.Shared.Progress)
+
+-- 3D characters for the Characters screen, from the models saved to Roblox
+do
+	local previews = Instance.new("Folder")
+	previews.Name = "Previews"
+	previews.Parent = ReplicatedStorage
+	require(ReplicatedStorage.Shared.CharacterAssets).fill(previews, nil)
+end
 local MarketplaceService = game:GetService("MarketplaceService")
 
 -- ---------- the lobby scene: the lane outside the Party House ----------

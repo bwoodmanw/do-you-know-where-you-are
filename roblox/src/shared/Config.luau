@@ -100,6 +100,22 @@ Config.ROBUX_PRODUCTS = {
 	headstart = 0,
 }
 
+-- Characters saved to Roblox (Studio: right-click the character in
+-- ServerStorage/Characters -> Save to Roblox), name -> model asset id. The
+-- Lobby shows these in 3D; the Party House uses them for any character not
+-- imported there. 0 = not saved yet.
+Config.CHARACTER_ASSETS = {
+	Glow = 0,
+	Patch = 0,
+	Muscle = 0,
+	Tinker = 0,
+	Shadow = 0,
+	Brainy = 0,
+	Echo = 0,
+	Bramble = 0,
+	Host = 0,
+}
+
 -- Boost pictures: the Image asset id of each uploaded boost icon
 -- (art/roblox-store/boost-*-512.png). 0 = show the emoji instead.
 Config.BOOST_IMAGES = {

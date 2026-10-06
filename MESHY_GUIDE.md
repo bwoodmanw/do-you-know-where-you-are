@@ -114,3 +114,21 @@ ServerStorage. Code updates go in with Rojo (`roblox/README.md`).
 - **Character is tiny or huge** -> fine; the game scales it.
 - **Looks nothing like the sheet** -> try front picture only, or a different
   Meshy model version.
+
+
+## Part 5 - Show a character in the Lobby (Save to Roblox)
+
+The Lobby cannot see the Party House's ServerStorage, so each finished
+character is saved to Roblox once and both places load it by its id
+(`Config.CHARACTER_ASSETS`, loaded by `shared/CharacterAssets.luau`).
+
+1. In Studio, in the **Party House**, open **ServerStorage -> Characters**.
+2. Right-click the character (e.g. **Glow**) -> **Save to Roblox...**
+3. Choose **Create new asset**. Name: `Escape Crew - Glow`. Leave
+   **Distribute on Creator Store** off. Creator: **Bwoodmanw**. Click **Save**.
+4. Get its id: **Toolbox -> Inventory -> My Models**, right-click the model ->
+   **Copy Asset ID** (or the number in its Creator Hub page address).
+5. Send the ids to Claude (one per character, and the Host).
+
+The Lobby's Characters screen then shows it in 3D (drag to turn), and the
+Party House uses it for any character not imported there.

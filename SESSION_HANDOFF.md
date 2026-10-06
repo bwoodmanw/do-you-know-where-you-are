@@ -163,6 +163,14 @@ vases tip, present lids pop off, a gold key floats up where a key is found.
 direction may be backwards on imports), lasts 2-2.6 s, host frozen 2.8 s.
 **No changing character mid-game** (button hidden, server refuses).
 
+**Lobby 3D characters (built 6 Oct, untested):** `Config.CHARACTER_ASSETS`
+(name -> model asset id, all 0 until Brent saves them; steps in
+MESHY_GUIDE Part 5) loaded with InsertService by `shared/CharacterAssets.luau`
+into ReplicatedStorage.Previews in both places (and into the Party House's
+ServerStorage/Characters for any character not imported there). The Lobby's
+Characters screen has a turnable 3D viewer and the skill description beside
+the ladder.
+
 ## Brent's to-do list (from the end of this session)
 
 1. **Sync both places with Rojo and publish** (two PowerShell windows,

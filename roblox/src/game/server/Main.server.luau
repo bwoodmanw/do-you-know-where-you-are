@@ -50,6 +50,15 @@ do
 			end
 		end
 	end
+	-- characters saved to Roblox fill in any not imported here
+	local ServerStorage = game:GetService("ServerStorage")
+	local chars = ServerStorage:FindFirstChild("Characters")
+	if not chars then
+		chars = Instance.new("Folder")
+		chars.Name = "Characters"
+		chars.Parent = ServerStorage
+	end
+	require(ReplicatedStorage.Shared.CharacterAssets).fill(previews, chars)
 end
 local Places = require(ReplicatedStorage.Shared.Places)
 local TeleportService = game:GetService("TeleportService")
