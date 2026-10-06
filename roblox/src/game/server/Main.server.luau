@@ -31,8 +31,14 @@ do
 	local src = game:GetService("ServerStorage"):FindFirstChild("Characters")
 	if src then
 		for _, c in ipairs(src:GetChildren()) do
-			if c:IsA("Model") and c.Name ~= "Host" then
+			if c:IsA("Model") and string.lower(c.Name) ~= "host" then
 				local m = c:Clone()
+				-- named as on the select screen whatever its capitals ("muscle" -> "Muscle")
+				for _, sk in ipairs(Config.SKILLS) do
+					if string.lower(sk.name) == string.lower(c.Name) then
+						m.Name = sk.name
+					end
+				end
 				for _, d in ipairs(m:GetDescendants()) do
 					if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") then
 						d:Destroy()
