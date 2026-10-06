@@ -103,6 +103,24 @@ local function toast(text, seconds)
 	end)
 end
 
+-- ---------- sounds only this player hears ----------
+local SoundService = game:GetService("SoundService")
+local function playLocal(name, volume)
+	local id = Config.SOUNDS[name]
+	if not id then
+		return
+	end
+	local s = Instance.new("Sound")
+	s.SoundId = "rbxassetid://" .. id
+	s.Volume = volume or 0.8
+	s.Parent = SoundService
+	s:Play()
+	local max = Config.SOUND_MAX[name] or 4
+	task.delay(max, function()
+		s:Destroy()
+	end)
+end
+
 -- ---------- jumpscare ----------
 local scare = frame(gui, { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0, Visible = false, ZIndex = 50 })
 local scareImg
@@ -117,6 +135,7 @@ if Config.IMAGES.scare then
 else
 	label(scare, { Size = UDim2.fromScale(1, 0.7), Position = UDim2.fromScale(0, 0.15), Text = "\u{1F383}", ZIndex = 51 })
 end
+local redFlash = frame(gui, { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(200, 0, 20), BackgroundTransparency = 1, ZIndex = 49 })
 local function jumpscare()
 	scare.Visible = true
 	local cam = workspace.CurrentCamera
@@ -161,24 +180,41 @@ local function hostCloseUp(intense)
 		return
 	end
 	local cam = workspace.CurrentCamera
+	local fov = cam.FieldOfView
 	cam.CameraType = Enum.CameraType.Scriptable
+	-- light the face so it shows in a dark room
+	local glow = Instance.new("PointLight")
+	glow.Color = Color3.fromRGB(255, 150, 60)
+	glow.Brightness = 3
+	glow.Range = 14
+	glow.Parent = head
+	playLocal(intense and "roar" or "giggle", 1)
+	redFlash.BackgroundTransparency = intense and 0.35 or 0.7
+	TweenService:Create(redFlash, TweenInfo.new(0.7), { BackgroundTransparency = 1 }):Play()
+	local r = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2
 	local t0 = os.clock()
-	local dur = intense and 1.1 or 0.8
+	local dur = intense and 1.6 or 1.2
 	local conn
 	conn = RunService.RenderStepped:Connect(function()
 		local f = (os.clock() - t0) / dur
 		if f >= 1 or not head.Parent then
 			conn:Disconnect()
+			glow:Destroy()
+			cam.FieldOfView = fov
 			cam.CameraType = Enum.CameraType.Custom
 			if intense then
 				jumpscare()
 			end
 			return
 		end
-		local dist = 7 - math.min(1, f * 3) * 4.6
-		local s = intense and 0.35 or 0.12
-		local pos = head.Position + head.CFrame.LookVector * dist + Vector3.new((math.random() - 0.5) * s, 0.2 + (math.random() - 0.5) * s, 0)
-		cam.CFrame = CFrame.lookAt(pos, head.Position)
+		-- rush in on the face, then hold it filling the screen, shaking
+		local e = 1 - (1 - math.min(1, f * 2.2)) ^ 3
+		local dist = r + 9 - e * 8
+		cam.FieldOfView = fov - e * 25
+		local s = (intense and 0.3 or 0.1) * e
+		local front = head.Position + head.CFrame.LookVector * dist + Vector3.new(0, r * 0.15, 0)
+		local shake = Vector3.new((math.random() - 0.5) * s, (math.random() - 0.5) * s, (math.random() - 0.5) * s)
+		cam.CFrame = CFrame.lookAt(front + shake, head.Position)
 	end)
 end
 
@@ -508,6 +544,7 @@ for i, c in ipairs(Config.COLORS) do
 			shown[j] = pressed[j] and ('<font color="' .. hex(Config.COLOR3[pressed[j]]) .. '">\u{25CF}</font>') or "_"
 		end
 		entered.Text = table.concat(shown, " ")
+		playLocal("beep", 0.6)
 		remotes.Press:FireServer(c)
 		if #pressed >= 3 then
 			pressed = {}
@@ -809,6 +846,24 @@ remotes.Boost.OnClientEvent:Connect(function(kind)
 	end
 end)
 
+-- the heartbeat speeds up and gets louder as the host comes closer
+local dangerLevel = 0
+task.spawn(function()
+	while true do
+		if dangerLevel >= 2 and not player:GetAttribute("Escaped") and not player:GetAttribute("Caged") then
+			local vol = 0.2 + dangerLevel * 0.15
+			playLocal("heart", vol)
+			task.wait(0.22)
+			playLocal("heart", vol * 0.7)
+			task.wait(math.max(0.2, 1.2 - dangerLevel * 0.2))
+		else
+			task.wait(0.3)
+		end
+	end
+end)
+-- the host breathes: a looping sound on its head, louder the closer you are
+local breathFor
+
 local function roomAt(pos)
 	local x, y = math.floor(pos.X / T), math.floor(pos.Z / T)
 	for _, f in ipairs(HouseMap.floors) do
@@ -887,6 +942,22 @@ RunService.RenderStepped:Connect(function(dt)
 	local r = roomAt(hrp.Position)
 	roomName.Text = r and ("The Party House \u{00B7} " .. r) or "The Party House"
 	local host = workspace:FindFirstChild("PartyHost")
+	if host ~= breathFor then
+		breathFor = host
+		local head = host and (host:FindFirstChild("Head") or host.PrimaryPart)
+		if head and Config.SOUNDS.breath then
+			local s = Instance.new("Sound")
+			s.Name = "Breathing"
+			s.SoundId = "rbxassetid://" .. Config.SOUNDS.breath
+			s.Looped = true
+			s.Volume = 1.4
+			s.RollOffMode = Enum.RollOffMode.InverseTapered
+			s.RollOffMinDistance = 6
+			s.RollOffMaxDistance = 60
+			s.Parent = head
+			s:Play()
+		end
+	end
 	local level = 0
 	if host and host.PrimaryPart then
 		local d = (host.PrimaryPart.Position - hrp.Position).Magnitude / T
@@ -898,6 +969,7 @@ RunService.RenderStepped:Connect(function(dt)
 	for i = 1, 5 do
 		steps[i].TextTransparency = i <= level and 0 or 0.8
 	end
+	dangerLevel = level
 end)
 
 -- ---------- a big icon that pops up: items picked up, skills used ----------

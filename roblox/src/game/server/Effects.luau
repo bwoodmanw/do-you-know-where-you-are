@@ -7,7 +7,44 @@
 local Debris = game:GetService("Debris")
 local TweenService = game:GetService("TweenService")
 
+local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+
 local Effects = {}
+
+-- the sound each burst makes
+local KIND_SOUND = {
+	pop = "pop", boost = "present", reveal = "reveal", light = "light", plant = "plant", shove = "shove",
+	pick = "pick", rescue = "rescue", escape = "escape", caught = "cage", sneak = "sneak", heal = "heal", noise = "noise",
+}
+
+-- a sound everyone near the spot hears (louder the closer they are)
+function Effects.sound(position, name, volume)
+	local id = Config.SOUNDS[name]
+	if not id or typeof(position) ~= "Vector3" then
+		return
+	end
+	local holder = Instance.new("Part")
+	holder.Anchored, holder.CanCollide, holder.CanQuery, holder.CanTouch = true, false, false, false
+	holder.Transparency = 1
+	holder.Size = Vector3.new(1, 1, 1)
+	holder.Position = position
+	local s = Instance.new("Sound")
+	s.SoundId = "rbxassetid://" .. id
+	s.Volume = volume or 0.8
+	s.RollOffMode = Enum.RollOffMode.InverseTapered
+	s.RollOffMinDistance = 12
+	s.RollOffMaxDistance = 90
+	s.Parent = holder
+	holder.Parent = workspace
+	s:Play()
+	local max = Config.SOUND_MAX[name] or 4
+	task.delay(max, function()
+		if s.Parent then
+			s:Stop()
+		end
+	end)
+	Debris:AddItem(holder, max + 0.5)
+end
 
 local SPARKLE = "rbxasset://textures/particles/sparkles_main.dds"
 local SMOKE = "rbxasset://textures/particles/smoke_main.dds"
@@ -45,6 +82,9 @@ function Effects.burst(position, kind)
 	local k = KINDS[kind]
 	if not k or typeof(position) ~= "Vector3" then
 		return
+	end
+	if KIND_SOUND[kind] then
+		Effects.sound(position, KIND_SOUND[kind])
 	end
 	local holder = Instance.new("Part")
 	holder.Anchored, holder.CanCollide, holder.CanQuery, holder.CanTouch = true, false, false, false

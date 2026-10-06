@@ -112,6 +112,35 @@ Config.BOOST_IMAGES = {
 
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }
 Config.IMAGES = {}
-Config.SOUNDS = {}
+-- Sounds: Roblox's licensed sound library (ProSoundEffects, free to use).
+-- Swap any id for another from Studio's Toolbox -> Audio.
+Config.SOUNDS = {
+	pop = 9113263649, -- Balloon Pop 3
+	hide = 9113837941, -- Cloth Rustle 5
+	unhide = 9120839599, -- Wood Door Creak Squeak 11
+	pick = 9117185722, -- Padlock Open Lock Pick
+	unlock = 9116324156, -- Lock Unlock Door 10
+	shove = 9114154737, -- Door Slides 7
+	light = 9116395089, -- Magic Glows chiming hits 4
+	reveal = 9116418035, -- Magic Tone Falling Shimmer 3
+	plant = 9114518077, -- Foliage Movement 1
+	present = 9126073001, -- Synth Sparkle bell ding
+	candy = 9113959343, -- Crack Egg Crunchy 11
+	energy = 9114172109, -- Drinking gulping 6
+	beep = 9119717523, -- Switch click
+	wrong = 9113085764, -- Alarm Buzzer 5
+	cage = 9114885296, -- Jail Cell Door 7
+	rescue = 9114885622, -- Jail Cell Door 13
+	escape = 9112766176, -- Crowd Cheer And Applause 1
+	roar = 9113980480, -- Giant monster roar growl 2
+	giggle = 9114571545, -- Ghost giggle 9
+	sneak = 9126229255, -- Whoosh by fast
+	heal = 9116395085, -- Magic chiming hits 5
+	noise = 9120675895, -- Whistle calling 4
+	breath = 9113983944, -- Deep monster breathing 1 (loops on the host)
+	heart = 9119882039, -- Synth Whomps 38 (a heartbeat thump)
+}
+-- the longest a sound plays, in seconds (some library sounds are long)
+Config.SOUND_MAX = { hide = 1.6, unhide = 1.5, escape = 5, cage = 2.5, rescue = 2, shove = 1.6, wrong = 1.2 }
 
 return Config

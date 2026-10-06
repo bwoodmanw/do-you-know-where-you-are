@@ -249,7 +249,7 @@ function Scene.boards(titles)
 	part(workspace, { Name = "WallCap", Size = Vector3.new(2.6, 0.6, 71), Position = Vector3.new(wallX + 1, 20.3, 0), Color = Color3.fromRGB(60, 45, 45), Material = Enum.Material.Slate })
 	local bodies = {}
 	for i, title in ipairs(titles) do
-		local z = (i - 2) * 18
+		local z = (i - (#titles + 1) / 2) * 17
 		-- the board's front faces the lane (-X)
 		local b = part(workspace, { Name = "Leaderboard", Size = Vector3.new(14, 16, 0.6), CFrame = CFrame.lookAt(Vector3.new(wallX - 0.4, 10, z), Vector3.new(wallX - 10, 10, z)), Color = Color3.fromRGB(40, 28, 46), Material = Enum.Material.Wood })
 		local lamp = part(workspace, { Name = "BoardLamp", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.8, 0.8), Position = Vector3.new(wallX - 2, 19, z), Color = Color3.fromRGB(255, 230, 170), Material = Enum.Material.Neon, CanCollide = false })

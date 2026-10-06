@@ -388,6 +388,7 @@ local function openDoor(plr, how)
 	end
 	state.doorOpen = true
 	RoundState:SetAttribute("DoorOpen", true)
+	Effects.sound(world.objects.door.keypad.Position, "unlock", 1)
 	local door = world.objects.door.door
 	door.CanCollide = false
 	TweenService:Create(door, TweenInfo.new(1.2), { Position = door.Position + Vector3.new(0, 9.5, 0) }):Play()
@@ -434,6 +435,7 @@ local function unhide(plr)
 	setVisible(plr, true)
 	if entry then
 		teleport(plr, entry.outside)
+		Effects.sound(entry.outside, "unhide")
 	end
 end
 
@@ -631,6 +633,7 @@ local function wirePrompts()
 					hrp.Anchored = true
 				end
 				setVisible(plr, false)
+				Effects.sound(entry.inside, "hide")
 				say("hide", "You are hiding. Press Jump or the Hide button to come out.", nil, plr)
 			end)
 		end
@@ -654,6 +657,9 @@ function round.hostCaught(_, plr)
 		return say("shield", "POP! " .. plr.DisplayName .. "'s Party Shield saved them - run!")
 	end
 	Effects.at(plr, "caught")
+	if host then
+		host:stun(1.8) -- holds still for the close-up
+	end
 	plr:SetAttribute("Caged", true)
 	teleport(plr, world.objects.cage.inside)
 	setSpeed(plr, 0)
@@ -777,6 +783,7 @@ Press.OnServerEvent:Connect(function(plr, colour)
 		openDoor(plr, "code")
 	else
 		say("wrong", "Wrong code! And that was LOUD... something is coming.", nil, plr)
+		Effects.sound(world.objects.door.keypad.Position, "wrong", 1)
 		if host then
 			host:alert(world.objects.door.keypad.Position)
 		end
@@ -928,6 +935,10 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
 	end
 	Effects.at(plr, "boost")
+	local spot = hrpOf(plr)
+	if spot and (id == "candy" or id == "energy") then
+		Effects.sound(spot.Position, id)
+	end
 	say("boost", plr.DisplayName .. " used " .. boost.name .. "!", { icon = boost.icon, userId = plr.UserId, item = boost.name })
 end)
 

@@ -29,7 +29,7 @@ local function fresh()
 		inv = {}, -- owned boosts: inv[boostId] = count
 		loadout = {}, -- boosts chosen for the next game (taken from inv)
 		unlocked = { partyhouse = true },
-		stats = { games = 0, escapes = 0, rescues = 0 },
+		stats = { games = 0, escapes = 0, rescues = 0, earned = 0 }, -- earned: every point ever won, spent or not
 		best = {}, -- best["partyhouse_normal"] = seconds
 	}
 end
@@ -40,6 +40,9 @@ local function fill(p)
 		if p[k] == nil then
 			p[k] = v
 		end
+	end
+	if p.stats and p.stats.earned == nil then
+		p.stats.earned = math.max(0, p.points or 0) -- older profiles: start from what they hold
 	end
 	for k, v in pairs(base.stats) do
 		if p.stats[k] == nil then
@@ -121,6 +124,9 @@ function Profile.addPoints(plr, n)
 	local data = cache[plr.UserId]
 	if data then
 		data.points = math.max(0, data.points + n)
+		if n > 0 then
+			data.stats.earned = (data.stats.earned or 0) + n
+		end
 		Profile.publish(plr)
 	end
 end
@@ -138,11 +144,15 @@ function Profile.week()
 	return math.floor(os.time() / (7 * 86400))
 end
 
-function Profile.boardNames(mapId, difficulty)
+-- points = every point ever earned (spending does not lower it); fastest is
+-- one weekly board for all maps, keyed "userId|map|difficulty" so each row
+-- knows where it was set
+function Profile.boardNames()
 	return {
-		points = "EC_TopPoints",
+		points = "EC_TopEarned",
+		escapes = "EC_TopEscapes",
 		rescues = "EC_TopRescues",
-		fastest = "EC_Fast_" .. mapId .. "_" .. difficulty .. "_w" .. Profile.week(),
+		fastest = "EC_FastAll_w" .. Profile.week(),
 	}
 end
 
@@ -153,13 +163,19 @@ function Profile.record(plr, mapId, difficulty, escapedSeconds)
 	if not data then
 		return
 	end
-	local names = Profile.boardNames(mapId, difficulty)
+	local names = Profile.boardNames()
 	local key = tostring(plr.UserId)
 	task.spawn(function()
 		local p = board(names.points)
 		if p then
 			pcall(function()
-				p:SetAsync(key, math.floor(data.points))
+				p:SetAsync(key, math.floor(data.stats.earned or data.points))
+			end)
+		end
+		local e = board(names.escapes)
+		if e then
+			pcall(function()
+				e:SetAsync(key, data.stats.escapes)
 			end)
 		end
 		local r = board(names.rescues)
@@ -172,7 +188,7 @@ function Profile.record(plr, mapId, difficulty, escapedSeconds)
 			local f = board(names.fastest)
 			if f then
 				pcall(function()
-					f:UpdateAsync(key, function(old)
+					f:UpdateAsync(key .. "|" .. mapId .. "|" .. difficulty, function(old)
 						local v = -math.floor(escapedSeconds)
 						if old == nil or v > old then
 							return v
@@ -197,7 +213,7 @@ local function nameOf(userId)
 	return nameCache[userId]
 end
 
--- top N rows: { { name, value } }
+-- top N rows: { { name, value, map, difficulty } } (map/difficulty on the fastest board)
 function Profile.top(boardName, n, negate)
 	local b = board(boardName)
 	if not b then
@@ -209,7 +225,8 @@ function Profile.top(boardName, n, negate)
 	end)
 	if ok and pages then
 		for _, entry in ipairs(pages:GetCurrentPage()) do
-			table.insert(rows, { name = nameOf(tonumber(entry.key)), value = negate and -entry.value or entry.value })
+			local uid, map, diff = string.match(entry.key, "^(%d+)|?([^|]*)|?([^|]*)$")
+			table.insert(rows, { name = nameOf(tonumber(uid)), value = negate and -entry.value or entry.value, map = map, difficulty = diff })
 		end
 	end
 	return rows

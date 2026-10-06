@@ -123,6 +123,18 @@ again and go back to the saved boosts when the player leaves. A **corner
 map** (N or the Map button) shows rooms as you find them, doorways, the exit
 door, you as an arrow and teammates as dots (red = caged).
 
+Added 6 Oct, untested in Roblox: **sounds** (Roblox's licensed library,
+ids in `Config.SOUNDS`: balloon pop, hide/unhide, lock pick, unlock, wrong
+code, shove, presents, candy crunch, drink gulp, cage, rescue, cheer, skill
+sounds, keypad clicks), the host **breathes** (3D, louder when close) and a
+**heartbeat** speeds up with the footprints; the **caught close-up** rushes in
+until the face fills the screen (lit, red flash, roar or giggle, host holds
+still 1.8 s). **Leaderboards:** points earned ever (spending does not lower
+it), most escapes, most rescues, fastest escapes this week with map and
+difficulty (new board names, so they start empty). Next big build waits for
+a yes: `MAP_PLAN.md` (bigger house, locked doors and keys, Tinker no longer
+opens the exit).
+
 ## Brent's to-do list (from the end of this session)
 
 1. **Sync both places with Rojo and publish** (two PowerShell windows,

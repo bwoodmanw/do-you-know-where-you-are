@@ -405,8 +405,8 @@ stallPrompt.Triggered:Connect(function(plr)
 	OpenShop:FireClient(plr)
 end)
 Scene.dropOff()
-local boards = Scene.boards({ "\u{1F3C6} Most points", "\u{23F1} Fastest escape (week)", "\u{1F512} Most rescues" })
-local boardPoints, boardFast, boardRescue = boards[1], boards[2], boards[3]
+local boards = Scene.boards({ "\u{1F3C6} Most points earned", "\u{1F6AA} Most escapes", "\u{1F512} Most rescues", "\u{23F1} Fastest escapes this week" })
+local boardPoints, boardEscapes, boardRescue, boardFast = boards[1], boards[2], boards[3], boards[4]
 local function fill(body, rows, fmt)
 	if #rows == 0 then
 		body.Text = "No scores yet - be the first!"
@@ -414,18 +414,27 @@ local function fill(body, rows, fmt)
 	end
 	local lines = {}
 	for i, r in ipairs(rows) do
-		table.insert(lines, i .. ". " .. r.name .. "  " .. fmt(r.value))
+		table.insert(lines, i .. ". " .. r.name .. "  " .. fmt(r.value, r))
 	end
 	body.Text = table.concat(lines, "\n")
 end
+local function mapName(id)
+	local i = Progress.mapIndex(id)
+	return i and Progress.MAPS[i].name or "?"
+end
 task.spawn(function()
 	while true do
-		local names = Profile.boardNames("partyhouse", "normal")
+		local names = Profile.boardNames()
 		fill(boardPoints, Profile.top(names.points, 10), function(v)
 			return tostring(v)
 		end)
-		fill(boardFast, Profile.top(names.fastest, 10, true), function(v)
-			return string.format("%d:%02d", math.floor(v / 60), v % 60)
+		fill(boardEscapes, Profile.top(names.escapes, 10), function(v)
+			return tostring(v)
+		end)
+		-- two lines a row: the time, then where it was set
+		fill(boardFast, Profile.top(names.fastest, 6, true), function(v, r)
+			local d = Config.DIFFICULTY[r.difficulty]
+			return string.format("%d:%02d", math.floor(v / 60), v % 60) .. "\n     " .. mapName(r.map) .. (d and (" \u{00B7} " .. d.name) or "")
 		end)
 		fill(boardRescue, Profile.top(names.rescues, 10), function(v)
 			return tostring(v)
