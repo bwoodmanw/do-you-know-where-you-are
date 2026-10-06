@@ -159,7 +159,7 @@ function Host:spawn(diff)
 	self.frenzy = false
 	self.mode = "patrol"
 	self.skill = (Config.HOSTS[self.kind or "pumpkin"] or Config.HOSTS.pumpkin).skill
-	self.nextSkill = os.clock() + 8
+	self.nextSkill = os.clock() + 4
 	self.path = PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 11, AgentCanJump = false, WaypointSpacing = 6 })
 	return self.model
 end
@@ -277,10 +277,6 @@ function Host:step(dt)
 		if self.skill == "throw" and now >= (self.nextSkill or 0) and bestD >= s.min and bestD <= s.range then
 			self.nextSkill = now + (s.cooldown[string.lower(self.diff.name)] or 15)
 			self:throwAt(best)
-		elseif self.skill == "blackout" and now >= (self.nextSkill or 0) then
-			-- the Robot: lights out in his room when he spots you
-			self.nextSkill = now + (Config.HOST_SKILLS.blackout.cooldown[string.lower(self.diff.name)] or 30)
-			self.round:hostBlackout(self.root.Position)
 		end
 	elseif self.mode == "hunt" and now - self.lastSeen > Config.HOST.lostAfter then
 		self.mode = "search"
@@ -321,6 +317,30 @@ function Host:step(dt)
 				self.mode = "patrol"
 				self.round:hostCaught(plr)
 				return
+			end
+		end
+	end
+
+	-- the Robot: the moment a kid is in the same room as him, lights out
+	if self.skill == "blackout" and now >= (self.nextSkill or 0) then
+		local function roomOf(pos)
+			local x, y = math.floor(pos.X / Config.TILE), math.floor(pos.Z / Config.TILE)
+			for _, f in ipairs(self.world.map.floors) do
+				if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
+					return f.name
+				end
+			end
+			return nil
+		end
+		local mine = roomOf(self.root.Position)
+		if mine then
+			for _, plr in ipairs(Players:GetPlayers()) do
+				local h = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+				if h and not plr:GetAttribute("Hidden") and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped") and roomOf(h.Position) == mine then
+					self.nextSkill = now + (Config.HOST_SKILLS.blackout.cooldown[string.lower(self.diff.name)] or 30)
+					self.round:hostBlackout(self.root.Position)
+					break
+				end
 			end
 		end
 	end
@@ -380,12 +400,30 @@ function Host:throwAt(plr)
 	local ball = Instance.new("Part")
 	ball.Name = "ThrownPumpkin"
 	ball.Shape = Enum.PartType.Ball
-	ball.Size = Vector3.new(2.4, 2.2, 2.4)
+	ball.Size = Vector3.new(3.4, 3, 3.4)
 	ball.Color = Color3.fromRGB(240, 120, 20)
 	ball.Material = Enum.Material.SmoothPlastic
 	ball.Anchored, ball.CanCollide, ball.CanQuery, ball.CanTouch = true, false, false, false
 	ball.Position = from
 	ball.Parent = workspace
+	-- easy to see coming: it glows, leaves a trail, and he winds up first
+	local glow = Instance.new("PointLight")
+	glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 140, 40), 14, 3
+	glow.Parent = ball
+	local a0, a1 = Instance.new("Attachment"), Instance.new("Attachment")
+	a0.Position, a1.Position = Vector3.new(0, 0.8, 0), Vector3.new(0, -0.8, 0)
+	a0.Parent, a1.Parent = ball, ball
+	local trail = Instance.new("Trail")
+	trail.Attachment0, trail.Attachment1 = a0, a1
+	trail.Color = ColorSequence.new(Color3.fromRGB(255, 160, 40))
+	trail.Lifetime = 0.35
+	trail.LightEmission = 0.7
+	trail.Parent = ball
+	self.pause = math.max(self.pause or 0, 0.4)
+	Effects.burst(from, "pick")
+	if game:GetService("RunService"):IsStudio() then
+		print("[host] throwing a pumpkin at " .. plr.Name)
+	end
 	Effects.sound(from, "throw")
 	local peak = math.max(6, (to - from).Magnitude * 0.25)
 	local t0 = os.clock()

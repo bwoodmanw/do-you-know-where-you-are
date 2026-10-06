@@ -12,7 +12,8 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Lobby (Escape Crew place, Rojo port 34873)
 - [ ] House model in place, facing the lawn; no glowing boxes in front of it
-- [ ] A host face (or shadow) in a window every 18-40 s, lined up with a window
+- [ ] A host face in a window every 18-40 s, lined up with a window (exact: add Parts named PeekSpot on the windows)
+- [ ] Daily reward pop-up on the first visit of the day; next day = day 2; a missed day = day 1
 - [ ] Cannot walk round the side or back of the house
 - [ ] Shopkeeper: glasses, cap, grin; waves
 - [ ] Drive-in car: sit, faces the leaderboards
@@ -46,9 +47,9 @@ Per floor:
 - [ ] Bounce Hall: candy colours, ball pit, slide-tower loft, bounce pads, cloud exit
 
 Per host:
-- [ ] Pumpkin: throws pumpkins you can dodge; a hit knocks you down 2 s
+- [ ] Pumpkin: winds up and throws a glowing pumpkin with a trail you can dodge; a hit knocks you down 2 s (F9 in Studio: "[host] throwing a pumpkin")
 - [ ] Gummy Bear Man: puddles stick you 3 s; never more than 4; never by doors
-- [ ] Robot: his room goes dark for 8 s when he spots you; his eyes glow red
+- [ ] Robot: his room goes dark for 8 s as soon as you are in the same room; his eyes glow red
 
 ## Live game (after publishing both places)
 - [ ] Lobby -> chosen floor -> results -> Play again / Back to lobby

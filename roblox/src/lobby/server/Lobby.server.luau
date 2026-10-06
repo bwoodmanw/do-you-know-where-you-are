@@ -108,6 +108,14 @@ local function placeHouse()
 	-- the old built windows become invisible spots on the model's own windows
 	customHouse = true
 	local spots = Config.LOBBY_HOUSE_WINDOWS or {}
+	-- precise spots: Parts named PeekSpot placed on the model's windows in Studio
+	local exact = {}
+	for _, d in ipairs(m:GetDescendants()) do
+		if d:IsA("BasePart") and d.Name == "PeekSpot" then
+			d.Transparency, d.CanCollide = 1, false
+			table.insert(exact, d.Position)
+		end
+	end
 	local n = 0
 	for _, w in ipairs(workspace:GetChildren()) do
 		if w:IsA("BasePart") and w.Name == "Window" then
@@ -118,7 +126,9 @@ local function placeHouse()
 			if l then
 				l.Brightness = 0.6
 			end
-			if s then
+			if exact[n] then
+				w.Position = exact[n] + Vector3.new(0, 0, 0.3)
+			elseif s and #exact == 0 then
 				w.Position = Vector3.new(s[1] * size2.X, s[2] * size2.Y, -89.4)
 			else
 				w.Name = "UnusedWindow"
@@ -675,8 +685,35 @@ task.spawn(function()
 	end
 end)
 
+-- daily login reward: claimed on arrival once a day; an unbroken run of days
+-- climbs the 7-day ladder, a missed day starts it again at day 1
+local function dailyReward(plr, data)
+	if not data then
+		return
+	end
+	local today = math.floor(os.time() / 86400)
+	data.daily = data.daily or { last = 0, streak = 0 }
+	if data.daily.last == today then
+		return
+	end
+	data.daily.streak = (data.daily.last == today - 1) and (data.daily.streak + 1) or 1
+	data.daily.last = today
+	local day = (data.daily.streak - 1) % #Config.DAILY + 1
+	local r = Config.DAILY[day]
+	local premium = plr.MembershipType == Enum.MembershipType.Premium
+	local pts = r.points * (premium and Config.PREMIUM_DAILY_MULT or 1)
+	data.points += pts
+	if r.boost then
+		data.inv[r.boost] = (data.inv[r.boost] or 0) + 1
+	end
+	Profile.publish(plr)
+	Profile.save(plr)
+	plr:SetAttribute("DailyShow", game:GetService("HttpService"):JSONEncode({ streak = data.daily.streak, day = day, points = pts, boost = r.boost, premium = premium }))
+end
+
 Players.PlayerAdded:Connect(function(plr)
-	Profile.load(plr)
+	local data = Profile.load(plr)
+	dailyReward(plr, data)
 	task.wait(1)
 	broadcast()
 end)

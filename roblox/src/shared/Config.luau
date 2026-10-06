@@ -49,7 +49,7 @@ Config.HEARTBEAT = false
 -- host skills; cooldowns by difficulty
 Config.HOST_SKILLS = {
 	-- Pumpkin: a pumpkin thrown in a slow arc; a hit knocks you down
-	throw = { min = 12, range = 45, flight = 1.2, radius = 4, knock = 2,
+	throw = { min = 8, range = 45, flight = 1.2, radius = 4, knock = 2,
 		cooldown = { easy = 20, normal = 15, hard = 12, nightmare = 9 } },
 	-- Gummy Bear Man: sticky puddles (stuck for a moment); never many, never by doors
 	gummy = { max = 4, melt = 40, stick = 3, clear = 2,
@@ -171,6 +171,19 @@ Config.BOOST_IMAGES = {
 
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }
 Config.IMAGES = {}
+-- daily login rewards: day 1-7 of an unbroken streak (then round again);
+-- miss a day and it starts again at day 1. Roblox Premium members get
+-- PREMIUM_DAILY_MULT times the points.
+Config.DAILY = {
+	{ points = 20 },
+	{ points = 30 },
+	{ points = 40, boost = "candy" },
+	{ points = 50 },
+	{ points = 60, boost = "energy" },
+	{ points = 80 },
+	{ points = 120, boost = "freeze" },
+}
+Config.PREMIUM_DAILY_MULT = 2
 -- background music: audio asset ids (Creator Store or your own uploads).
 -- Each list is shuffled; players set the volume with the music button.
 Config.MUSIC = {
@@ -195,7 +208,7 @@ Config.MUSIC = {
 }
 -- where the Lobby house model's windows are, as fractions of its width (from
 -- the middle) and height, for the host's peeks
-Config.LOBBY_HOUSE_WINDOWS = { { -0.33, 0.62 }, { -0.12, 0.62 }, { 0.12, 0.62 }, { 0.33, 0.62 }, { -0.3, 0.33 }, { 0.3, 0.33 } }
+Config.LOBBY_HOUSE_WINDOWS = { { -0.28, 0.52 }, { -0.07, 0.52 }, { 0.17, 0.52 }, { 0.38, 0.52 }, { -0.25, 0.23 }, { 0.35, 0.23 } }
 -- Sounds: Roblox's licensed sound library (ProSoundEffects, free to use).
 -- Swap any id for another from Studio's Toolbox -> Audio.
 Config.SOUNDS = {

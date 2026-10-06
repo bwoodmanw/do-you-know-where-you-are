@@ -576,6 +576,54 @@ charsBtn.Activated:Connect(function()
 end)
 readProfile()
 
+-- ---------- daily reward ----------
+local function showDaily()
+	local json = player:GetAttribute("DailyShow")
+	if not json then
+		return
+	end
+	local ok, info = pcall(function()
+		return HttpService:JSONDecode(json)
+	end)
+	if not ok or type(info) ~= "table" then
+		return
+	end
+	local box = frame(gui, { Size = UDim2.fromOffset(640, 330), Position = UDim2.new(0.5, -320, 0.5, -165), ZIndex = 20 })
+	corner(box, 18)
+	label(box, { Size = UDim2.new(1, -20, 0, 40), Position = UDim2.fromOffset(10, 10), Text = "\u{1F381} Daily reward \u{00B7} " .. info.streak .. (info.streak == 1 and " day" or " days") .. " in a row!", TextColor3 = PUMP, ZIndex = 21 })
+	for i, r in ipairs(Config.DAILY) do
+		local today = i == info.day
+		local done = i < info.day
+		local cell = frame(box, { Size = UDim2.fromOffset(80, 110), Position = UDim2.fromOffset(18 + (i - 1) * 87, 62),
+			BackgroundColor3 = today and PUMP or (done and Color3.fromRGB(47, 107, 58) or PLUM), BackgroundTransparency = today and 0 or 0.3, ZIndex = 21 })
+		corner(cell, 12)
+		label(cell, { Size = UDim2.new(1, 0, 0, 24), Position = UDim2.fromOffset(0, 6), Text = "Day " .. i, TextColor3 = today and NIGHT or CREAM, ZIndex = 22 })
+		local b = r.boost and Progress.BOOSTS[r.boost]
+		label(cell, { Size = UDim2.new(1, -8, 0, 40), Position = UDim2.fromOffset(4, 32), Text = (done and "\u{2705}\n" or "") .. r.points .. " \u{2B50}" .. (b and ("\n+" .. b.icon) or ""), TextColor3 = today and NIGHT or CREAM, ZIndex = 22 })
+	end
+	local b = info.boost and Progress.BOOSTS[info.boost]
+	label(box, { Size = UDim2.new(1, -40, 0, 30), Position = UDim2.fromOffset(20, 182),
+		Text = "+" .. info.points .. " \u{2B50}" .. (b and (" and a " .. b.icon .. " " .. b.name) or "") .. (info.premium and "  (Premium: double points!)" or ""), ZIndex = 21 })
+	label(box, { Size = UDim2.new(1, -40, 0, 22), Position = UDim2.fromOffset(20, 214), Text = "Come back tomorrow for day " .. (info.day % #Config.DAILY + 1) .. ". Miss a day and it starts again at day 1.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 21 })
+	if not info.premium then
+		button(box, "\u{2B50} Roblox Premium: double daily points", { Size = UDim2.fromOffset(330, 38), Position = UDim2.fromOffset(20, 276), BackgroundColor3 = Color3.fromRGB(0, 120, 200), ZIndex = 21 }, function()
+			MarketplaceService:PromptPremiumPurchase(player)
+		end)
+	end
+	button(box, "Yay!", { Size = UDim2.fromOffset(150, 38), Position = UDim2.new(1, -170, 0, 276), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 21 }, function()
+		box:Destroy()
+	end)
+end
+if player:GetAttribute("DailyShow") then
+	showDaily()
+else
+	local conn
+	conn = player:GetAttributeChangedSignal("DailyShow"):Connect(function()
+		conn:Disconnect()
+		showDaily()
+	end)
+end
+
 -- ---------- music ----------
 require(ReplicatedStorage.Shared.MusicPlayer).start("lobby", gui, UDim2.new(1, -116, 0, 104), remotes:WaitForChild("SetMusic"))
 
