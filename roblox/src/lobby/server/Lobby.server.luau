@@ -245,6 +245,8 @@ local BuyBoost = remote("BuyBoost") -- (boostId) with points
 local SellBoost = remote("SellBoost") -- (boostId) back for its points
 local ResetLadder = remote("ResetLadder") -- (skill, "points" | "robux")
 local SetMusic = remote("SetMusic") -- (volume 0..1)
+local InviteToParty = remote("InviteToParty") -- (userId) a player in this Lobby
+local PartyInvite = remote("PartyInvite") -- server -> client: { id, leader }
 SetMusic.OnServerEvent:Connect(function(plr, v)
 	Profile.setMusic(plr, v)
 end)
@@ -311,6 +313,101 @@ local function chosenMap(party)
 	return best
 end
 
+-- ---------- party circles: each party gets a glowing circle on the lawn with
+-- its players standing round it and a sign: "2 / 6 - waiting for players" ----------
+local PAD_SPOTS = { Vector3.new(24, 0, 46), Vector3.new(-26, 0, 46), Vector3.new(24, 0, 64), Vector3.new(-26, 0, 64), Vector3.new(24, 0, 82), Vector3.new(-26, 0, 82) }
+local padsFolder = Instance.new("Folder")
+padsFolder.Name = "PartyCircles"
+padsFolder.Parent = workspace
+local joinPartyFn -- set below (the JoinParty handler)
+local padOf = {} -- [pad index] = party
+local function padFor(party)
+	for i, p in pairs(padOf) do
+		if p == party then
+			return i
+		end
+	end
+	for i = 1, #PAD_SPOTS do
+		if not padOf[i] then
+			padOf[i] = party
+			return i
+		end
+	end
+	return nil
+end
+local function standOnPad(party, plr)
+	local i = padFor(party)
+	local char = plr.Character
+	if not i or not char then
+		return
+	end
+	local k = table.find(party.members, plr) or 1
+	local a = (k - 1) / 6 * math.pi * 2
+	local centre = PAD_SPOTS[i]
+	local spot = centre + Vector3.new(math.cos(a) * 4.5, 3, math.sin(a) * 4.5)
+	char:PivotTo(CFrame.lookAt(spot, Vector3.new(centre.X, spot.Y, centre.Z)))
+end
+local function paintPads()
+	for i, party in pairs(padOf) do
+		if not parties[party.id] then
+			padOf[i] = nil
+		end
+	end
+	for _, party in pairs(parties) do
+		if party.max > 1 then
+			padFor(party)
+		end
+	end
+	padsFolder:ClearAllChildren()
+	for i, party in pairs(padOf) do
+		local c = PAD_SPOTS[i]
+		local full = #party.members >= party.max
+		local colour = party.starting and Color3.fromRGB(123, 227, 107) or full and Color3.fromRGB(255, 210, 63) or Color3.fromRGB(255, 138, 31)
+		local disc = Instance.new("Part")
+		disc.Name = "PartyCircle"
+		disc.Shape = Enum.PartType.Cylinder
+		disc.Size = Vector3.new(0.3, 12, 12)
+		disc.CFrame = CFrame.new(c + Vector3.new(0, 0.2, 0)) * CFrame.Angles(0, 0, math.rad(90))
+		disc.Material = Enum.Material.Neon
+		disc.Color = colour
+		disc.Transparency = 0.45
+		disc.Anchored, disc.CanCollide = true, false
+		disc.Parent = padsFolder
+		local sign = Instance.new("BillboardGui")
+		sign.Size = UDim2.fromOffset(240, 70)
+		sign.StudsOffset = Vector3.new(0, 8, 0)
+		sign.AlwaysOnTop = false
+		sign.MaxDistance = 120
+		sign.Parent = disc
+		local t = Instance.new("TextLabel")
+		t.Size = UDim2.fromScale(1, 1)
+		t.BackgroundTransparency = 0.3
+		t.BackgroundColor3 = Color3.fromRGB(26, 16, 38)
+		t.TextColor3 = Color3.fromRGB(255, 244, 224)
+		t.Font = Enum.Font.FredokaOne
+		t.TextScaled = true
+		local status = party.starting and "Starting!" or full and "Full - ready to start" or "Waiting for players"
+		t.Text = party.leader.DisplayName .. "'s party\n" .. #party.members .. " / " .. party.max .. "  \u{00B7}  " .. status .. (party.friendsOnly and "\n(friends only)" or "")
+		t.Parent = sign
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0, 12)
+		corner.Parent = t
+		if not full and not party.starting then
+			local pp = Instance.new("ProximityPrompt")
+			pp.ActionText = "Join party"
+			pp.ObjectText = party.leader.DisplayName .. "'s party"
+			pp.RequiresLineOfSight = false
+			pp.MaxActivationDistance = 10
+			pp.Parent = disc
+			pp.Triggered:Connect(function(plr)
+				if joinPartyFn and partyOf[plr] ~= party then
+					joinPartyFn(plr, party.id)
+				end
+			end)
+		end
+	end
+end
+
 local function broadcast()
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local list = {}
@@ -321,6 +418,7 @@ local function broadcast()
 		end
 		PartyList:FireClient(plr, list, partyOf[plr] and partyOf[plr].id or nil)
 	end
+	paintPads()
 end
 
 local function leave(plr)
@@ -403,12 +501,13 @@ CreateParty.OnServerEvent:Connect(function(plr, solo)
 	parties[party.id] = party
 	partyOf[plr] = party
 	broadcast()
+	standOnPad(party, plr)
 	if solo then
 		start(party)
 	end
 end)
 
-JoinParty.OnServerEvent:Connect(function(plr, id)
+local function joinParty(plr, id)
 	local party = parties[id]
 	if not party or party.starting then
 		return Notice:FireClient(plr, "That party has already gone.")
@@ -416,7 +515,7 @@ JoinParty.OnServerEvent:Connect(function(plr, id)
 	if #party.members >= party.max then
 		return Notice:FireClient(plr, "That party is full.")
 	end
-	if party.friendsOnly and not isFriend(plr, party.leader) then
+	if party.friendsOnly and not isFriend(plr, party.leader) and not (party.invited and party.invited[plr.UserId]) then
 		return Notice:FireClient(plr, "That party is friends only.")
 	end
 	leave(plr)
@@ -426,6 +525,23 @@ JoinParty.OnServerEvent:Connect(function(plr, id)
 		Notice:FireClient(m, plr.DisplayName .. " joined the party!")
 	end
 	broadcast()
+	standOnPad(party, plr)
+end
+joinPartyFn = joinParty
+JoinParty.OnServerEvent:Connect(joinParty)
+
+-- invite someone in this Lobby: a pop-up on their screen; accepting lets them
+-- into a friends-only party too
+InviteToParty.OnServerEvent:Connect(function(plr, userId)
+	local party = partyOf[plr]
+	local target = typeof(userId) == "number" and Players:GetPlayerByUserId(userId)
+	if not party or not target or target == plr or partyOf[target] == party then
+		return
+	end
+	party.invited = party.invited or {}
+	party.invited[target.UserId] = true
+	PartyInvite:FireClient(target, { id = party.id, leader = party.leader.DisplayName, from = plr.DisplayName })
+	Notice:FireClient(plr, "Invite sent to " .. target.DisplayName .. "!")
 end)
 
 LeaveParty.OnServerEvent:Connect(function(plr)

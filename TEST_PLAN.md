@@ -22,6 +22,8 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 - [ ] Music plays; music button steps 100 / 50 / 25 / Off and is remembered next visit
 - [ ] Shop: 6 boosts with pictures, + buys, - sells back, Take / Taking, R$ buttons
 - [ ] Characters screen: every character in 3D (drag to turn), locked upgrades, Reset
+- [ ] Invite list: players in this Lobby (one tap, pop-up Join for them) and friends online (Roblox invite)
+- [ ] Party circle on the lawn: members stand round it; sign shows x / y and status; others can Join party at it
 - [ ] Party panel: floor buttons (Ground, Bedrooms, Attic, Bounce Hall; others "coming soon")
 - [ ] Live only: Start takes the party to the chosen floor
 

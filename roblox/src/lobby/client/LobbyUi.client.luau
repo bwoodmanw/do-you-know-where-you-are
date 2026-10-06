@@ -103,18 +103,252 @@ local function notice(text)
 end
 remotes.Notice.OnClientEvent:Connect(notice)
 
-local function invite()
+-- Roblox's own invite, to everyone or to one friend (friends land in this Lobby)
+local function robloxInvite(userId)
 	local ok, can = pcall(function()
 		return SocialService:CanSendGameInviteAsync(player)
 	end)
 	if ok and can then
 		pcall(function()
-			SocialService:PromptGameInvite(player)
+			local options = Instance.new("ExperienceInviteOptions")
+			if userId then
+				options.InviteUser = userId
+			end
+			SocialService:PromptGameInvite(player, options)
 		end)
 	else
 		notice("Invites aren't available here (they work in the published game).")
 	end
 end
+
+-- the invite list: players in this Lobby (straight into your party) and
+-- friends online elsewhere (a Roblox invite to come here)
+local inviteBox -- built on first use
+local inParty = false
+local function invite()
+	if inviteBox then
+		inviteBox:Destroy()
+	end
+	inviteBox = Instance.new("Frame")
+	inviteBox.Size = UDim2.fromOffset(420, 460)
+	inviteBox.AnchorPoint = Vector2.new(0.5, 0.5)
+	inviteBox.Position = UDim2.fromScale(0.5, 0.5)
+	inviteBox.BackgroundColor3 = Color3.fromRGB(26, 16, 38)
+	inviteBox.ZIndex = 30
+	inviteBox.Parent = gui
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 16)
+	c.Parent = inviteBox
+	local function text(t, y, colour)
+		local l = Instance.new("TextLabel")
+		l.Size = UDim2.new(1, -40, 0, 26)
+		l.Position = UDim2.fromOffset(20, y)
+		l.BackgroundTransparency = 1
+		l.Font = Enum.Font.FredokaOne
+		l.TextScaled = true
+		l.TextXAlignment = Enum.TextXAlignment.Left
+		l.TextColor3 = colour or Color3.fromRGB(255, 244, 224)
+		l.Text = t
+		l.ZIndex = 31
+		l.Parent = inviteBox
+	end
+	text("\u{2709} Invite friends", 14, Color3.fromRGB(255, 138, 31))
+	local close = Instance.new("TextButton")
+	close.Size = UDim2.fromOffset(36, 32)
+	close.Position = UDim2.new(1, -50, 0, 12)
+	close.BackgroundColor3 = Color3.fromRGB(150, 60, 70)
+	close.Font = Enum.Font.GothamBlack
+	close.TextScaled = true
+	close.TextColor3 = Color3.new(1, 1, 1)
+	close.Text = "X"
+	close.ZIndex = 31
+	close.Parent = inviteBox
+	local cc = Instance.new("UICorner")
+	cc.Parent = close
+	close.Activated:Connect(function()
+		inviteBox:Destroy()
+		inviteBox = nil
+	end)
+	local list = Instance.new("ScrollingFrame")
+	list.Size = UDim2.new(1, -40, 1, -120)
+	list.Position = UDim2.fromOffset(20, 52)
+	list.BackgroundTransparency = 1
+	list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	list.CanvasSize = UDim2.new()
+	list.ScrollBarThickness = 6
+	list.ZIndex = 31
+	list.Parent = inviteBox
+	local layout = Instance.new("UIListLayout")
+	layout.Padding = UDim.new(0, 6)
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Parent = list
+	local order = 0
+	local function row(name, action, onClick, colour)
+		order += 1
+		local r = Instance.new("Frame")
+		r.Size = UDim2.new(1, -8, 0, 40)
+		r.BackgroundColor3 = Color3.fromRGB(75, 58, 102)
+		r.LayoutOrder = order
+		r.ZIndex = 32
+		r.Parent = list
+		local rc = Instance.new("UICorner")
+		rc.Parent = r
+		local n = Instance.new("TextLabel")
+		n.Size = UDim2.new(1, -130, 1, -10)
+		n.Position = UDim2.fromOffset(10, 5)
+		n.BackgroundTransparency = 1
+		n.Font = Enum.Font.FredokaOne
+		n.TextScaled = true
+		n.TextXAlignment = Enum.TextXAlignment.Left
+		n.TextColor3 = Color3.fromRGB(255, 244, 224)
+		n.Text = name
+		n.ZIndex = 33
+		n.Parent = r
+		if action then
+			local b = Instance.new("TextButton")
+			b.Size = UDim2.fromOffset(110, 30)
+			b.Position = UDim2.new(1, -116, 0, 5)
+			b.BackgroundColor3 = colour or Color3.fromRGB(255, 138, 31)
+			b.Font = Enum.Font.FredokaOne
+			b.TextScaled = true
+			b.TextColor3 = Color3.fromRGB(26, 16, 38)
+			b.Text = action
+			b.ZIndex = 33
+			b.Parent = r
+			local bc = Instance.new("UICorner")
+			bc.Parent = b
+			b.Activated:Connect(function()
+				onClick()
+				b.Text = "\u{2705} Sent"
+				b.Active = false
+			end)
+		end
+	end
+	local function heading(t)
+		order += 1
+		local h = Instance.new("TextLabel")
+		h.Size = UDim2.new(1, -8, 0, 24)
+		h.BackgroundTransparency = 1
+		h.Font = Enum.Font.FredokaOne
+		h.TextScaled = true
+		h.TextXAlignment = Enum.TextXAlignment.Left
+		h.TextColor3 = Color3.fromRGB(185, 168, 207)
+		h.Text = t
+		h.LayoutOrder = order
+		h.ZIndex = 32
+		h.Parent = list
+	end
+	-- people already in this Lobby
+	if inParty then
+		heading("Here in the Lobby")
+		local any = false
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p ~= player then
+				any = true
+				row(p.DisplayName, "Invite", function()
+					remotes.InviteToParty:FireServer(p.UserId)
+				end)
+			end
+		end
+		if not any then
+			row("Nobody else here yet", nil)
+		end
+	end
+	-- friends who are online somewhere else
+	heading("Friends online")
+	task.spawn(function()
+		local ok, friends = pcall(function()
+			return player:GetFriendsOnline(50)
+		end)
+		if not inviteBox then
+			return
+		end
+		local here = {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			here[p.UserId] = true
+		end
+		local shown = 0
+		for _, f in ipairs(ok and friends or {}) do
+			if not here[f.VisitorId] then
+				shown += 1
+				row(f.DisplayName or f.UserName, "Invite", function()
+					robloxInvite(f.VisitorId)
+				end, Color3.fromRGB(0, 170, 220))
+			end
+		end
+		if shown == 0 then
+			row(ok and "No friends online right now" or "Friends list not available here", nil)
+		end
+	end)
+	-- or Roblox's own list
+	local all = Instance.new("TextButton")
+	all.Size = UDim2.new(1, -40, 0, 44)
+	all.Position = UDim2.new(0, 20, 1, -58)
+	all.BackgroundColor3 = Color3.fromRGB(75, 58, 102)
+	all.Font = Enum.Font.FredokaOne
+	all.TextScaled = true
+	all.TextColor3 = Color3.fromRGB(255, 244, 224)
+	all.Text = "Open Roblox's invite list"
+	all.ZIndex = 31
+	all.Parent = inviteBox
+	local ac = Instance.new("UICorner")
+	ac.Parent = all
+	all.Activated:Connect(function()
+		robloxInvite(nil)
+	end)
+end
+
+-- someone in this Lobby invited you to their party
+remotes.PartyInvite.OnClientEvent:Connect(function(info)
+	local box = Instance.new("Frame")
+	box.Size = UDim2.fromOffset(380, 150)
+	box.AnchorPoint = Vector2.new(0.5, 0)
+	box.Position = UDim2.new(0.5, 0, 0, 80)
+	box.BackgroundColor3 = Color3.fromRGB(26, 16, 38)
+	box.ZIndex = 40
+	box.Parent = gui
+	local bc = Instance.new("UICorner")
+	bc.CornerRadius = UDim.new(0, 16)
+	bc.Parent = box
+	local t = Instance.new("TextLabel")
+	t.Size = UDim2.new(1, -30, 0, 70)
+	t.Position = UDim2.fromOffset(15, 10)
+	t.BackgroundTransparency = 1
+	t.Font = Enum.Font.FredokaOne
+	t.TextScaled = true
+	t.TextWrapped = true
+	t.TextColor3 = Color3.fromRGB(255, 244, 224)
+	t.Text = "\u{2709} " .. tostring(info.from) .. " invited you to " .. tostring(info.leader) .. "'s party!"
+	t.ZIndex = 41
+	t.Parent = box
+	local function btn(textValue, x, colour, onClick)
+		local b = Instance.new("TextButton")
+		b.Size = UDim2.fromOffset(160, 44)
+		b.Position = UDim2.fromOffset(x, 92)
+		b.BackgroundColor3 = colour
+		b.Font = Enum.Font.FredokaOne
+		b.TextScaled = true
+		b.TextColor3 = Color3.fromRGB(26, 16, 38)
+		b.Text = textValue
+		b.ZIndex = 41
+		b.Parent = box
+		local c = Instance.new("UICorner")
+		c.Parent = b
+		b.Activated:Connect(function()
+			onClick()
+			box:Destroy()
+		end)
+	end
+	btn("Join", 20, Color3.fromRGB(255, 138, 31), function()
+		remotes.JoinParty:FireServer(info.id)
+	end)
+	btn("No thanks", 200, Color3.fromRGB(185, 168, 207), function() end)
+	task.delay(30, function()
+		if box.Parent then
+			box:Destroy()
+		end
+	end)
+end)
 
 -- ---------- main menu (left) ----------
 local menu = frame(gui, { Size = UDim2.fromOffset(330, 500), Position = UDim2.new(0, 24, 0.5, -250) })
@@ -220,6 +454,7 @@ end)
 
 local function paintParty(p)
 	current = p
+	inParty = p ~= nil
 	partyBox.Visible = p ~= nil
 	menu.Visible = p == nil
 	joinBox.Visible = p == nil
