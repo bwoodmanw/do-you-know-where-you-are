@@ -398,65 +398,15 @@ PickUpgrade.OnServerEvent:Connect(function(plr, skill, level, upgradeId)
 	end
 end)
 
--- ---------- a shop stall in the garden ----------
-local stall = part({ Name = "ShopStall", Size = Vector3.new(10, 4, 4), Position = Vector3.new(-30, 2, 10), Material = Enum.Material.Wood, Color = Color3.fromRGB(122, 74, 30) })
-part({ Name = "StallRoof", Size = Vector3.new(12, 0.6, 6), Position = Vector3.new(-30, 9, 10), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 138, 31) })
-for _, x in ipairs({ -35, -25 }) do
-	part({ Name = "StallPost", Size = Vector3.new(0.5, 5, 0.5), Position = Vector3.new(x, 6.5, 10), Material = Enum.Material.Wood, Color = Color3.fromRGB(90, 60, 30) })
-end
-local stallSign = Instance.new("BillboardGui")
-stallSign.Size = UDim2.fromOffset(160, 40)
-stallSign.StudsOffset = Vector3.new(0, 7, 0)
-stallSign.Parent = stall
-local stallText = Instance.new("TextLabel")
-stallText.Size = UDim2.fromScale(1, 1)
-stallText.BackgroundTransparency = 1
-stallText.Font = Enum.Font.FredokaOne
-stallText.TextScaled = true
-stallText.TextColor3 = Color3.fromRGB(255, 210, 63)
-stallText.Text = "\u{1F6D2} BOOST SHOP"
-stallText.Parent = stallSign
-local stallPrompt = Instance.new("ProximityPrompt")
-stallPrompt.ActionText = "Shop"
-stallPrompt.ObjectText = "Boosts"
-stallPrompt.RequiresLineOfSight = false
-stallPrompt.Parent = stall
+-- ---------- the scene: shop stall, leaderboard wall, cars and benches ----------
+local Scene = require(script.Parent.LobbyScene)
+local stallPrompt = Scene.stall(Vector3.new(-30, 0, 10))
 stallPrompt.Triggered:Connect(function(plr)
 	OpenShop:FireClient(plr)
 end)
-
--- ---------- leaderboards everyone can walk up to ----------
-local function boardPart(title, x)
-	local b = part({ Name = "Leaderboard", Size = Vector3.new(12, 16, 1), Position = Vector3.new(x, 9, -5), Material = Enum.Material.Wood, Color = Color3.fromRGB(40, 28, 46) })
-	local sg = Instance.new("SurfaceGui")
-	sg.Face = Enum.NormalId.Back
-	sg.CanvasSize = Vector2.new(360, 480)
-	sg.LightInfluence = 0
-	sg.Parent = b
-	local head = Instance.new("TextLabel")
-	head.Size = UDim2.new(1, 0, 0, 60)
-	head.BackgroundColor3 = Color3.fromRGB(255, 138, 31)
-	head.Font = Enum.Font.FredokaOne
-	head.TextScaled = true
-	head.TextColor3 = Color3.fromRGB(26, 16, 38)
-	head.Text = title
-	head.Parent = sg
-	local body = Instance.new("TextLabel")
-	body.Size = UDim2.new(1, -20, 1, -70)
-	body.Position = UDim2.fromOffset(10, 66)
-	body.BackgroundTransparency = 1
-	body.Font = Enum.Font.FredokaOne
-	body.TextSize = 26
-	body.TextXAlignment = Enum.TextXAlignment.Left
-	body.TextYAlignment = Enum.TextYAlignment.Top
-	body.TextColor3 = Color3.fromRGB(255, 244, 224)
-	body.Text = "Loading..."
-	body.Parent = sg
-	return body
-end
-local boardPoints = boardPart("\u{1F3C6} Most points", -32)
-local boardFast = boardPart("\u{23F1} Fastest escape (week)", 0)
-local boardRescue = boardPart("\u{1F512} Most rescues", 32)
+Scene.dropOff()
+local boards = Scene.boards({ "\u{1F3C6} Most points", "\u{23F1} Fastest escape (week)", "\u{1F512} Most rescues" })
+local boardPoints, boardFast, boardRescue = boards[1], boards[2], boards[3]
 local function fill(body, rows, fmt)
 	if #rows == 0 then
 		body.Text = "No scores yet - be the first!"
