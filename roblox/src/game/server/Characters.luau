@@ -12,9 +12,30 @@ local Characters = {}
 local KID_HEIGHT = 5.4 -- studs; the host is about twice that
 local HOST_HEIGHT = 10.5
 
+local function rigged(m)
+	if m:FindFirstChildOfClass("Humanoid") then
+		return m
+	end
+	for _, c in ipairs(m:GetChildren()) do
+		if c:IsA("Model") and c:FindFirstChildOfClass("Humanoid") then
+			return c
+		end
+	end
+	return m
+end
+
 local function template(name)
 	local folder = ServerStorage:FindFirstChild("Characters")
-	return folder and folder:FindFirstChild(name)
+	if not folder then
+		return nil
+	end
+	local want = string.lower(name)
+	for _, c in ipairs(folder:GetChildren()) do
+		if c:IsA("Model") and string.lower(c.Name) == want then
+			return rigged(c)
+		end
+	end
+	return nil
 end
 
 -- free or imported models must not run their own code in our game
@@ -81,6 +102,12 @@ end
 function Characters.host()
 	local t = template("Host")
 	if not t then
+		local folder = ServerStorage:FindFirstChild("Characters")
+		local names = {}
+		for _, c in ipairs(folder and folder:GetChildren() or {}) do
+			table.insert(names, c.Name .. " (" .. c.ClassName .. ")")
+		end
+		warn("No imported host: ServerStorage/Characters has " .. (#names > 0 and table.concat(names, ", ") or "nothing") .. " - name the host model Host. Using the built host.")
 		return nil
 	end
 	local m = t:Clone()

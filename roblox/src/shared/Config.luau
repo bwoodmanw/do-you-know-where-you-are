@@ -103,11 +103,11 @@ Config.ROBUX_PRODUCTS = {
 -- Boost pictures: the Image asset id of each uploaded boost icon
 -- (art/roblox-store/boost-*-512.png). 0 = show the emoji instead.
 Config.BOOST_IMAGES = {
-	candy = 0,
-	shield = 0,
-	clue = 0,
-	energy = 0,
-	headstart = 0,
+	candy = 129315639528838,
+	shield = 118951370092761,
+	clue = 101410393070554,
+	energy = 86003322408140,
+	headstart = 129479504189534,
 }
 
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }
