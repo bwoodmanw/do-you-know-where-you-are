@@ -64,6 +64,34 @@ local function strip(model)
 	end
 end
 
+-- Meshy faces looked blotchy and their shadows flickered under the rooms'
+-- shadow-casting lights: characters cast no shadows (so they cannot darken
+-- their own faces), and with FLAT_CHARACTER_SKIN their skin uses only its
+-- colour picture, without the bumpy normal map. Both are tried safely.
+local function soften(model)
+	local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+	for _, d in ipairs(model:GetDescendants()) do
+		if d:IsA("BasePart") then
+			d.CastShadow = false
+		elseif d:IsA("SurfaceAppearance") and Config.FLAT_CHARACTER_SKIN then
+			local part = d.Parent
+			if part and part:IsA("MeshPart") then
+				local ok = pcall(function()
+					local tex = d.ColorMap
+					if tex and tex ~= "" then
+						part.TextureID = tex
+					else
+						error("no colour map")
+					end
+				end)
+				if ok then
+					d:Destroy()
+				end
+			end
+		end
+	end
+end
+
 local function fitHeight(model, height)
 	local size = model:GetExtentsSize()
 	if size.Y > 0.1 then
@@ -108,6 +136,7 @@ function Characters.apply(plr, name)
 		end
 	end
 	fitHeight(m, KID_HEIGHT)
+	soften(m)
 	-- keep Roblox's walk/run/jump animations from the avatar
 	local animate = old:FindFirstChild("Animate")
 	if animate then

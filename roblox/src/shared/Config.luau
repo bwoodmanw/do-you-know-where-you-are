@@ -120,6 +120,10 @@ Config.VOTE_SECONDS = 10
 Config.STUDIO_MAP = "gummy" -- partyhouse, partyhouse_2, partyhouse_3, gummy
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
+-- testing in Studio: force a host ("pumpkin", "gummy", "robot"); nil = random
+Config.STUDIO_HOST = nil
+-- characters' skin without the bumpy normal map (smoother faces); false to keep it
+Config.FLAT_CHARACTER_SKIN = true
 Config.MAX_PARTY = 6
 
 -- Robux prices for boosts: the Developer Product id for each boost, created in

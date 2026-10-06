@@ -1486,6 +1486,9 @@ function round.start()
 		end
 		kind = others[math.random(1, #others)]
 	end
+	if RunService:IsStudio() and Config.STUDIO_HOST and Config.HOSTS[Config.STUDIO_HOST] then
+		kind = Config.STUDIO_HOST
+	end
 	host.kind = kind
 	RoundState:SetAttribute("HostKind", kind)
 	RoundState:SetAttribute("Blackout", "")
