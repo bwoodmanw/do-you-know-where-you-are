@@ -372,11 +372,39 @@ function House.buildObjects(world)
 				entry.prompt = prompt(poster, "Light up", "Painted wall - Glow", 1.5)
 			end
 		elseif o.kind == "plant" then
-			local pot = part(root, { Name = "Pot", Shape = Enum.PartType.Cylinder, Size = Vector3.new(2, 2.4, 2.4), CFrame = CFrame.new(base + Vector3.new(0, 1, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(181, 101, 58), Material = Enum.Material.Slate })
-			for i = 1, 7 do
-				local a = i / 7 * math.pi * 2
-				part(root, { Name = "Leaf", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 2.6, 1.6), Position = base + Vector3.new(math.cos(a) * 1.1, 3.2 + (i % 2) * 0.8, math.sin(a) * 1.1), Color = i % 2 == 0 and Color3.fromRGB(58, 125, 68) or Color3.fromRGB(95, 179, 90), Material = Enum.Material.Grass, CanCollide = false })
+			local pot = part(root, { Name = "Pot", Shape = Enum.PartType.Cylinder, Size = Vector3.new(3, 3.6, 3.6), CFrame = CFrame.new(base + Vector3.new(0, 1.5, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(181, 101, 58), Material = Enum.Material.Slate })
+			for i = 1, 9 do
+				local a = i / 9 * math.pi * 2
+				part(root, { Name = "Leaf", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 4.2, 2.4), Position = base + Vector3.new(math.cos(a) * 1.6, 4.8 + (i % 3) * 1.1, math.sin(a) * 1.6), Color = i % 2 == 0 and Color3.fromRGB(58, 160, 78) or Color3.fromRGB(120, 210, 110), Material = Enum.Material.Grass, CanCollide = false })
 			end
+			-- a big flower on top so it reads as "the plant", a soft glow and sparkles
+			part(root, { Name = "Bloom", Shape = Enum.PartType.Ball, Size = Vector3.new(2, 2, 2), Position = base + Vector3.new(0, 8.4, 0), Color = Color3.fromRGB(255, 120, 190), Material = Enum.Material.Neon, CanCollide = false })
+			local glow = Instance.new("PointLight")
+			glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(150, 255, 150), 14, 1.5
+			glow.Parent = pot
+			local att = Instance.new("Attachment")
+			att.Position = Vector3.new(0, 0, 0)
+			att.Parent = pot
+			local sparkle = Instance.new("ParticleEmitter")
+			sparkle.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+			sparkle.Color = ColorSequence.new(Color3.fromRGB(170, 255, 170))
+			sparkle.Rate = 4
+			sparkle.Lifetime = NumberRange.new(1, 2)
+			sparkle.Speed = NumberRange.new(1, 3)
+			sparkle.SpreadAngle = Vector2.new(180, 180)
+			sparkle.Size = NumberSequence.new(0.5, 0)
+			sparkle.Parent = att
+			local marker = Instance.new("BillboardGui")
+			marker.Size = UDim2.fromOffset(44, 44)
+			marker.StudsOffset = Vector3.new(0, 9, 0)
+			marker.MaxDistance = 70
+			marker.Parent = pot
+			local icon = Instance.new("TextLabel")
+			icon.Size = UDim2.fromScale(1, 1)
+			icon.BackgroundTransparency = 1
+			icon.TextScaled = true
+			icon.Text = "\u{1F33F}"
+			icon.Parent = marker
 			entry.part = pot
 			entry.prompt = prompt(pot, "Ask the plant", "Big plant - Bramble", 1.5)
 		elseif o.kind == "lock" then
@@ -499,10 +527,16 @@ function House.buildGarden(world)
 	end
 	local garden = part(root, { Name = "Garden", Size = Vector3.new((gx1 - gx0) * T, 1, 6 * T), Position = Vector3.new((gx0 + gx1) / 2 * T, -0.5, -3 * T), Material = groundMat, Color = groundCol })
 	if stairs then
+		-- solid steps you can climb, a landing at the top and a glowing doorway
 		for i = 1, 8 do
-			part(root, { Name = "StairUp", Size = Vector3.new(16, i * 1.5, 3), Position = Vector3.new(doorX * T + T / 2, i * 0.75, -16 - i * 3), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(95, 62, 40), CanCollide = false })
+			part(root, { Name = "StairUp", Size = Vector3.new(16, i * 1.5, 3), Position = Vector3.new(doorX * T + T / 2, i * 0.75, -16 - i * 3), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(95, 62, 40) })
 		end
-		local sign = part(root, { Name = "UpSign", Size = Vector3.new(10, 3, 0.3), Position = Vector3.new(doorX * T + T / 2, 14, -5.9 * T), Color = Color3.fromRGB(40, 28, 46), CanCollide = false })
+		part(root, { Name = "Landing", Size = Vector3.new(16, 12, 7), Position = Vector3.new(doorX * T + T / 2, 6, -43.5), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(95, 62, 40) })
+		part(root, { Name = "NextFloorDoor", Size = Vector3.new(7, 10, 0.4), Position = Vector3.new(doorX * T + T / 2, 17, -47.2), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 190, 90), Transparency = 0.2 })
+		local doorLight = Instance.new("PointLight")
+		doorLight.Color, doorLight.Range, doorLight.Brightness = Color3.fromRGB(255, 200, 120), 18, 2
+		doorLight.Parent = root:FindFirstChild("NextFloorDoor")
+		local sign = part(root, { Name = "UpSign", Size = Vector3.new(10, 3, 0.3), Position = Vector3.new(doorX * T + T / 2, 24, -46.9), Color = Color3.fromRGB(40, 28, 46), CanCollide = false })
 		local sg = Instance.new("SurfaceGui")
 		sg.Face = Enum.NormalId.Back
 		sg.Parent = sign
@@ -533,7 +567,7 @@ function House.buildGarden(world)
 	local function hedge(x0, z0, x1, z1)
 		local size = Vector3.new(math.max(2, math.abs(x1 - x0)), 6, math.max(2, math.abs(z1 - z0)))
 		local centre = Vector3.new((x0 + x1) / 2, 3, (z0 + z1) / 2)
-		part(root, { Name = "Hedge", Size = stairs and Vector3.new(size.X, 16, size.Z) or size, Position = stairs and centre + Vector3.new(0, 5, 0) or centre,
+		part(root, { Name = "Hedge", Size = stairs and Vector3.new(size.X, 26, size.Z) or size, Position = stairs and centre + Vector3.new(0, 10, 0) or centre,
 			Material = stairs and Enum.Material.Plaster or clouds and Enum.Material.SmoothPlastic or Enum.Material.LeafyGrass,
 			Color = stairs and wallColor or clouds and Color3.fromRGB(255, 240, 248) or Color3.fromRGB(40, 80, 38) })
 		part(root, { Name = "Boundary", Size = Vector3.new(size.X, 40, size.Z), Position = centre + Vector3.new(0, 20, 0), Transparency = 1 })
@@ -546,7 +580,8 @@ function House.buildGarden(world)
 	hedge(holeWest and px0 or px1, 0, holeWest and px0 or px1, map.h * T) -- outer side of the side path
 	hedge(px0, 0, px1, 0) -- its two ends
 	hedge(px0, map.h * T, px1, map.h * T)
-	world.gardenSpot = garden.Position + Vector3.new(0, 4, 0)
+	-- escaped players arrive beside the stairs, not inside them
+	world.gardenSpot = garden.Position + Vector3.new(stairs and -3 * T or 0, 4, 0)
 	world.gardenSpotSide = Vector3.new(sideX, 4, map.h * T / 2)
 end
 
