@@ -106,14 +106,14 @@ Config.ROBUX_PRODUCTS = {
 -- imported there. 0 = not saved yet.
 Config.CHARACTER_ASSETS = {
 	Glow = 0,
-	Patch = 0,
-	Muscle = 0,
+	Patch = 77714233647329,
+	Muscle = 74999955541128,
 	Tinker = 0,
 	Shadow = 0,
 	Brainy = 0,
 	Echo = 0,
 	Bramble = 0,
-	Host = 0,
+	Host = 80775740181256,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
