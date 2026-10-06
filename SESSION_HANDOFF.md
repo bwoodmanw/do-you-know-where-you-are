@@ -54,6 +54,10 @@ roblox/
   src/lobby/server/Lobby.server.luau  lobby scene, parties (friends only),
                     shop (points + Robux receipts), ladder picks, map votes,
                     leaderboard boards, shop stall, teleport with data
+  src/lobby/server/LobbyScene.luau  the drop-off scene: shop stall + waving
+                    shopkeeper, leaderboard wall, parked cars and benches with
+                    Seats (sit, no driving); ServerStorage/LobbyProps can swap in
+                    store models named Car / Bench
   src/lobby/client/LobbyUi.client.luau  lobby screens
 art/
   sheets/        42 ChatGPT images renamed to their prompt names (characters,
@@ -101,7 +105,9 @@ tools/            preview_glb.py (render a .glb), make_art.py, serve.js, ...
 
 ## Not verified yet (written since Brent's last live test)
 
-Camera follow after the character swap (the fix for "mouse can't turn the
+The new Lobby scene (stall, shopkeeper, board wall, cars, benches - the
+Lobby menu, points, stall and boards themselves were seen working live),
+camera follow after the character swap (the fix for "mouse can't turn the
 camera"), mouse look (M), effects, pickup pop-ups, spectate, play-again /
 back-to-lobby vote, the whole progression system (profile, shop, ladder, map
 votes, boosts, XP and level-ups, unlocks, leaderboard boards), the 3D
@@ -176,3 +182,11 @@ host model in game, and friends joining a party (blocked by the age review).
   `npx.cmd`. The app's Terminal panel did not start (missing integration
   script).
 - AI images: check sneakers and clothes for real brand logos before upload.
+- **Rojo's Studio panel remembers the last port.** Lobby = `lobby.project.json`
+  on **34873**; Party House = `game.project.json` on **34872**. Set the port in
+  the Rojo panel before Connect, and check ServerScriptService/Server (Lobby has
+  one script `Lobby` (+ LobbyScene); Party House has Main, Characters, Effects,
+  Host, House, Props) before publishing. Both places were once synced with the
+  wrong project this way; it was caught before publishing.
+- **"Failed to fetch place info" in Studio:** log out, close Studio fully,
+  log back in (a known Roblox issue).
