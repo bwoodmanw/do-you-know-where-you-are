@@ -1,8 +1,10 @@
 --[[
 	MusicPlayer (client) - background music from Config.MUSIC, shuffled, with a
-	small music button that steps the volume 100% -> 50% -> 25% -> off. The
-	choice is saved with the player's profile (the server keeps it in the
-	MusicVolume attribute), so it follows them between the Lobby and the game.
+	small music button that steps the volume 100% -> 50% -> 25% -> off, and
+	beside it a game-sounds button that does the same for every other sound
+	(pops, doors, bounces...). Both are saved with the player's profile (the
+	MusicVolume and SfxVolume attributes), so they follow them between the
+	Lobby and the game.
 ]]
 
 local Players = game:GetService("Players")
@@ -15,7 +17,7 @@ local MusicPlayer = {}
 local STEPS = { 1, 0.5, 0.25, 0 }
 local BASE = 0.5 -- music sits under the sound effects
 
-function MusicPlayer.start(listName, gui, position, setRemote)
+function MusicPlayer.start(listName, gui, position, setRemote, setSfxRemote)
 	local ids = (Config.MUSIC and Config.MUSIC[listName]) or {}
 	local player = Players.LocalPlayer
 	local level = player:GetAttribute("MusicVolume") or 0.5
@@ -98,6 +100,35 @@ function MusicPlayer.start(listName, gui, position, setRemote)
 				nextSong()
 			end
 		end
+	end)
+
+	-- game sounds: its own button, just left of the music one
+	local Sfx = require(ReplicatedStorage.Shared.Sfx)
+	local sfxLevel = player:GetAttribute("SfxVolume") or 1
+	local sfxBtn = btn:Clone()
+	sfxBtn.Name = "SoundsButton"
+	sfxBtn.Position = position - UDim2.fromOffset(102, 0)
+	sfxBtn.Visible = true
+	sfxBtn.Parent = gui
+	local function paintSfx()
+		sfxBtn.Text = sfxLevel == 0 and "\u{1F507} Off" or ("\u{1F50A} " .. math.floor(sfxLevel * 100 + 0.5) .. "%")
+		Sfx.setVolume(sfxLevel)
+	end
+	sfxBtn.Activated:Connect(function()
+		local i = table.find(STEPS, sfxLevel) or 1
+		sfxLevel = STEPS[i % #STEPS + 1]
+		paintSfx()
+		if setSfxRemote then
+			setSfxRemote:FireServer(sfxLevel)
+		end
+	end)
+	player:GetAttributeChangedSignal("SfxVolume"):Connect(function()
+		sfxLevel = player:GetAttribute("SfxVolume") or sfxLevel
+		paintSfx()
+	end)
+	task.spawn(function()
+		Sfx.group()
+		paintSfx()
 	end)
 
 	btn.Activated:Connect(function()

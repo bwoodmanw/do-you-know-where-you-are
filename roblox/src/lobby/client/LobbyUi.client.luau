@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SocialService = game:GetService("SocialService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+local Sfx = require(game:GetService("ReplicatedStorage").Shared.Sfx)
 local Progress = require(ReplicatedStorage.Shared.Progress)
 local HttpService = game:GetService("HttpService")
 local MarketplaceService = game:GetService("MarketplaceService")
@@ -1013,7 +1014,7 @@ else
 end
 
 -- ---------- music ----------
-require(ReplicatedStorage.Shared.MusicPlayer).start("lobby", gui, UDim2.new(1, -116, 0, 104), remotes:WaitForChild("SetMusic"))
+require(ReplicatedStorage.Shared.MusicPlayer).start("lobby", gui, UDim2.new(1, -116, 0, 104), remotes:WaitForChild("SetMusic"), remotes:WaitForChild("SetSfx"))
 
 -- ---------- the trampoline: bounce high (here, where the character's physics run) ----------
 task.spawn(function()
@@ -1036,6 +1037,7 @@ task.spawn(function()
 		local v = hrp.AssemblyLinearVelocity
 		hrp.AssemblyLinearVelocity = Vector3.new(v.X, 85, v.Z)
 		local s = Instance.new("Sound")
+		s.SoundGroup = Sfx.group()
 		s.SoundId = "rbxassetid://" .. Config.SOUNDS.bounce
 		s.Parent = tramp
 		s:Play()

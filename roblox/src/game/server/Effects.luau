@@ -8,6 +8,7 @@ local Debris = game:GetService("Debris")
 local TweenService = game:GetService("TweenService")
 
 local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+local Sfx = require(game:GetService("ReplicatedStorage").Shared.Sfx)
 
 local Effects = {}
 
@@ -29,6 +30,7 @@ function Effects.sound(position, name, volume)
 	holder.Size = Vector3.new(1, 1, 1)
 	holder.Position = position
 	local s = Instance.new("Sound")
+	s.SoundGroup = Sfx.group()
 	s.SoundId = "rbxassetid://" .. id
 	s.Volume = volume or 0.8
 	s.RollOffMode = Enum.RollOffMode.InverseTapered

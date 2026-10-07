@@ -302,6 +302,7 @@ end
 
 -- ---------- things to play with while waiting ----------
 local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+local Sfx = require(game:GetService("ReplicatedStorage").Shared.Sfx)
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
 
@@ -311,6 +312,7 @@ local function sound(at, name, volume)
 		return
 	end
 	local s = Instance.new("Sound")
+	s.SoundGroup = Sfx.group()
 	s.SoundId = "rbxassetid://" .. id
 	s.Volume = volume or 0.8
 	s.RollOffMaxDistance = 80

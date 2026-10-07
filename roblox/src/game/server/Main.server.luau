@@ -103,6 +103,11 @@ local SetMusic = remote("SetMusic") -- (volume 0..1)
 SetMusic.OnServerEvent:Connect(function(plr, v)
 	require(ReplicatedStorage.Shared.Profile).setMusic(plr, v)
 end)
+local SetSfx = remote("SetSfx") -- (game-sound volume 0..1)
+SetSfx.OnServerEvent:Connect(function(plr, v)
+	require(ReplicatedStorage.Shared.Profile).setSfx(plr, v)
+end)
+require(ReplicatedStorage.Shared.Sfx).group()
 
 local RoundState = Instance.new("Configuration")
 RoundState.Name = "RoundState"

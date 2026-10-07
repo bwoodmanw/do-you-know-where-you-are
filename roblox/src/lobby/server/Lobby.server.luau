@@ -293,6 +293,11 @@ local PartyInvite = remote("PartyInvite") -- server -> client: { id, leader }
 SetMusic.OnServerEvent:Connect(function(plr, v)
 	Profile.setMusic(plr, v)
 end)
+local SetSfx = remote("SetSfx") -- (game-sound volume 0..1)
+SetSfx.OnServerEvent:Connect(function(plr, v)
+	Profile.setSfx(plr, v)
+end)
+require(ReplicatedStorage.Shared.Sfx).group()
 local SetLoadout = remote("SetLoadout") -- ({boostId, ...}) up to Progress.MAX_BOOSTS
 local PickUpgrade = remote("PickUpgrade") -- (skill, level, upgradeId)
 local VoteMap = remote("VoteMap") -- (mapId)

@@ -77,6 +77,7 @@ function Profile.load(plr)
 	end
 	data = fill(data)
 	plr:SetAttribute("MusicVolume", (data.settings and data.settings.music) or 0.5)
+	plr:SetAttribute("SfxVolume", (data.settings and data.settings.sfx) or 1)
 	cache[plr.UserId] = data
 	Profile.publish(plr)
 	return data
@@ -130,6 +131,17 @@ function Profile.setMusic(plr, v)
 	data.settings = data.settings or {}
 	data.settings.music = v
 	plr:SetAttribute("MusicVolume", v)
+end
+
+-- a player's game-sound volume (0, 0.25, 0.5 or 1)
+function Profile.setSfx(plr, v)
+	local data = cache[plr.UserId]
+	if not data or typeof(v) ~= "number" or v < 0 or v > 1 then
+		return
+	end
+	data.settings = data.settings or {}
+	data.settings.sfx = v
+	plr:SetAttribute("SfxVolume", v)
 end
 
 function Profile.addPoints(plr, n)

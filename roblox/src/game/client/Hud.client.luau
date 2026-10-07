@@ -12,6 +12,7 @@ local TextChatService = game:GetService("TextChatService")
 local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
+local Sfx = require(game:GetService("ReplicatedStorage").Shared.Sfx)
 local HttpService = game:GetService("HttpService")
 local Progress = require(ReplicatedStorage.Shared.Progress)
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
@@ -125,6 +126,7 @@ local function playLocal(name, volume)
 		return
 	end
 	local s = Instance.new("Sound")
+	s.SoundGroup = Sfx.group()
 	s.SoundId = "rbxassetid://" .. id
 	s.Volume = volume or 0.8
 	s.Parent = SoundService
@@ -1061,6 +1063,7 @@ local function watchPad(pad)
 		local v = hrp.AssemblyLinearVelocity
 		hrp.AssemblyLinearVelocity = Vector3.new(v.X, 70, v.Z)
 		local s = Instance.new("Sound")
+		s.SoundGroup = Sfx.group()
 		s.SoundId = "rbxassetid://" .. Config.SOUNDS.bounce
 		s.Parent = pad
 		s:Play()
@@ -1079,7 +1082,7 @@ workspace.DescendantAdded:Connect(function(d)
 end)
 
 -- ---------- music ----------
-require(ReplicatedStorage.Shared.MusicPlayer).start("game", gui, UDim2.new(0.77, 0, 0, 10), remotes:WaitForChild("SetMusic"))
+require(ReplicatedStorage.Shared.MusicPlayer).start("game", gui, UDim2.new(0.77, 0, 0, 10), remotes:WaitForChild("SetMusic"), remotes:WaitForChild("SetSfx"))
 
 -- ---------- who is playing, and their points this game ----------
 local SKILL_ICON = {}
@@ -1337,6 +1340,7 @@ RunService.RenderStepped:Connect(function(dt)
 		local head = host and (host:FindFirstChild("Head") or host.PrimaryPart)
 		if head and Config.SOUNDS.breath then
 			local s = Instance.new("Sound")
+			s.SoundGroup = Sfx.group()
 			s.Name = "Breathing"
 			s.SoundId = "rbxassetid://" .. Config.SOUNDS.breath
 			s.Looped = true

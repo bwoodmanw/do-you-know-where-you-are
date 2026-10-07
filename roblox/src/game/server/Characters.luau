@@ -70,6 +70,7 @@ end
 -- colour picture, without the bumpy normal map. Both are tried safely.
 local function soften(model)
 	local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+	local skipped = 0
 	for _, d in ipairs(model:GetDescendants()) do
 		if d:IsA("BasePart") then
 			d.CastShadow = false
@@ -88,10 +89,13 @@ local function soften(model)
 					d:Destroy()
 				else
 					-- a running game usually cannot read ColorMap: soften it in Studio instead
-					warn("Face softening skipped for " .. model.Name .. "." .. part.Name .. " - move its SurfaceAppearance ColorMap into TextureID in Studio")
+					skipped += 1
 				end
 			end
 		end
+	end
+	if skipped > 0 then
+		warn("Face softening skipped for " .. (model:GetAttribute("EscapeCrewChar") or model.Name) .. " (" .. skipped .. " parts) - run the Command Bar fix in Studio (TEST_PLAN.md)")
 	end
 end
 
