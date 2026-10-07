@@ -156,6 +156,10 @@ Checklist in `TEST_PLAN.md` ("This round").
 
 ## Open items and decisions waiting on Brent
 
+0. **Seasonal icon:** `art/roblox-store/icon-halloween-512.png` (checked 7 Oct: our own
+   Brainy and Glow with the pumpkin host, no text or logos). From 1 Nov remind Brent
+   to upload the normal `icon-512.png` again (Creator Hub -> Icon).
+
 1. **Patch's face is still blotchy.** `Characters.soften` swaps each
    SurfaceAppearance for a plain TextureID, but a running game usually cannot
    read ColorMap, so it silently did nothing. It now prints "Face softening
