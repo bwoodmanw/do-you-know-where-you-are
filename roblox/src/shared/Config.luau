@@ -95,7 +95,7 @@ Config.SKILL_INFO = {
 	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as many points.", how = "Find the invitation in the Parlour and press E." },
 	muscle = { about = "Shoves the heavy cabinet in the Music Room aside, opening a secret way out.", how = "Hold E at the cabinet." },
 	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.", how = "Press E at the painted wall in the Library." },
-	patch = { about = "Gives a nearby friend a Party Shield (one grab) and everyone nearby their breath back. Frees every caged friend at once, twice as fast.", how = "Press the Shield button. Hold E at the cage." },
+	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). Her Shield button gives a friend a Party Shield. She frees every caged friend at once, faster than anyone.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
 	echo = { about = "Hears the host coming from further away, and throws a noise that sends the host to look somewhere else.", how = "Press Noise, then tap where to throw it." },
 	bramble = { about = "Talks to plants: the big plant in the Conservatory whispers the door code to Bramble.", how = "Press E at the plant." },
 }
@@ -175,6 +175,30 @@ Config.BOOST_IMAGES = {
 
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }
 Config.IMAGES = {}
+-- map screen pictures (Lobby): buildings and floors
+Config.MAP_IMAGES = {
+	["building-partyhouse"] = 90366125862515,
+	["building-gummy"] = 117537443847515,
+	["building-hospital"] = 92023239477557,
+	partyhouse = 72796482527577, -- Ground
+	partyhouse_2 = 74153444335342, -- Bedrooms
+	partyhouse_3 = 96483386228074, -- Attic
+	gummy = 106384940484821, -- Bounce Hall
+	gummy_2 = 85279894455333, -- Candy Factory
+	gummy_3 = 113575969259861, -- Jelly Vault
+	hospital = 92023239477557,
+}
+-- character portraits (face with a skill badge) by skill id
+Config.PORTRAITS = {
+	tinker = 91349731911904,
+	shadow = 102479346958097,
+	patch = 81417443811968,
+	muscle = 124426472579046,
+	glow = 74862458851440,
+	echo = 78989824967295,
+	bramble = 127007527181153,
+	brainy = 123589958200522,
+}
 -- daily login rewards: day 1-7 of an unbroken streak (then round again);
 -- miss a day and it starts again at day 1. Roblox Premium members get
 -- PREMIUM_DAILY_MULT times the points.

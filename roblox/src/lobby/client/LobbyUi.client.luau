@@ -402,17 +402,76 @@ local amLeader = false
 local function opt(key, value)
 	remotes.SetOption:FireServer(key, value)
 end
-local mapBox = frame(partyBox, { Size = UDim2.new(1, -40, 0, 80), Position = UDim2.fromOffset(20, 210), BackgroundTransparency = 1 })
-local mapGrid = Instance.new("UIGridLayout")
-mapGrid.CellSize = UDim2.new(1 / #Progress.MAPS, -7, 0, 76)
-mapGrid.CellPadding = UDim2.fromOffset(8, 0)
-mapGrid.Parent = mapBox
-local mapBtns = {}
-for _, m in ipairs(Progress.MAPS) do
-	mapBtns[m.id] = button(mapBox, "", {}, function()
-		remotes.VoteMap:FireServer(m.id)
+-- the map: one button here; the map screen opens for the whole party together
+local mapBtn = button(partyBox, "", { Size = UDim2.new(1, -40, 0, 80), Position = UDim2.fromOffset(20, 210), BackgroundColor3 = Color3.fromRGB(47, 107, 58) }, function()
+	if not current then
+		return
+	end
+	if amLeader then
+		opt("mapScreen", true)
+	else
+		notice("Your party leader opens the map screen - then everyone votes together.")
+	end
+end)
+
+local function img(id)
+	return (id and id > 0) and ("rbxassetid://" .. id) or ""
+end
+local mapScreen = frame(gui, { Size = UDim2.fromOffset(940, 600), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Visible = false, ZIndex = 40 })
+corner(mapScreen, 18)
+local msScale = Instance.new("UIScale")
+msScale.Parent = mapScreen
+local function fitMapScreen()
+	local vs = workspace.CurrentCamera.ViewportSize
+	msScale.Scale = math.min(1, (vs.Y - 30) / 600, (vs.X - 20) / 940)
+end
+workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(fitMapScreen)
+fitMapScreen()
+label(mapScreen, { Size = UDim2.new(1, -40, 0, 40), Position = UDim2.fromOffset(20, 12), Text = "\u{1F5FA} Choose where to play", TextColor3 = PUMP, ZIndex = 41 })
+label(mapScreen, { Size = UDim2.new(1, -40, 0, 24), Position = UDim2.fromOffset(20, 56), Text = "1. The leader picks a building     2. Everyone votes for a floor (ties go to the leader)", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
+local buildingCards, floorCards = {}, {}
+local function card(parent, x, y, w, h, onClick)
+	local b = Instance.new("ImageButton")
+	b.Size = UDim2.fromOffset(w, h)
+	b.Position = UDim2.fromOffset(x, y)
+	b.BackgroundColor3 = PLUM
+	b.ScaleType = Enum.ScaleType.Crop
+	b.ZIndex = 42
+	b.Parent = parent
+	corner(b, 14)
+	local stroke = Instance.new("UIStroke")
+	stroke.Thickness = 0
+	stroke.Color = PUMP
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Parent = b
+	local name = label(b, { Size = UDim2.new(1, -16, 0, 30), Position = UDim2.new(0, 8, 1, -66), BackgroundTransparency = 0.25, BackgroundColor3 = NIGHT, ZIndex = 43, Text = "" })
+	corner(name, 8)
+	local sub = label(b, { Size = UDim2.new(1, -16, 0, 26), Position = UDim2.new(0, 8, 1, -32), BackgroundTransparency = 0.25, BackgroundColor3 = NIGHT, ZIndex = 43, Text = "", TextColor3 = Color3.fromRGB(255, 210, 63) })
+	corner(sub, 8)
+	b.Activated:Connect(onClick)
+	return { button = b, name = name, sub = sub, stroke = stroke }
+end
+for i, bld in ipairs(Progress.BUILDINGS) do
+	buildingCards[bld.id] = card(mapScreen, 20 + (i - 1) * 305, 92, 290, 190, function()
+		if amLeader then
+			opt("building", bld.id)
+		else
+			notice("The leader picks the building - you vote for the floor.")
+		end
 	end)
 end
+for i = 1, 3 do
+	floorCards[i] = card(mapScreen, 20 + (i - 1) * 305, 300, 290, 220, function()
+		local id = floorCards[i].mapId
+		if id then
+			remotes.VoteMap:FireServer(id)
+		end
+	end)
+end
+local msDone = button(mapScreen, "\u{2705} Done", { Size = UDim2.fromOffset(200, 48), Position = UDim2.new(1, -220, 1, -62), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 42 }, function()
+	opt("mapScreen", false)
+end)
+local msWait = label(mapScreen, { Size = UDim2.new(1, -260, 0, 40), Position = UDim2.new(0, 20, 1, -58), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
 local optBox = frame(partyBox, { Size = UDim2.new(1, -40, 0, 170), Position = UDim2.fromOffset(20, 300), BackgroundTransparency = 1 })
 label(optBox, { Size = UDim2.new(0.32, 0, 0, 30), Position = UDim2.fromOffset(0, 0), Text = "Players", TextXAlignment = Enum.TextXAlignment.Left })
 button(optBox, "-", { Size = UDim2.fromOffset(40, 32), Position = UDim2.fromOffset(150, 0) }, function()
@@ -484,13 +543,60 @@ local function paintParty(p)
 		tally[mapId] = (tally[mapId] or 0) + 1
 	end
 	local myVote = p.votes and p.votes[tostring(player.UserId)]
+	-- the chosen map on the party panel
+	local ci = Progress.mapIndex(p.chosen or "partyhouse")
+	mapBtn.Text = "\u{1F5FA} " .. (ci and Progress.MAPS[ci].name or "?") .. "\n" .. (amLeader and "Tap to choose a map together" or "The leader opens the map screen")
+	-- the map screen, the same for everyone in the party
+	mapScreen.Visible = p.mapScreen == true
+	msDone.Visible = amLeader
+	msWait.Text = amLeader and "Tap Done when everyone has voted." or ("Waiting for " .. p.leader .. " to tap Done...")
+	for _, bld in ipairs(Progress.BUILDINGS) do
+		local c = buildingCards[bld.id]
+		local total, open = 0, 0
+		for _, m in ipairs(Progress.MAPS) do
+			if m.building == bld.id then
+				total += 1
+				if m.ready and p.unlocked and p.unlocked[m.id] then
+					open += 1
+				end
+			end
+		end
+		c.button.Image = img(Config.MAP_IMAGES["building-" .. bld.id])
+		c.name.Text = bld.name
+		c.sub.Text = open .. " of " .. total .. " floors open"
+		c.stroke.Thickness = p.building == bld.id and 5 or 0
+	end
+	local floors = {}
 	for _, m in ipairs(Progress.MAPS) do
-		local b = mapBtns[m.id]
-		local open = m.ready and p.unlocked and p.unlocked[m.id]
-		local state = not m.ready and "Coming soon" or (open and ((tally[m.id] or 0) .. " vote" .. ((tally[m.id] or 0) == 1 and "" or "s")) or "\u{1F512} Locked")
-		b.Text = m.icon .. " " .. m.name .. "\n" .. state
-		b.BackgroundColor3 = myVote == m.id and PUMP or (open and PLUM or Color3.fromRGB(50, 44, 60))
-		b.TextColor3 = myVote == m.id and NIGHT or CREAM
+		if m.building == (p.building or "partyhouse") then
+			table.insert(floors, m)
+		end
+	end
+	for i = 1, 3 do
+		local c, m = floorCards[i], floors[i]
+		c.button.Visible = m ~= nil
+		c.mapId = nil
+		if m then
+			local open = m.ready and p.unlocked and p.unlocked[m.id]
+			local voters = {}
+			for uid, vote in pairs(p.votes or {}) do
+				if vote == m.id then
+					for _, mem in ipairs(p.members) do
+						if tostring(mem.userId) == uid then
+							table.insert(voters, mem.name)
+						end
+					end
+				end
+			end
+			c.mapId = open and m.id or nil
+			c.button.Image = img(Config.MAP_IMAGES[m.id])
+			c.button.ImageTransparency = open and 0 or 0.6
+			c.name.Text = m.name
+			c.sub.Text = not m.ready and "Coming soon" or (not open and "\u{1F512} Locked")
+				or (#voters .. (#voters == 1 and " vote" or " votes") .. (#voters > 0 and (": " .. table.concat(voters, ", ")) or ""))
+			c.stroke.Thickness = myVote == m.id and 5 or (p.chosen == m.id and 3 or 0)
+			c.stroke.Color = myVote == m.id and PUMP or Color3.fromRGB(123, 227, 107)
+		end
 	end
 end
 
@@ -659,22 +765,33 @@ viewCam.Parent = view
 view.CurrentCamera = viewCam
 local noModel = label(view, { Size = UDim2.fromScale(1, 0.7), Position = UDim2.fromScale(0, 0.12), Text = "", ZIndex = 12 })
 label(view, { Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -24), Text = "drag to turn", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 12 })
-local skillAbout = label(chars, { Size = UDim2.fromOffset(230, 120), Position = UDim2.fromOffset(14, 334), TextScaled = false, TextSize = 16, TextWrapped = true,
+local skillAbout = label(chars, { Size = UDim2.fromOffset(230, 100), Position = UDim2.fromOffset(14, 376), TextScaled = false, TextSize = 16, TextWrapped = true,
 	TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 11 })
 -- right: picking a character, their level and the skill ladder
 local right = frame(chars, { Size = UDim2.new(1, -256, 1, -60), Position = UDim2.fromOffset(250, 0), BackgroundTransparency = 1, ZIndex = 11 })
 local charRow = frame(right, { Size = UDim2.new(1, -20, 0, 50), Position = UDim2.fromOffset(10, 56), BackgroundTransparency = 1, ZIndex = 11 })
 local charGrid = Instance.new("UIGridLayout")
-charGrid.CellSize = UDim2.fromOffset(72, 46)
+charGrid.CellSize = UDim2.fromOffset(72, 64)
 charGrid.CellPadding = UDim2.fromOffset(6, 0)
 charGrid.Parent = charRow
 local selected = Config.SKILLS[1].id
 local charBtns = {}
 for _, sk in ipairs(Config.SKILLS) do
-	charBtns[sk.id] = button(charRow, sk.icon, { BackgroundColor3 = sk.color, ZIndex = 12 }, function()
+	charBtns[sk.id] = button(charRow, (Config.PORTRAITS[sk.id] or 0) > 0 and "" or sk.icon, { BackgroundColor3 = sk.color, ZIndex = 12 }, function()
 		selected = sk.id
 		repaintChars()
 	end)
+	if (Config.PORTRAITS[sk.id] or 0) > 0 then
+		local face = Instance.new("ImageLabel")
+		face.Size = UDim2.new(1, -4, 1, -4)
+		face.Position = UDim2.fromOffset(2, 2)
+		face.BackgroundTransparency = 1
+		face.ScaleType = Enum.ScaleType.Crop
+		face.Image = "rbxassetid://" .. Config.PORTRAITS[sk.id]
+		face.ZIndex = 13
+		face.Parent = charBtns[sk.id]
+		corner(face, 10)
+	end
 end
 local charTitle = label(right, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.fromOffset(10, 114), Text = "", ZIndex = 11 })
 local xpBack = frame(right, { Size = UDim2.new(1, -40, 0, 14), Position = UDim2.fromOffset(20, 150), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 11 })
@@ -698,6 +815,23 @@ for level = 2, 5 do
 		end)
 	end
 end
+-- arrows to step through the characters
+local function stepChar(d)
+	local i = 1
+	for k, sk in ipairs(Config.SKILLS) do
+		if sk.id == selected then
+			i = k
+		end
+	end
+	selected = Config.SKILLS[(i - 1 + d) % #Config.SKILLS + 1].id
+	repaintChars()
+end
+button(chars, "\u{25C0}", { Size = UDim2.fromOffset(56, 36), Position = UDim2.fromOffset(14, 332), ZIndex = 12 }, function()
+	stepChar(-1)
+end)
+button(chars, "\u{25B6}", { Size = UDim2.fromOffset(56, 36), Position = UDim2.fromOffset(188, 332), ZIndex = 12 }, function()
+	stepChar(1)
+end)
 -- choices are for keeps; a reset clears this character's whole ladder
 button(right, "\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(92, 448), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 11 }, function()
 	remotes.ResetLadder:FireServer(selected, "points")

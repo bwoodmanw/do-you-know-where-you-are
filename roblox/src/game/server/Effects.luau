@@ -129,6 +129,47 @@ function Effects.burst(position, kind)
 	Debris:AddItem(holder, k[6] + 0.5)
 end
 
+-- what comes out of something empty: bats flutter away, tissue paper floats
+-- down, or a pop of confetti
+function Effects.surprise(position, kind)
+	if kind == "bats" then
+		Effects.sound(position, "sneak", 0.6)
+		for _ = 1, 6 do
+			local bat = Instance.new("Part")
+			bat.Name = "Bat"
+			bat.Size = Vector3.new(1.4, 0.15, 0.7)
+			bat.Color = Color3.fromRGB(25, 15, 30)
+			bat.Anchored, bat.CanCollide, bat.CanQuery, bat.CanTouch = true, false, false, false
+			bat.CFrame = CFrame.new(position + Vector3.new(math.random() - 0.5, 1.5, math.random() - 0.5))
+			bat.Parent = workspace
+			local goal = position + Vector3.new(math.random(-10, 10), math.random(8, 13), math.random(-10, 10))
+			TweenService:Create(bat, TweenInfo.new(1.6, Enum.EasingStyle.Sine), { CFrame = CFrame.new(goal) * CFrame.Angles(math.random() * 2, math.random() * 6, math.random() * 2), Transparency = 1 }):Play()
+			Debris:AddItem(bat, 1.8)
+		end
+	elseif kind == "tissue" then
+		Effects.sound(position, "hide", 0.5)
+		for _ = 1, 8 do
+			local sheet = Instance.new("Part")
+			sheet.Name = "Tissue"
+			sheet.Size = Vector3.new(1.3, 0.05, 1.3)
+			sheet.Color = ({ Color3.fromRGB(255, 200, 220), Color3.fromRGB(200, 230, 255), Color3.fromRGB(255, 245, 200) })[math.random(1, 3)]
+			sheet.Anchored, sheet.CanCollide, sheet.CanQuery, sheet.CanTouch = true, false, false, false
+			sheet.CFrame = CFrame.new(position + Vector3.new(math.random() * 2 - 1, 3 + math.random() * 2, math.random() * 2 - 1))
+			sheet.Parent = workspace
+			local land = Vector3.new(position.X + math.random(-4, 4), position.Y - 1, position.Z + math.random(-4, 4))
+			TweenService:Create(sheet, TweenInfo.new(2.2, Enum.EasingStyle.Sine), { CFrame = CFrame.new(land) * CFrame.Angles(0, math.random() * 6, 0) }):Play()
+			task.delay(3, function()
+				if sheet.Parent then
+					TweenService:Create(sheet, TweenInfo.new(1), { Transparency = 1 }):Play()
+				end
+			end)
+			Debris:AddItem(sheet, 4.2)
+		end
+	else
+		Effects.burst(position, "pop")
+	end
+end
+
 -- the burst at a player, a little above the floor
 function Effects.at(player, kind)
 	local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")

@@ -324,7 +324,7 @@ function House.buildObjects(world)
 			entry.outside = at(o.x + 1, o.y, 3)
 			entry.part = cage.CageRoof
 			local lockPart = part(cage, { Name = "Padlock", Size = Vector3.new(1, 1, 0.4), Position = base + Vector3.new(T / 2 + 0.3, 4, 0), Color = Color3.fromRGB(255, 210, 63), Material = Enum.Material.Metal })
-			entry.prompt = prompt(lockPart, "Free your friend", "Cage", 2)
+			entry.prompt = prompt(lockPart, "Free your friend", "Cage", 3.5) -- Patch holds half as long
 			entry.prompt.Enabled = false
 		elseif o.kind == "balloon" then
 			local b = part(root, { Name = "Balloon", Shape = Enum.PartType.Ball, Size = Vector3.new(2.6, 2.6, 2.6), Position = base + Vector3.new(0, 6, 0), Color = Color3.fromRGB(239, 233, 245), Material = Enum.Material.SmoothPlastic, CanCollide = false })
@@ -500,6 +500,18 @@ function House.buildObjects(world)
 			entry.part = part(root, { Name = "Hide " .. o.id, Size = size, Position = base + Vector3.new(0, y, 0), Color = col, Material = mat })
 			entry.inside = base + Vector3.new(0, 3, 0)
 			entry.prompt = prompt(entry.part, "Hide", "Fits " .. (o.cap or 2))
+			-- hiding places are marked so they stand out from things to search
+			local mark = Instance.new("BillboardGui")
+			mark.Size = UDim2.fromOffset(40, 40)
+			mark.StudsOffset = Vector3.new(0, entry.part.Size.Y / 2 + 1.6, 0)
+			mark.MaxDistance = 40
+			mark.Parent = entry.part
+			local mt = Instance.new("TextLabel")
+			mt.Size = UDim2.fromScale(1, 1)
+			mt.BackgroundTransparency = 1
+			mt.TextScaled = true
+			mt.Text = "\u{1F648}"
+			mt.Parent = mark
 			entry.prompt.HoldDuration = 0.2
 		end
 	end
@@ -756,6 +768,99 @@ function House.decorate(world)
 			local web = deco({ Name = "Cobweb", Size = Vector3.new(4.5, 4.5, 0.05), CFrame = CFrame.new(c[1] + (c[1] == x0 and 1.4 or -1.4), H - 1.8, c[2] + (c[2] == z0 and 1.4 or -1.4)) * CFrame.Angles(0, math.rad(c[3]), 0), Transparency = 1 })
 			emoji(web, Enum.NormalId.Front, "\u{1F578}")
 			emoji(web, Enum.NormalId.Back, "\u{1F578}")
+		end
+		-- party clutter away from the walls (not solid); some of it does things
+		local inner = {}
+		for y = f.y0 + 2, f.y1 - 2 do
+			for x = f.x0 + 2, f.x1 - 2 do
+				if free(x, y) then
+					table.insert(inner, { x, y })
+				end
+			end
+		end
+		local rng = Random.new()
+		for _ = 1, math.min(2, #inner) do
+			local c = table.remove(inner, rng:NextInteger(1, #inner))
+			for dx = -1, 1 do
+				for dy = -1, 1 do
+					busy[(c[1] + dx) .. "," .. (c[2] + dy)] = true
+				end
+			end
+			local base = at(c[1], c[2], 0)
+			local kind = rng:NextInteger(1, 4)
+			if kind == 1 then
+				-- a birthday cake: blow out the candles
+				deco({ Name = "CakeTable", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 4, 4), CFrame = CFrame.new(base + Vector3.new(0, 2.8, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(240, 235, 245), Material = Enum.Material.Fabric })
+				deco({ Name = "CakeTableLeg", Size = Vector3.new(0.5, 2.6, 0.5), Position = base + Vector3.new(0, 1.3, 0), Color = Color3.fromRGB(90, 60, 40) })
+				local cake = deco({ Name = "PartyCake", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.4, 2.2, 2.2), CFrame = CFrame.new(base + Vector3.new(0, 3.7, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(255, 190, 215) })
+				local flames = {}
+				for i = 1, 3 do
+					local a = i / 3 * math.pi * 2
+					deco({ Name = "Candle", Size = Vector3.new(0.15, 0.7, 0.15), Position = base + Vector3.new(math.cos(a) * 0.6, 4.75, math.sin(a) * 0.6), Color = DECOR[i] })
+					table.insert(flames, deco({ Name = "Flame", Shape = Enum.PartType.Ball, Size = Vector3.new(0.3, 0.3, 0.3), Position = base + Vector3.new(math.cos(a) * 0.6, 5.25, math.sin(a) * 0.6), Color = Color3.fromRGB(255, 200, 60), Material = Enum.Material.Neon }))
+				end
+				local glow = Instance.new("PointLight")
+				glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 190, 90), 8, 1
+				glow.Parent = cake
+				local pp = prompt(cake, "Blow out the candles", "Birthday cake", 0.5)
+				pp.Triggered:Connect(function()
+					pp.Enabled = false
+					for _, fl in ipairs(flames) do
+						fl.Transparency = 1
+					end
+					glow.Enabled = false
+					require(script.Parent.Effects).sound(cake.Position, "sneak", 0.6)
+					task.delay(40, function()
+						for _, fl in ipairs(flames) do
+							fl.Transparency = 0
+						end
+						glow.Enabled = true
+						pp.Enabled = true
+					end)
+				end)
+			elseif kind == 2 then
+				-- a jack-in-the-box: wind it up... POP! (loud: the host hears it)
+				local box = deco({ Name = "JackBox", Size = Vector3.new(2, 2, 2), Position = base + Vector3.new(0, 1, 0), Color = DECOR[(r % #DECOR) + 1], Material = Enum.Material.SmoothPlastic })
+				local clown = deco({ Name = "Jack", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.4, 1.4), Position = base + Vector3.new(0, 1.4, 0), Color = Color3.fromRGB(255, 230, 200), Transparency = 1 })
+				local pp = prompt(box, "Turn the handle", "Jack-in-the-box", 1)
+				pp.Triggered:Connect(function()
+					pp.Enabled = false
+					task.wait(1.2)
+					clown.Transparency = 0
+					TweenService:Create(clown, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = base + Vector3.new(0, 3.6, 0) }):Play()
+					local fx = require(script.Parent.Effects)
+					fx.sound(box.Position, "giggle", 1)
+					fx.burst(box.Position + Vector3.new(0, 3, 0), "pop")
+					if world.onNoise then
+						world.onNoise(box.Position)
+					end
+					task.delay(8, function()
+						clown.Transparency = 1
+						clown.Position = base + Vector3.new(0, 1.4, 0)
+						pp.Enabled = true
+					end)
+				end)
+			elseif kind == 3 then
+				-- a pile of presents to shake: tissue paper flies out
+				local boxes = {}
+				for i = 0, 2 do
+					table.insert(boxes, deco({ Name = "GiftPile", Size = Vector3.new(1.8 - i * 0.4, 1.2, 1.8 - i * 0.4), Position = base + Vector3.new(0, 0.6 + i * 1.2, 0), Color = DECOR[(i + r) % #DECOR + 1] }))
+				end
+				local pp = prompt(boxes[2], "Shake", "Pile of presents", 0.5)
+				pp.Triggered:Connect(function()
+					pp.Enabled = false
+					require(script.Parent.Effects).surprise(boxes[3].Position, "tissue")
+					task.delay(20, function()
+						pp.Enabled = true
+					end)
+				end)
+			else
+				-- a chair with a bunch of balloons tied to it
+				deco({ Name = "PartyChair", Size = Vector3.new(1.6, 2.4, 1.6), Position = base + Vector3.new(0, 1.2, 0), Color = Color3.fromRGB(120, 80, 160) })
+				for i = 0, 2 do
+					deco({ Name = "ChairBalloon", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.9, 1.6), Position = base + Vector3.new(math.cos(i * 2.1) * 0.8, 6 + i * 0.5, math.sin(i * 2.1) * 0.8), Color = DECOR[(i + r + 2) % #DECOR + 1] })
+				end
+			end
 		end
 		-- a rug in the middle (not in the kitchen: it has its tiles)
 		if f.kind ~= "tiles" then

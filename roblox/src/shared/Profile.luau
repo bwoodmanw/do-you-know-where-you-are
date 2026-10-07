@@ -249,7 +249,7 @@ function Profile.top(boardName, n, negate)
 	if ok and pages then
 		for _, entry in ipairs(pages:GetCurrentPage()) do
 			local uid, map, diff = string.match(entry.key, "^(%d+)|?([^|]*)|?([^|]*)$")
-			table.insert(rows, { name = nameOf(tonumber(uid)), value = negate and -entry.value or entry.value, map = map, difficulty = diff })
+			table.insert(rows, { name = nameOf(tonumber(uid)), userId = tonumber(uid), value = negate and -entry.value or entry.value, map = map, difficulty = diff })
 		end
 	end
 	return rows

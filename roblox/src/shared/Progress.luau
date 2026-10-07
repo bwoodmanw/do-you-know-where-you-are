@@ -19,6 +19,12 @@ Progress.MAPS = {
 	{ id = "hospital", building = "hospital", floor = 1, name = "Abandoned Hospital", icon = "\u{1F3E5}", ready = false },
 }
 
+Progress.BUILDINGS = {
+	{ id = "partyhouse", name = "The Party House" },
+	{ id = "gummy", name = "Gummy Bounce House" },
+	{ id = "hospital", name = "Abandoned Hospital" },
+}
+
 -- what escaping this floor unlocks
 function Progress.unlocksAfter(id)
 	local out = {}

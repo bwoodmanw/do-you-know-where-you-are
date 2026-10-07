@@ -360,6 +360,84 @@ function Scene.fun()
 		end
 	end)
 
+	-- a soccer ball to kick about too
+	local soccerHome = Vector3.new(6, 3, 66)
+	local soccer = part(folder, { Name = "SoccerBall", Shape = Enum.PartType.Ball, Size = Vector3.new(2.6, 2.6, 2.6), Position = soccerHome, Color = Color3.fromRGB(245, 245, 245), Material = Enum.Material.SmoothPlastic, Anchored = false })
+	soccer.CustomPhysicalProperties = PhysicalProperties.new(0.25, 0.4, 0.7)
+	for _, dir in ipairs({ Vector3.new(1, 0, 0), Vector3.new(-1, 0, 0), Vector3.new(0, 1, 0), Vector3.new(0, -1, 0), Vector3.new(0, 0, 1), Vector3.new(0, 0, -1) }) do
+		local spot = part(folder, { Name = "Patch", Shape = Enum.PartType.Ball, Size = Vector3.new(0.9, 0.9, 0.9), Position = soccerHome + dir * 1.05, Color = Color3.fromRGB(20, 20, 24), Anchored = false, CanCollide = false, Massless = true })
+		local w = Instance.new("WeldConstraint")
+		w.Part0, w.Part1 = soccer, spot
+		w.Parent = spot
+	end
+	local lastKick = 0
+	soccer.Touched:Connect(function(hit)
+		if hit.Parent and hit.Parent:FindFirstChildOfClass("Humanoid") and os.clock() - lastKick > 0.4 then
+			lastKick = os.clock()
+			sound(soccer, "bounce", 0.6)
+		end
+	end)
+	task.spawn(function()
+		while soccer.Parent do
+			task.wait(2)
+			local p = soccer.Position
+			if p.Y < -20 or math.abs(p.X) > 90 or math.abs(p.Z) > 95 then
+				soccer.AssemblyLinearVelocity = Vector3.zero
+				soccer.Position = soccerHome
+			end
+		end
+	end)
+
+	-- a swing set with two swings: sit and it swings
+	local sx, sz = 44, 60
+	local wood = Color3.fromRGB(110, 70, 40)
+	for _, z in ipairs({ sz - 6, sz + 6 }) do
+		for _, dx in ipairs({ -2.5, 2.5 }) do
+			part(folder, { Name = "SwingLeg", Size = Vector3.new(0.6, 11, 0.6), CFrame = CFrame.new(sx + dx / 2, 5.3, z) * CFrame.Angles(0, 0, math.rad(dx > 0 and -12 or 12)), Color = wood, Material = Enum.Material.Wood })
+		end
+	end
+	part(folder, { Name = "SwingBar", Size = Vector3.new(0.6, 0.6, 13), Position = Vector3.new(sx, 10.6, sz), Color = wood, Material = Enum.Material.Wood })
+	for _, z in ipairs({ sz - 2.5, sz + 2.5 }) do
+		local pivot = CFrame.new(sx, 10.4, z)
+		local ropeL = part(folder, { Name = "SwingRope", Size = Vector3.new(0.12, 7.4, 0.12), Color = Color3.fromRGB(200, 190, 170), CanCollide = false })
+		local ropeR = part(folder, { Name = "SwingRope", Size = Vector3.new(0.12, 7.4, 0.12), Color = Color3.fromRGB(200, 190, 170), CanCollide = false })
+		local swing = Instance.new("Seat")
+		swing.Name = "Swing"
+		swing.Anchored = true
+		swing.Size = Vector3.new(1.8, 0.3, 2.2)
+		swing.Color = Color3.fromRGB(200, 60, 60)
+		swing.Material = Enum.Material.SmoothPlastic
+		swing.TopSurface, swing.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		swing.Parent = folder
+		local pp = promptOn(swing, "Sit", "Swing")
+		pp.Triggered:Connect(function(plr)
+			local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+			if hum and not swing.Occupant then
+				swing:Sit(hum)
+			end
+		end)
+		local angle, t = 0, 0
+		local function place(a)
+			local swingCF = pivot * CFrame.Angles(0, 0, a)
+			swing.CFrame = swingCF * CFrame.new(0, -7.6, 0)
+			ropeL.CFrame = swingCF * CFrame.new(0, -3.7, -0.9)
+			ropeR.CFrame = swingCF * CFrame.new(0, -3.7, 0.9)
+		end
+		place(0)
+		game:GetService("RunService").Heartbeat:Connect(function(dt)
+			if swing.Occupant then
+				t += dt
+				angle = math.sin(t * 2.2) * 0.5
+			elseif math.abs(angle) > 0.001 then
+				angle *= 0.96
+				t = 0
+			else
+				return
+			end
+			place(angle)
+		end)
+	end
+
 	-- a giant pumpkin that giggles and glows when you poke it
 	local pumpkin = part(folder, { Name = "GiantPumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(6, 5, 6), Position = Vector3.new(16, 2.5, 54), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
 	part(folder, { Name = "Stem", Size = Vector3.new(0.6, 1.2, 0.6), Position = Vector3.new(16, 5.4, 54), Color = Color3.fromRGB(70, 110, 40) })

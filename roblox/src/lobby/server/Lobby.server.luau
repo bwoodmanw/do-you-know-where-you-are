@@ -309,6 +309,7 @@ local function isFriend(a, b)
 	return friendCache[key]
 end
 
+local chosenMap
 local function snapshot(party)
 	local members = {}
 	for _, m in ipairs(party.members) do
@@ -324,13 +325,16 @@ local function snapshot(party)
 		difficulty = party.difficulty,
 		spook = party.spook,
 		votes = party.votes,
+		mapScreen = party.mapScreen == true,
+		building = party.building or "partyhouse",
+		chosen = chosenMap(party),
 		unlocked = (Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked,
 	}
 end
 
 -- the map the party plays: most votes among maps that are ready and the
 -- leader has unlocked; a tie goes to the leader's vote
-local function chosenMap(party)
+function chosenMap(party)
 	local unlocked = (Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked
 	local tally, best, bestN = {}, "partyhouse", 0
 	for userId, mapId in pairs(party.votes) do
@@ -643,6 +647,15 @@ SetOption.OnServerEvent:Connect(function(plr, key, value)
 		party.difficulty = value
 	elseif key == "spook" and (value == "giggly" or value == "spooky") then
 		party.spook = value
+	elseif key == "mapScreen" and typeof(value) == "boolean" then
+		-- the leader opens the map screen for the whole party (and closes it)
+		party.mapScreen = value
+	elseif key == "building" and typeof(value) == "string" then
+		for _, b in ipairs(Progress.BUILDINGS) do
+			if b.id == value then
+				party.building = value
+			end
+		end
 	end
 	broadcast()
 end)
@@ -843,16 +856,44 @@ Scene.dropOff()
 Scene.fun()
 local boards = Scene.boards({ "\u{1F3C6} Most points earned", "\u{1F6AA} Most escapes", "\u{1F3E2} Most floors escaped", "\u{1F512} Most rescues", "\u{23F1} Fastest escapes this week" })
 local boardPoints, boardEscapes, boardFloors, boardRescue, boardFast = boards[1], boards[2], boards[3], boards[4], boards[5]
-local function fill(body, rows, fmt)
+-- each row: the player's avatar in a circle, then rank, name and score
+local function fill(body, rows, fmt, rowH)
+	rowH = rowH or 38
+	for _, c in ipairs(body:GetChildren()) do
+		if c:IsA("Frame") then
+			c:Destroy()
+		end
+	end
 	if #rows == 0 then
 		body.Text = "No scores yet - be the first!"
 		return
 	end
-	local lines = {}
+	body.Text = ""
 	for i, r in ipairs(rows) do
-		table.insert(lines, i .. ". " .. r.name .. "  " .. fmt(r.value, r))
+		local row = Instance.new("Frame")
+		row.Size = UDim2.new(1, 0, 0, rowH - 4)
+		row.Position = UDim2.fromOffset(0, (i - 1) * rowH)
+		row.BackgroundTransparency = 1
+		row.Parent = body
+		local face = Instance.new("ImageLabel")
+		face.Size = UDim2.fromOffset(34, 34)
+		face.BackgroundColor3 = Color3.fromRGB(75, 58, 102)
+		face.Image = r.userId and ("rbxthumb://type=AvatarHeadShot&id=" .. r.userId .. "&w=48&h=48") or ""
+		face.Parent = row
+		local fc = Instance.new("UICorner")
+		fc.CornerRadius = UDim.new(0.5, 0)
+		fc.Parent = face
+		local t = Instance.new("TextLabel")
+		t.Size = UDim2.new(1, -42, 1, 0)
+		t.Position = UDim2.fromOffset(42, 0)
+		t.BackgroundTransparency = 1
+		t.Font = Enum.Font.FredokaOne
+		t.TextScaled = true
+		t.TextXAlignment = Enum.TextXAlignment.Left
+		t.TextColor3 = Color3.fromRGB(255, 244, 224)
+		t.Text = i .. ". " .. r.name .. "  " .. fmt(r.value, r)
+		t.Parent = row
 	end
-	body.Text = table.concat(lines, "\n")
 end
 local function mapName(id)
 	local i = Progress.mapIndex(id)
@@ -873,8 +914,8 @@ task.spawn(function()
 		-- two lines a row: the time, then where it was set
 		fill(boardFast, Profile.top(names.fastest, 6, true), function(v, r)
 			local d = Config.DIFFICULTY[r.difficulty]
-			return string.format("%d:%02d", math.floor(v / 60), v % 60) .. "\n     " .. mapName(r.map) .. (d and (" \u{00B7} " .. d.name) or "")
-		end)
+			return string.format("%d:%02d", math.floor(v / 60), v % 60) .. "\n" .. mapName(r.map) .. (d and (" \u{00B7} " .. d.name) or "")
+		end, 62)
 		fill(boardRescue, Profile.top(names.rescues, 10), function(v)
 			return tostring(v)
 		end)

@@ -8,7 +8,8 @@
 	Every game: 3 clue balloons (two in rooms open from the start, one behind
 	the first locked door), 3 trick balloons, the plant (start rooms), 2 real
 	and 2 empty presents, 11 search spots (7 / 3 / 1 by zone; the keys go in
-	these), 8 hiding places in different rooms, and the invitation and painted
+	these), 8 hiding places in different rooms (plus more until every two
+	rooms joined by a doorway share one; each fits 1-3), and the invitation and painted
 	wall behind the first locked door.
 ]]
 
@@ -137,10 +138,82 @@ function MapGen.make(plans, rng)
 	end
 	for i = 1, 8 do
 		local look = HIDE_LOOKS[rng:NextInteger(1, #HIDE_LOOKS)]
-		add({ id = "h" .. i, kind = "hide", look = look, cap = look == "wardrobe" and 2 or 1 }, pick(ZA, "hide", 1))
+		add({ id = "h" .. i, kind = "hide", look = look, cap = look == "wardrobe" and 3 or rng:NextInteger(1, 2) }, pick(ZA, "hide", 1))
 	end
 	for i = 0, 2 do
 		add({ id = "x" .. i, kind = "balloon", decoy = true, n = rng:NextInteger(1, 3) }, pick(ZA, "balloon", 1))
+	end
+	-- every two rooms joined by a doorway get at least one hiding place
+	-- between them. Done after everything the generator checks, so it can
+	-- only use slots nothing else needed.
+	local function roomAt(x, y)
+		for _, f in ipairs(plan.floors) do
+			if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
+				return f.name
+			end
+		end
+		return nil
+	end
+	local links, seen = {}, {}
+	local function link(a, b)
+		if a and b and a ~= b then
+			local k = a < b and (a .. "|" .. b) or (b .. "|" .. a)
+			if not seen[k] then
+				seen[k] = true
+				table.insert(links, { a, b })
+			end
+		end
+	end
+	for y = 0, plan.h - 1 do
+		local row = plan.map[y + 1]
+		for x = 0, plan.w - 1 do
+			if row and string.sub(row, x + 1, x + 1) ~= "#" then
+				local here = roomAt(x, y)
+				local near = {}
+				for _, d in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
+					local r = roomAt(x + d[1], y + d[2])
+					if r then
+						table.insert(near, r)
+					end
+				end
+				if here then
+					for _, r in ipairs(near) do
+						link(here, r)
+					end
+				else
+					-- a doorway between rooms
+					for i = 1, #near do
+						for j = i + 1, #near do
+							link(near[i], near[j])
+						end
+					end
+				end
+			end
+		end
+	end
+	local hidden, extra = {}, 0
+	for _, o in ipairs(map.objects) do
+		if o.kind == "hide" then
+			hidden[roomAt(o.x, o.y) or ""] = true
+		end
+	end
+	for _, l in ipairs(links) do
+		if not hidden[l[1]] and not hidden[l[2]] then
+			local cands = {}
+			for _, s in ipairs(plan.floorSlots) do
+				if (s[4] == l[1] or s[4] == l[2]) and ok(s) then
+					table.insert(cands, s)
+				end
+			end
+			if #cands > 0 then
+				local s = cands[rng:NextInteger(1, #cands)]
+				taken[s[1] .. "," .. s[2]] = true
+				extra += 1
+				local look = HIDE_LOOKS[rng:NextInteger(1, #HIDE_LOOKS)]
+				add({ id = "hx" .. extra, kind = "hide", look = look, cap = look == "wardrobe" and 3 or rng:NextInteger(1, 2) }, s)
+				hidden[s[4]] = true
+			end
+		end
 	end
 	-- posters on walls behind the first locked door, not side by side
 	local wtaken = {}

@@ -507,11 +507,11 @@ local function besideTile(x, y, h)
 end
 
 local NOTHING = {
-	"Nothing but old socks.",
-	"Just crumbs and a sticky sweet. No key.",
-	"A spider! But no key.",
-	"Dusty party hats. No key here.",
-	"Empty... the key must be somewhere else.",
+	{ "A flutter of bats! But no key.", "bats" },
+	{ "Just tissue paper. No key here.", "tissue" },
+	{ "Confetti everywhere! No key though.", "confetti" },
+	{ "Nothing but old socks and tissue paper.", "tissue" },
+	{ "Squeak! Bats! The key must be somewhere else.", "bats" },
 }
 
 -- a locked inner door opens (with its key, or Tinker picks it)
@@ -578,6 +578,7 @@ local function wirePrompts()
 				House.openObject(entry)
 				if not def.boost then
 					Effects.sound(entry.part.Position, "hide")
+					Effects.surprise(entry.part.Position, "tissue")
 					return say("info", "Empty! Just tissue paper.", nil, plr)
 				end
 				addPoints(plr, 5)
@@ -726,7 +727,9 @@ local function wirePrompts()
 					addPoints(plr, 10)
 					say("key", plr.DisplayName .. " found the key to the " .. world.objects[lock].def.name .. "!", { icon = "\u{1F511}", userId = plr.UserId, item = "Key" })
 				else
-					say("info", NOTHING[math.random(1, #NOTHING)], nil, plr)
+					local what = NOTHING[math.random(1, #NOTHING)]
+					Effects.surprise(entry.part.Position, what[2])
+					say("info", what[1], nil, plr)
 				end
 			end)
 		elseif def.kind == "vent" then
@@ -1226,7 +1229,6 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 			if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
 				local d = (h.Position - hrp.Position).Magnitude
 				if d < 18 then
-					Boost:FireClient(p, "stamina")
 					if plr:GetAttribute("HealShield") then
 						p:SetAttribute("Shield", true)
 						given += 1
@@ -1243,7 +1245,6 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		if given == 0 then
 			plr:SetAttribute("Shield", true)
 		end
-		Boost:FireClient(plr, "stamina")
 		Effects.at(plr, "heal")
 		say("heal", given == 0 and "Patch gave herself a Party Shield!" or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!"), { userId = plr.UserId })
 	elseif skill == "echo" then
@@ -1346,6 +1347,7 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 	elseif id == "freeze" then
 		if host and host.model then
 			host:stun(10)
+			RoundState:SetAttribute("FrozenUntil", workspace:GetServerTimeNow() + 10)
 			local ice = Instance.new("Highlight")
 			ice.FillColor = Color3.fromRGB(140, 220, 255)
 			ice.OutlineColor = Color3.new(1, 1, 1)
@@ -1398,6 +1400,11 @@ function round.start()
 	HouseMap = MapGen.make(floors[mapInfo and mapInfo.floor or 1] or Plans.partyhouse[1])
 	RoundState:SetAttribute("MapJson", HttpService:JSONEncode(MapGen.forClient(HouseMap)))
 	world = House.build(HouseMap)
+	world.onNoise = function(pos)
+		if host and host.model then
+			host:alert(pos)
+		end
+	end
 	Props.place(world)
 	wirePrompts()
 	-- each locked door hides its key in a random searchable thing on its near side
@@ -1562,6 +1569,31 @@ function round.start()
 		end
 	end)
 end
+
+-- Patch's aura: friends near her get half their stamina back, once every
+-- 10 seconds each
+local auraAt = {}
+task.spawn(function()
+	while true do
+		task.wait(1)
+		if state.status == "playing" then
+			for _, patch in ipairs(Players:GetPlayers()) do
+				local ph = hrpOf(patch)
+				if ph and patch:GetAttribute("Skill") == "patch" and not patch:GetAttribute("Caged") and not patch:GetAttribute("Escaped") and not patch:GetAttribute("Hidden") then
+					for _, p in ipairs(Players:GetPlayers()) do
+						local h = hrpOf(p)
+						if p ~= patch and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - ph.Position).Magnitude < 14 and (auraAt[p] or 0) < os.clock() then
+							auraAt[p] = os.clock() + 10
+							Boost:FireClient(p, "half")
+							Effects.at(p, "heal")
+							say("info", "Patch gave you a breather: +50% stamina", nil, p)
+						end
+					end
+				end
+			end
+		end
+	end
+end)
 
 -- the host thinks five times a second
 local acc = 0

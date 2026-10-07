@@ -455,6 +455,14 @@ label(view, { Size = UDim2.new(1, 0, 0, 22), Position = UDim2.new(0, 0, 1, -26),
 local info = frame(picker, { Size = UDim2.fromOffset(400, 300), Position = UDim2.fromOffset(440, 64), BackgroundColor3 = Color3.fromRGB(43, 29, 64), ZIndex = 21 })
 corner(info, 14)
 local infoIcon = label(info, { Size = UDim2.fromOffset(70, 70), Position = UDim2.fromOffset(14, 12), Text = "", ZIndex = 22 })
+local infoPortrait = Instance.new("ImageLabel")
+infoPortrait.Size = UDim2.fromOffset(70, 70)
+infoPortrait.Position = UDim2.fromOffset(14, 12)
+infoPortrait.BackgroundTransparency = 1
+infoPortrait.ScaleType = Enum.ScaleType.Crop
+infoPortrait.ZIndex = 23
+infoPortrait.Parent = info
+corner(infoPortrait, 14)
 local infoName = label(info, { Size = UDim2.fromOffset(270, 40), Position = UDim2.fromOffset(94, 14), Text = "", TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 22 })
 local infoSay = label(info, { Size = UDim2.fromOffset(270, 26), Position = UDim2.fromOffset(94, 54), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 22 })
 local function para(y, h)
@@ -515,7 +523,10 @@ local function showChar()
 	end
 	view.BackgroundColor3 = sk.color:Lerp(Color3.fromRGB(26, 16, 38), 0.75)
 	local si = Config.SKILL_INFO[sk.id] or {}
-	infoIcon.Text = sk.icon
+	local portrait = Config.PORTRAITS and Config.PORTRAITS[sk.id] or 0
+	infoPortrait.Image = portrait > 0 and ("rbxassetid://" .. portrait) or ""
+	infoPortrait.Visible = portrait > 0
+	infoIcon.Text = portrait > 0 and "" or sk.icon
 	infoName.Text = sk.name
 	infoSay.Text = sk.say
 	infoAbout.Text = si.about or ""
@@ -1157,6 +1168,37 @@ task.spawn(function()
 	end
 end)
 
+-- ---------- boosts working right now: icon and how long is left ----------
+local activeRow = frame(gui, { Size = UDim2.fromOffset(290, 46), Position = TOUCH and UDim2.new(1, -300, 1, -412) or UDim2.new(1, -300, 1, -272), BackgroundTransparency = 1 })
+local activeList = Instance.new("UIListLayout")
+activeList.FillDirection = Enum.FillDirection.Horizontal
+activeList.HorizontalAlignment = Enum.HorizontalAlignment.Right
+activeList.Padding = UDim.new(0, 6)
+activeList.Parent = activeRow
+local function activeSlot(boostId, fallback)
+	local f = frame(activeRow, { Size = UDim2.fromOffset(44, 44), BackgroundTransparency = 0.3, Visible = false })
+	corner(f, 22)
+	local ring = Instance.new("UIStroke")
+	ring.Color = Color3.fromRGB(123, 227, 107)
+	ring.Thickness = 2
+	ring.Parent = f
+	local imgId = Config.BOOST_IMAGES[boostId] or 0
+	if imgId > 0 then
+		local pic = Instance.new("ImageLabel")
+		pic.Size = UDim2.fromScale(1, 1)
+		pic.BackgroundTransparency = 1
+		pic.Image = "rbxassetid://" .. imgId
+		pic.Parent = f
+	else
+		label(f, { Size = UDim2.fromScale(1, 1), Text = fallback })
+	end
+	local t = label(f, { Size = UDim2.new(1, 0, 0, 16), Position = UDim2.new(0, 0, 1, -12), Text = "", TextStrokeTransparency = 0.2, ZIndex = 3 })
+	return f, t
+end
+local shieldSlot, shieldText = activeSlot("shield", "\u{1F6E1}")
+local candySlot, candyText = activeSlot("candy", "\u{1F36C}")
+local freezeSlot, freezeText = activeSlot("freeze", "\u{1F9CA}")
+
 -- ---------- running and stamina ----------
 local stamina, tired, candyUntil = 100, false, 0
 remotes.Boost.OnClientEvent:Connect(function(kind)
@@ -1164,6 +1206,11 @@ remotes.Boost.OnClientEvent:Connect(function(kind)
 		candyUntil = os.clock() + 20
 	elseif kind == "stamina" then
 		stamina, tired = 100, false
+	elseif kind == "half" then
+		stamina = math.min(100, stamina + 50)
+		if stamina >= 25 then
+			tired = false
+		end
 	end
 end)
 
@@ -1232,6 +1279,15 @@ RunService.RenderStepped:Connect(function(dt)
 		end
 	end
 	runBtn.BackgroundColor3 = (runToggle or shiftHeld) and PUMP or Color3.fromRGB(75, 58, 102)
+	-- the active boosts row
+	shieldSlot.Visible = player:GetAttribute("Shield") == true
+	shieldText.Text = "ON"
+	local candyLeft = candyUntil - os.clock()
+	candySlot.Visible = candyLeft > 0
+	candyText.Text = candyLeft > 0 and (math.ceil(candyLeft) .. "s") or ""
+	local frozenLeft = (RoundState:GetAttribute("FrozenUntil") or 0) - workspace:GetServerTimeNow()
+	freezeSlot.Visible = frozenLeft > 0
+	freezeText.Text = frozenLeft > 0 and (math.ceil(frozenLeft) .. "s") or ""
 	staminaBar.Size = UDim2.fromScale(stamina / 100, 1)
 	staminaBar.BackgroundColor3 = tired and Color3.fromRGB(255, 77, 94) or Color3.fromRGB(123, 227, 107)
 	gameEarned.Text = "\u{2B50} " .. tostring(player:GetAttribute("GameEarned") or 0) .. " points this game"
