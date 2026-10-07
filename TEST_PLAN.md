@@ -10,7 +10,29 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
-## This round (built 6 Oct late) - test these first
+## Fixes and 10 levels (built 7 Oct) - test these first
+
+Lobby:
+- [ ] Swings now stand by the party circles on the right with a lamp beside them; new lamps over the whole play lawn; the night is a little brighter
+- [ ] Characters screen: name, level and XP bar sit below the portraits (not touching); the 3D character is bigger
+- [ ] The ladder shows levels 2-10 and scrolls; levels not reached are locked; picks you made before still show ticked
+- [ ] The green reset button shows the real Robux price from Creator Hub
+
+Party House:
+- [ ] Character picker: the boosts line ends with "(get them in the Lobby shop)" with the bracket showing
+- [ ] Character picker: the level matches the Lobby's ladder screen (it used an old XP table before)
+
+Patch's face (Party House place, in Studio, not playing):
+1. **View** tab -> **Command Bar** (a box opens at the bottom).
+2. Copy this whole line, paste it in the Command Bar, press **Enter**:
+   `local n=0 for _,d in ipairs(game.ServerStorage.Characters.Patch:GetDescendants()) do if d:IsA("SurfaceAppearance") and d.Parent:IsA("MeshPart") then local ok,c=pcall(function() return d.ColorMap end) if not ok or c=="" then local ok2,cc=pcall(function() return d.ColorMapContent.Uri end) c=ok2 and cc or "" end print(d.Parent:GetFullName(),"colour map:",c) if c~="" then d.Parent.TextureID=c d.Parent=nil n+=1 end end end print("Patch: softened",n,"parts")`
+3. **View** -> **Output**. Photograph what it printed.
+4. If it says `softened 1` or more: **Test** -> **Play** and photograph Patch's face close up.
+   Then in Explorer, right-click **ServerStorage -> Characters -> Patch** -> **Save to Roblox...**
+   and overwrite the existing Patch asset (if it only offers a new one, save it and send Claude the new id).
+5. If it says `softened 0`: send the Output photo; the blotches are in the picture itself.
+
+## Built 6 Oct late
 
 Lobby:
 - [ ] Characters screen: a portrait on every character button; the arrows under the 3D view step through characters

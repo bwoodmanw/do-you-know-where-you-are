@@ -69,9 +69,41 @@ cage freeing (Patch half); bats / tissue / confetti from empty finds; hides
 marked and in every pair of joined rooms (1-3 players); interactive party
 clutter (cake candles, jack-in-the-box, gift pile).
 
+## 10 levels per character (built 7 Oct, Brent's yes) - untested
+XP for levels 2-10: 300 / 800 / 1,600 / 3,000 / 4,800 / 7,000 / 9,600 /
+12,600 / 16,000. Even levels (2, 4, 6, 8) are the same for everyone; odd
+levels (3, 5, 7, 9) and 10 are the character's own. Bonuses are about half
+the old size; level 10 holds the old big level-5 upgrades. Caps
+(`Progress.CAPS`): run +20%, stamina +50%, hold times at most twice as fast,
+host sight at least 65%, recharge at most twice as fast, 5 clues per player.
+Saved picks at levels 2-5 keep their ids (their numbers shrank). Every number
+is in `roblox/src/shared/Progress.luau`.
+
+| Lvl | Everyone / Tinker | Shadow | Brainy | Muscle |
+|---|---|---|---|---|
+| 2 | +10% stamina / hold 8% faster | | | |
+| 3 | hold 15% / one code colour | sneak 8 s / recharge 20% | +1 clue / one code colour | shove 20% / Shield |
+| 4 | run 5% / host sees 10% less | | | |
+| 5 | hold 15% / Shield | sneak 10 s / run 5% | +1 clue / hold 20% | run 5% / stamina 15% |
+| 6 | +10% stamina / hold 8% faster | | | |
+| 7 | hold 15% / +1 clue | sight 10% / recharge 20% | +1 clue / hold 15% | shove 20% / stamina 15% |
+| 8 | run 5% / host sees 10% less | | | |
+| 9 | hold 20% / sight 15% | sneak 12 s / run 8% | +2 clues / hold 20% | shove 30% / run 8% |
+| 10 | Master Hands x2 / run 15% | Ghost 14 s / Blur run 15% | Genius +3 / Speed Reader x2 | Titan x2 / Iron Lungs +50% |
+
+| Lvl | Glow | Patch | Echo | Bramble |
+|---|---|---|---|---|
+| 3 | light 28 / one code colour | shield all nearby / recharge 15% | throw 85 / recharge 15% | ask 20% / stamina 10% |
+| 5 | light 32 / sight 10% | recharge 20% / free 20% | sight 10% / recharge 20% | sight 10% / one code colour |
+| 7 | light 38 / sight 10% | recharge 15% / free 20% | throw 95 / sight 10% | ask 20% / stamina 15% |
+| 9 | light 44 / sight 15% | recharge 25% / free 30% | throw 110 / recharge 25% | sight 15% / +1 clue |
+| 10 | Little Sun 50 / Dazzle 30% | Guardian Angel x2 / Field Medic x2 | Radar Ears 30% / Echo Storm x2 | Camouflage 35% / Plant Friend x2 |
+
+(Patch's "shield all nearby" stays at level 3 where players already took it.)
+
 ## Next, waiting on Brent's yes
-1. 10 levels per character (XP 300 / 800 / 1,600 / 3,000 / 4,800 / 7,000 /
-   9,600 / 12,600 / 16,000; smaller bonuses; scrolling ladder).
+1. Skill Reset Developer Product 49 -> 79 Robux (Brent changes it in Creator
+   Hub; the Lobby button now reads the price from Roblox).
 2. Muscle's blocked passage + Party Popper (replaces one locked door and the
    secret hole).
 3. Gummy floors 2-3 (Candy Factory, Jelly Vault), then the Hospital.

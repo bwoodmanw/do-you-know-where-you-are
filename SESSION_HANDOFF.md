@@ -1,7 +1,7 @@
 # Escape Crew - session handoff
 
-Last updated: 6 Oct 2026 (late), end of the second build session (73 commits;
-latest "Party House uses its own portrait uploads").
+Last updated: 7 Oct 2026, third session (10 levels per character, Lobby
+lights and swings, ladder screen layout, Party House picker fixes).
 
 ## What it is
 
@@ -148,13 +148,14 @@ Checklist in `TEST_PLAN.md` ("This round").
    SurfaceAppearance for a plain TextureID, but a running game usually cannot
    read ColorMap, so it silently did nothing. It now prints "Face softening
    skipped for Patch..." in F9 when that happens. The fix is done once by hand
-   in Studio (steps given to Brent on 6 Oct): copy the SurfaceAppearance's
-   ColorMap into the MeshPart's TextureID, then delete the SurfaceAppearance.
-   Re-save to Roblox so the Lobby copy matches. Ask for a close-up photo.
-2. **10 levels per character** (Brent asked; not built). Proposal: XP
-   300 / 800 / 1,600 / 3,000 / 4,800 / 7,000 / 9,600 / 12,600 / 16,000, each
-   ladder bonus made smaller, the ladder screen scrolls. Needs his yes on the
-   numbers.
+   in Studio. Brent could not find ColorMap in Properties (7 Oct), so he was
+   given a Command Bar line (TEST_PLAN.md, "Patch's face") that does it and
+   prints each part's colour map. If it prints "softened 0", Patch has no
+   SurfaceAppearance and the blotches are in the texture itself: ask for the
+   Output photo. Then re-save Patch to Roblox so the Lobby copy matches.
+2. **10 levels per character** - built 7 Oct, untested (table in
+   ROADMAP.md). **Skill Reset price:** Claude agrees with 79 Robux; Brent
+   changes it in Creator Hub (the Lobby button reads the live price).
 3. **Muscle redesign** (no answer yet): a blocked passage replaces one locked
    door; Muscle shoves it, or anyone plants a Party Popper found in a search
    spot (3 s fuse, BOOM brings the host). The secret hole goes.

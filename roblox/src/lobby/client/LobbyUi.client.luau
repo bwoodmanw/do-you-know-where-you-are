@@ -748,7 +748,7 @@ corner(chars, 18)
 label(chars, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "Characters & skill ladder", TextColor3 = PUMP, ZIndex = 11 })
 -- left: the character in 3D (drag to turn) and what their skill does
 local view = Instance.new("ViewportFrame")
-view.Size = UDim2.fromOffset(230, 270)
+view.Size = UDim2.fromOffset(230, 300)
 view.Position = UDim2.fromOffset(14, 56)
 view.BackgroundColor3 = Color3.fromRGB(40, 26, 58)
 view.Ambient = Color3.fromRGB(170, 160, 190)
@@ -765,7 +765,7 @@ viewCam.Parent = view
 view.CurrentCamera = viewCam
 local noModel = label(view, { Size = UDim2.fromScale(1, 0.7), Position = UDim2.fromScale(0, 0.12), Text = "", ZIndex = 12 })
 label(view, { Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -24), Text = "drag to turn", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 12 })
-local skillAbout = label(chars, { Size = UDim2.fromOffset(230, 100), Position = UDim2.fromOffset(14, 376), TextScaled = false, TextSize = 16, TextWrapped = true,
+local skillAbout = label(chars, { Size = UDim2.fromOffset(230, 100), Position = UDim2.fromOffset(14, 404), TextScaled = false, TextSize = 16, TextWrapped = true,
 	TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 11 })
 -- right: picking a character, their level and the skill ladder
 local right = frame(chars, { Size = UDim2.new(1, -256, 1, -60), Position = UDim2.fromOffset(250, 0), BackgroundTransparency = 1, ZIndex = 11 })
@@ -793,17 +793,27 @@ for _, sk in ipairs(Config.SKILLS) do
 		corner(face, 10)
 	end
 end
-local charTitle = label(right, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.fromOffset(10, 114), Text = "", ZIndex = 11 })
-local xpBack = frame(right, { Size = UDim2.new(1, -40, 0, 14), Position = UDim2.fromOffset(20, 150), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 11 })
+local charTitle = label(right, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.fromOffset(10, 128), Text = "", ZIndex = 11 })
+local xpBack = frame(right, { Size = UDim2.new(1, -40, 0, 14), Position = UDim2.fromOffset(20, 164), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 11 })
 corner(xpBack, 7)
 local xpFill = frame(xpBack, { Size = UDim2.fromScale(0, 1), BackgroundColor3 = Color3.fromRGB(123, 227, 107), BackgroundTransparency = 0, ZIndex = 12 })
 corner(xpFill, 7)
 local ladder = {}
-for level = 2, 5 do
-	local y = 176 + (level - 2) * 68
-	local tag = label(right, { Size = UDim2.fromOffset(70, 56), Position = UDim2.fromOffset(16, y), Text = "Lv " .. level, ZIndex = 11 })
-	local a = button(right, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(92, y), ZIndex = 11 })
-	local b = button(right, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(364, y), ZIndex = 11 })
+local ladderScroll = Instance.new("ScrollingFrame")
+ladderScroll.Size = UDim2.fromOffset(640, 254)
+ladderScroll.Position = UDim2.fromOffset(0, 186)
+ladderScroll.BackgroundTransparency = 1
+ladderScroll.BorderSizePixel = 0
+ladderScroll.ScrollBarThickness = 8
+ladderScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 138, 31)
+ladderScroll.CanvasSize = UDim2.fromOffset(0, (Progress.MAX_LEVEL - 1) * 68)
+ladderScroll.ZIndex = 11
+ladderScroll.Parent = right
+for level = 2, Progress.MAX_LEVEL do
+	local y = (level - 2) * 68
+	local tag = label(ladderScroll, { Size = UDim2.fromOffset(70, 56), Position = UDim2.fromOffset(16, y), Text = "Lv " .. level, ZIndex = 12 })
+	local a = button(ladderScroll, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(92, y), ZIndex = 12 })
+	local b = button(ladderScroll, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(364, y), ZIndex = 12 })
 	ladder[level] = { tag = tag, a = a, b = b }
 	for _, side in ipairs({ "a", "b" }) do
 		ladder[level][side].Activated:Connect(function()
@@ -826,19 +836,27 @@ local function stepChar(d)
 	selected = Config.SKILLS[(i - 1 + d) % #Config.SKILLS + 1].id
 	repaintChars()
 end
-button(chars, "\u{25C0}", { Size = UDim2.fromOffset(56, 36), Position = UDim2.fromOffset(14, 332), ZIndex = 12 }, function()
+button(chars, "\u{25C0}", { Size = UDim2.fromOffset(56, 36), Position = UDim2.fromOffset(14, 362), ZIndex = 12 }, function()
 	stepChar(-1)
 end)
-button(chars, "\u{25B6}", { Size = UDim2.fromOffset(56, 36), Position = UDim2.fromOffset(188, 332), ZIndex = 12 }, function()
+button(chars, "\u{25B6}", { Size = UDim2.fromOffset(56, 36), Position = UDim2.fromOffset(188, 362), ZIndex = 12 }, function()
 	stepChar(1)
 end)
 -- choices are for keeps; a reset clears this character's whole ladder
 button(right, "\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(92, 448), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 11 }, function()
 	remotes.ResetLadder:FireServer(selected, "points")
 end)
-button(right, "\u{1F504} Reset upgrades: R$ 49", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(364, 448), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 11, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
+local resetRobux = button(right, "\u{1F504} Reset upgrades: Robux", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(364, 448), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 11, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
 	remotes.ResetLadder:FireServer(selected, "robux")
 	MarketplaceService:PromptProductPurchase(player, Config.ROBUX_PRODUCTS.reset)
+end)
+task.spawn(function()
+	local ok, info = pcall(function()
+		return MarketplaceService:GetProductInfo(Config.ROBUX_PRODUCTS.reset, Enum.InfoType.Product)
+	end)
+	if ok and info and info.PriceInRobux then
+		resetRobux.Text = "\u{1F504} Reset upgrades: R$ " .. info.PriceInRobux
+	end
 end)
 button(chars, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, -80, 1, -46), ZIndex = 11 }, function()
 	chars.Visible = false
@@ -903,7 +921,7 @@ RunService.RenderStepped:Connect(function()
 	-- characters face -Z; turn it round to face the camera on +Z
 	shown:PivotTo(CFrame.Angles(0, math.pi + spin, 0))
 	local cf, size = shown:GetBoundingBox()
-	local dist = size.Y * 0.62 / math.tan(math.rad(viewCam.FieldOfView / 2))
+	local dist = size.Y * 0.54 / math.tan(math.rad(viewCam.FieldOfView / 2))
 	viewCam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0, size.Y * 0.05, dist), cf.Position)
 end)
 
@@ -925,7 +943,7 @@ repaintChars = function()
 	local prev = Progress.LEVEL_XP[lvl]
 	xpFill.Size = UDim2.fromScale(nextNeed and math.clamp((xp - prev) / (nextNeed - prev), 0, 1) or 1, 1)
 	local picks = (profile.picks and profile.picks[selected]) or {}
-	for level = 2, 5 do
+	for level = 2, Progress.MAX_LEVEL do
 		local options = Progress.choices(selected, level)
 		local row = ladder[level]
 		local reached = lvl >= level

@@ -389,7 +389,7 @@ function Scene.fun()
 	end)
 
 	-- a swing set with two swings: sit and it swings
-	local sx, sz = 44, 60
+	local sx, sz = 40, 50
 	local wood = Color3.fromRGB(110, 70, 40)
 	for _, z in ipairs({ sz - 6, sz + 6 }) do
 		for _, dx in ipairs({ -2.5, 2.5 }) do
@@ -437,6 +437,21 @@ function Scene.fun()
 			place(angle)
 		end)
 	end
+
+	-- lamps over the play lawn (the lane's lamps stop at the spawn)
+	local function lamp(x, z, range)
+		part(folder, { Name = "LampPost", Size = Vector3.new(0.6, 10, 0.6), Position = Vector3.new(x, 5, z), Material = Enum.Material.Metal, Color = Color3.fromRGB(30, 30, 34) })
+		local bulb = part(folder, { Name = "Lamp", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.4, 1.4), Position = Vector3.new(x, 10.4, z), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 220, 150), CanCollide = false })
+		local l = Instance.new("PointLight")
+		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 210, 150), range or 24, 1.4
+		l.Parent = bulb
+	end
+	for _, z in ipairs({ 48, 68, 88 }) do
+		lamp(-11, z)
+		lamp(11, z)
+	end
+	lamp(34, 50, 26) -- by the swings
+	lamp(-36, 56) -- by the left party circles
 
 	-- a giant pumpkin that giggles and glows when you poke it
 	local pumpkin = part(folder, { Name = "GiantPumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(6, 5, 6), Position = Vector3.new(16, 2.5, 54), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })

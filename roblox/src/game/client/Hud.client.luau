@@ -476,6 +476,10 @@ local infoLevel = para(220, 48)
 -- the boosts you are bringing into this game
 local infoBag = para(272, 24)
 infoBag.TextColor3 = Color3.fromRGB(255, 210, 63)
+infoBag.TextScaled = true
+local bagFit = Instance.new("UITextSizeConstraint")
+bagFit.MaxTextSize = 18
+bagFit.Parent = infoBag
 infoLevel.TextColor3 = Color3.fromRGB(205, 190, 225)
 
 local viewIndex = 1
@@ -504,7 +508,7 @@ local function showChar()
 			end
 		end
 	end
-	infoBag.Text = #bring > 0 and ("\u{1F392} Bringing: " .. table.concat(bring, ", ")) or "\u{1F392} No boosts this game (buy them in the Lobby shop)"
+	infoBag.Text = #bring > 0 and ("\u{1F392} Bringing: " .. table.concat(bring, ", ")) or "\u{1F392} No boosts this game (get them in the Lobby shop)"
 
 	if shown then
 		shown:Destroy()
@@ -533,12 +537,7 @@ local function showChar()
 	infoHow.Text = si.how and ("\u{1F3AE} " .. si.how) or ""
 	local data = profileData()
 	local xp = data and data.xp and data.xp[sk.id] or 0
-	local level = 1
-	for i, need in ipairs({ 0, 100, 250, 450, 700 }) do
-		if xp >= need then
-			level = i
-		end
-	end
+	local level = Progress.level(xp)
 	local picks = data and data.picks and data.picks[sk.id]
 	local n = 0
 	if picks then

@@ -42,7 +42,7 @@ Config.DIFFICULTY = {
 Config.CLUE_COSTS = { 10, 20, 30 }
 Config.POINT_SCALE = 0.67
 -- reset one character's skill ladder (the Robux price is set on the
--- Developer Product: 49)
+-- Developer Product in Creator Hub; the Lobby button reads it from there)
 Config.RESET_POINTS = 500
 -- the heartbeat that speeds up near the host (off: only the breathing tells)
 Config.HEARTBEAT = false
@@ -140,7 +140,7 @@ Config.ROBUX_PRODUCTS = {
 	energy = 3716924026, -- Second Wind, 25
 	headstart = 3716924113, -- 50
 	freeze = 3716936312, -- Frozen Pop, 50
-	reset = 3716924568, -- resets one character's skill ladder, 49
+	reset = 3716924568, -- resets one character's skill ladder (price in Creator Hub)
 }
 
 -- Characters saved to Roblox (Studio: right-click the character in

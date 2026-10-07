@@ -29,6 +29,14 @@ end
 local MarketplaceService = game:GetService("MarketplaceService")
 
 -- ---------- the lobby scene: the lane outside the Party House ----------
+do
+	local Lighting = game:GetService("Lighting")
+	local function atLeast(c, r, g, b)
+		return Color3.fromRGB(math.max(c.R * 255, r), math.max(c.G * 255, g), math.max(c.B * 255, b))
+	end
+	Lighting.Ambient = atLeast(Lighting.Ambient, 70, 62, 84)
+	Lighting.OutdoorAmbient = atLeast(Lighting.OutdoorAmbient, 105, 96, 125)
+end
 local function part(props)
 	local p = Instance.new("Part")
 	p.Anchored = true
