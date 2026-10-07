@@ -197,6 +197,8 @@ Config.CHARACTER_ASSETS = {
 	Host = 135742994182895,
 	HostGummy = 106903651525041,
 	HostRobot = 95188395596101,
+	-- skins (Config.SKINS: the model names)
+	TinkerPumpkin = 107525785066601,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon

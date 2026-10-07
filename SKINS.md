@@ -13,8 +13,8 @@ previews show it too. Skins change looks only, never skills.
 
 | # | Skin | Character | Picture folder (`art/model-input/`) | Model file (`art/models/`) | Name in Studio | Picture |
 |---|---|---|---|---|---|---|
-| 1 | Pumpkin Patch Tinker | Tinker | `tinker-pumpkin/` | `tinker-pumpkin.glb` | `TinkerPumpkin` | ready (checked 7 Oct) |
-| 2 | Ghostly Shadow | Shadow | `ghostly-shadow/` | `ghostly-shadow.glb` | `ShadowGhost` | ready (checked 7 Oct) |
+| 1 | Pumpkin Patch Tinker | Tinker | `tinker-pumpkin/` | `tinker-pumpkin.glb` | `TinkerPumpkin` | model saved: 107525785066601 (Game Pass to make) |
+| 2 | Ghostly Shadow | Shadow | `ghostly-shadow/` | `ghostly-shadow.glb` | `ShadowGhost` | new fitted T-pose picture checked 7 Oct: ready |
 | 3 | Candy Glow | Glow | `candy-glow/` | `candy-glow.glb` | `GlowCandy` | ready (checked 7 Oct) |
 | 4 | Night Nurse Patch | Patch | `night-nurse-patch/` | `night-nurse-patch.glb` | `PatchNurse` | ready (checked 7 Oct) |
 | 5 | Space Cadet Brainy | Brainy | `space-cadet-brainy/` | `space-cadet-brainy.glb` | `BrainySpace` | ready (checked 7 Oct) |
