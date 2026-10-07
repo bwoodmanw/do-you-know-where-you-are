@@ -12,6 +12,11 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 3 (7 Oct):
+- [ ] Lobby house sits on grass (ground now continues under it) and is 6 studs nearer the lawn
+- [ ] Window faces: on the windows, on the house's surface (not floating in front of the porch)
+- [ ] Studio, Party House place, stopped: Plugins tab -> Escape Crew -> Soften Patch; Output says "softened N parts"; Play: Patch's face smooth
+
 Round 2 (7 Oct, late):
 - [ ] Lobby house level: front no longer lifted (`LOBBY_HOUSE_TILT` 5 degrees, sink 0.5); no face above the roof
 - [ ] Lobby (owner only): a 📊 Balance button bottom-left opens the host-balance table (Refresh, Close); it fills as games finish

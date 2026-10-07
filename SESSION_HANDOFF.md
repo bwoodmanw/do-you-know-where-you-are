@@ -80,6 +80,12 @@ roblox/
   src/lobby/client/LobbyUi.client.luau  lobby screens (shop, characters with
                       portraits and arrows, party panel, map screen)
 tools/make_housemap.py  floor plans + 2,000-game validation per plan
+tools/studio-plugins/SoftenPatch.lua  Studio plugin (copied to %LOCALAPPDATA%\Roblox\Plugins):
+                      Plugins tab -> Escape Crew -> Soften Patch (selected model or
+                      Characters/Patch: ColorMap -> TextureID, Ctrl+Z undoes)
+art/roblox-store/description.txt  the experience description (under 1,000 chars)
+roblox/src/shared/BalanceLog.luau  per floor + difficulty totals (DataStore
+                      EscapeCrewBalance); Lobby 📊 Balance button, owner only
 art/roblox-store/     icon, thumbnail, boost-*.png, maps/ (card pictures),
                       portraits/ (8 character portraits)
 art/sheets/ art/models/ art/model-input/   design art and Meshy files

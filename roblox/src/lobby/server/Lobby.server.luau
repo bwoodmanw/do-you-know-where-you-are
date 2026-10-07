@@ -66,6 +66,8 @@ for _, x in ipairs({ -20, -8, 8, 20 }) do
 end
 -- nobody walks round the house: an invisible wall across the end of the lawn
 part({ Name = "HouseFence", Size = Vector3.new(200, 60, 2), Position = Vector3.new(0, 30, -88), Transparency = 1 })
+-- ground under the house itself (the lawn stops at z -100; the house goes back further)
+part({ Name = "HouseYard", Size = Vector3.new(160, 2, 80), Position = Vector3.new(0, -1, -138), Material = Enum.Material.Grass, Color = Color3.fromRGB(46, 82, 40) })
 -- a realistic house model (ServerStorage/LobbyProps/House in THIS place) replaces
 -- the built front. It is only scenery: imported with File > Import, no Avatar
 -- Setup needed (a rig from Avatar Setup is removed here anyway).
@@ -105,7 +107,12 @@ local function placeHouse()
 	end
 	local cf2, size2 = m:GetBoundingBox()
 	-- front on the fence line, standing on the ground, centred on the lane
-	m:PivotTo(m:GetPivot() + (Vector3.new(0, size2.Y / 2 - (Config.LOBBY_HOUSE_SINK or 0), -90 - size2.Z / 2) - cf2.Position))
+	local fwd = Config.LOBBY_HOUSE_FORWARD or 0
+	m:PivotTo(m:GetPivot() + (Vector3.new(0, size2.Y / 2 - (Config.LOBBY_HOUSE_SINK or 0), -90 + fwd - size2.Z / 2) - cf2.Position))
+	local fence = workspace:FindFirstChild("HouseFence")
+	if fence then
+		fence.Position = Vector3.new(0, 30, -88 + fwd)
+	end
 	m.Name = "LobbyHouse"
 	m.Parent = workspace
 	for _, p2 in ipairs(workspace:GetChildren()) do
@@ -137,7 +144,13 @@ local function placeHouse()
 			if exact[n] then
 				w.Position = exact[n] + Vector3.new(0, 0, 0.3)
 			elseif s and #exact == 0 then
-				w.Position = Vector3.new(s[1] * size2.X, s[2] * size2.Y - (Config.LOBBY_HOUSE_SINK or 0), -89.4)
+				-- on the house's own front at that spot (windows sit back from the porch)
+				local x, y = s[1] * size2.X, s[2] * size2.Y - (Config.LOBBY_HOUSE_SINK or 0)
+				local params = RaycastParams.new()
+				params.FilterType = Enum.RaycastFilterType.Include
+				params.FilterDescendantsInstances = { m }
+				local hit = workspace:Raycast(Vector3.new(x, y, -40), Vector3.new(0, 0, -120), params)
+				w.Position = hit and (hit.Position + Vector3.new(0, 0, 0.4)) or Vector3.new(x, y, -89.4 + fwd)
 			else
 				w.Name = "UnusedWindow"
 			end
