@@ -287,17 +287,84 @@ end
 -- ---------- the drop-off: cars along the lane, benches by the lamps ----------
 function Scene.dropOff()
 	local colours = { Color3.fromRGB(180, 40, 50), Color3.fromRGB(40, 90, 170), Color3.fromRGB(230, 230, 225), Color3.fromRGB(60, 120, 70) }
-	-- parked along both sides, nose towards the house
-	car(Vector3.new(-17, 0, -22), 0, colours[1])
-	car(Vector3.new(-17, 0, -42), 0, colours[2])
-	car(Vector3.new(17, 0, -30), math.rad(180), colours[3])
-	car(Vector3.new(17, 0, -50), math.rad(180), colours[4])
+	-- left of the lane: two cars lined up, noses towards the house
+	car(Vector3.new(-17, 0, -24), 0, colours[1])
+	car(Vector3.new(-17, 0, -44), 0, colours[2])
+	-- right of the lane: the drive-in, three cars facing the leaderboards,
+	-- the outer two angled in towards the middle board
+	car(Vector3.new(19, 0, -26), -math.pi / 2 - math.rad(12), colours[3])
+	car(Vector3.new(19, 0, -7), -math.pi / 2, colours[4])
 	-- benches facing the lane
 	bench(Vector3.new(-20, 0, 22), math.rad(-90))
 	bench(Vector3.new(20, 0, 22), math.rad(90))
 	bench(Vector3.new(-20, 0, -4), math.rad(-90))
-	-- the "drive-in": a car parked facing the leaderboards, to sit and watch
-	car(Vector3.new(24, 0, 8.5), -math.pi / 2, Color3.fromRGB(230, 170, 40))
+	car(Vector3.new(19, 0, 15), -math.pi / 2 + math.rad(12), Color3.fromRGB(230, 170, 40))
+end
+
+-- ---------- round the edge: an iron fence, trees and pumpkins ----------
+function Scene.perimeter()
+	local folder = Instance.new("Folder")
+	folder.Name = "LobbyEdge"
+	folder.Parent = workspace
+	local iron = Color3.fromRGB(28, 26, 32)
+	local E = 96 -- the fence line (the invisible edge walls are at 100)
+	local function fence(a, b)
+		local len = (b - a).Magnitude
+		local mid = (a + b) / 2
+		local cf = CFrame.lookAt(mid, b)
+		for _, h in ipairs({ 2, 6 }) do
+			part(folder, { Name = "FenceRail", Size = Vector3.new(0.3, 0.3, len), CFrame = cf + Vector3.new(0, h, 0), Color = iron, Material = Enum.Material.Metal })
+		end
+		local n = math.floor(len / 3)
+		for i = 0, n do
+			local p = a:Lerp(b, i / n)
+			part(folder, { Name = "FencePost", Size = Vector3.new(0.3, 7, 0.3), Position = p + Vector3.new(0, 3.5, 0), Color = iron, Material = Enum.Material.Metal })
+			if i % 8 == 0 then
+				part(folder, { Name = "FenceSpike", Shape = Enum.PartType.Ball, Size = Vector3.new(0.7, 0.7, 0.7), Position = p + Vector3.new(0, 7.2, 0), Color = Color3.fromRGB(200, 160, 60), Material = Enum.Material.Metal })
+			end
+		end
+	end
+	fence(Vector3.new(-E, 0, -86), Vector3.new(-E, 0, E))
+	fence(Vector3.new(E, 0, -86), Vector3.new(E, 0, E))
+	fence(Vector3.new(-E, 0, E), Vector3.new(E, 0, E))
+	-- trees just inside the fence: bare spooky ones and dark leafy ones
+	local rng = Random.new(31)
+	local function tree(pos, bare)
+		local trunkCol = Color3.fromRGB(58, 40, 30)
+		local h = bare and rng:NextNumber(12, 16) or rng:NextNumber(10, 14)
+		part(folder, { Name = "TreeTrunk", Size = Vector3.new(1.4, h, 1.4), Position = pos + Vector3.new(0, h / 2, 0), Color = trunkCol, Material = Enum.Material.Wood })
+		if bare then
+			for k = 1, 4 do
+				local a = k / 4 * math.pi * 2 + rng:NextNumber(0, 1)
+				local base = pos + Vector3.new(0, h * rng:NextNumber(0.55, 0.9), 0)
+				local tip = base + Vector3.new(math.cos(a) * 4, rng:NextNumber(2, 4), math.sin(a) * 4)
+				part(folder, { Name = "Branch", Size = Vector3.new(0.5, 0.5, (tip - base).Magnitude), CFrame = CFrame.lookAt((base + tip) / 2, tip), Color = trunkCol, Material = Enum.Material.Wood, CanCollide = false })
+			end
+		else
+			for k = 1, 3 do
+				part(folder, { Name = "Leaves", Shape = Enum.PartType.Ball, Size = Vector3.new(8, 8, 8) * rng:NextNumber(0.8, 1.15), Position = pos + Vector3.new(rng:NextNumber(-1.5, 1.5), h + rng:NextNumber(-1, 2), rng:NextNumber(-1.5, 1.5)), Color = Color3.fromRGB(32, 58, 34), Material = Enum.Material.LeafyGrass, CanCollide = false })
+			end
+		end
+	end
+	local spots = {}
+	for z = -80, 88, 14 do
+		table.insert(spots, Vector3.new(-E + 6, 0, z))
+		table.insert(spots, Vector3.new(E - 6, 0, z))
+	end
+	for x = -84, 84, 14 do
+		table.insert(spots, Vector3.new(x, 0, E - 6))
+	end
+	for i, p in ipairs(spots) do
+		tree(p + Vector3.new(rng:NextNumber(-2, 2), 0, rng:NextNumber(-3, 3)), i % 3 == 0)
+	end
+	-- jack-o'-lanterns along the fence, glowing
+	for i = 1, #spots, 3 do
+		local p = spots[i] + Vector3.new(spots[i].X < 0 and 3 or spots[i].X > 0 and -3 or 0, 0, spots[i].Z > E - 10 and -3 or 7)
+		local pumpkin = part(folder, { Name = "JackOLantern", Shape = Enum.PartType.Ball, Size = Vector3.new(2.6, 2.2, 2.6), Position = p + Vector3.new(0, 1.1, 0), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
+		local glow = Instance.new("PointLight")
+		glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 140, 40), 12, 1.2
+		glow.Parent = pumpkin
+	end
 end
 
 -- ---------- things to play with while waiting ----------

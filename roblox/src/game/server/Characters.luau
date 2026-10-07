@@ -143,6 +143,19 @@ function Characters.apply(plr, name)
 		end
 	end
 	fitHeight(m, KID_HEIGHT)
+	-- feet exactly on the floor: the hip height from the model itself, and
+	-- only the root collides (limbs scraping the floor made a character shake
+	-- as it ran)
+	for _, d in ipairs(m:GetDescendants()) do
+		if d:IsA("BasePart") and d ~= hrp then
+			d.CanCollide = false
+		end
+	end
+	local bcf, bsize = m:GetBoundingBox()
+	local hip = (hrp.Position.Y - hrp.Size.Y / 2) - (bcf.Position.Y - bsize.Y / 2)
+	if hip > 0.1 then
+		hum.HipHeight = hip
+	end
 	soften(m)
 	-- keep Roblox's walk/run/jump animations from the avatar
 	local animate = old:FindFirstChild("Animate")

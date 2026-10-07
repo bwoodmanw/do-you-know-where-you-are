@@ -188,6 +188,18 @@ function Host:alert(pos)
 	self.goal = pos
 end
 
+-- Echo's noise: it goes to look and ignores everyone it can see for a few
+-- seconds (it still grabs anyone it bumps into)
+function Host:lure(pos, seconds)
+	if not self.model then
+		return
+	end
+	self.mode = "search"
+	self.goal = pos
+	self.target = nil
+	self.lureUntil = os.clock() + seconds
+end
+
 function Host:canSee(char)
 	local head = self.model and self.model:FindFirstChild("Head")
 	local target = char and char:FindFirstChild("HumanoidRootPart")
@@ -254,9 +266,10 @@ function Host:step(dt)
 	end
 	-- who can it see? the nearest wins
 	local best, bestD = nil, math.huge
+	local lured = os.clock() < (self.lureUntil or 0)
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local char = plr.Character
-		if char and self:canSee(char) then
+		if char and not lured and self:canSee(char) then
 			local d = (char.HumanoidRootPart.Position - self.root.Position).Magnitude
 			if d < bestD then
 				best, bestD = plr, d

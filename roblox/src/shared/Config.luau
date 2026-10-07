@@ -89,6 +89,8 @@ Config.SKILLS = {
 }
 
 Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25 }
+-- Echo's noise: seconds the host goes to it and ignores the kids it can see
+Config.ECHO_LURE = 5
 -- Muscle's Barricade: crates beside doorways (crates per floor), how close he
 -- must be (studs), how long it stands, how long the host is stuck smashing it
 Config.BARRICADE = { crates = 6, reach = 16, stands = 10, hold = 4 }
@@ -254,7 +256,11 @@ Config.MUSIC = {
 Config.MUSIC_ARTIST = "When Bears and Lions Attack"
 -- where the Lobby house model's windows are, as fractions of its width (from
 -- the middle) and height, for the host's peeks
-Config.LOBBY_HOUSE_WINDOWS = { { -0.23, 0.72 }, { 0.02, 0.69 }, { 0.24, 0.73 }, { -0.3, 0.33 }, { 0.23, 0.33 } }
+-- (x across from the middle, y up from the ground) as parts of the house's
+-- width and height, measured from Brent's photo of 7 Oct
+Config.LOBBY_HOUSE_WINDOWS = { { -0.2, 0.69 }, { 0.12, 0.66 }, { 0.3, 0.69 }, { -0.28, 0.31 }, { 0.29, 0.31 } }
+-- studs the Lobby house sits down into the ground (it stood a little high)
+Config.LOBBY_HOUSE_SINK = 2
 -- seconds between the host's peeks, and how long the face stays
 Config.LOBBY_PEEK_GAP = { 18, 40 }
 Config.LOBBY_PEEK_SECONDS = 2.5

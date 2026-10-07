@@ -375,6 +375,34 @@ end
 player:GetAttributeChangedSignal("CandyCharges"):Connect(paintCandy)
 paintCandy()
 
+-- prompts one character uses (Pick the lock, Shove) show only to them, and
+-- the everyone-else prompt beside it (Unlock, Party Popper) hides for them:
+-- never two on top of each other. Set on this screen only.
+local function fitPrompt(p)
+	local only, notFor = p:GetAttribute("Only"), p:GetAttribute("Not")
+	if not only and not notFor then
+		return
+	end
+	if p:GetAttribute("BaseDist") == nil then
+		p:SetAttribute("BaseDist", p.MaxActivationDistance)
+	end
+	local s = player:GetAttribute("Skill")
+	local show = (only == nil or s == only) and (notFor == nil or s ~= notFor)
+	p.MaxActivationDistance = show and p:GetAttribute("BaseDist") or 0
+end
+workspace.DescendantAdded:Connect(function(d)
+	if d:IsA("ProximityPrompt") then
+		task.defer(fitPrompt, d)
+	end
+end)
+player:GetAttributeChangedSignal("Skill"):Connect(function()
+	for _, d in ipairs(workspace:GetDescendants()) do
+		if d:IsA("ProximityPrompt") then
+			fitPrompt(d)
+		end
+	end
+end)
+
 -- hold-to-use prompts (pick, shove, read, free...) go faster with ladder upgrades
 local ProximityPromptService = game:GetService("ProximityPromptService")
 ProximityPromptService.PromptShown:Connect(function(prompt)

@@ -817,8 +817,11 @@ local function wirePrompts()
 				clearBlock(plr, id, "shove")
 			end)
 			entry.popperPrompt.Triggered:Connect(function(plr)
-				if state.status ~= "playing" or world.unlocked[id] or entry.fuse or not world.keys[id] then
+				if state.status ~= "playing" or world.unlocked[id] or entry.fuse then
 					return
+				end
+				if not world.keys[id] then
+					return need(plr, "muscle", "You need a Party Popper - search drawers and boxes for one! Or bring Muscle to shove it.")
 				end
 				entry.fuse = true
 				entry.popperPrompt.Enabled = false
@@ -1470,8 +1473,7 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 			return say("info", "Throw it somewhere closer!", nil, plr)
 		end
 		if host and host.model then
-			host.mode = "search"
-			host.goal = pos
+			host:lure(pos, Config.ECHO_LURE)
 		end
 		Effects.burst(pos + Vector3.new(0, 1, 0), "noise")
 		say("lure", "Echo threw a noise - the host has gone to look!", { pos = pos, userId = plr.UserId })

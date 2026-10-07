@@ -413,6 +413,8 @@ function House.buildObjects(world)
 			-- Tinker can pick the keypad once a game to learn one colour
 			entry.padPrompt = prompt(entry.keypad, "Pick the keypad", "Tinker: learn one colour", 6)
 			entry.padPrompt.KeyboardKeyCode = Enum.KeyCode.F
+			entry.padPrompt:SetAttribute("Only", "tinker")
+			entry.padPrompt.UIOffset = Vector2.new(0, 96) -- below "Use keypad", not on top of it
 			entry.exit = part(root, { Name = "ExitDoor", Size = Vector3.new(T, 10, 2), Position = base + Vector3.new(0, 5, -T / 2 + 1), Transparency = 1, CanCollide = false })
 		elseif o.kind == "hole" then
 			-- the old secret hole (Muscle's, before the blocked passage): plain wall now
@@ -563,7 +565,9 @@ function House.buildObjects(world)
 			entry.shovePrompt = prompt(entry.part, "Shove", (o.bonus and "Junk Cupboard" or "Blocked passage") .. " - Muscle", 3)
 			entry.popperPrompt = prompt(entry.part, "Plant Party Popper", o.bonus and "Junk Cupboard" or "Blocked passage", 1)
 			entry.popperPrompt.KeyboardKeyCode = Enum.KeyCode.F
-			entry.popperPrompt.Enabled = false
+			-- Muscle sees Shove; everyone else sees the Party Popper
+			entry.shovePrompt:SetAttribute("Only", "muscle")
+			entry.popperPrompt:SetAttribute("Not", "muscle")
 			storeRoomGift(root, entry, o)
 		elseif o.kind == "lock" then
 			-- walls left and right: the door spans X, otherwise Z
@@ -588,6 +592,9 @@ function House.buildObjects(world)
 			entry.unlockPrompt = prompt(entry.lockPart, "Unlock", o.name or "Locked door", 0.5)
 			entry.pickPrompt = prompt(entry.lockPart, "Pick the lock", "Tinker", 4)
 			entry.pickPrompt.KeyboardKeyCode = Enum.KeyCode.F
+			-- Tinker sees Pick; everyone else sees Unlock
+			entry.pickPrompt:SetAttribute("Only", "tinker")
+			entry.unlockPrompt:SetAttribute("Not", "tinker")
 			storeRoomGift(root, entry, o)
 		elseif o.kind == "vent" then
 			-- a grate low on the wall towards the other end
