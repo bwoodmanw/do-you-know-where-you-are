@@ -32,9 +32,11 @@ All nine: full body, A-pose, facing the camera, plain grey background, the
 same face as the character, no logos, no likeness to known characters - ready
 for Meshy.
 - **Pumpkin Patch Tinker** - very good; same proportions as Tinker.
-- **Ghostly Shadow** - good. The see-through glow on the ragged hem will come
-  out as plain lavender cloth in 3D (fine). If Avatar Setup fuses the wavy
-  sleeve ends to the hands, regenerate in Meshy with **T-Pose**.
+- **Ghostly Shadow** - first model (7 Oct): the wide ragged hoodie hangs
+  from the arms down to the hips, so Meshy made one sheet of cloth joining
+  hand to hip, and Avatar Setup ties it to both: it stretches and flaps when
+  he walks. Make the picture again with prompt **2b** (a fitted hoodie with
+  air between the arms and the body), then the model with **T-Pose**.
 - **Candy Glow** - good. The see-through raincoat comes out as solid pink (the
   same happened with Glow's green coat and looked fine).
 
@@ -71,6 +73,9 @@ ends with the line the originals used. Save each result as
 **2. Ghostly Shadow** (done)
 > The same child as the reference picture, same purple eyes and dark hair. Ghost costume: a loose pale lavender-white hoodie with soft wavy ragged hem and sleeve ends like a friendly ghost, a faint glow at the edges, the hood up, a grey cloth face mask, light grey cargo trousers, white trainers with lavender laces, fingerless grey gloves. Mysterious but friendly. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
 
+**2b. Ghostly Shadow, fitted** (use this one: the first made a cloak that joined hand to hip)
+> The same child as the reference picture, same purple eyes and dark hair. Ghost costume: a fitted pale lavender-white hoodie (not a cape, poncho or cloak) with the hood up; close-fitting long sleeves that end at the wrists with a short wavy ghost-trim cuff; the hem stops at the waist with a short wavy ghost-trim edge; a clear gap of air between each arm and the body all the way down, nothing hanging from the arms; a faint glow along the trims, a grey cloth face mask, slim light grey cargo trousers, white trainers with lavender laces, fingerless grey gloves. Mysterious but friendly. Stylised 3D animated-film look, full body, standing in a T-pose facing the camera, arms straight out to the sides, plain light grey background, soft even lighting, no text, no logos.
+
 **3. Candy Glow** (done)
 > The same girl as the reference picture, same curly brown hair bun, freckles and green eyes. Candy outfit: a see-through glowing raincoat in candy pink with small sweet-shaped buttons, a striped mint and white jumper, lilac trousers, glossy pink wellington boots, her glowing headband antenna now ends in a little glowing lollipop, a round candy-shaped lamp on her chest. Cheerful. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
 
@@ -93,6 +98,32 @@ ends with the line the originals used. Save each result as
 
 Send me each new picture before making its model: I look at every one for
 logos, words and resemblance to known characters (the game is public).
+
+## Muscle's trainers: the clean texture (7 Oct)
+
+Muscle's own model had a red swoosh-like mark smeared along each trainer
+(from the source picture). `art/models/muscle-texture-clean.png` is his
+texture with only the red on the shoes repainted grey
+(`art/models/muscle-shoes-before-after.png`: before on top, after below;
+made by `tools/repaint_shoes.py`). To put it on him:
+
+1. Studio, the **Party House** place, game stopped. **View** -> **Asset
+   Manager** -> the **Import** button (arrow up) -> choose
+   `art/models/muscle-texture-clean.png` -> it appears under **Images**.
+   Right-click it -> **Copy Asset ID**.
+2. **Explorer** -> **ServerStorage -> Characters -> Muscle**: select it ->
+   **Plugins** tab -> **Escape Crew** -> **Soften Patch** (this moves his
+   skin onto TextureID, so the next step can change it; skip if it says
+   there is nothing to soften).
+3. **View** -> **Command Bar**. Paste this, put the copied number where it
+   says PASTE, press Enter:
+   `local id = "rbxassetid://PASTE" local n = 0 for _, d in ipairs(game.ServerStorage.Characters.Muscle:GetDescendants()) do if d:IsA("MeshPart") then d.TextureID = id n += 1 end end print("Muscle: new texture on " .. n .. " parts")`
+4. Look at his shoes (zoom in on him in the viewport, or press Play and pick
+   Muscle): plain grey and white. If anything else looks wrong, **Ctrl+Z**
+   and send me a photo.
+5. Right-click **Muscle** -> **Save to Roblox** -> choose **Overwrite** the
+   existing `Escape Crew - Muscle` asset (keeps its id, so the Lobby picks it
+   up), then **File -> Publish to Roblox**.
 
 ## Make each 3D model (as in MESHY_GUIDE.md)
 
