@@ -324,7 +324,9 @@ local function paintCode()
 		if player:GetAttribute("Skill") == "brainy" then
 			cost = math.ceil(cost / 2)
 		end
-		clueBtn.Text = "\u{1F4A1} Clue " .. cost .. "\u{2B50} (" .. tostring(RoundState:GetAttribute("CluesLeft") or 0) .. ")"
+		local free = RoundState:GetAttribute("FreeClues") or 0
+		local left = tostring(RoundState:GetAttribute("CluesLeft") or 0)
+		clueBtn.Text = free > 0 and ("\u{1F4A1} Clue FREE (" .. left .. ")") or ("\u{1F4A1} Clue " .. cost .. "\u{2B50} (" .. left .. ")")
 	end
 end
 RoundState.AttributeChanged:Connect(paintCode)

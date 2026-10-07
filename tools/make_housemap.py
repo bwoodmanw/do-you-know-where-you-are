@@ -324,6 +324,89 @@ def plan_hospital():
     return p
 
 
+# ---------------------------------------------------------------- Abandoned Hospital, floor 2: the Wards
+def plan_wards():
+    p = Plan('ward_a', 'Abandoned Hospital - Wards')
+    p.building, p.floor_no, p.theme = 'hospital', 2, 'hospital'
+    p.exit_style, p.exit_text = 'stairs', 'Up to the Labs'
+    for x in (10, 20, 30):
+        p.rect(x, 0, x, H - 1)
+    for y in (9, 19):
+        p.rect(0, y, W - 1, y)
+    for y in range(1, H - 1):
+        p.grid[y][0] = '#'
+        p.grid[y][W - 1] = '#'
+    p.rect(20, 20, 20, 28, '.')     # the Nurses' Station spans the bottom middle
+    for x, y in [(10, 24), (30, 25), (15, 19), (25, 19), (10, 14), (5, 19), (30, 13), (20, 16), (35, 19), (10, 4), (30, 4)]:
+        p.put(x, y, '.')
+    p.put(15, 9, 'L')    # L1: Ward B -> Medicine Store
+    p.put(20, 5, 'L')    # L2: Medicine Store -> Stairwell
+    p.put(25, 0, 'D')
+    p.put(0, 14, 'C')
+    p.rect(20, 22, 20, 24)
+    p.rect(25, 11, 25, 13)
+    p.rect(34, 21, 34, 23)
+    for x, y in [(23, 3), (27, 3), (23, 6), (27, 6)]:
+        p.put(x, y, '#')
+    p.rect(4, 4, 6, 4)
+    for f in [(2, 11, 6, 11, 'bed'), (4, 15, 6, 16, 'bed'), (12, 13, 17, 14, 'bed'), (12, 3, 17, 3, 'shelf'),
+              (13, 6, 18, 6, 'shelf'), (2, 21, 8, 21, 'shelf'), (2, 25, 6, 25, 'shelf'), (14, 23, 17, 24, 'counter'),
+              (22, 15, 23, 16, 'table'), (33, 14, 36, 14, 'bed'), (33, 3, 35, 3, 'desk')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 9, 8, 'greylino', "Nurses' Office"), (11, 1, 19, 8, 'whitetiles', 'Medicine Store'), (21, 1, 29, 8, 'greylino', 'Stairwell'),
+                (31, 1, 38, 8, 'mintlino', 'Quiet Room'), (1, 10, 9, 18, 'mintlino', 'Ward A'), (11, 10, 19, 18, 'mintlino', 'Ward B'),
+                (21, 10, 29, 18, 'whitetiles', 'Day Room'), (31, 10, 38, 18, 'whitetiles', "Children's Ward"), (1, 20, 9, 28, 'greylino', 'Linen Room'),
+                (11, 20, 29, 28, 'whitetiles', "Nurses' Station"), (31, 20, 38, 28, 'whitetiles', 'Bathroom')]
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
+               dict(id='L1', kind='lock', x=15, y=9, name='Medicine Store door'), dict(id='L2', kind='lock', x=20, y=5, name='Stairwell door'),
+               dict(id='cage', kind='cage', x=12, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=9, y=17), dict(id='v1b', kind='vent', pair='v1', x=11, y=17),
+               dict(id='v2a', kind='vent', pair='v2', x=29, y=11), dict(id='v2b', kind='vent', pair='v2', x=31, y=11)]
+    p.start = [(17, 27), (18, 27), (19, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 14), (22, 15)
+    p.patrol = [(5, 13), (15, 16), (24, 17), (34, 16), (35, 25), (24, 21), (13, 26), (5, 27),
+                (15, 5, 'L1'), (6, 7, 'L1'), (25, 5, 'L2'), (35, 6, 'L2')]
+    return p
+
+
+# ---------------------------------------------------------------- Abandoned Hospital, floor 3: the Labs
+def plan_labs():
+    p = Plan('lab_a', 'Abandoned Hospital - Labs')
+    p.building, p.floor_no, p.theme = 'hospital', 3, 'hospital'
+    p.exit_style, p.exit_text = 'stairs', 'Out onto the helipad!'
+    for x in (13, 26):
+        p.rect(x, 0, x, H - 1)
+    for y in (10, 20):
+        p.rect(0, y, W - 1, y)
+    for x, y in [(13, 25), (26, 24), (19, 20), (22, 20), (6, 20), (13, 15), (26, 16), (33, 20), (26, 4)]:
+        p.put(x, y, '.')
+    p.put(6, 10, 'L')    # L1: Science Lab -> Lab Store
+    p.put(13, 5, 'L')    # L2: Lab Store -> Helipad Stairs
+    p.put(19, 0, 'D')
+    p.put(0, 24, 'C')
+    for x, y in [(17, 3), (22, 3), (17, 7), (22, 7)]:
+        p.put(x, y, '#')
+    p.rect(21, 12, 21, 14)
+    p.rect(20, 23, 20, 25)
+    p.rect(31, 22, 31, 24)
+    for f in [(2, 3, 10, 3, 'shelf'), (3, 6, 11, 6, 'shelf'), (2, 13, 8, 13, 'counter'), (5, 16, 7, 17, 'counter'),
+              (29, 14, 35, 15, 'planter'), (16, 16, 17, 17, 'table'), (2, 22, 10, 22, 'shelf'), (2, 26, 8, 26, 'shelf'),
+              (30, 3, 32, 3, 'desk'), (15, 22, 17, 23, 'counter')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 12, 9, 'greylino', 'Lab Store'), (14, 1, 25, 9, 'greylino', 'Helipad Stairs'), (27, 1, 38, 9, 'mintlino', 'Radio Room'),
+                (1, 11, 12, 19, 'whitetiles', 'Science Lab'), (14, 11, 25, 19, 'mintlino', 'Lift Lobby'), (27, 11, 38, 19, 'greylino', 'Plant Lab'),
+                (1, 21, 12, 28, 'greylino', 'Supply Room'), (14, 21, 25, 28, 'whitetiles', 'Lab Entrance'), (27, 21, 38, 28, 'greylino', 'Generator Room')]
+    p.fixed = [dict(id='door', kind='door', x=19, y=0),
+               dict(id='L1', kind='lock', x=6, y=10, name='Lab Store door'), dict(id='L2', kind='lock', x=13, y=5, name='Helipad door'),
+               dict(id='cage', kind='cage', x=15, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=12, y=18), dict(id='v1b', kind='vent', pair='v1', x=14, y=18),
+               dict(id='v2a', kind='vent', pair='v2', x=36, y=19), dict(id='v2b', kind='vent', pair='v2', x=36, y=21)]
+    p.start = [(18, 27), (19, 27), (20, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 24), (16, 16)
+    p.patrol = [(6, 14), (19, 14), (32, 17), (33, 25), (19, 24), (6, 27), (6, 4, 'L1'), (10, 8, 'L1'), (19, 5, 'L2'), (33, 6, 'L2')]
+    return p
+
+
 # ---------------------------------------------------------------- floor 3: the Attic
 def plan_attic():
     p = Plan('attic_a', 'The Party House - Attic')
@@ -474,8 +557,9 @@ def add_closets(p):
     def hits(rect, tiles):
         return any(rect[0] <= x <= rect[2] and rect[1] <= y <= rect[3] for x, y in tiles)
 
-    found = []
-    for f in rooms1:
+    def search(may_go):
+      found = []
+      for f in rooms1:
         if f[5] in p.tall or (f[2] - f[0]) < 5 or (f[3] - f[1]) < 5:
             continue
         for cx, cy, dx, dy in ((f[0], f[1], 1, 1), (f[2], f[1], -1, 1), (f[0], f[3], 1, -1), (f[2], f[3], -1, -1)):
@@ -487,14 +571,22 @@ def add_closets(p):
                 continue
             # furniture in the corner goes (never the cake's table)
             gone = [fu for fu in p.furniture if hits(fu, inside + walls)]
-            if any(hits(fu, [p.cake]) for fu in gone):
+            # only plain shelves and tables may go (never a bath, bed, piano, planter...)
+            if any(hits(fu, [p.cake]) for fu in gone) or any(fu[4] not in may_go for fu in gone):
                 continue
             freed = {(x, y) for fu in gone for y in range(fu[1], fu[3] + 1) for x in range(fu[0], fu[2] + 1)}
             if any(p.c(*t) not in '.T' or (p.c(*t) == 'T' and t not in freed) for t in around):
                 continue
             found.append((len(gone), f, inside, walls, door, gone))
-    found.sort(key=lambda c: (c[0], any(s in c[2] for s in p.start), c[1][5]))
-    found = [c[1:] for c in found]
+      found.sort(key=lambda c: (c[0], any(s in c[2] for s in p.start), c[1][5]))
+      return [c[1:] for c in found]
+    # plain shelves and tables may go; if that leaves room for fewer than two
+    # store rooms, counters and desks may too (never a bath, bed, piano, planter, pit)
+    found = search(('shelf', 'table'))
+    if len({c[0][5] for c in found}) < 2:
+        found = search(('shelf', 'table', 'counter', 'desk'))
+    if len({c[0][5] for c in found}) < 2:
+        found = search(('shelf', 'table', 'counter', 'desk', 'bath'))
     picked, used = [], set()
     for c in found:
         if c[0][5] not in used and not any(set(c[1] + c[2]) & set(d[1] + d[2]) for d in picked):
@@ -752,10 +844,13 @@ gum = add_closets(plan_bounce())
 fac = add_closets(plan_factory())
 vault = add_closets(plan_vault())
 hosp = add_closets(plan_hospital())
+ward = add_closets(plan_wards())
+lab = add_closets(plan_labs())
 for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms'),
           att, mirror(att, 'attic_b', 'The Party House - Attic'), gum, mirror(gum, 'gum_b', 'Gummy Bounce House - Bounce Hall'),
           fac, mirror(fac, 'fac_b', 'Gummy Bounce House - Candy Factory'), vault, mirror(vault, 'vault_b', 'Gummy Bounce House - Jelly Vault'),
-          hosp, mirror(hosp, 'hosp_b', 'Abandoned Hospital - Ground Floor')):
+          hosp, mirror(hosp, 'hosp_b', 'Abandoned Hospital - Ground Floor'),
+          ward, mirror(ward, 'ward_b', 'Abandoned Hospital - Wards'), lab, mirror(lab, 'lab_b', 'Abandoned Hospital - Labs')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (

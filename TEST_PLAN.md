@@ -12,6 +12,18 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 5 (7 Oct):
+- [ ] Studio Play builds Hospital: Wards (`hospital_2`): Ward A/B and Children's Ward with beds, Linen Room towels, Medicine Store, stairs "Up to the Labs"; ask for `hospital_3` (Labs: Science Lab benches, Plant Lab planters, Generator Room tanks, "Out onto the helipad!")
+- [ ] Lobby map screen: Hospital shows 3 floors (Wards and Labs use the Hospital picture for now)
+- [ ] Rooms say what they are: bathrooms have a toilet, sink and mirror; Clock Room grandfather clocks; Boiler / Generator / Water Tank rooms tanks and pipes; storage rooms stacked crates; plant rooms potted plants; offices a desk and lamp; halls and landings a long runner
+- [ ] Shelves: Records/Office/Study/Archive files, Locker Room lockers, Linen towels, Children's Ward toys
+- [ ] Muscle's crates: arrows and a big arm painted on every side, "Barricade crate - Muscle" over it; Muscle's prompt says "Move Barricade"
+- [ ] Bonus clues are FREE: from a present, the Extra Clue boost or a ladder upgrade the Clue button says "Clue FREE" and no points are taken
+- [ ] Lobby menu: smaller text, more space between buttons; Balance and Windows buttons sit to the right of the menu, not on it
+- [ ] How to play: scrolls, covers leader/Ready, balloons, keys, blocked doors and Poppers, store rooms, hiding (Space), vents, Barricade, Echo/Shadow/Patch, cage, clues, boosts, levels, 9 floors
+- [ ] Window faces (owner, live or Studio with API access): 🪟 Windows -> click the middle of each window -> Save -> Test: the host peeks in each, in turn
+- [ ] Soften Patch (Studio STOPPED): a small "Soften Patch" window says "Done! Softened N parts"; while playing it says "Press Stop first"
+
 Round 4 (7 Oct):
 - [ ] Top of the screen: the timer/code bar stops before 🔊 and 🎵; Players and Lobby sit under 🎵; the song name sits under Lobby (nothing overlaps)
 - [ ] Lobby: Friends' parties box starts below the points and sound buttons

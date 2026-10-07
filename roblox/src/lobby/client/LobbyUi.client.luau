@@ -360,19 +360,19 @@ menuStroke.Parent = menu
 local menuPad = Instance.new("UIPadding")
 menuPad.PaddingTop, menuPad.PaddingBottom = UDim.new(0, 16), UDim.new(0, 16)
 menuPad.Parent = menu
-list(menu, 10)
-label(menu, { Size = UDim2.new(0.9, 0, 0, 22), Text = "THE PARTY AT THE END OF THE LANE", TextColor3 = Color3.fromRGB(255, 217, 168), LayoutOrder = 1 })
-label(menu, { Size = UDim2.new(0.9, 0, 0, 56), Text = "ESCAPE CREW", TextColor3 = PUMP, LayoutOrder = 2 })
-button(menu, "\u{25B6} Play solo", { Size = UDim2.new(0.86, 0, 0, 52), BackgroundColor3 = PUMP, TextColor3 = NIGHT, LayoutOrder = 3 }, function()
+list(menu, 14)
+label(menu, { Size = UDim2.new(0.9, 0, 0, 20), Text = "THE PARTY AT THE END OF THE LANE", TextColor3 = Color3.fromRGB(255, 217, 168), LayoutOrder = 1 })
+label(menu, { Size = UDim2.new(0.9, 0, 0, 48), Text = "ESCAPE CREW", TextColor3 = PUMP, LayoutOrder = 2 })
+button(menu, "\u{25B6} Play solo", { Size = UDim2.new(0.86, 0, 0, 46), BackgroundColor3 = PUMP, TextColor3 = NIGHT, LayoutOrder = 3 }, function()
 	remotes.CreateParty:FireServer(true)
 end)
-button(menu, "\u{1F465} Create a party", { Size = UDim2.new(0.86, 0, 0, 52), LayoutOrder = 4 }, function()
+button(menu, "\u{1F465} Create a party", { Size = UDim2.new(0.86, 0, 0, 44), LayoutOrder = 4 }, function()
 	remotes.CreateParty:FireServer(false)
 end)
-button(menu, "\u{2709} Invite friends", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 5 }, invite)
-local shopBtn = button(menu, "\u{1F6D2} Shop", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 6 })
-local charsBtn = button(menu, "\u{1F9D1}\u{200D}\u{1F91D}\u{200D}\u{1F9D1} Characters", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 7 })
-local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 8 })
+button(menu, "\u{2709} Invite friends", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 5 }, invite)
+local shopBtn = button(menu, "\u{1F6D2} Shop", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 6 })
+local charsBtn = button(menu, "\u{1F9D1}\u{200D}\u{1F91D}\u{200D}\u{1F9D1} Characters", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 7 })
+local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 8 })
 
 -- ---------- the balance table (the experience's owner only) ----------
 task.spawn(function()
@@ -432,10 +432,56 @@ task.spawn(function()
 	button(panel, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, 10, 1, -48), ZIndex = 31 }, function()
 		panel.Visible = false
 	end)
-	button(gui, "\u{1F4CA} Balance", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0, 24, 1, -56), ZIndex = 5 }, function()
+	button(gui, "\u{1F4CA} Balance", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0, 372, 1, -52), ZIndex = 5 }, function()
 		panel.Visible = not panel.Visible
 		if panel.Visible then
 			fill()
+		end
+	end)
+	-- window faces: click the middle of each window on the house
+	local setup = frame(gui, { Size = UDim2.fromOffset(640, 100), Position = UDim2.new(0.5, -320, 0, 56), Visible = false, ZIndex = 30 })
+	corner(setup, 14)
+	label(setup, { Size = UDim2.new(1, -20, 0, 44), Position = UDim2.fromOffset(10, 4), TextWrapped = true, ZIndex = 31,
+		Text = "\u{1FA9F} Click the middle of each window on the house (up to 8). Then Save. Test makes the host peek in each." })
+	local editingMode = false
+	local function bar(text, x, action)
+		button(setup, text, { Size = UDim2.fromOffset(140, 38), Position = UDim2.new(0, x, 1, -46), ZIndex = 31 }, function()
+			if action == "done" then
+				editingMode = false
+				setup.Visible = false
+			else
+				remotes.PeekSetup:FireServer(action)
+			end
+		end)
+	end
+	bar("\u{1F4BE} Save", 16, "save")
+	bar("\u{1F440} Test", 172, "test")
+	bar("\u{1F5D1} Clear", 328, "clear")
+	bar("Done", 484, "done")
+	button(gui, "\u{1FA9F} Windows", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0, 512, 1, -52), ZIndex = 5 }, function()
+		editingMode = not editingMode
+		setup.Visible = editingMode
+		if editingMode then
+			remotes.PeekSetup:FireServer("start")
+		end
+	end)
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if not editingMode or processed then
+			return
+		end
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			local house = workspace:FindFirstChild("LobbyHouse")
+			if not house then
+				return
+			end
+			local ray = workspace.CurrentCamera:ScreenPointToRay(input.Position.X, input.Position.Y)
+			local params = RaycastParams.new()
+			params.FilterType = Enum.RaycastFilterType.Include
+			params.FilterDescendantsInstances = { house }
+			local hit = workspace:Raycast(ray.Origin, ray.Direction * 600, params)
+			if hit then
+				remotes.PeekSetup:FireServer("add", hit.Position)
+			end
 		end
 	end)
 end)
@@ -657,7 +703,7 @@ local function paintParty(p)
 				end
 			end
 			c.mapId = open and m.id or nil
-			c.button.Image = img(Config.MAP_IMAGES[m.id])
+			c.button.Image = img(Config.MAP_IMAGES[m.id] or Config.MAP_IMAGES["building-" .. m.building])
 			c.button.ImageTransparency = open and 0 or 0.6
 			c.name.Text = m.name
 			c.sub.Text = not m.ready and "Coming soon" or (not open and "\u{1F512} Locked")
@@ -1121,23 +1167,46 @@ end)
 local help = frame(gui, { Size = UDim2.fromOffset(520, 420), Position = UDim2.new(0.5, -260, 0.5, -210), Visible = false, ZIndex = 10 })
 corner(help, 18)
 label(help, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "How to play", TextColor3 = PUMP, ZIndex = 11 })
-label(help, {
-	Size = UDim2.new(1, -40, 1, -120),
-	Position = UDim2.fromOffset(20, 56),
-	TextScaled = false,
-	TextSize = 19,
-	TextWrapped = true,
-	TextXAlignment = Enum.TextXAlignment.Left,
-	TextYAlignment = Enum.TextYAlignment.Top,
-	ZIndex = 11,
-	Text = "\u{1F3E0} You were dropped at a party. It was a trick. Find the way out of the Party House before the host catches you - and before the timer runs out.\n\n"
-		.. "\u{1F388} Pop the numbered balloons (E) to learn the door code, or use your character's skill.\n"
-		.. "\u{1F648} Hide in wardrobes, curtains and boxes (E). Jump to come out.\n"
-		.. "\u{1F3C3} Run with Shift or the Run button - it uses stamina.\n"
-		.. "\u{1F4A1} Clues show the next step but cost points you earned in that game.\n"
-		.. "\u{1F512} Caught? A teammate frees you from the cage - or watch your team.\n"
-		.. "\u{1F333} Everyone out to the garden = you win!",
-})
+do
+	local scroll = Instance.new("ScrollingFrame")
+	scroll.Size = UDim2.new(1, -30, 1, -120)
+	scroll.Position = UDim2.fromOffset(18, 56)
+	scroll.BackgroundTransparency = 1
+	scroll.BorderSizePixel = 0
+	scroll.ScrollBarThickness = 8
+	scroll.ScrollBarImageColor3 = PUMP
+	scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	scroll.CanvasSize = UDim2.new()
+	scroll.ZIndex = 11
+	scroll.Parent = help
+	local t = label(scroll, {
+		Size = UDim2.new(1, -14, 0, 0),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		TextScaled = false,
+		TextSize = 17,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top,
+		ZIndex = 12,
+		Text = "\u{1F3E0} You were dropped at a party. It was a trick! Escape the floor before the host catches you - and before the timer runs out.\n\n"
+			.. "\u{1F465} The party leader picks the floor, difficulty and Giggly or Spooky. Everyone picks a character and presses \u{25B6} Play when ready.\n\n"
+			.. "\u{1F388} Pop balloons (E) to learn the 3-colour door code - some are tricks. Brainy, Glow and Bramble learn it a faster way. Tinker can pick the big door's keypad (F) for one colour.\n\n"
+			.. "\u{1F511} Locked doors: find the key in a drawer, box or coat - or Tinker picks the lock (F).\n"
+			.. "\u{1F6A7} Blocked doorways: Muscle shoves the junk (E), or anyone plants a \u{1F389} Party Popper (F). Poppers belong to the whole team - but the BOOM brings the host!\n"
+			.. "\u{1F381} The Store Room and the Junk Cupboard hide a bonus present.\n\n"
+			.. "\u{1F3C3} Run with Shift or the Run button (it uses stamina).\n"
+			.. "\u{1F648} Hide where you see a \u{1F648} - each fits 1 to 3. Press Space to come out.\n"
+			.. "\u{1F573} Crawl through vents to the next room - the host can't follow.\n\n"
+			.. "\u{1F4AA} Muscle's Barricade: slide a \u{1F4AA} crate into a doorway. Friends walk through, the host has to smash it.\n"
+			.. "\u{1F3A7} Echo throws a noise - the host goes to look. \u{1F319} Shadow sneaks unseen. \u{1F6E1} Patch gives Party Shields and helps friends run.\n\n"
+			.. "\u{1F512} Caught? A friend frees you from the cage (hold E) - or watch your team.\n"
+			.. "\u{1F4A1} Clues show the next step but cost points earned that game.\n"
+			.. "\u{1F392} Boosts from the shop: tap them in the game.\n\n"
+			.. "\u{2B50} Play a character to level them up to 10 - choose upgrades in Characters.\n"
+			.. "\u{1F6AA} Escape a floor to unlock the next one - 3 buildings, 9 floors!",
+	})
+	local _ = t
+end
 button(help, "Got it", { Size = UDim2.fromOffset(160, 46), Position = UDim2.new(0.5, -80, 1, -60), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 11 }, function()
 	help.Visible = false
 end)

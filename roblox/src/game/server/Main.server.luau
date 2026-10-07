@@ -601,8 +601,10 @@ local function wireStoreRooms()
 				local what
 				if roll == 1 then
 					state.cluesLeft += 1
+					state.freeClues = (state.freeClues or 0) + 1
 					RoundState:SetAttribute("CluesLeft", state.cluesLeft)
-					what = "+1 clue for the team and 30 points"
+					RoundState:SetAttribute("FreeClues", state.freeClues)
+					what = "a free clue for the team and 30 points"
 				elseif roll == 2 then
 					plr:SetAttribute("Shield", true)
 					what = "a Party Shield and 30 points"
@@ -1494,6 +1496,26 @@ AskClue.OnServerEvent:Connect(function(plr)
 	if state.status ~= "playing" or state.cluesLeft <= 0 then
 		return
 	end
+	-- a bonus clue (a present, the Extra Clue boost, a ladder upgrade) is free
+	if (state.freeClues or 0) > 0 then
+		state.freeClues -= 1
+		RoundState:SetAttribute("FreeClues", state.freeClues)
+		state.cluesLeft -= 1
+		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+		local fid, ftext = hintFor()
+		local fentry = world.objects[fid]
+		local ftarget = fentry and (fentry.keypad or fentry.part or fentry.exit)
+		if ftarget then
+			local hl = Instance.new("Highlight")
+			hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(123, 227, 107), Color3.fromRGB(123, 227, 107), 0.6
+			hl.Adornee = ftarget
+			hl.Parent = ftarget
+			task.delay(15, function()
+				hl:Destroy()
+			end)
+		end
+		return say("clue", "\u{1F381} Free clue: " .. ftext)
+	end
 	-- a clue costs points earned in this game: 10, then 20, then 30 (Brainy half)
 	local used = state.cluesUsed or 0
 	local cost = Config.CLUE_COSTS[math.min(used + 1, #Config.CLUE_COSTS)]
@@ -1589,7 +1611,9 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 		end
 	elseif id == "clue" then
 		state.cluesLeft += 1
+		state.freeClues = (state.freeClues or 0) + 1
 		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+		RoundState:SetAttribute("FreeClues", state.freeClues)
 	end
 	Effects.at(plr, "boost")
 	local spot = hrpOf(plr)
@@ -1773,6 +1797,8 @@ function round.start()
 		local s = HouseMap.start[((i - 1) % #HouseMap.start) + 1]
 		teleport(plr, at(s[1], s[2], 0))
 	end
+	state.freeClues = extraClues
+	RoundState:SetAttribute("FreeClues", extraClues)
 	if extraClues > 0 then
 		state.cluesLeft += extraClues
 		RoundState:SetAttribute("CluesLeft", state.cluesLeft)

@@ -132,7 +132,7 @@ Config.PICK_WAIT = 120
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "hospital" -- partyhouse, partyhouse_2, partyhouse_3, gummy, gummy_2, gummy_3, hospital
+Config.STUDIO_MAP = "hospital_2" -- partyhouse(_2, _3), gummy(_2, _3), hospital(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot"); nil = random

@@ -125,20 +125,92 @@ local function roomNameAt(map, x, y)
 	return ""
 end
 
--- what sits on a Party House shelf, by room: food in a pantry or kitchen,
--- towels in a bathroom, toys in a nursery, boxes in a store room, else books
-local function shelfStyle(name)
+-- what sits on a shelf, by room, in every building: food in a pantry,
+-- kitchen or canteen, towels in a bathroom or linen room, toys in a nursery
+-- or children's ward, files in records and offices, lockers in a locker
+-- room, boxes in stores; otherwise the building's own (books, candy jars,
+-- medicine)
+local function shelfStyle(theme, name)
 	local n = string.lower(name)
-	if string.find(n, "pantry") or string.find(n, "kitchen") then
+	local function has(...)
+		for _, w in ipairs({ ... }) do
+			if string.find(n, w, 1, true) then
+				return true
+			end
+		end
+		return false
+	end
+	if has("medicine", "pharmacy") then
+		return "medicine"
+	elseif has("pantry", "kitchen", "canteen", "taste") then
 		return "food"
-	elseif string.find(n, "bath") or string.find(n, "linen") or string.find(n, "laundry") then
+	elseif has("bath", "linen", "laundry") then
 		return "towels"
-	elseif string.find(n, "nursery") or string.find(n, "play") or string.find(n, "kids") or string.find(n, "doll") then
+	elseif has("nursery", "play", "kids", "doll", "children") then
 		return "toys"
-	elseif string.find(n, "storage") or string.find(n, "box") or string.find(n, "trunk") or string.find(n, "store") then
+	elseif has("records", "office", "study", "radio", "archive") then
+		return "files"
+	elseif has("locker") then
+		return "lockers"
+	elseif has("storage", "box", "trunk", "store", "supply", "packing", "wrapper") then
 		return "boxes"
 	end
-	return "books"
+	return theme == "gummy" and "candy" or theme == "hospital" and "medicine" or "books"
+end
+
+-- a shelf that matches its room (false: the building's own kind of shelf)
+local function styledShelf(root, map, x, y)
+	local style = shelfStyle(map.theme, roomNameAt(map, x, y))
+	if style == "books" or style == "candy" or style == "medicine" then
+		return false
+	end
+	local bodyCol = map.theme == "gummy" and Color3.fromRGB(255, 190, 215) or map.theme == "hospital" and Color3.fromRGB(232, 236, 238) or (style == "towels" and Color3.fromRGB(235, 232, 225) or Color3.fromRGB(150, 110, 70))
+	if style == "lockers" then
+		part(root, { Name = "Lockers", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.Metal, Color = Color3.fromRGB(120, 140, 170) })
+		for d = -1, 1 do
+			part(root, { Name = "LockerGap", Size = Vector3.new(0.1, 9.4, 0.1), Position = at(x, y, 5) + Vector3.new(d * 2.6 + 1.3, 0, T * 0.3 + 0.05), Color = Color3.fromRGB(40, 45, 55), CanCollide = false })
+			part(root, { Name = "LockerVent", Size = Vector3.new(1.4, 0.8, 0.1), Position = at(x, y, 8.5) + Vector3.new(d * 2.6, 0, T * 0.3 + 0.05), Color = Color3.fromRGB(60, 70, 85), CanCollide = false })
+		end
+		return true
+	end
+	part(root, { Name = "Shelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = map.theme == "party" and Enum.Material.Wood or Enum.Material.SmoothPlastic, Color = bodyCol })
+	local front = T * 0.3 + 0.4
+	for row = 0, 2 do
+		for j = 0, 2 do
+			local p = at(x, y, 1.4 + row * 3) + Vector3.new(-2.5 + j * 2.5, 0, front)
+			local k = (x + j + row) % 3
+			if style == "food" then
+				if k == 0 then
+					part(root, { Name = "Can", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.6, 1.1, 1.1), CFrame = CFrame.new(p + Vector3.new(0, 0.1, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(200, 60, 50), Material = Enum.Material.Metal, CanCollide = false })
+				elseif k == 1 then
+					part(root, { Name = "Jar", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.8, 1.3, 1.3), CFrame = CFrame.new(p + Vector3.new(0, 0.2, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(240, 170, 60), Material = Enum.Material.Glass, Transparency = 0.2, CanCollide = false })
+				else
+					part(root, { Name = "CerealBox", Size = Vector3.new(1.6, 2.3, 0.7), Position = p + Vector3.new(0, 0.35, 0), Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
+				end
+			elseif style == "towels" then
+				for t = 0, 2 do
+					part(root, { Name = "Towel", Size = Vector3.new(2, 0.5, 1.2), Position = p + Vector3.new(0, -0.4 + t * 0.55, 0), Color = ({ Color3.fromRGB(150, 200, 235), Color3.fromRGB(250, 250, 250), Color3.fromRGB(255, 190, 210) })[(t + j) % 3 + 1], Material = Enum.Material.Fabric, CanCollide = false })
+				end
+			elseif style == "toys" then
+				if k == 0 then
+					part(root, { Name = "ToyBall", Shape = Enum.PartType.Ball, Size = Vector3.new(1.5, 1.5, 1.5), Position = p, Color = Color3.fromRGB(61, 139, 255), CanCollide = false })
+				elseif k == 1 then
+					part(root, { Name = "ToyBlock", Size = Vector3.new(1.3, 1.3, 1.3), Position = p - Vector3.new(0, 0.1, 0), Color = Color3.fromRGB(232, 80, 91), CanCollide = false })
+					part(root, { Name = "ToyBlock", Size = Vector3.new(1, 1, 1), Position = p + Vector3.new(0, 1.05, 0), Color = Color3.fromRGB(70, 209, 96), CanCollide = false })
+				else
+					part(root, { Name = "Teddy", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.5, 1.2), Position = p - Vector3.new(0, 0.2, 0), Color = Color3.fromRGB(160, 110, 70), Material = Enum.Material.Fabric, CanCollide = false })
+					part(root, { Name = "TeddyHead", Shape = Enum.PartType.Ball, Size = Vector3.new(1, 1, 1), Position = p + Vector3.new(0, 0.9, 0), Color = Color3.fromRGB(160, 110, 70), Material = Enum.Material.Fabric, CanCollide = false })
+				end
+			elseif style == "files" then
+				for t = 0, 3 do
+					part(root, { Name = "Folder", Size = Vector3.new(0.35, 1.9, 1.3), Position = p + Vector3.new(-0.6 + t * 0.4, 0.15, 0), Color = ({ Color3.fromRGB(230, 200, 140), Color3.fromRGB(150, 180, 220), Color3.fromRGB(230, 120, 110) })[(t + j) % 3 + 1], CanCollide = false })
+				end
+			else
+				part(root, { Name = "Box", Size = Vector3.new(2, 1.8, 1.2), Position = p + Vector3.new(0, 0.1, 0), Color = Color3.fromRGB(180, 140, 95), Material = Enum.Material.Cardboard, CanCollide = false })
+			end
+		end
+	end
+	return true
 end
 
 local function furnitureAt(map, x, y)
@@ -298,7 +370,9 @@ function House.build(map)
 			elseif c == "T" then
 				local f = furnitureAt(map, x, y)
 				local kind = f and f.kind or "table"
-				if map.theme == "gummy" and kind ~= "pit" and kind ~= "planter" then
+				if kind == "shelf" and styledShelf(root, map, x, y) then
+					-- a shelf that matches its room
+				elseif map.theme == "gummy" and kind ~= "pit" and kind ~= "planter" then
 					candyFurniture(root, kind, x, y)
 				elseif map.theme == "hospital" and kind ~= "planter" and kind ~= "pit" then
 					hospitalFurniture(root, kind, x, y)
@@ -331,41 +405,6 @@ function House.build(map)
 				elseif kind == "piano" then
 					part(root, { Name = "Piano", Size = Vector3.new(T, 5, T * 0.7), Position = at(x, y, 2.5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(20, 18, 24) })
 					part(root, { Name = "Keys", Size = Vector3.new(T, 0.3, 1.4), Position = at(x, y, 4.2) + Vector3.new(0, 0, T * 0.35 + 0.7), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(240, 240, 235) })
-				elseif shelfStyle(roomNameAt(map, x, y)) ~= "books" then
-					local style = shelfStyle(roomNameAt(map, x, y))
-					part(root, { Name = "Shelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.Wood, Color = style == "towels" and Color3.fromRGB(235, 232, 225) or Color3.fromRGB(150, 110, 70) })
-					local front = T * 0.3 + 0.4
-					for row = 0, 2 do
-						for j = 0, 2 do
-							local p = at(x, y, 1.4 + row * 3) + Vector3.new(-2.5 + j * 2.5, 0, front)
-							local k = (x + j + row) % 3
-							if style == "food" then
-								if k == 0 then
-									part(root, { Name = "Can", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.6, 1.1, 1.1), CFrame = CFrame.new(p + Vector3.new(0, 0.1, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(200, 60, 50), Material = Enum.Material.Metal, CanCollide = false })
-								elseif k == 1 then
-									part(root, { Name = "Jar", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.8, 1.3, 1.3), CFrame = CFrame.new(p + Vector3.new(0, 0.2, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(240, 170, 60), Material = Enum.Material.Glass, Transparency = 0.2, CanCollide = false })
-								else
-									part(root, { Name = "CerealBox", Size = Vector3.new(1.6, 2.3, 0.7), Position = p + Vector3.new(0, 0.35, 0), Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
-								end
-							elseif style == "towels" then
-								for t = 0, 2 do
-									part(root, { Name = "Towel", Size = Vector3.new(2, 0.5, 1.2), Position = p + Vector3.new(0, -0.4 + t * 0.55, 0), Color = ({ Color3.fromRGB(150, 200, 235), Color3.fromRGB(250, 250, 250), Color3.fromRGB(255, 190, 210) })[(t + j) % 3 + 1], Material = Enum.Material.Fabric, CanCollide = false })
-								end
-							elseif style == "toys" then
-								if k == 0 then
-									part(root, { Name = "ToyBall", Shape = Enum.PartType.Ball, Size = Vector3.new(1.5, 1.5, 1.5), Position = p, Color = Color3.fromRGB(61, 139, 255), CanCollide = false })
-								elseif k == 1 then
-									part(root, { Name = "ToyBlock", Size = Vector3.new(1.3, 1.3, 1.3), Position = p - Vector3.new(0, 0.1, 0), Color = Color3.fromRGB(232, 80, 91), CanCollide = false })
-									part(root, { Name = "ToyBlock", Size = Vector3.new(1, 1, 1), Position = p + Vector3.new(0, 1.05, 0), Color = Color3.fromRGB(70, 209, 96), CanCollide = false })
-								else
-									part(root, { Name = "Teddy", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.5, 1.2), Position = p - Vector3.new(0, 0.2, 0), Color = Color3.fromRGB(160, 110, 70), Material = Enum.Material.Fabric, CanCollide = false })
-									part(root, { Name = "TeddyHead", Shape = Enum.PartType.Ball, Size = Vector3.new(1, 1, 1), Position = p + Vector3.new(0, 0.9, 0), Color = Color3.fromRGB(160, 110, 70), Material = Enum.Material.Fabric, CanCollide = false })
-								end
-							else
-								part(root, { Name = "Box", Size = Vector3.new(2, 1.8, 1.2), Position = p + Vector3.new(0, 0.1, 0), Color = Color3.fromRGB(180, 140, 95), Material = Enum.Material.Cardboard, CanCollide = false })
-							end
-						end
-					end
 				else
 					part(root, { Name = "Shelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.Wood, Color = Color3.fromRGB(92, 58, 34) })
 					local cols = { Color3.fromRGB(232, 80, 91), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(138, 107, 209) }
@@ -477,8 +516,25 @@ function House.addCrate(world, x, y)
 				local home = CFrame.new(at(hx, hy, 0) + Vector3.new(0, 3, 0))
 				local door = CFrame.new(at(x, y, 0) + Vector3.new(0, 3, 0))
 				local crate = part(world.root, { Name = "BarricadeCrate", Size = size, CFrame = home, Color = Color3.fromRGB(150, 98, 52), Material = Enum.Material.WoodPlanks, CanCollide = false })
+				-- painted on every side: a strong arm and arrows, "push me"
+				for _, face in ipairs({ Enum.NormalId.Front, Enum.NormalId.Back, Enum.NormalId.Left, Enum.NormalId.Right }) do
+					local sg = Instance.new("SurfaceGui")
+					sg.Face = face
+					sg.CanvasSize = Vector2.new(200, 160)
+					sg.LightInfluence = 0.3
+					sg.Parent = crate
+					local t = Instance.new("TextLabel")
+					t.Size = UDim2.fromScale(1, 1)
+					t.BackgroundTransparency = 1
+					t.TextScaled = true
+					t.Font = Enum.Font.FredokaOne
+					t.TextColor3 = Color3.fromRGB(255, 210, 63)
+					t.TextStrokeTransparency = 0.3
+					t.Text = "\u{2B05}\u{1F4AA}\u{27A1}"
+					t.Parent = sg
+				end
 				local mark = Instance.new("BillboardGui")
-				mark.Size = UDim2.fromOffset(70, 56)
+				mark.Size = UDim2.fromOffset(110, 56)
 				mark.StudsOffset = Vector3.new(0, 5, 0)
 				mark.MaxDistance = 35
 				mark.Parent = crate
@@ -496,11 +552,11 @@ function House.addCrate(world, x, y)
 				word.Font = Enum.Font.FredokaOne
 				word.TextColor3 = Color3.fromRGB(255, 120, 120)
 				word.TextStrokeTransparency = 0.4
-				word.Text = "Muscle's crate"
+				word.Text = "Barricade crate - Muscle"
 				word.Parent = mark
 				local c = { part = crate, home = home, door = door, hx = hx, hy = hy, x = x, y = y, busy = false }
 				-- Muscle's prompt (only Muscle sees it)
-				c.prompt = prompt(crate, "Barricade", "Muscle's crate", 0)
+				c.prompt = prompt(crate, "Move Barricade", "Muscle's crate", 0)
 				c.prompt:SetAttribute("Only", "muscle")
 				c.prompt.Triggered:Connect(function(plr)
 					if world.onCrate then
@@ -1285,9 +1341,88 @@ function House.decorate(world)
 				end
 			end
 		end
+		-- a few things that say which room this is (not solid), by its name
+		do
+			local nm = string.lower(f.name)
+			local function has(...)
+				for _, w in ipairs({ ... }) do
+					if string.find(nm, w, 1, true) then
+						return true
+					end
+				end
+				return false
+			end
+			local srng = Random.new(r * 13 + 5)
+			local function nearWall(n)
+				local out = {}
+				for y = f.y0, f.y1 do
+					for x = f.x0, f.x1 do
+						if free(x, y) and (cell(map, x - 1, y) == "#" or cell(map, x + 1, y) == "#" or cell(map, x, y - 1) == "#" or cell(map, x, y + 1) == "#") then
+							table.insert(out, { x, y })
+						end
+					end
+				end
+				local got = {}
+				for _ = 1, math.min(n, #out) do
+					local c = table.remove(out, srng:NextInteger(1, #out))
+					busy[c[1] .. "," .. c[2]] = true
+					table.insert(got, at(c[1], c[2], 0))
+				end
+				return got
+			end
+			if has("bath") then
+				for i, b in ipairs(nearWall(2)) do
+					if i == 1 then
+						deco({ Name = "Toilet", Size = Vector3.new(1.6, 1.3, 2), Position = b + Vector3.new(0, 0.65, 0), Color = Color3.fromRGB(245, 245, 248) })
+						deco({ Name = "ToiletTank", Size = Vector3.new(1.8, 1.8, 0.7), Position = b + Vector3.new(0, 1.9, 1), Color = Color3.fromRGB(245, 245, 248) })
+					else
+						deco({ Name = "Sink", Size = Vector3.new(2.2, 0.8, 1.6), Position = b + Vector3.new(0, 3, 0), Color = Color3.fromRGB(245, 245, 248) })
+						deco({ Name = "SinkStand", Size = Vector3.new(0.6, 2.6, 0.6), Position = b + Vector3.new(0, 1.3, 0), Color = Color3.fromRGB(230, 230, 235) })
+						deco({ Name = "Mirror", Size = Vector3.new(2.4, 2.6, 0.1), Position = b + Vector3.new(0, 5.4, 0.9), Color = Color3.fromRGB(200, 225, 240), Material = Enum.Material.Glass, Reflectance = 0.4 })
+					end
+				end
+			elseif has("clock") then
+				for _, b in ipairs(nearWall(2)) do
+					deco({ Name = "GrandfatherClock", Size = Vector3.new(2, 8, 1.4), Position = b + Vector3.new(0, 4, 0), Color = Color3.fromRGB(95, 60, 35), Material = Enum.Material.Wood })
+					local dial = deco({ Name = "ClockFace", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.1, 1.6, 1.6), CFrame = CFrame.new(b + Vector3.new(0, 6.6, -0.75)) * CFrame.Angles(0, math.rad(90), 0), Color = Color3.fromRGB(245, 235, 210) })
+					emoji(dial, Enum.NormalId.Left, "\u{1F570}")
+					emoji(dial, Enum.NormalId.Right, "\u{1F570}")
+				end
+			elseif has("boiler", "generator", "water tank") then
+				for _, b in ipairs(nearWall(2)) do
+					deco({ Name = "Tank", Shape = Enum.PartType.Cylinder, Size = Vector3.new(7, 4, 4), CFrame = CFrame.new(b + Vector3.new(0, 3.5, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(150, 155, 160), Material = Enum.Material.Metal })
+					deco({ Name = "Pipe", Size = Vector3.new(0.6, 0.6, T), Position = b + Vector3.new(0, 8, 0), Color = Color3.fromRGB(120, 90, 60), Material = Enum.Material.Metal })
+					deco({ Name = "Gauge", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.8, 0.8), Position = b + Vector3.new(0, 5, -2), Color = Color3.fromRGB(255, 80, 60), Material = Enum.Material.Neon })
+				end
+			elseif has("storage", "dusty", "packing", "dock", "supply", "loading") then
+				for _, b in ipairs(nearWall(2)) do
+					for k = 0, 2 do
+						deco({ Name = "Crate", Size = Vector3.new(2.6 - k * 0.4, 2, 2.6 - k * 0.4), CFrame = CFrame.new(b + Vector3.new(0, 1 + k * 2, 0)) * CFrame.Angles(0, math.rad(k * 17), 0), Color = Color3.fromRGB(170, 125, 80), Material = Enum.Material.Cardboard })
+					end
+				end
+			elseif has("plant", "conservatory", "garden", "greenhouse") then
+				for _, b in ipairs(nearWall(2)) do
+					deco({ Name = "PlantPot", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.6, 1.8, 1.8), CFrame = CFrame.new(b + Vector3.new(0, 0.8, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(180, 100, 60), Material = Enum.Material.Slate })
+					deco({ Name = "PlantLeaves", Shape = Enum.PartType.Ball, Size = Vector3.new(2.6, 3, 2.6), Position = b + Vector3.new(0, 3, 0), Color = Color3.fromRGB(70, 150, 75), Material = Enum.Material.Grass })
+				end
+			elseif has("office", "records", "staff", "security", "radio") then
+				for _, b in ipairs(nearWall(1)) do
+					deco({ Name = "OfficeDesk", Size = Vector3.new(4, 0.3, 2.2), Position = b + Vector3.new(0, 3, 0), Color = Color3.fromRGB(120, 85, 55), Material = Enum.Material.Wood })
+					deco({ Name = "DeskLegs", Size = Vector3.new(3.6, 2.8, 1.8), Position = b + Vector3.new(0, 1.4, 0), Color = Color3.fromRGB(95, 66, 42), Material = Enum.Material.Wood, Transparency = 0.2 })
+					deco({ Name = "Lamp", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.8, 0.8), Position = b + Vector3.new(1.3, 3.6, 0), Color = Color3.fromRGB(255, 220, 140), Material = Enum.Material.Neon })
+					deco({ Name = "Papers", Size = Vector3.new(1.2, 0.1, 0.9), Position = b + Vector3.new(-0.6, 3.2, 0), Color = Color3.fromRGB(250, 250, 245) })
+				end
+			elseif has("corridor", "hall", "landing", "stair", "lobby", "entrance") and not hosp then
+				-- a long runner down the middle
+				local long = (f.x1 - f.x0) > (f.y1 - f.y0)
+				deco({ Name = "Runner", Size = long and Vector3.new((f.x1 - f.x0 + 1) * T * 0.8, 0.08, 3) or Vector3.new(3, 0.08, (f.y1 - f.y0 + 1) * T * 0.8), Position = Vector3.new((x0 + x1) / 2, 0.07, (z0 + z1) / 2), Color = candy and Color3.fromRGB(255, 120, 170) or Color3.fromRGB(130, 30, 45), Material = Enum.Material.Fabric })
+			end
+		end
 		-- a rug in the middle (not in the kitchen: it has its tiles; not in the
 		-- hospital; not in a pantry, bathroom or laundry)
-		local plain = string.find(string.lower(f.name), "pantry") or string.find(string.lower(f.name), "bath") or string.find(string.lower(f.name), "laundry")
+		local lname = string.lower(f.name)
+		local plain = string.find(lname, "pantry") or string.find(lname, "bath") or string.find(lname, "laundry") or string.find(lname, "corridor") or string.find(lname, "hall")
+			or string.find(lname, "landing") or string.find(lname, "stair") or string.find(lname, "lobby") or string.find(lname, "entrance") or string.find(lname, "boiler") or string.find(lname, "tank")
 		if f.kind ~= "tiles" and not hosp and not plain then
 			local w, d = (f.x1 - f.x0 + 1) * T * 0.4, (f.y1 - f.y0 + 1) * T * 0.4
 			deco({ Name = "Rug", Size = Vector3.new(w, 0.1, d), Position = Vector3.new((x0 + x1) / 2, 0.06, (z0 + z1) / 2), Color = DECOR[r % #DECOR + 1], Material = Enum.Material.Fabric, Transparency = 0.15 })

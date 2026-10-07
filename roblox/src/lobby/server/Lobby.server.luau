@@ -158,7 +158,50 @@ local function placeHouse()
 	end
 	print(string.format("Lobby house: placed LobbyProps/House, %d parts, %.0f x %.0f x %.0f studs", parts, size2.X, size2.Y, size2.Z))
 end
+-- window faces the owner set by clicking the windows (saved), else the
+-- measured Config.LOBBY_HOUSE_WINDOWS. Stored relative to the house.
+local LobbyStore = game:GetService("DataStoreService"):GetDataStore("EscapeCrewLobby")
+local peekTest = {} -- windows to peek in straight away (the owner's Test)
+local function applyPeekSpots(list)
+	local m = workspace:FindFirstChild("LobbyHouse")
+	if not m then
+		return
+	end
+	local pivot = m:GetPivot()
+	local spots = {}
+	for _, w in ipairs(workspace:GetChildren()) do
+		if w:IsA("BasePart") and (w.Name == "Window" or w.Name == "UnusedWindow") then
+			table.insert(spots, w)
+		end
+	end
+	for i, rel in ipairs(list) do
+		local w = spots[i]
+		if not w then
+			w = part({ Name = "Window", Size = Vector3.new(6, 7, 0.5), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 190, 90) })
+			local l = Instance.new("PointLight")
+			l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 180, 90), 18, 0.6
+			l.Parent = w
+			table.insert(spots, w)
+		end
+		w.Name, w.Transparency, w.CanCollide = "Window", 1, false
+		w.Position = pivot:PointToWorldSpace(Vector3.new(rel[1], rel[2], rel[3]))
+	end
+	for i = #list + 1, #spots do
+		spots[i].Name = "UnusedWindow"
+	end
+end
 local okHouse, houseErr = pcall(placeHouse)
+if okHouse then
+	task.spawn(function()
+		local ok, saved = pcall(function()
+			return LobbyStore:GetAsync("peekSpots")
+		end)
+		if ok and type(saved) == "table" and #saved > 0 then
+			applyPeekSpots(saved)
+			print("Lobby peek: using " .. #saved .. " window spots set by clicking")
+		end
+	end)
+end
 if not okHouse then
 	warn("Lobby house: could not place it - " .. tostring(houseErr))
 end
@@ -192,14 +235,17 @@ task.spawn(function()
 	print(head and ("Lobby peek: host head loaded (" .. head.ClassName .. ", " .. tostring(head.Size) .. ")") or "Lobby peek: no host head - peeks show a shadow instead")
 	while true do
 		local gap = Config.LOBBY_PEEK_GAP
-		task.wait(math.random(gap[1], gap[2]))
+		local waitFor, t0 = math.random(gap[1], gap[2]), os.clock()
+		while os.clock() - t0 < waitFor and #peekTest == 0 do
+			task.wait(0.25)
+		end
 		local windows = {}
 		for _, w in ipairs(workspace:GetChildren()) do
 			if w.Name == "Window" and w:IsA("BasePart") then
 				table.insert(windows, w)
 			end
 		end
-		local w = windows[math.random(1, math.max(1, #windows))]
+		local w = table.remove(peekTest, 1) or windows[math.random(1, math.max(1, #windows))]
 		if w then
 			local old = w.Color
 			w.Color = Color3.fromRGB(200, 60, 40)
@@ -319,6 +365,59 @@ GetBalance.OnServerInvoke = function(plr)
 end
 Players.PlayerAdded:Connect(function(plr)
 	plr:SetAttribute("IsOwner", isOwner(plr))
+end)
+-- the owner sets the window faces by clicking the windows: start, add (a
+-- point on the house), save, clear, test
+local PeekSetup = remote("PeekSetup")
+local editing, markers = nil, {}
+local function clearMarkers()
+	for _, mk in ipairs(markers) do
+		mk:Destroy()
+	end
+	markers = {}
+end
+PeekSetup.OnServerEvent:Connect(function(plr, action, pos)
+	local m = workspace:FindFirstChild("LobbyHouse")
+	if not isOwner(plr) or not m then
+		return
+	end
+	if action == "start" then
+		editing = {}
+		clearMarkers()
+	elseif action == "add" and editing and typeof(pos) == "Vector3" then
+		local cf, size = m:GetBoundingBox()
+		local inBox = cf:PointToObjectSpace(pos)
+		if math.abs(inBox.X) > size.X / 2 + 2 or math.abs(inBox.Y) > size.Y / 2 + 2 or math.abs(inBox.Z) > size.Z / 2 + 4 then
+			return Notice:FireClient(plr, "Click on the house itself - the middle of a window.")
+		end
+		local rel = m:GetPivot():PointToObjectSpace(pos)
+		table.insert(editing, { rel.X, rel.Y, rel.Z })
+		table.insert(markers, part({ Name = "PeekMarker", Shape = Enum.PartType.Ball, Size = Vector3.new(1.2, 1.2, 1.2), Position = pos, Material = Enum.Material.Neon, Color = Color3.fromRGB(80, 255, 120), CanCollide = false }))
+		applyPeekSpots(editing)
+		Notice:FireClient(plr, "Window " .. #editing .. " set. Click the next one, or Save.")
+	elseif action == "save" and editing and #editing > 0 then
+		local list = editing
+		local ok = pcall(function()
+			LobbyStore:SetAsync("peekSpots", list)
+		end)
+		clearMarkers()
+		editing = nil
+		Notice:FireClient(plr, ok and ("Saved " .. #list .. " windows - the host will peek in those.") or "Could not save (in Studio: turn on API access). The spots work until the server closes.")
+	elseif action == "clear" then
+		pcall(function()
+			LobbyStore:RemoveAsync("peekSpots")
+		end)
+		editing = {}
+		clearMarkers()
+		Notice:FireClient(plr, "Cleared. Click the windows again, then Save.")
+	elseif action == "test" then
+		for _, w in ipairs(workspace:GetChildren()) do
+			if w:IsA("BasePart") and w.Name == "Window" then
+				table.insert(peekTest, w)
+			end
+		end
+		Notice:FireClient(plr, "Watch the house: the host peeks in each window in turn.")
+	end
 end)
 for _, plr in ipairs(Players:GetPlayers()) do
 	plr:SetAttribute("IsOwner", isOwner(plr))
