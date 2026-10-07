@@ -109,7 +109,7 @@ is in `roblox/src/shared/Progress.luau`.
 ## Muscle's blocked passage (built 7 Oct, Brent's yes) - untested
 Each game one of the two locked doors (random) is a doorway heaped with
 party junk instead. Muscle holds E 3 s and shoves it clear (quiet, 25
-points). Without Muscle, the Party Popper hidden in a search spot on the
+points). Without Muscle, the Confetti Cannon hidden in a search spot on the
 near side (where that door's key would be) is planted with F: 3 s fuse,
 BOOM, confetti, the host comes to look (15 points). Tinker can't pick it.
 The secret hole is gone (plain wall; the cabinet is furniture). The plan
@@ -123,7 +123,7 @@ only when everyone presses Play.
 - Store rooms: `add_closets` in the generator carves two 3 x 3 rooms into
   corners of zone-1 rooms on every plan (furniture there removed; host patrol
   points moved out): B1 "Store Room door" locked (Tinker / key), B2 "Junk
-  Cupboard" blocked (Muscle / its own Party Popper). Off the way out. A
+  Cupboard" blocked (Muscle / its own Confetti Cannon). Off the way out. A
   present inside: 30 points + a clue, a Shield or 30 more.
 - Muscle's Barricade (skill button, 25 s): 6 crates marked 💪 beside inner
   doorways each game, plus the junk he shoves aside. The nearest crate in 16

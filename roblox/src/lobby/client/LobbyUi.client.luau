@@ -1192,7 +1192,7 @@ do
 			.. "\u{1F465} The party leader picks the floor, difficulty and Giggly or Spooky. Everyone picks a character and presses \u{25B6} Play when ready.\n\n"
 			.. "\u{1F388} Pop balloons (E) to learn the 3-colour door code - some are tricks. Brainy, Glow and Bramble learn it a faster way. Tinker can pick the big door's keypad (F) for one colour.\n\n"
 			.. "\u{1F511} Locked doors: find the key in a drawer, box or coat - or Tinker picks the lock (F).\n"
-			.. "\u{1F6A7} Blocked doorways: Muscle shoves the junk (E), or anyone plants a \u{1F389} Party Popper (F). Poppers belong to the whole team - but the BOOM brings the host!\n"
+			.. "\u{1F6A7} Blocked doorways: Muscle shoves the junk (E), or anyone plants a \u{1F389} Confetti Cannon (F). Cannons belong to the whole team - but the BOOM brings the host!\n"
 			.. "\u{1F381} The Store Room and the Junk Cupboard hide a bonus present - 20 to 60 points for everyone in the game!\n\n"
 			.. "\u{1F3C3} Run with Shift or the Run button (it uses stamina).\n"
 			.. "\u{1F648} Hide where you see a \u{1F648} - each fits 1 to 3. Press Space to come out.\n"

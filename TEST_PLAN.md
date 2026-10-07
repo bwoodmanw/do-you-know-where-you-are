@@ -41,7 +41,7 @@ Round 4 (7 Oct):
 - [ ] The host never stays pressed into a wall (after 4 s he pops back onto the floor)
 - [ ] Play again: closing the picker with X counts as ready; while waiting, an "I'm ready!" button under the banner
 - [ ] Only the party leader can change Difficulty and Giggly/Spooky ("The party leader picks these" for others)
-- [ ] Party Poppers: "Team Party Poppers: N" above your bars; any Popper opens any blocked doorway; it stays after a cage
+- [ ] Confetti Cannons: "Team Confetti Cannons: N" above your bars; any Popper opens any blocked doorway; it stays after a cage
 - [ ] Shelves match the room: pantry/kitchen food, bathroom towels, nursery toys, store boxes, library books; no rug in pantry/bathroom
 
 Round 3 (7 Oct):
@@ -70,7 +70,7 @@ Lobby:
 Party House / any floor:
 - [ ] Echo runs smoothly (no shaking); every character's feet on the floor
 - [ ] Echo's noise: throw it behind the host while he chases you - he turns and goes to it for about 5 s
-- [ ] Prompts: Tinker sees only "Pick the lock" at locked doors, everyone else only "Unlock"; Muscle sees only "Shove" at blocked doors, everyone else only "Plant Party Popper" (without one: "You need a Party Popper..."); Tinker's "Pick the keypad" sits below "Use keypad"
+- [ ] Prompts: Tinker sees only "Pick the lock" at locked doors, everyone else only "Unlock"; Muscle sees only "Shove" at blocked doors, everyone else only "Plant Confetti Cannon" (without one: "You need a Confetti Cannon..."); Tinker's "Pick the keypad" sits below "Use keypad"
 - [ ] Halloween: orange / purple / black bunting, two paper bats turning slowly in each room
 - [ ] First game (an account with 0 or 1 games): a "Tip 1 of 6" card on the left; tips move on as you pop a balloon, meet a locked door, the host comes out, someone is caught, the code is known; Next and X work
 
@@ -95,14 +95,14 @@ Party House:
 - [ ] Vents: two or more players can crawl through the same vent one after another; you can't crawl again for about 2.5 s after coming out ("Catch your breath")
 - [ ] Bramble's plant has a pink flower with a yellow middle on top (no glowing orb)
 - [ ] Muscle: one of the two locked doors is a doorway heaped with junk saying "Blocked!" (red on the corner map); Muscle holds E 3 s and it clears quietly; anyone else gets "Too heavy..."
-- [ ] Party Popper: one search spot on the near side holds it ("found a Party Popper!"); at the blocked doorway hold F to plant it; 3-2-1 countdown, BOOM with confetti, the doorway clears and the host comes to look
+- [ ] Confetti Cannon: one search spot on the near side holds it ("found a Confetti Cannon!"); at the blocked doorway hold F to plant it; 3-2-1 countdown, BOOM with confetti, the doorway clears and the host comes to look
 - [ ] Tinker cannot pick the blocked doorway; the other locked door still works with a key or Tinker
 - [ ] No secret hole any more; the Music Room cabinet is just furniture
 - [ ] Lobby: the points reset button says 800
 - [ ] Sound buttons (Lobby and game): a 🔊 button left of the 🎵 one; 🔊 steps 100 / 50 / 25 / Off for pops, doors, bounces, the host's breathing; 🎵 still only the music; both remembered next visit and between Lobby and game
 - [ ] Studio Play now builds the Candy Factory (`Config.STUDIO_MAP = "gummy_2"`): pink candy walls, Conveyor Hall with two conveyor counters, Chocolate River and Packing Hall upstairs behind the doors, stairs up "Up to the Jelly Vault"
 - [ ] Ask Claude to switch to `gummy_3` for the Jelly Vault: jelly pool (ball pit), two jelly bounce pads in the Security Room, three vents, exit to the cotton-candy clouds
-- [ ] Store rooms (every floor): two small rooms in corners of the first rooms - a "Store Room door" (locked: Tinker picks it, or its key from a search spot) and a "Junk Cupboard" (blocked: Muscle shoves it, or its own Party Popper). A gold present inside each: Open = 30 points plus a clue, a Shield or 30 more
+- [ ] Store rooms (every floor): two small rooms in corners of the first rooms - a "Store Room door" (locked: Tinker picks it, or its key from a search spot) and a "Junk Cupboard" (blocked: Muscle shoves it, or its own Confetti Cannon). A gold present inside each: Open = 30 points plus a clue, a Shield or 30 more
 - [ ] Muscle's Barricade button: next to a 💪 crate (6 beside doorways, plus the junk he shoves aside) it slides into the doorway; friends walk straight through it; the host stops and smashes it ("CRASH!") for 4 s, then it slides home; recharges 25 s; with no crate near: "No 💪 crate close by"
 - [ ] Tinker: hold F at the big door's keypad (6 s) - "colour N is ..." once per game; others get "Only Tinker can pick a keypad"
 - [ ] Live: escaping Bounce Hall unlocks Candy Factory; Candy Factory unlocks Jelly Vault; the Lobby map screen shows both floors with their pictures

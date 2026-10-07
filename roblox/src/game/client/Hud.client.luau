@@ -336,12 +336,12 @@ paintCode()
 local bars = frame(gui, { Size = UDim2.fromOffset(250, 84), Position = TOUCH and UDim2.fromOffset(10, 60) or UDim2.new(0, 10, 1, -94), BackgroundTransparency = 0.3 })
 roomName = label(bars, { Size = UDim2.new(1, -16, 0, 20), Position = UDim2.fromOffset(8, 58), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
 do
--- the team's Party Poppers, just above the bars (they stay through a cage)
+-- the team's Confetti Cannons, just above the bars (they stay through a cage)
 local popperLine = label(bars, { Size = UDim2.new(1, 0, 0, 24), Position = UDim2.fromOffset(0, -28), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 210, 63), TextStrokeTransparency = 0.4, Visible = false })
 local function paintPoppers()
 	local n = RoundState:GetAttribute("Poppers") or 0
 	popperLine.Visible = n > 0
-	popperLine.Text = "\u{1F389} Team Party Poppers: " .. n
+	popperLine.Text = "\u{1F389} Team Confetti Cannons: " .. n
 end
 RoundState:GetAttributeChangedSignal("Poppers"):Connect(paintPoppers)
 paintPoppers()
@@ -392,7 +392,7 @@ paintCandy()
 
 do
 -- prompts one character uses (Pick the lock, Shove) show only to them, and
--- the everyone-else prompt beside it (Unlock, Party Popper) hides for them:
+-- the everyone-else prompt beside it (Unlock, Confetti Cannon) hides for them:
 -- never two on top of each other. Set on this screen only.
 local function fitPrompt(p)
 	local only, notFor = p:GetAttribute("Only"), p:GetAttribute("Not")

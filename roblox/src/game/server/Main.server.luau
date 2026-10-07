@@ -543,7 +543,7 @@ local function openLock(plr, id, how)
 	say("open", (how == "pick" and ("Click! " .. plr.DisplayName .. " picked the lock on the ") or (plr.DisplayName .. " unlocked the ")) .. entry.def.name .. "!")
 end
 
--- the blocked passage clears (Muscle shoved it, or the Party Popper went off)
+-- the blocked passage clears (Muscle shoved it, or the Confetti Cannon went off)
 local function clearBlock(plr, id, how)
 	if world.unlocked[id] then
 		return
@@ -576,7 +576,7 @@ local function clearBlock(plr, id, how)
 		say("open", "Muscle shoved the junk out of the " .. entry.def.name .. "!" .. (entry.def.bonus and " A bonus present inside!" or ""))
 	else
 		addPoints(plr, 15)
-		say("open", "BOOM! The Party Popper blasted open the " .. entry.def.name .. "... and the host heard it!" .. (entry.def.bonus and " A bonus present inside!" or ""))
+		say("open", "BOOM! The Confetti Cannon blasted open the " .. entry.def.name .. "... and the host heard it!" .. (entry.def.bonus and " A bonus present inside!" or ""))
 	end
 end
 
@@ -822,7 +822,7 @@ local function wirePrompts()
 					return
 				end
 				if plr:GetAttribute("Skill") ~= "muscle" then
-					return need(plr, "muscle", "Too heavy to move! Muscle could shove it - or find a Party Popper in a drawer or box.")
+					return need(plr, "muscle", "Too heavy to move! Muscle could shove it - or find a Confetti Cannon in a drawer or box.")
 				end
 				clearBlock(plr, id, "shove")
 			end)
@@ -831,7 +831,7 @@ local function wirePrompts()
 					return
 				end
 				if (world.poppers or 0) <= 0 then
-					return need(plr, "muscle", "You need a Party Popper - search drawers and boxes for one! Or bring Muscle to shove it.")
+					return need(plr, "muscle", "You need a Confetti Cannon - search drawers and boxes for one! Or bring Muscle to shove it.")
 				end
 				entry.fuse = true
 				world.poppers -= 1
@@ -840,7 +840,7 @@ local function wirePrompts()
 				local myWorld = world
 				local pos = entry.part.Position - Vector3.new(0, 5.6, 0)
 				local popper = Instance.new("Part")
-				popper.Name = "PartyPopper"
+				popper.Name = "ConfettiCannon"
 				popper.Shape = Enum.PartType.Cylinder
 				popper.Size = Vector3.new(1.6, 0.9, 0.9)
 				popper.CFrame = CFrame.new(pos) * CFrame.Angles(0, 0, math.rad(90))
@@ -861,7 +861,7 @@ local function wirePrompts()
 				num.TextColor3 = Color3.fromRGB(255, 210, 63)
 				num.TextStrokeTransparency = 0.3
 				num.Parent = count
-				say("info", plr.DisplayName .. " planted the Party Popper - stand back!")
+				say("info", plr.DisplayName .. " planted the Confetti Cannon - stand back!")
 				task.spawn(function()
 					for n = 3, 1, -1 do
 						num.Text = "\u{1F389} " .. n
@@ -923,7 +923,7 @@ local function wirePrompts()
 					RoundState:SetAttribute("Poppers", world.poppers)
 					Effects.burst(entry.part.Position, "boost")
 					addPoints(plr, 10)
-					say("key", plr.DisplayName .. " found a Party Popper! It blasts open any blocked doorway.", { icon = "\u{1F389}", userId = plr.UserId, item = "Party Popper" })
+					say("key", plr.DisplayName .. " found a Confetti Cannon! It blasts open any blocked doorway.", { icon = "\u{1F389}", userId = plr.UserId, item = "Confetti Cannon" })
 				elseif lock then
 					world.keys[lock] = true
 					RoundState:SetAttribute("Key_" .. lock, true)
@@ -1231,14 +1231,14 @@ local function hintFor()
 				return id, "Muscle can shove the junk blocking the " .. name .. "."
 			end
 			if (world.poppers or 0) > 0 then
-				return id, "Plant a Party Popper at the blocked " .. name .. " - it's loud, so be ready to run!"
+				return id, "Plant a Confetti Cannon at the blocked " .. name .. " - it's loud, so be ready to run!"
 			end
 			for sid, lock in pairs(world.keyIn) do
 				if lock == id and not o[sid].searched then
-					return sid, "A Party Popper is hidden in the " .. roomOf(sid) .. " - it can blast open the " .. name .. "."
+					return sid, "A Confetti Cannon is hidden in the " .. roomOf(sid) .. " - it can blast open the " .. name .. "."
 				end
 			end
-			return id, "The " .. name .. " is blocked. Bring Muscle, or search drawers and boxes for a Party Popper!"
+			return id, "The " .. name .. " is blocked. Bring Muscle, or search drawers and boxes for a Confetti Cannon!"
 		end
 		if skills.tinker then
 			return id, "Tinker can pick the lock on the " .. name .. "."
@@ -1677,7 +1677,7 @@ function round.start()
 	local floors = Plans[mapInfo and mapInfo.building or "partyhouse"] or Plans.partyhouse
 	HouseMap = MapGen.make(floors[mapInfo and mapInfo.floor or 1] or Plans.partyhouse[1])
 	-- one of the locked doors is a blocked passage instead: Muscle shoves the
-	-- junk away, or anyone plants the Party Popper hidden in a search spot
+	-- junk away, or anyone plants the Confetti Cannon hidden in a search spot
 	local lockDefs = {}
 	for _, o in ipairs(HouseMap.objects) do
 		if o.kind == "lock" and not o.bonus then
@@ -1712,7 +1712,7 @@ function round.start()
 		barricade(plr, c)
 		plr:SetAttribute("CoolUntil", now + Config.COOLDOWN.muscle * (plr:GetAttribute("CooldownMult") or 1))
 	end
-	-- each locked door hides its key (the blocked passage: a Party Popper) in a
+	-- each locked door hides its key (the blocked passage: a Confetti Cannon) in a
 	-- random searchable thing on its near side
 	world.unlocked, world.keys, world.keyIn = {}, {}, {}
 	world.poppers = 0

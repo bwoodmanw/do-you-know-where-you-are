@@ -726,7 +726,7 @@ function House.buildObjects(world)
 			entry.part = pot
 			entry.prompt = prompt(pot, "Ask the plant", "Big plant - Bramble", 1.5)
 		elseif o.kind == "lock" and o.blocked then
-			-- a doorway heaped with party junk: Muscle shoves it, or a Party Popper
+			-- a doorway heaped with party junk: Muscle shoves it, or a Confetti Cannon
 			local alongX = cell(map, o.x - 1, o.y) ~= "."
 			entry.part = part(root, { Name = "BlockedPassage", Size = alongX and Vector3.new(T, 13, 1.4) or Vector3.new(1.4, 13, T), Position = base + Vector3.new(0, 6.5, 0), Transparency = 1 })
 			entry.pile = {}
@@ -764,9 +764,9 @@ function House.buildObjects(world)
 				txt.Parent = sg
 			end
 			entry.shovePrompt = prompt(entry.part, "Shove", (o.bonus and "Junk Cupboard" or "Blocked passage") .. " - Muscle", 3)
-			entry.popperPrompt = prompt(entry.part, "Plant Party Popper", o.bonus and "Junk Cupboard" or "Blocked passage", 1)
+			entry.popperPrompt = prompt(entry.part, "Plant Confetti Cannon", o.bonus and "Junk Cupboard" or "Blocked passage", 1)
 			entry.popperPrompt.KeyboardKeyCode = Enum.KeyCode.F
-			-- Muscle sees Shove; everyone else sees the Party Popper
+			-- Muscle sees Shove; everyone else sees the Confetti Cannon
 			entry.shovePrompt:SetAttribute("Only", "muscle")
 			entry.popperPrompt:SetAttribute("Not", "muscle")
 			storeRoomGift(root, entry, o)

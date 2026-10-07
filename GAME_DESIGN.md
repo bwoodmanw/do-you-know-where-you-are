@@ -337,7 +337,7 @@ each rescue, each room cleared, a run-finishing bonus. A lost run still earns.
 
 Hidden in objects, one per room or two in bigger rooms. Halloween examples:
 **Candy Corn** (stamina never drains for 20 s), **Glow Stick** (lights the room
-for everyone for 30 s), **Party Popper** (startles the creature back a few
+for everyone for 30 s), **Confetti Cannon** (startles the creature back a few
 steps), **Balloon Decoy** (the creature chases it instead of you), **Mint**
 (refills energy).
 
