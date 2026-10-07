@@ -367,6 +367,88 @@ function Scene.perimeter()
 	end
 end
 
+-- ---------- Halloween dressing for the Lobby ----------
+function Scene.halloween()
+	local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+	if not Config.HALLOWEEN then
+		return
+	end
+	local folder = Instance.new("Folder")
+	folder.Name = "LobbyHalloween"
+	folder.Parent = workspace
+	-- orange and purple lights strung across the lane between the lamp posts
+	for z = 30, -50, -20 do
+		local a, b = Vector3.new(-11, 9.6, z), Vector3.new(11, 9.6, z)
+		for k = 0, 14 do
+			local p = a:Lerp(b, k / 14) - Vector3.new(0, math.sin(k / 14 * math.pi) * 1.6, 0)
+			part(folder, { Name = "LaneLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 0.5, 0.5), Position = p, Color = k % 2 == 0 and Color3.fromRGB(255, 138, 31) or Color3.fromRGB(150, 80, 220), Material = Enum.Material.Neon, CanCollide = false })
+		end
+	end
+	-- hay bales with pumpkins by the gate
+	for _, x in ipairs({ -15, 15 }) do
+		part(folder, { Name = "HayBale", Size = Vector3.new(5, 2.6, 3), Position = Vector3.new(x, 1.3, -62), Color = Color3.fromRGB(215, 180, 90), Material = Enum.Material.Fabric })
+		for i = -1, 1 do
+			local pk = part(folder, { Name = "Pumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.4, 1.6), Position = Vector3.new(x + i * 1.6, 3.3, -62), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
+			if i == 0 then
+				local l = Instance.new("PointLight")
+				l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 140, 40), 10, 1
+				l.Parent = pk
+			end
+		end
+	end
+	-- friendly tombstones on the lawn edges
+	local words = { "BOO!", "R.I.P. Socks", "Here lies Sir Pumpkin", "BOO!", "Gone to the party", "Trick or Treat" }
+	for i, p in ipairs({ Vector3.new(-40, 0, 30), Vector3.new(-48, 0, 12), Vector3.new(44, 0, -40), Vector3.new(-44, 0, -60), Vector3.new(62, 0, 40), Vector3.new(-60, 0, 70) }) do
+		local stone = part(folder, { Name = "Tombstone", Size = Vector3.new(3, 4, 0.8), CFrame = CFrame.new(p + Vector3.new(0, 2, 0)) * CFrame.Angles(0, math.rad((i * 37) % 30 - 15), math.rad((i * 13) % 10 - 5)), Color = Color3.fromRGB(120, 120, 130), Material = Enum.Material.Slate })
+		part(folder, { Name = "TombTop", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.8, 3, 3), CFrame = stone.CFrame * CFrame.new(0, 2, 0) * CFrame.Angles(0, math.rad(90), 0), Color = Color3.fromRGB(120, 120, 130), Material = Enum.Material.Slate })
+		for _, face in ipairs({ Enum.NormalId.Front, Enum.NormalId.Back }) do
+			local sg = Instance.new("SurfaceGui")
+			sg.Face = face
+			sg.CanvasSize = Vector2.new(150, 200)
+			sg.Parent = stone
+			local t = Instance.new("TextLabel")
+			t.Size = UDim2.fromScale(1, 0.6)
+			t.Position = UDim2.fromScale(0, 0.15)
+			t.BackgroundTransparency = 1
+			t.TextScaled = true
+			t.Font = Enum.Font.FredokaOne
+			t.TextColor3 = Color3.fromRGB(60, 60, 70)
+			t.Text = words[i]
+			t.Parent = sg
+		end
+	end
+	-- a ghost drifting slowly over the lawn
+	local ghost = part(folder, { Name = "LawnGhost", Shape = Enum.PartType.Ball, Size = Vector3.new(3, 3.6, 3), Position = Vector3.new(0, 9, 50), Color = Color3.fromRGB(245, 245, 255), Transparency = 0.3, CanCollide = false })
+	local gb = Instance.new("BillboardGui")
+	gb.Size = UDim2.new(3, 0, 3, 0)
+	gb.Parent = ghost
+	local gt = Instance.new("TextLabel")
+	gt.Size = UDim2.fromScale(1, 1)
+	gt.BackgroundTransparency = 1
+	gt.TextScaled = true
+	gt.Text = "\u{1F47B}"
+	gt.Parent = gb
+	task.spawn(function()
+		local t = 0
+		while ghost.Parent do
+			t += 0.05
+			ghost.Position = Vector3.new(math.sin(t * 0.3) * 30, 9 + math.sin(t * 1.4) * 1.2, 50 + math.cos(t * 0.3) * 20)
+			task.wait(0.05)
+		end
+	end)
+	-- a thin purple haze
+	local Lighting = game:GetService("Lighting")
+	if not Lighting:FindFirstChildOfClass("Atmosphere") then
+		local atm = Instance.new("Atmosphere")
+		atm.Density = 0.32
+		atm.Offset = 0.1
+		atm.Color = Color3.fromRGB(110, 80, 150)
+		atm.Decay = Color3.fromRGB(60, 40, 90)
+		atm.Glare, atm.Haze = 0, 1.2
+		atm.Parent = Lighting
+	end
+end
+
 -- ---------- things to play with while waiting ----------
 local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
 local Sfx = require(game:GetService("ReplicatedStorage").Shared.Sfx)

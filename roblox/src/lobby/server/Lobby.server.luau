@@ -1002,6 +1002,7 @@ end)
 Scene.dropOff()
 Scene.fun()
 Scene.perimeter()
+Scene.halloween()
 local boards = Scene.boards({ "\u{1F3C6} Most points earned", "\u{1F6AA} Most escapes", "\u{1F3E2} Most floors escaped", "\u{1F512} Most rescues", "\u{23F1} Fastest escapes this week" })
 local boardPoints, boardEscapes, boardFloors, boardRescue, boardFast = boards[1], boards[2], boards[3], boards[4], boards[5]
 -- each row: the player's avatar in a circle, then rank, name and score

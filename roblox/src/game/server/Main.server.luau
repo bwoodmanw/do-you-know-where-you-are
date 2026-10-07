@@ -162,8 +162,8 @@ local function savePlayer(plr)
 end
 
 local state = {}
-local function addPoints(plr, n)
-	if n > 0 then
+local function addPoints(plr, n, exact)
+	if n > 0 and not exact then
 		n = math.max(1, math.floor(n * Config.POINT_SCALE + 0.5))
 	end
 	Profile.addPoints(plr, n)
@@ -596,23 +596,24 @@ local function wireStoreRooms()
 				end
 				Effects.surprise(pos, "confetti")
 				Effects.burst(pos, "boost")
-				addPoints(plr, 30)
+				for _, p in ipairs(playersInRound()) do
+					local n = math.random(20, 60)
+					addPoints(p, n, true)
+					say("boost", "\u{1F381} Bonus present: +" .. n .. " points for you!", { icon = "\u{1F381}", userId = p.UserId, item = "+" .. n .. " points" }, p)
+				end
 				local roll = math.random(1, 3)
-				local what
+				local extra = ""
 				if roll == 1 then
 					state.cluesLeft += 1
 					state.freeClues = (state.freeClues or 0) + 1
 					RoundState:SetAttribute("CluesLeft", state.cluesLeft)
 					RoundState:SetAttribute("FreeClues", state.freeClues)
-					what = "a free clue for the team and 30 points"
+					extra = " And a free clue for the team!"
 				elseif roll == 2 then
 					plr:SetAttribute("Shield", true)
-					what = "a Party Shield and 30 points"
-				else
-					addPoints(plr, 30)
-					what = "60 points"
+					extra = " And a Party Shield for " .. plr.DisplayName .. "!"
 				end
-				say("boost", plr.DisplayName .. " opened a bonus present: " .. what .. "!", { icon = "\u{1F381}", userId = plr.UserId, item = "Bonus present" })
+				say("info", plr.DisplayName .. " opened a bonus present - points for everyone!" .. extra)
 			end)
 		end
 	end

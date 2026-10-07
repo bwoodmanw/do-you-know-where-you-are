@@ -12,6 +12,11 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 6 (7 Oct):
+- [ ] Bonus present: everyone in the game gets their own +20 to +60 points (pop-up shows the exact number), sometimes plus a free clue or a Shield for the opener
+- [ ] Every room: a little spider going up and down on a thread, orange/purple lights along the top of a wall; every third room a floating ghost
+- [ ] Lobby: orange/purple lights strung across the lane, hay bales with pumpkins by the gate, friendly tombstones (BOO!), a ghost drifting over the lawn, a light purple haze
+
 Round 5 (7 Oct):
 - [ ] Studio Play builds Hospital: Wards (`hospital_2`): Ward A/B and Children's Ward with beds, Linen Room towels, Medicine Store, stairs "Up to the Labs"; ask for `hospital_3` (Labs: Science Lab benches, Plant Lab planters, Generator Room tanks, "Out onto the helipad!")
 - [ ] Lobby map screen: Hospital shows 3 floors (Wards and Labs use the Hospital picture for now)

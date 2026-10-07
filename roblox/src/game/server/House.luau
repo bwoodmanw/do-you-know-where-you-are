@@ -1167,6 +1167,87 @@ function House.decorate(world)
 				end)
 			end
 		end
+		if Config.HALLOWEEN then
+			local hrng = Random.new(r * 31 + 7)
+			local top = (f.tall and HT or H)
+			-- a little spider that slowly goes up and down on its thread
+			do
+				local sx = hrng:NextNumber(x0 + 4, math.max(x0 + 4.1, x1 - 4))
+				local sz = hrng:NextNumber(z0 + 4, math.max(z0 + 4.1, z1 - 4))
+				local thread = deco({ Name = "SpiderThread", Size = Vector3.new(0.04, 2, 0.04), Position = Vector3.new(sx, top - 1, sz), Color = Color3.fromRGB(230, 230, 230) })
+				local body = deco({ Name = "Spider", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.7, 0.9), Position = Vector3.new(sx, top - 2, sz), Color = Color3.fromRGB(20, 18, 22), Material = Enum.Material.SmoothPlastic })
+				local legs = {}
+				for k = 1, 8 do
+					local side = k <= 4 and -1 or 1
+					local along = ((k - 1) % 4 - 1.5) * 0.22
+					table.insert(legs, { deco({ Name = "SpiderLeg", Size = Vector3.new(0.7, 0.06, 0.06), Color = Color3.fromRGB(20, 18, 22) }), Vector3.new(side * 0.55, -0.05, along), side })
+				end
+				local eyes = {}
+				for _, ex in ipairs({ -0.15, 0.15 }) do
+					table.insert(eyes, { deco({ Name = "SpiderEye", Shape = Enum.PartType.Ball, Size = Vector3.new(0.15, 0.15, 0.15), Color = Color3.fromRGB(255, 80, 60), Material = Enum.Material.Neon }), Vector3.new(ex, 0.1, -0.42) })
+				end
+				task.spawn(function()
+					local t = hrng:NextNumber(0, 6)
+					while body.Parent do
+						t += 0.1
+						local drop = 2 + (math.sin(t * 0.6) + 1) * 2.2
+						local c = CFrame.new(sx, top - drop, sz)
+						body.CFrame = c
+						thread.Size = Vector3.new(0.04, drop, 0.04)
+						thread.CFrame = CFrame.new(sx, top - drop / 2, sz)
+						for _, l in ipairs(legs) do
+							l[1].CFrame = c * CFrame.new(l[2]) * CFrame.Angles(0, 0, math.rad(l[3] * -25 + math.sin(t * 3) * 8))
+						end
+						for _, e in ipairs(eyes) do
+							e[1].CFrame = c * CFrame.new(e[2])
+						end
+						task.wait(0.1)
+					end
+				end)
+			end
+			-- a string of orange and purple lights along the top of one wall
+			do
+				local n = math.max(4, math.floor((x1 - x0) / 2.5))
+				for k = 0, n do
+					local px = x0 + 1 + (x1 - x0 - 2) * k / n
+					deco({ Name = "HalloweenLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.45, 0.45, 0.45), Position = Vector3.new(px, top - 0.9 - math.sin(k / n * math.pi) * 0.6, z0 + 0.5), Color = k % 2 == 0 and Color3.fromRGB(255, 138, 31) or Color3.fromRGB(150, 80, 220), Material = Enum.Material.Neon })
+				end
+			end
+			-- every third room: a friendly little ghost floating in a corner
+			if r % 3 == 0 then
+				local spot
+				for _, c in ipairs({ { f.x1, f.y1 }, { f.x0, f.y1 }, { f.x1, f.y0 }, { f.x0, f.y0 } }) do
+					if not spot and free(c[1], c[2]) then
+						spot = c
+					end
+				end
+				if spot then
+					busy[spot[1] .. "," .. spot[2]] = true
+					local base = at(spot[1], spot[2], 0) + Vector3.new(0, 5, 0)
+					local ghost = deco({ Name = "Ghost", Shape = Enum.PartType.Ball, Size = Vector3.new(2.2, 2.6, 2.2), Position = base, Color = Color3.fromRGB(245, 245, 255), Material = Enum.Material.SmoothPlastic, Transparency = 0.25 })
+					local face = Instance.new("BillboardGui")
+					face.Size = UDim2.new(2, 0, 2, 0)
+					face.Parent = ghost
+					local t = Instance.new("TextLabel")
+					t.Size = UDim2.fromScale(1, 1)
+					t.BackgroundTransparency = 1
+					t.TextScaled = true
+					t.Text = "\u{1F47B}"
+					t.Parent = face
+					local glow = Instance.new("PointLight")
+					glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(190, 210, 255), 8, 0.6
+					glow.Parent = ghost
+					task.spawn(function()
+						local tt = hrng:NextNumber(0, 6)
+						while ghost.Parent do
+							tt += 0.1
+							ghost.Position = base + Vector3.new(math.sin(tt * 0.5) * 0.6, math.sin(tt * 1.3) * 0.5, math.cos(tt * 0.5) * 0.6)
+							task.wait(0.1)
+						end
+					end)
+				end
+			end
+		end
 		-- pictures on the north wall, facing into the room
 		local hung = 0
 		for _, x in ipairs({ f.x0 + 2, f.x1 - 2, math.floor((f.x0 + f.x1) / 2) }) do
