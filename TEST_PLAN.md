@@ -12,6 +12,15 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 4 (7 Oct):
+- [ ] Top of the screen: the timer/code bar stops before 🔊 and 🎵; Players and Lobby sit under 🎵; the song name sits under Lobby (nothing overlaps)
+- [ ] Lobby: Friends' parties box starts below the points and sound buttons
+- [ ] The host never stays pressed into a wall (after 4 s he pops back onto the floor)
+- [ ] Play again: closing the picker with X counts as ready; while waiting, an "I'm ready!" button under the banner
+- [ ] Only the party leader can change Difficulty and Giggly/Spooky ("The party leader picks these" for others)
+- [ ] Party Poppers: "Team Party Poppers: N" above your bars; any Popper opens any blocked doorway; it stays after a cage
+- [ ] Shelves match the room: pantry/kitchen food, bathroom towels, nursery toys, store boxes, library books; no rug in pantry/bathroom
+
 Round 3 (7 Oct):
 - [ ] Lobby house sits on grass (ground now continues under it) and is 6 studs nearer the lawn
 - [ ] Window faces: on the windows, on the house's surface (not floating in front of the porch)

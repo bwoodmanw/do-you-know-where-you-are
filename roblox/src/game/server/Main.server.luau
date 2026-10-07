@@ -827,10 +827,12 @@ local function wirePrompts()
 				if state.status ~= "playing" or world.unlocked[id] or entry.fuse then
 					return
 				end
-				if not world.keys[id] then
+				if (world.poppers or 0) <= 0 then
 					return need(plr, "muscle", "You need a Party Popper - search drawers and boxes for one! Or bring Muscle to shove it.")
 				end
 				entry.fuse = true
+				world.poppers -= 1
+				RoundState:SetAttribute("Poppers", world.poppers)
 				entry.popperPrompt.Enabled = false
 				local myWorld = world
 				local pos = entry.part.Position - Vector3.new(0, 5.6, 0)
@@ -913,12 +915,12 @@ local function wirePrompts()
 				local isPopper = lock ~= nil and world.objects[lock].def.blocked
 				House.openObject(entry, lock ~= nil and not isPopper)
 				if isPopper then
-					world.keys[lock] = true
-					RoundState:SetAttribute("Key_" .. lock, true)
-					world.objects[lock].popperPrompt.Enabled = true
+					-- the team's Poppers: any one works on any blocked doorway
+					world.poppers = (world.poppers or 0) + 1
+					RoundState:SetAttribute("Poppers", world.poppers)
 					Effects.burst(entry.part.Position, "boost")
 					addPoints(plr, 10)
-					say("key", plr.DisplayName .. " found a Party Popper! Plant it at the blocked " .. world.objects[lock].def.name .. ".", { icon = "\u{1F389}", userId = plr.UserId, item = "Party Popper" })
+					say("key", plr.DisplayName .. " found a Party Popper! It blasts open any blocked doorway.", { icon = "\u{1F389}", userId = plr.UserId, item = "Party Popper" })
 				elseif lock then
 					world.keys[lock] = true
 					RoundState:SetAttribute("Key_" .. lock, true)
@@ -1225,8 +1227,8 @@ local function hintFor()
 			if skills.muscle then
 				return id, "Muscle can shove the junk blocking the " .. name .. "."
 			end
-			if world.keys[id] then
-				return id, "Plant the Party Popper at the blocked " .. name .. " - it's loud, so be ready to run!"
+			if (world.poppers or 0) > 0 then
+				return id, "Plant a Party Popper at the blocked " .. name .. " - it's loud, so be ready to run!"
 			end
 			for sid, lock in pairs(world.keyIn) do
 				if lock == id and not o[sid].searched then
@@ -1597,14 +1599,38 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 	say("boost", plr.DisplayName .. " used " .. boost.name .. "!", { icon = boost.icon, userId = plr.UserId, item = boost.name })
 end)
 
-SetDifficulty.OnServerEvent:Connect(function(_, key)
+-- the party leader leaving hands the lead to someone still here
+Players.PlayerRemoving:Connect(function(plr)
+	if RoundState:GetAttribute("Leader") == plr.UserId then
+		local nextOne
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p ~= plr then
+				nextOne = nextOne or p
+			end
+		end
+		RoundState:SetAttribute("Leader", nextOne and nextOne.UserId or nil)
+	end
+end)
+
+local function isLeader(plr)
+	local lead = RoundState:GetAttribute("Leader")
+	return lead == nil or lead == plr.UserId
+end
+
+SetDifficulty.OnServerEvent:Connect(function(plr, key)
+	if not isLeader(plr) then
+		return say("info", "Only the party leader can change the difficulty.", nil, plr)
+	end
 	if typeof(key) == "string" and Config.DIFFICULTY[key] and not (host and host.model) then
 		RoundState:SetAttribute("Difficulty", key)
 		say("info", "Difficulty: " .. Config.DIFFICULTY[key].name)
 	end
 end)
 
-SetSpook.OnServerEvent:Connect(function(_, level)
+SetSpook.OnServerEvent:Connect(function(plr, level)
+	if not isLeader(plr) then
+		return say("info", "Only the party leader can choose Giggly or Spooky.", nil, plr)
+	end
 	if (level == "giggly" or level == "spooky") and not (host and host.model) then
 		RoundState:SetAttribute("Spook", level)
 		say("info", "This game is " .. (level == "spooky" and "SPOOKY" or "Giggly") .. ".")
@@ -1662,6 +1688,8 @@ function round.start()
 	-- each locked door hides its key (the blocked passage: a Party Popper) in a
 	-- random searchable thing on its near side
 	world.unlocked, world.keys, world.keyIn = {}, {}, {}
+	world.poppers = 0
+	RoundState:SetAttribute("Poppers", 0)
 	for _, lock in ipairs({ { "L1", 1 }, { "L2", 2 }, { "B1", 1 }, { "B2", 1 } }) do
 		local choices = {}
 		for oid, e in pairs(world.objects) do
@@ -1924,6 +1952,13 @@ Players.PlayerAdded:Connect(function(plr)
 		if typeof(data.map) == "string" and Progress.mapIndex(data.map) then
 			RoundState:SetAttribute("Map", data.map)
 		end
+		if typeof(data.leader) == "number" and not RoundState:GetAttribute("Leader") then
+			RoundState:SetAttribute("Leader", data.leader)
+		end
+	end
+	-- no party leader known (Studio, or they left): the first one here leads
+	if not RoundState:GetAttribute("Leader") then
+		RoundState:SetAttribute("Leader", plr.UserId)
 	end
 	plr.CharacterAdded:Connect(function(char)
 		task.wait(0.2)

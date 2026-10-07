@@ -116,6 +116,31 @@ local function floorKind(map, x, y)
 	return "door"
 end
 
+local function roomNameAt(map, x, y)
+	for _, f in ipairs(map.floors) do
+		if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
+			return f.name
+		end
+	end
+	return ""
+end
+
+-- what sits on a Party House shelf, by room: food in a pantry or kitchen,
+-- towels in a bathroom, toys in a nursery, boxes in a store room, else books
+local function shelfStyle(name)
+	local n = string.lower(name)
+	if string.find(n, "pantry") or string.find(n, "kitchen") then
+		return "food"
+	elseif string.find(n, "bath") or string.find(n, "linen") or string.find(n, "laundry") then
+		return "towels"
+	elseif string.find(n, "nursery") or string.find(n, "play") or string.find(n, "kids") or string.find(n, "doll") then
+		return "toys"
+	elseif string.find(n, "storage") or string.find(n, "box") or string.find(n, "trunk") or string.find(n, "store") then
+		return "boxes"
+	end
+	return "books"
+end
+
 local function furnitureAt(map, x, y)
 	for _, f in ipairs(map.furniture) do
 		if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
@@ -306,6 +331,41 @@ function House.build(map)
 				elseif kind == "piano" then
 					part(root, { Name = "Piano", Size = Vector3.new(T, 5, T * 0.7), Position = at(x, y, 2.5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(20, 18, 24) })
 					part(root, { Name = "Keys", Size = Vector3.new(T, 0.3, 1.4), Position = at(x, y, 4.2) + Vector3.new(0, 0, T * 0.35 + 0.7), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(240, 240, 235) })
+				elseif shelfStyle(roomNameAt(map, x, y)) ~= "books" then
+					local style = shelfStyle(roomNameAt(map, x, y))
+					part(root, { Name = "Shelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.Wood, Color = style == "towels" and Color3.fromRGB(235, 232, 225) or Color3.fromRGB(150, 110, 70) })
+					local front = T * 0.3 + 0.4
+					for row = 0, 2 do
+						for j = 0, 2 do
+							local p = at(x, y, 1.4 + row * 3) + Vector3.new(-2.5 + j * 2.5, 0, front)
+							local k = (x + j + row) % 3
+							if style == "food" then
+								if k == 0 then
+									part(root, { Name = "Can", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.6, 1.1, 1.1), CFrame = CFrame.new(p + Vector3.new(0, 0.1, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(200, 60, 50), Material = Enum.Material.Metal, CanCollide = false })
+								elseif k == 1 then
+									part(root, { Name = "Jar", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.8, 1.3, 1.3), CFrame = CFrame.new(p + Vector3.new(0, 0.2, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(240, 170, 60), Material = Enum.Material.Glass, Transparency = 0.2, CanCollide = false })
+								else
+									part(root, { Name = "CerealBox", Size = Vector3.new(1.6, 2.3, 0.7), Position = p + Vector3.new(0, 0.35, 0), Color = Color3.fromRGB(255, 210, 63), CanCollide = false })
+								end
+							elseif style == "towels" then
+								for t = 0, 2 do
+									part(root, { Name = "Towel", Size = Vector3.new(2, 0.5, 1.2), Position = p + Vector3.new(0, -0.4 + t * 0.55, 0), Color = ({ Color3.fromRGB(150, 200, 235), Color3.fromRGB(250, 250, 250), Color3.fromRGB(255, 190, 210) })[(t + j) % 3 + 1], Material = Enum.Material.Fabric, CanCollide = false })
+								end
+							elseif style == "toys" then
+								if k == 0 then
+									part(root, { Name = "ToyBall", Shape = Enum.PartType.Ball, Size = Vector3.new(1.5, 1.5, 1.5), Position = p, Color = Color3.fromRGB(61, 139, 255), CanCollide = false })
+								elseif k == 1 then
+									part(root, { Name = "ToyBlock", Size = Vector3.new(1.3, 1.3, 1.3), Position = p - Vector3.new(0, 0.1, 0), Color = Color3.fromRGB(232, 80, 91), CanCollide = false })
+									part(root, { Name = "ToyBlock", Size = Vector3.new(1, 1, 1), Position = p + Vector3.new(0, 1.05, 0), Color = Color3.fromRGB(70, 209, 96), CanCollide = false })
+								else
+									part(root, { Name = "Teddy", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.5, 1.2), Position = p - Vector3.new(0, 0.2, 0), Color = Color3.fromRGB(160, 110, 70), Material = Enum.Material.Fabric, CanCollide = false })
+									part(root, { Name = "TeddyHead", Shape = Enum.PartType.Ball, Size = Vector3.new(1, 1, 1), Position = p + Vector3.new(0, 0.9, 0), Color = Color3.fromRGB(160, 110, 70), Material = Enum.Material.Fabric, CanCollide = false })
+								end
+							else
+								part(root, { Name = "Box", Size = Vector3.new(2, 1.8, 1.2), Position = p + Vector3.new(0, 0.1, 0), Color = Color3.fromRGB(180, 140, 95), Material = Enum.Material.Cardboard, CanCollide = false })
+							end
+						end
+					end
 				else
 					part(root, { Name = "Shelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.Wood, Color = Color3.fromRGB(92, 58, 34) })
 					local cols = { Color3.fromRGB(232, 80, 91), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(138, 107, 209) }
@@ -420,7 +480,7 @@ function House.addCrate(world, x, y)
 				local mark = Instance.new("BillboardGui")
 				mark.Size = UDim2.fromOffset(70, 56)
 				mark.StudsOffset = Vector3.new(0, 5, 0)
-				mark.MaxDistance = 60
+				mark.MaxDistance = 35
 				mark.Parent = crate
 				local icon = Instance.new("TextLabel")
 				icon.Size = UDim2.fromScale(1, 0.7)
@@ -1225,8 +1285,10 @@ function House.decorate(world)
 				end
 			end
 		end
-		-- a rug in the middle (not in the kitchen: it has its tiles; not in the hospital)
-		if f.kind ~= "tiles" and not hosp then
+		-- a rug in the middle (not in the kitchen: it has its tiles; not in the
+		-- hospital; not in a pantry, bathroom or laundry)
+		local plain = string.find(string.lower(f.name), "pantry") or string.find(string.lower(f.name), "bath") or string.find(string.lower(f.name), "laundry")
+		if f.kind ~= "tiles" and not hosp and not plain then
 			local w, d = (f.x1 - f.x0 + 1) * T * 0.4, (f.y1 - f.y0 + 1) * T * 0.4
 			deco({ Name = "Rug", Size = Vector3.new(w, 0.1, d), Position = Vector3.new((x0 + x1) / 2, 0.06, (z0 + z1) / 2), Color = DECOR[r % #DECOR + 1], Material = Enum.Material.Fabric, Transparency = 0.15 })
 		end

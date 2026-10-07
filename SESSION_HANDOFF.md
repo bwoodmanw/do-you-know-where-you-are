@@ -195,3 +195,5 @@ Checklist in `TEST_PLAN.md` ("This round").
 - Meshy faces are soft because of the source picture; use one big front image.
 - `re.sub` replacements collapse backslashes - use a lambda.
 - Imported heads may face backwards: aim by the root's LookVector.
+- Hud.client.luau is at Luau's 200-locals-per-function limit at top level:
+  wrap new HUD code in `do ... end` blocks (luau-compile catches it).

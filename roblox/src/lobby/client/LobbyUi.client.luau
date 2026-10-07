@@ -441,7 +441,8 @@ task.spawn(function()
 end)
 
 -- ---------- parties you can join (right) ----------
-local joinBox = frame(gui, { Size = UDim2.fromOffset(330, 400), Position = UDim2.new(1, -354, 0.5, -200) })
+-- below the points, sound and music buttons (top right)
+local joinBox = frame(gui, { Size = UDim2.fromOffset(330, 400), Position = UDim2.new(1, -354, 0, 168) })
 corner(joinBox, 18)
 label(joinBox, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "Friends' parties", TextColor3 = PUMP })
 local joinList = frame(joinBox, { Size = UDim2.new(1, -20, 1, -64), Position = UDim2.fromOffset(10, 56), BackgroundTransparency = 1 })

@@ -293,7 +293,8 @@ local function hostCloseUp(intense)
 end
 
 -- ---------- top bar ----------
-local top = frame(gui, { Size = UDim2.new(0.36, 0, 0, 40), Position = UDim2.new(0.4, 0, 0, 8), BackgroundTransparency = 0.25 })
+-- the top bar stops short of the sound and music buttons (top right)
+local top = frame(gui, { Size = UDim2.new(0.7, -232, 0, 40), Position = UDim2.new(0.3, 0, 0, 8), BackgroundTransparency = 0.25 })
 corner(top, 12)
 local roomName -- placed with the bars below
 local steps = {}
@@ -332,6 +333,17 @@ paintCode()
 -- ---------- bars ----------
 local bars = frame(gui, { Size = UDim2.fromOffset(250, 84), Position = TOUCH and UDim2.fromOffset(10, 60) or UDim2.new(0, 10, 1, -94), BackgroundTransparency = 0.3 })
 roomName = label(bars, { Size = UDim2.new(1, -16, 0, 20), Position = UDim2.fromOffset(8, 58), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
+do
+-- the team's Party Poppers, just above the bars (they stay through a cage)
+local popperLine = label(bars, { Size = UDim2.new(1, 0, 0, 24), Position = UDim2.fromOffset(0, -28), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 210, 63), TextStrokeTransparency = 0.4, Visible = false })
+local function paintPoppers()
+	local n = RoundState:GetAttribute("Poppers") or 0
+	popperLine.Visible = n > 0
+	popperLine.Text = "\u{1F389} Team Party Poppers: " .. n
+end
+RoundState:GetAttributeChangedSignal("Poppers"):Connect(paintPoppers)
+paintPoppers()
+end
 corner(bars, 10)
 local function bar(y, color, name)
 	label(bars, { Size = UDim2.fromOffset(78, 16), Position = UDim2.fromOffset(8, y - 2), Text = name, TextXAlignment = Enum.TextXAlignment.Left })
@@ -376,6 +388,7 @@ end
 player:GetAttributeChangedSignal("CandyCharges"):Connect(paintCandy)
 paintCandy()
 
+do
 -- prompts one character uses (Pick the lock, Shove) show only to them, and
 -- the everyone-else prompt beside it (Unlock, Party Popper) hides for them:
 -- never two on top of each other. Set on this screen only.
@@ -403,6 +416,7 @@ player:GetAttributeChangedSignal("Skill"):Connect(function()
 		end
 	end
 end)
+end
 
 -- hold-to-use prompts (pick, shove, read, free...) go faster with ladder upgrades
 local ProximityPromptService = game:GetService("ProximityPromptService")
@@ -461,6 +475,10 @@ fitPicker()
 label(picker, { Size = UDim2.new(1, -120, 0, 36), Position = UDim2.fromOffset(60, 12), Text = "Escape Crew - pick your character", TextColor3 = PUMP, ZIndex = 21 })
 -- back out without changing anything
 button(picker, "X", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(44, 40), Position = UDim2.new(1, -58, 0, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 22 }, function()
+	-- closing it with a character chosen means "I'm ready"
+	if player:GetAttribute("Skill") then
+		remotes.Ready:FireServer()
+	end
 	picker.Visible = false
 end)
 
@@ -679,6 +697,22 @@ local function paintDifficulty()
 end
 RoundState:GetAttributeChangedSignal("Difficulty"):Connect(paintDifficulty)
 paintDifficulty()
+do
+-- only the party leader can change these; everyone else sees what was chosen
+local leaderNote = label(picker, { Size = UDim2.fromOffset(300, 20), Position = UDim2.new(1, -320, 0, 480), Text = "The party leader picks these", TextColor3 = Color3.fromRGB(185, 168, 207), TextScaled = false, TextSize = 14, Visible = false, ZIndex = 22 })
+local function paintLeader()
+	local lead = RoundState:GetAttribute("Leader")
+	local mine = lead == nil or lead == player.UserId
+	for _, b in pairs(diffBtns) do
+		b.Active, b.AutoButtonColor = mine, mine
+	end
+	giggly.Active, giggly.AutoButtonColor = mine, mine
+	spooky.Active, spooky.AutoButtonColor = mine, mine
+	leaderNote.Visible = not mine
+end
+RoundState:GetAttributeChangedSignal("Leader"):Connect(paintLeader)
+paintLeader()
+end
 local function paintSpook()
 	local s = RoundState:GetAttribute("Spook")
 	giggly.BackgroundColor3 = s == "giggly" and PUMP or Color3.fromRGB(75, 58, 102)
@@ -1117,14 +1151,14 @@ workspace.DescendantAdded:Connect(function(d)
 end)
 
 -- ---------- music ----------
-require(ReplicatedStorage.Shared.MusicPlayer).start("game", gui, UDim2.new(0.77, 0, 0, 10), remotes:WaitForChild("SetMusic"), remotes:WaitForChild("SetSfx"))
+require(ReplicatedStorage.Shared.MusicPlayer).start("game", gui, UDim2.new(1, -110, 0, 10), remotes:WaitForChild("SetMusic"), remotes:WaitForChild("SetSfx"), UDim2.new(1, -250, 0, 134))
 
 -- ---------- who is playing, and their points this game ----------
 local SKILL_ICON = {}
 for _, sk in ipairs(Config.SKILLS) do
 	SKILL_ICON[sk.id] = sk.icon
 end
-local playersBtn = button(gui, "\u{1F465} Players", { Size = UDim2.fromOffset(96, 36), Position = UDim2.new(0.77, 0, 0, 52), ZIndex = 5 })
+local playersBtn = button(gui, "\u{1F465} Players", { Size = UDim2.fromOffset(96, 36), Position = UDim2.new(1, -110, 0, 52), ZIndex = 5 })
 local playersBox = frame(gui, { Size = UDim2.fromOffset(260, 60), Position = UDim2.new(0.77, -268, 0, 52), Visible = false, ZIndex = 6 })
 corner(playersBox, 12)
 label(playersBox, { Size = UDim2.new(1, -50, 0, 22), Position = UDim2.fromOffset(10, 7), Text = "\u{1F465} In this game", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 7 })
@@ -1171,7 +1205,7 @@ task.spawn(function()
 end)
 
 -- ---------- leave for the Lobby (asks first) ----------
-local leaveBtn = button(gui, "\u{1F6AA} Lobby", { Size = UDim2.fromOffset(96, 36), Position = UDim2.new(0.77, 0, 0, 94), ZIndex = 5 })
+local leaveBtn = button(gui, "\u{1F6AA} Lobby", { Size = UDim2.fromOffset(96, 36), Position = UDim2.new(1, -110, 0, 94), ZIndex = 5 })
 local leaveBox = frame(gui, { Size = UDim2.fromOffset(360, 140), Position = UDim2.new(0.5, -180, 0.4, -70), Visible = false, ZIndex = 45 })
 corner(leaveBox, 16)
 label(leaveBox, { Size = UDim2.new(1, -30, 0, 60), Position = UDim2.fromOffset(15, 10), Text = "Leave this game and go back to the Lobby?", TextWrapped = true, ZIndex = 46 })
@@ -1190,6 +1224,13 @@ end)
 -- ---------- waiting for everyone to choose a character ----------
 local pickBanner = label(gui, { Size = UDim2.fromOffset(560, 40), Position = UDim2.new(0.5, -280, 0, 56), BackgroundTransparency = 0.2, BackgroundColor3 = NIGHT, TextColor3 = PUMP, Visible = false, ZIndex = 8 })
 corner(pickBanner, 10)
+local readyBtn = button(gui, "\u{25B6} I'm ready!", { Size = UDim2.fromOffset(170, 38), Position = UDim2.new(0.5, -85, 0, 100), BackgroundColor3 = PUMP, TextColor3 = NIGHT, Visible = false, ZIndex = 8 }, function()
+	if player:GetAttribute("Skill") then
+		remotes.Ready:FireServer()
+	else
+		picker.Visible = true
+	end
+end)
 task.spawn(function()
 	while true do
 		task.wait(0.5)
@@ -1197,6 +1238,8 @@ task.spawn(function()
 		local deadline = RoundState:GetAttribute("PickDeadline")
 		local show = RoundState:GetAttribute("Status") == "playing" and not RoundState:GetAttribute("HostOut") and deadline ~= nil and waiting > 0
 		pickBanner.Visible = show
+		readyBtn.Visible = show and not player:GetAttribute("Ready") and not picker.Visible
+		readyBtn.Text = player:GetAttribute("Skill") and "\u{25B6} I'm ready!" or "Choose a character"
 		if show then
 			local left = math.max(0, math.floor(deadline - workspace:GetServerTimeNow()))
 			local mine = not player:GetAttribute("Ready")

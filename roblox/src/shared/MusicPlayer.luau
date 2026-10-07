@@ -17,7 +17,7 @@ local MusicPlayer = {}
 local STEPS = { 1, 0.5, 0.25, 0 }
 local BASE = 0.5 -- music sits under the sound effects
 
-function MusicPlayer.start(listName, gui, position, setRemote, setSfxRemote)
+function MusicPlayer.start(listName, gui, position, setRemote, setSfxRemote, nowPlayingAt)
 	local ids = (Config.MUSIC and Config.MUSIC[listName]) or {}
 	local player = Players.LocalPlayer
 	local level = player:GetAttribute("MusicVolume") or 0.5
@@ -40,7 +40,7 @@ function MusicPlayer.start(listName, gui, position, setRemote, setSfxRemote)
 	-- what is playing, under the button
 	local nowPlaying = Instance.new("TextLabel")
 	nowPlaying.Size = UDim2.fromOffset(240, 18)
-	nowPlaying.Position = position + UDim2.fromOffset(-144, 38)
+	nowPlaying.Position = nowPlayingAt or (position + UDim2.fromOffset(-144, 38))
 	nowPlaying.BackgroundTransparency = 1
 	nowPlaying.Font = Enum.Font.FredokaOne
 	nowPlaying.TextSize = 14

@@ -262,7 +262,37 @@ function Host:step(dt)
 	if self.pause > 0 then
 		self.pause -= dt
 		self.hum:MoveTo(self.root.Position)
+		self.stuckPos, self.stuckAt = self.root.Position, os.clock()
 		return
+	end
+	-- hardly moved for 4 s (pressed into a wall): back to the middle of the
+	-- nearest open floor tile, and off on its patrol again
+	local clock = os.clock()
+	if not self.stuckAt or (self.root.Position - self.stuckPos).Magnitude > 2 then
+		self.stuckPos, self.stuckAt = self.root.Position, clock
+	elseif clock - self.stuckAt > 4 then
+		local map = self.world.map
+		local T = Config.TILE
+		local tx, ty = math.floor(self.root.Position.X / T), math.floor(self.root.Position.Z / T)
+		local best
+		for r = 0, 3 do
+			for dy = -r, r do
+				for dx = -r, r do
+					local row = map.map[ty + dy + 1]
+					if not best and row and string.sub(row, tx + dx + 2, tx + dx + 2) ~= "" and string.sub(row, tx + dx + 1, tx + dx + 1) == "." then
+						best = { tx + dx, ty + dy }
+					end
+				end
+			end
+		end
+		if best then
+			local p = require(script.Parent.House).at(best[1], best[2], 0)
+			local cf, size = self.model:GetBoundingBox()
+			self.model:PivotTo(self.model:GetPivot() + (p + Vector3.new(0, size.Y / 2 + 0.05, 0) - cf.Position))
+		end
+		self.mode = "patrol"
+		self.goal = nil
+		self.stuckPos, self.stuckAt = self.root.Position, clock
 	end
 	-- who can it see? the nearest wins
 	local best, bestD = nil, math.huge

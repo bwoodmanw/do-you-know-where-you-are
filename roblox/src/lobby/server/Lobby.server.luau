@@ -609,7 +609,7 @@ local function start(party)
 		local code = TeleportService:ReserveServer(placeId)
 		local options = Instance.new("TeleportOptions")
 		options.ReservedServerAccessCode = code
-		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook, map = mapId })
+		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook, map = mapId, leader = party.leader.UserId })
 		TeleportService:TeleportAsync(placeId, party.members, options)
 	end)
 	if not ok then
