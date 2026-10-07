@@ -658,11 +658,14 @@ local function openPicker()
 	end
 	showChar()
 end
--- a new game: choose (or keep) your character
+-- a new game: choose (or keep) your character. Checked a moment later, once
+-- every change the server made for the new game has arrived.
 RoundState:GetAttributeChangedSignal("Status"):Connect(function()
-	if RoundState:GetAttribute("Status") == "playing" and not RoundState:GetAttribute("HostOut") then
-		picker.Visible = true
-	end
+	task.delay(0.3, function()
+		if RoundState:GetAttribute("Status") == "playing" and not RoundState:GetAttribute("HostOut") and RoundState:GetAttribute("EndsAt") == nil then
+			picker.Visible = true
+		end
+	end)
 end)
 picker:GetPropertyChangedSignal("Visible"):Connect(function()
 	if picker.Visible then

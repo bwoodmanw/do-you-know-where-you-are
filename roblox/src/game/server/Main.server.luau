@@ -1802,6 +1802,10 @@ function round.start()
 	local now = workspace:GetServerTimeNow()
 	state = { status = "playing", code = code, known = {}, entry = {}, doorOpen = false, cluesLeft = diff.clues,
 		diff = diffKey, earned = {}, startedAt = now, endsAt = now + diff.timer, frenzy = false }
+	-- clear the last game's clock and host first, so screens see a fresh
+	-- game (not one already under way) and open the character picker
+	RoundState:SetAttribute("EndsAt", nil)
+	RoundState:SetAttribute("HostOut", false)
 	RoundState:SetAttribute("Status", "playing")
 	RoundState:SetAttribute("ClueCost", Config.CLUE_COSTS[1])
 	for _, p in ipairs(Players:GetPlayers()) do
@@ -1809,7 +1813,6 @@ function round.start()
 	end
 	RoundState:SetAttribute("DoorOpen", false)
 	RoundState:SetAttribute("CluesLeft", diff.clues)
-	RoundState:SetAttribute("EndsAt", state.endsAt)
 	RoundState:SetAttribute("Frenzy", false)
 	RoundState:SetAttribute("HostOut", false)
 	for i = 1, 3 do

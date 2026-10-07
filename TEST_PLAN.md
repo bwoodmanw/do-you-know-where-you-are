@@ -13,6 +13,7 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
 Round 9 (7 Oct):
+- [ ] After Play again OR Next floor (door / button): the character picker opens again with your last character ready; Change works; the game waits for everyone's Play
 - [ ] Results appear at the end of every game (they could fail after the Next floor change - fixed)
 - [ ] Ground floors with a floor above (Party House Ground, Bounce Hall, Hospital Ground): stairs, a landing and a glowing door in the garden / clouds, sign "Up to the Bedrooms" / "Up to the Candy Factory" / "Up to the Wards"; candy-pink steps in the Gummy House, grey concrete at the Hospital
 - [ ] Every floor's sign names the floor above; top floors (Attic, Jelly Vault, Labs) keep their own sign and the door says you made it
