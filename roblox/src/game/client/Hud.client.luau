@@ -688,6 +688,7 @@ button(picker, "\u{25B6} Play", { Size = UDim2.fromOffset(240, 52), Position = U
 	remotes.Ready:FireServer()
 	picker.Visible = false
 end)
+do
 local diffBtns = {}
 for i, key in ipairs(Config.DIFFICULTY_ORDER) do
 	diffBtns[key] = button(picker, Config.DIFFICULTY[key].name, { Size = UDim2.fromOffset(150, 40), Position = UDim2.fromOffset(180 + (i - 1) * 166, 450), ZIndex = 22 }, function()
@@ -747,6 +748,7 @@ pickBtn.Activated:Connect(function()
 end)
 
 -- ---------- keypad ----------
+end
 local keypad = frame(gui, { Size = UDim2.fromOffset(250, 300), Position = UDim2.new(1, -270, 0.5, -150), Visible = false, ZIndex = 30 })
 corner(keypad, 16)
 label(keypad, { Size = UDim2.new(1, 0, 0, 34), Position = UDim2.fromOffset(0, 8), Text = "Door keypad", ZIndex = 31 })
@@ -787,6 +789,7 @@ end)
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
 local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade" }
+do
 local function paintSkill()
 	local s = player:GetAttribute("Skill")
 	local icon = "\u{2B50}"
@@ -1255,6 +1258,7 @@ task.spawn(function()
 end)
 
 -- ---------- boosts working right now: icon and how long is left ----------
+end
 local activeRow = frame(gui, { Size = UDim2.fromOffset(290, 46), Position = TOUCH and UDim2.new(1, -300, 1, -412) or UDim2.new(1, -300, 1, -272), BackgroundTransparency = 1 })
 local activeList = Instance.new("UIListLayout")
 activeList.FillDirection = Enum.FillDirection.Horizontal
@@ -1301,6 +1305,7 @@ remotes.Boost.OnClientEvent:Connect(function(kind)
 end)
 
 -- the heartbeat speeds up and gets louder as the host comes closer
+do
 local dangerLevel = 0
 task.spawn(function()
 	while true do
@@ -1450,6 +1455,7 @@ RunService.RenderStepped:Connect(function(dt)
 end)
 
 -- ---------- a big icon that pops up: items picked up, skills used ----------
+end
 local popFrame = frame(gui, { Size = UDim2.fromOffset(170, 170), Position = UDim2.new(0.5, -85, 0.55, -85), BackgroundTransparency = 1, Visible = false, ZIndex = 35 })
 local popIcon = label(popFrame, { Size = UDim2.fromScale(1, 0.75), Text = "", ZIndex = 36 })
 local popText = label(popFrame, { Size = UDim2.new(1.6, 0, 0.25, 0), Position = UDim2.fromScale(-0.3, 0.75), Text = "", ZIndex = 36 })
@@ -1554,6 +1560,7 @@ RoundState:GetAttributeChangedSignal("Status"):Connect(paintSpectate)
 -- ---------- end of round: results ----------
 local results = frame(gui, { Size = UDim2.fromOffset(460, 440), Position = UDim2.new(0.5, -230, 0.5, -220), Visible = false, ZIndex = 40 })
 corner(results, 18)
+do
 local resTitle = label(results, { Size = UDim2.new(1, -20, 0, 44), Position = UDim2.fromOffset(10, 12), TextColor3 = PUMP, ZIndex = 41 })
 local resInfo = label(results, { Size = UDim2.new(1, -20, 0, 26), Position = UDim2.fromOffset(10, 60), ZIndex = 41 })
 local resList = label(results, { Size = UDim2.new(1, -40, 0, 190), Position = UDim2.fromOffset(20, 96), TextScaled = false, TextSize = 22, TextYAlignment = Enum.TextYAlignment.Top, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 41 })
@@ -1718,6 +1725,7 @@ do
 end
 
 -- ---------- mouse look: lock the mouse to the centre unless a menu is open ----------
+end
 local locked = false
 RunService.RenderStepped:Connect(function()
 	local menus = picker.Visible or keypad.Visible or sayPanel.Visible or results.Visible or spec.Visible or aiming

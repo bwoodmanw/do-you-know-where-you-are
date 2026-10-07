@@ -202,5 +202,9 @@ Checklist in `TEST_PLAN.md` ("This round").
 - Meshy faces are soft because of the source picture; use one big front image.
 - `re.sub` replacements collapse backslashes - use a lambda.
 - Imported heads may face backwards: aim by the root's LookVector.
-- Hud.client.luau is at Luau's 200-locals-per-function limit at top level:
-  wrap new HUD code in `do ... end` blocks (luau-compile catches it).
+- Hud.client.luau hit Luau's 200-locals limit in Studio (7 Oct: every button
+  vanished) although `luau-compile` passed - Studio compiles at debug level 2:
+  always check with `luau-compile --null -g2`. Top level now ~131 locals; wrap
+  new HUD code in `do ... end` blocks.
+- Rojo servers that run for a day can stop noticing file changes: restart them
+  and reconnect the Studio plugin when Studio does not match the code.

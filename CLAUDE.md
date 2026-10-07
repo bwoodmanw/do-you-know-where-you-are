@@ -10,7 +10,10 @@ parked. This folder is unrelated to Parallax or Playbox - ignore their rules.
 ## Working rules
 
 - **Check every Luau change before handing it over:**
-  `.tools/luau-compile.exe --null <file>` (syntax) and
+  `.tools/luau-compile.exe --null -g2 <file>` (syntax, at Studio's debug level:
+  without `-g2` it misses "Out of local registers", which broke the whole HUD on
+  7 Oct - keep Hud.client.luau's top level well under 200 locals, wrap new
+  sections in `do ... end`) and
   `.tools/luau-analyze.exe <file>` (ignore "Unknown global" for Roblox
   built-ins such as game, workspace, Instance, Enum, task, warn, typeof).
 - **Patch scripts are atomic:** assert every anchor, write each file once at
