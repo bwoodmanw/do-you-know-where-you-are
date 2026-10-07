@@ -55,7 +55,9 @@ Windows (C7):
 - [ ] One or two windows on the outside walls of most rooms: a night sky with stars, the moon (a bat on it), black hills and trees (candy-pink sky and clouds in the Gummy House, town lights at the hospital), a pale moonbeam into the room
 - [ ] Windows never cover a picture, a shelf, a set piece or a doorway; none in vault, boiler, generator, store or locker rooms
 
-Skins (B9): see `SKINS.md` - nothing shows until the art and Game Passes exist
+Skins (B9): see `SKINS.md` - free to try in Studio once a model is in ServerStorage/Characters; hidden live until its Game Pass id is in Config
+- [ ] Lobby (Studio): Characters -> Tinker: a Skins row (Plain, Pumpkin Patch Tinker); choose it; Party House: Tinker uses the TinkerPumpkin model; the picker's 3D view shows it too
+- [ ] Daily quests never include "Play a game with a friend"
 
 Earlier: F9 showed "The experience doesn't have access permission to use asset id 11490522280" (not from our code - see the finder in the session notes).
 

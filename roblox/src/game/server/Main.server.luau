@@ -468,9 +468,6 @@ local function checkEnd()
 		local out = plr:GetAttribute("Escaped") == true and not plr:GetAttribute("Waiting")
 		local row = { name = plr.DisplayName, points = earned, escaped = out, skill = skill, userId = plr.UserId, friendBonus = friendBonus[plr.UserId] }
 		quest(plr, "play")
-		if plr:GetAttribute("FriendBonus") then
-			quest(plr, "friend")
-		end
 		if won and out then
 			quest(plr, "escape")
 			if state.diff == "hard" or state.diff == "nightmare" then

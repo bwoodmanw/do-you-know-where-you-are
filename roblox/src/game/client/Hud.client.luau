@@ -636,6 +636,16 @@ local function showChar()
 	end
 	local previews = ReplicatedStorage:FindFirstChild("Previews")
 	local src = previews and previews:FindFirstChild(sk.name)
+	do
+		-- the skin this player wears for the character
+		local pd = profileData()
+		local worn = pd and pd.skins and pd.skins[sk.id]
+		for _, skin in ipairs(Config.SKINS or {}) do
+			if skin.id == worn and previews and previews:FindFirstChild(skin.model) then
+				src = previews:FindFirstChild(skin.model)
+			end
+		end
+	end
 	spin = 0
 	if src then
 		shown = src:Clone()

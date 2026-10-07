@@ -1125,7 +1125,16 @@ button(chars, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(
 end)
 local shown, spin, dragging, lastX, shownFor = nil, 0, false, 0, nil
 local function showModel(sk)
-	if shownFor == sk.id and shown then
+	-- the skin this player wears for the character, once its model is saved to Roblox
+	local previews = ReplicatedStorage:FindFirstChild("Previews")
+	local modelName = sk.name
+	local worn = profile.skins and profile.skins[sk.id]
+	for _, skin in ipairs(Config.SKINS or {}) do
+		if skin.id == worn and previews and previews:FindFirstChild(skin.model) then
+			modelName = skin.model
+		end
+	end
+	if shownFor == modelName and shown then
 		return
 	end
 	if shown then
@@ -1133,12 +1142,11 @@ local function showModel(sk)
 		shown = nil
 	end
 	spin = 0
-	local previews = ReplicatedStorage:FindFirstChild("Previews")
-	local src = previews and previews:FindFirstChild(sk.name)
+	local src = previews and previews:FindFirstChild(modelName)
 	if src then
 		shown = src:Clone()
 		shown.Parent = viewWorld
-		shownFor = sk.id
+		shownFor = modelName
 		noModel.Visible = false
 	else
 		shownFor = nil

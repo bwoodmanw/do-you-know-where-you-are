@@ -370,7 +370,6 @@ Config.QUESTS = {
 	{ id = "hide3", kind = "hide", goal = 3, points = 30, text = "Hide 3 times" },
 	{ id = "vents3", kind = "vent", goal = 3, points = 30, text = "Crawl through 3 vents" },
 	{ id = "door", kind = "door", goal = 1, points = 40, text = "Open the big exit door" },
-	{ id = "friend", kind = "friend", goal = 1, points = 50, text = "Play a game with a friend" },
 	{ id = "present", kind = "present", goal = 1, points = 40, text = "Open a bonus present" },
 }
 -- "Your daily reward is ready" (Roblox experience notifications; players 13+
@@ -387,6 +386,10 @@ Config.SKINS = {
 	{ id = "shadow_ghost", skill = "shadow", name = "Ghostly Shadow", model = "ShadowGhost", pass = 0 },
 	{ id = "glow_candy", skill = "glow", name = "Candy Glow", model = "GlowCandy", pass = 0 },
 	{ id = "patch_nurse", skill = "patch", name = "Night Nurse Patch", model = "PatchNurse", pass = 0 },
+	{ id = "brainy_space", skill = "brainy", name = "Space Cadet Brainy", model = "BrainySpace", pass = 0 },
+	{ id = "muscle_snow", skill = "muscle", name = "Snow Day Muscle", model = "MuscleSnow", pass = 0 },
+	{ id = "echo_star", skill = "echo", name = "Starlight Echo", model = "EchoStar", pass = 0 },
+	{ id = "bramble_autumn", skill = "bramble", name = "Autumn Leaf Bramble", model = "BrambleAutumn", pass = 0 },
 }
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true

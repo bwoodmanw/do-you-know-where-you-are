@@ -209,6 +209,20 @@ art/sheets/ art/models/ art/model-input/   design art and Meshy files
 - Skins (B9): `Config.SKINS` (Game Pass ids, 0 = hidden), profile `skins`,
   Lobby Characters row, `modelFor` in Main. Art and steps: `SKINS.md`.
 
+## Decisions (7 Oct, fourth session)
+
+- Notifications: keep (they only reach 13+ players who say yes).
+- Rejoin: only while friends are still in that game; a solo player who drops
+  uses Quick Play (no change needed - that is how it works).
+- The host is slowed in the chocolate as well as the kids.
+- The "Play a game with a friend" quest is gone (it could not be done solo);
+  a profile that had it today gets another quest instead.
+- Skins: 8 (4 Halloween-ish + Space Cadet Brainy, Snow Day Muscle, Starlight
+  Echo, Autumn Leaf Bramble), 99 Robux each, art and steps in `SKINS.md`.
+  Pictures 1-3 checked and ready; Patch's picture not in the repo yet.
+- Muscle's own picture (`art/model-input/muscle/a-pose-front.png`) has
+  trainers with a swoosh-like mark: decision pending (see below).
+
 ## Open items and decisions waiting on Brent
 
 0. **Seasonal icon:** `art/roblox-store/icon-halloween-512.png` is live. From
@@ -219,7 +233,8 @@ art/sheets/ art/models/ art/model-input/   design art and Meshy files
    `Config.BADGES` (rescuer, untouched, nightmare).
 2. **Built 7 Oct (fourth session), untested:** TEST_PLAN.md round 12. Still
    needs Brent: B7 Creator Hub steps (`NOTIFICATIONS.md`), B9 art, models
-   and Game Passes (`SKINS.md`), the console tick (Creator Hub) for Xbox.
+   and Game Passes (`SKINS.md`), the Console tick for Xbox / PlayStation
+   (Studio -> File -> Experience Settings -> Basic Info -> Playable Devices).
    F9 showed asset 11490522280 refused (not in our code: something in the
    place - find it with the Command Bar line in the session notes).
 3. **Play test** TEST_PLAN.md rounds 4-11 (most untested), then **publish

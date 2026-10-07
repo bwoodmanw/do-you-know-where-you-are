@@ -32,6 +32,22 @@ Quests.def = def
 function Quests.ensure(data, userId)
 	local day = today()
 	if type(data.quests) == "table" and data.quests.day == day and type(data.quests.list) == "table" then
+		-- a quest taken off the list today (e.g. "play with a friend"): swap
+		-- it for one the player does not have yet
+		for i, q in ipairs(data.quests.list) do
+			if not def(q.id) then
+				local have = {}
+				for _, o in ipairs(data.quests.list) do
+					have[o.id] = true
+				end
+				for _, d in ipairs(Config.QUESTS) do
+					if not have[d.id] then
+						data.quests.list[i] = { id = d.id, n = 0, done = false }
+						break
+					end
+				end
+			end
+		end
 		return data.quests
 	end
 	local rng = Random.new(day * 7919 + (userId % 1000003))
