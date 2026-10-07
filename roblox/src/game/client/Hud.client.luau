@@ -1549,23 +1549,26 @@ end)
 RoundState:GetAttributeChangedSignal("Status"):Connect(paintSpectate)
 
 -- ---------- end of round: results ----------
-local results = frame(gui, { Size = UDim2.fromOffset(460, 360), Position = UDim2.new(0.5, -230, 0.5, -180), Visible = false, ZIndex = 40 })
+local results = frame(gui, { Size = UDim2.fromOffset(460, 440), Position = UDim2.new(0.5, -230, 0.5, -220), Visible = false, ZIndex = 40 })
 corner(results, 18)
 local resTitle = label(results, { Size = UDim2.new(1, -20, 0, 44), Position = UDim2.fromOffset(10, 12), TextColor3 = PUMP, ZIndex = 41 })
 local resInfo = label(results, { Size = UDim2.new(1, -20, 0, 26), Position = UDim2.fromOffset(10, 60), ZIndex = 41 })
 local resList = label(results, { Size = UDim2.new(1, -40, 0, 190), Position = UDim2.fromOffset(20, 96), TextScaled = false, TextSize = 22, TextYAlignment = Enum.TextYAlignment.Top, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 41 })
 local resNext = label(results, { Size = UDim2.new(1, -20, 0, 24), Position = UDim2.new(0, 10, 1, -96), TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
-local againBtn, lobbyBtn
+local againBtn, lobbyBtn, upBtn
 local function chose(choice)
 	remotes.Vote:FireServer(choice)
-	againBtn.Visible, lobbyBtn.Visible = false, false
-	resNext.Text = choice == "again" and "Waiting for the others..." or "Going back to the lobby..."
+	againBtn.Visible, lobbyBtn.Visible, upBtn.Visible = false, false, false
+	resNext.Text = choice == "lobby" and "Going back to the lobby..." or "Waiting for the others..."
 end
 againBtn = button(results, "\u{1F501} Play again", { Size = UDim2.fromOffset(200, 50), Position = UDim2.new(0.5, -210, 1, -64), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 41 }, function()
 	chose("again")
 end)
 lobbyBtn = button(results, "\u{1F3E0} Back to lobby", { Size = UDim2.fromOffset(200, 50), Position = UDim2.new(0.5, 10, 1, -64), ZIndex = 41 }, function()
 	chose("lobby")
+end)
+upBtn = button(results, "\u{2B06} Next floor", { Size = UDim2.new(1, -40, 0, 40), Position = UDim2.new(0, 20, 1, -150), BackgroundColor3 = Color3.fromRGB(70, 209, 96), TextColor3 = NIGHT, Visible = false, ZIndex = 41 }, function()
+	chose("next")
 end)
 local function confetti()
 	local colours = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), PUMP }
@@ -1599,6 +1602,8 @@ remotes.Results.OnClientEvent:Connect(function(r)
 	end
 	results.Visible = true
 	againBtn.Visible, lobbyBtn.Visible = r.vote == true, r.vote == true
+	upBtn.Visible = r.vote == true and r.nextFloor ~= nil
+	upBtn.Text = "\u{2B06} Next floor: " .. tostring(r.nextFloor or "")
 	spec.Visible = false
 	if r.won then
 		confetti()

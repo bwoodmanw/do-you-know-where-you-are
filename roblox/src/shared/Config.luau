@@ -269,6 +269,9 @@ Config.MUSIC_ARTIST = "When Bears and Lions Attack"
 Config.LOBBY_HOUSE_WINDOWS = { { -0.2, 0.53 }, { 0.07, 0.51 }, { 0.3, 0.52 }, { -0.28, 0.27 }, { 0.29, 0.27 } }
 -- studs the Lobby house comes forward towards the lawn
 Config.LOBBY_HOUSE_FORWARD = 6
+-- the owner's 🪟 Windows button in the Lobby (set the window faces by
+-- clicking); off once they are saved - turn on to set them again
+Config.WINDOW_SETUP = false
 -- studs the Lobby house sits down into the ground, and degrees its front tips
 -- down (the model's front stood lifted, 7 Oct)
 Config.LOBBY_HOUSE_SINK = 1

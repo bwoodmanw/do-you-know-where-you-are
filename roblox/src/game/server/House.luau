@@ -225,7 +225,17 @@ end
 -- the Gummy Bounce House's furniture: candy-jar shelves, sweet conveyors,
 -- chocolate vats, gumball machines, marshmallow beds, frosted tables
 local CANDY = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(190, 110, 230), Color3.fromRGB(255, 150, 200) }
-local function candyFurniture(root, kind, x, y)
+local function candyFurniture(root, kind, x, y, room)
+	if kind == "counter" and string.find(string.lower(room or ""), "chocolate", 1, true) then
+		-- a channel of flowing chocolate with a caramel bank, marshmallows bobbing along
+		part(root, { Name = "RiverBank", Size = Vector3.new(T, 1.6, T), Position = at(x, y, 0.8), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(200, 140, 70) })
+		part(root, { Name = "ChocolateRiver", Size = Vector3.new(T, 0.3, T - 1.4), Position = at(x, y, 1.66), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(95, 55, 30), Reflectance = 0.15 })
+		if (x + y) % 2 == 0 then
+			local mallow = part(root, { Name = "Marshmallow", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.1, 1.3, 1.3), CFrame = CFrame.new(at(x, y, 2.1) - Vector3.new(T * 0.35, 0, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(255, 245, 250), CanCollide = false })
+			TweenService:Create(mallow, TweenInfo.new(3 + (x % 3), Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = CFrame.new(at(x, y, 2.1) + Vector3.new(T * 0.35, 0, 0)) * CFrame.Angles(0, math.rad(40), math.rad(90)) }):Play()
+		end
+		return
+	end
 	if kind == "shelf" then
 		part(root, { Name = "CandyShelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 190, 215) })
 		for row = 0, 2 do
@@ -373,7 +383,7 @@ function House.build(map)
 				if kind == "shelf" and styledShelf(root, map, x, y) then
 					-- a shelf that matches its room
 				elseif map.theme == "gummy" and kind ~= "pit" and kind ~= "planter" then
-					candyFurniture(root, kind, x, y)
+					candyFurniture(root, kind, x, y, roomNameAt(map, x, y))
 				elseif map.theme == "hospital" and kind ~= "planter" and kind ~= "pit" then
 					hospitalFurniture(root, kind, x, y)
 				elseif kind == "table" then
@@ -911,22 +921,31 @@ function House.buildGarden(world)
 			part(root, { Name = "StairUp", Size = Vector3.new(16, i * 1.5, 3), Position = Vector3.new(doorX * T + T / 2, i * 0.75, -16 - i * 3), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(95, 62, 40) })
 		end
 		part(root, { Name = "Landing", Size = Vector3.new(16, 12, 7), Position = Vector3.new(doorX * T + T / 2, 6, -43.5), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(95, 62, 40) })
-		part(root, { Name = "NextFloorDoor", Size = Vector3.new(7, 10, 0.4), Position = Vector3.new(doorX * T + T / 2, 17, -47.2), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 190, 90), Transparency = 0.2 })
+		-- a little in front of the landing's back wall (touching it, the two flickered)
+		part(root, { Name = "NextFloorDoor", Size = Vector3.new(7, 10, 0.4), Position = Vector3.new(doorX * T + T / 2, 17, -46.6), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 190, 90), Transparency = 0.2, CanCollide = false })
 		local doorLight = Instance.new("PointLight")
 		doorLight.Color, doorLight.Range, doorLight.Brightness = Color3.fromRGB(255, 200, 120), 18, 2
 		doorLight.Parent = root:FindFirstChild("NextFloorDoor")
-		local sign = part(root, { Name = "UpSign", Size = Vector3.new(10, 3, 0.3), Position = Vector3.new(doorX * T + T / 2, 24, -46.9), Color = Color3.fromRGB(40, 28, 46), CanCollide = false })
+		local sign = part(root, { Name = "UpSign", Size = Vector3.new(15, 4.4, 0.3), Position = Vector3.new(doorX * T + T / 2, 25, -46.4), Color = Color3.fromRGB(255, 138, 31), CanCollide = false })
 		local sg = Instance.new("SurfaceGui")
 		sg.Face = Enum.NormalId.Back
+		sg.LightInfluence = 0
+		sg.CanvasSize = Vector2.new(600, 176)
 		sg.Parent = sign
 		local t = Instance.new("TextLabel")
-		t.Size = UDim2.fromScale(1, 1)
+		t.Size = UDim2.new(1, -20, 0.66, 0)
+		t.Position = UDim2.fromOffset(10, 4)
 		t.BackgroundTransparency = 1
 		t.TextScaled = true
 		t.Font = Enum.Font.FredokaOne
-		t.TextColor3 = Color3.fromRGB(255, 210, 63)
+		t.TextColor3 = Color3.fromRGB(26, 16, 38)
 		t.Text = "\u{2B06} " .. ((map.exitText and map.exitText ~= "") and map.exitText or "Up to the next floor")
 		t.Parent = sg
+		local t2 = t:Clone()
+		t2.Size = UDim2.new(1, -20, 0.3, 0)
+		t2.Position = UDim2.new(0, 10, 0.68, 0)
+		t2.Text = "Step through when the game ends"
+		t2.Parent = sg
 	end
 	-- the side path runs along whichever side has the hole
 	local holeWest = false

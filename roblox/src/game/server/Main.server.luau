@@ -412,6 +412,7 @@ local function checkEnd()
 		timeBonus = state.timeBonus or 0,
 		nextIn = Config.VOTE_SECONDS,
 		vote = true,
+		nextFloor = won and (nextFloor() or {}).name or nil,
 		players = rows,
 	})
 	round.startVote()
@@ -1310,18 +1311,45 @@ LeaveToLobby.OnServerEvent:Connect(function(plr)
 	end
 end)
 
+-- the floor above this one in the same building (nil on a top floor)
+local function nextFloor()
+	local mapId = RoundState:GetAttribute("Map") or "partyhouse"
+	local i = Progress.mapIndex(mapId)
+	local m = i and Progress.MAPS[i]
+	if not m then
+		return nil
+	end
+	for _, n in ipairs(Progress.MAPS) do
+		if n.building == m.building and n.floor == m.floor + 1 and n.ready then
+			return n
+		end
+	end
+	return nil
+end
+
 function round.startVote()
 	votes = {}
 	voting = true
 	task.delay(Config.VOTE_SECONDS, function()
 		voting = false
 		local again, rest = {}, {}
+		local up, same = 0, 0
 		for _, plr in ipairs(Players:GetPlayers()) do
-			if votes[plr.UserId] == "again" then
+			if votes[plr.UserId] == "again" or votes[plr.UserId] == "next" then
 				table.insert(again, plr)
+				if votes[plr.UserId] == "next" then
+					up += 1
+				else
+					same += 1
+				end
 			elseif votes[plr.UserId] ~= "lobby" then
 				table.insert(rest, plr)
 			end
+		end
+		-- most of those staying chose the floor above: go up (a tie goes up)
+		local nf = nextFloor()
+		if nf and up > 0 and up >= same then
+			RoundState:SetAttribute("Map", nf.id)
 		end
 		-- anyone who did not choose goes back to the lobby (if there is one)
 		if #again > 0 or not toLobby(rest) then
@@ -1334,8 +1362,11 @@ function round.startVote()
 end
 
 Vote.OnServerEvent:Connect(function(plr, choice)
-	if not voting or (choice ~= "again" and choice ~= "lobby") then
+	if not voting or (choice ~= "again" and choice ~= "lobby" and choice ~= "next") then
 		return
+	end
+	if choice == "next" and not nextFloor() then
+		choice = "again"
 	end
 	votes[plr.UserId] = choice
 	if choice == "lobby" then
@@ -1344,7 +1375,7 @@ Vote.OnServerEvent:Connect(function(plr, choice)
 			votes[plr.UserId] = "again"
 		end
 	end
-	say("vote", plr.DisplayName .. (choice == "again" and " wants to play again!" or " went back to the lobby."))
+	say("vote", plr.DisplayName .. (choice == "again" and " wants to play again!" or choice == "next" and " wants to go up to the next floor!" or " went back to the lobby."))
 end)
 
 -- ---------- requests from players ----------
@@ -1700,6 +1731,25 @@ function round.start()
 	House.placeCrates(world, Config.BARRICADE.crates)
 	-- every room dressed to look like what it is called (game/server/Rooms.luau)
 	require(script.Parent.Rooms).dress(world)
+	local upDoor = world.root:FindFirstChild("NextFloorDoor")
+	if upDoor then
+		local told = {}
+		upDoor.Touched:Connect(function(hit)
+			local plr = Players:GetPlayerFromCharacter(hit.Parent)
+			if not plr then
+				return
+			end
+			if voting and state.status == "won" and nextFloor() then
+				if votes[plr.UserId] ~= "next" then
+					votes[plr.UserId] = "next"
+					say("vote", plr.DisplayName .. " stepped through - up to the next floor!")
+				end
+			elseif not told[plr.UserId] or os.clock() - told[plr.UserId] > 6 then
+				told[plr.UserId] = os.clock()
+				say("info", nextFloor() and "Wait here for your crew! When the game ends, step through to go up together." or "This is the top floor - you made it!", nil, plr)
+			end
+		end)
+	end
 	-- the Barricade prompt on a crate works like Muscle's button
 	world.onCrate = function(plr, c)
 		if state.status ~= "playing" or plr:GetAttribute("Skill") ~= "muscle" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") or c.busy then

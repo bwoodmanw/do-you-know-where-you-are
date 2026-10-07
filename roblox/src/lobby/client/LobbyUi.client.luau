@@ -458,7 +458,7 @@ task.spawn(function()
 	bar("\u{1F440} Test", 172, "test")
 	bar("\u{1F5D1} Clear", 328, "clear")
 	bar("Done", 484, "done")
-	button(gui, "\u{1FA9F} Windows", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0, 512, 1, -52), ZIndex = 5 }, function()
+	local windowsBtn = button(gui, "\u{1FA9F} Windows", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0, 512, 1, -52), ZIndex = 5, Visible = Config.WINDOW_SETUP == true }, function()
 		editingMode = not editingMode
 		setup.Visible = editingMode
 		if editingMode then
