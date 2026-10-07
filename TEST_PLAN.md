@@ -13,6 +13,7 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
 Round 10 (7 Oct):
+- [ ] Team items above the active boosts (gold border): a key icon with the door's name for each key found (gone once that door opens), and a confetti icon with x N for the team's Confetti Cannons (stays through a cage)
 - [ ] Lobby: hold Shift (or the Run button on a phone) to run, no stamina limit
 - [ ] Lobby party panel: the map button says just "Tap to choose a map" (others: "The leader chooses a map")
 - [ ] Jelly Pool: the pool is wobbling jelly (no balls); every other jelly tile bounces you up; four jelly cubes round the room

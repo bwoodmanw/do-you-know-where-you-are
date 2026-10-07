@@ -336,15 +336,55 @@ paintCode()
 local bars = frame(gui, { Size = UDim2.fromOffset(250, 84), Position = TOUCH and UDim2.fromOffset(10, 60) or UDim2.new(0, 10, 1, -94), BackgroundTransparency = 0.3 })
 roomName = label(bars, { Size = UDim2.new(1, -16, 0, 20), Position = UDim2.fromOffset(8, 58), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
 do
--- the team's Confetti Cannons, just above the bars (they stay through a cage)
-local popperLine = label(bars, { Size = UDim2.new(1, 0, 0, 24), Position = UDim2.fromOffset(0, -28), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 210, 63), TextStrokeTransparency = 0.4, Visible = false })
-local function paintPoppers()
-	local n = RoundState:GetAttribute("Poppers") or 0
-	popperLine.Visible = n > 0
-	popperLine.Text = "\u{1F389} Team Confetti Cannons: " .. n
+-- the team's items, as icons above the active boosts: a key for each locked
+-- door still shut, and the Confetti Cannons (they stay through a cage)
+local itemRow = frame(gui, { Size = UDim2.fromOffset(290, 58), Position = TOUCH and UDim2.new(1, -300, 1, -472) or UDim2.new(1, -300, 1, -332), BackgroundTransparency = 1 })
+local itemList = Instance.new("UIListLayout")
+itemList.FillDirection = Enum.FillDirection.Horizontal
+itemList.HorizontalAlignment = Enum.HorizontalAlignment.Right
+itemList.SortOrder = Enum.SortOrder.LayoutOrder
+itemList.Padding = UDim.new(0, 6)
+itemList.Parent = itemRow
+local function slot(icon, text, order)
+	local f = frame(itemRow, { Size = UDim2.fromOffset(58, 58), BackgroundColor3 = NIGHT, BackgroundTransparency = 0.2, LayoutOrder = order })
+	corner(f, 12)
+	local ring = Instance.new("UIStroke")
+	ring.Color, ring.Thickness = Color3.fromRGB(255, 210, 63), 2
+	ring.Parent = f
+	label(f, { Size = UDim2.new(1, 0, 0.62, 0), Position = UDim2.fromScale(0, 0.02), Text = icon })
+	label(f, { Size = UDim2.new(1, -4, 0.34, 0), Position = UDim2.new(0, 2, 0.64, 0), Text = text, TextColor3 = Color3.fromRGB(255, 210, 63) })
 end
-RoundState:GetAttributeChangedSignal("Poppers"):Connect(paintPoppers)
-paintPoppers()
+local function doorName(id)
+	for _, o in ipairs(HouseMap.objects or {}) do
+		if o.id == id then
+			return o.name
+		end
+	end
+	return nil
+end
+local function paintItems()
+	for _, c in ipairs(itemRow:GetChildren()) do
+		if c:IsA("GuiObject") then
+			c:Destroy()
+		end
+	end
+	local n = RoundState:GetAttribute("Poppers") or 0
+	if n > 0 then
+		slot("\u{1F389}", "x" .. n, 1)
+	end
+	for i, id in ipairs({ "L1", "L2", "B1", "B2" }) do
+		if RoundState:GetAttribute("Key_" .. id) and not RoundState:GetAttribute("Lock_" .. id) then
+			local nm = doorName(id) or "Key"
+			slot("\u{1F511}", string.match(nm, "^(%S+)") or nm, 1 + i)
+		end
+	end
+end
+RoundState.AttributeChanged:Connect(function(a)
+	if a == "Poppers" or a == "MapJson" or string.sub(a, 1, 4) == "Key_" or string.sub(a, 1, 5) == "Lock_" then
+		paintItems()
+	end
+end)
+paintItems()
 end
 corner(bars, 10)
 local function bar(y, color, name)
