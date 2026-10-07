@@ -91,6 +91,18 @@ Config.SKILLS = {
 Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25 }
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
+-- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
+Config.AMBIENT = {
+	hum = 9112812234, -- Landing Craft Interior, Constant Hum (boilers, generators)
+	factory = 9112796599, -- Industrial Ambience, Foundry (conveyors, factory)
+	fire = 9112780462, -- Fireplace, Crackly, Constant (parlour, library)
+	wind = 9118747853, -- Interior Wind, Semi Arctic Howl (attic)
+	beep = 9113084761, -- Alarm Beep, Console, Constant (wards, x-ray)
+	tick = 9114071134, -- Dial Switch, Sharp Ticking (clock room)
+	drip = 9120607471, -- Water Trickle, Dripping (bathrooms, laundry, the sticky archive)
+	bubble = 9112752575, -- Bubbles Dribble, Small Bloops (chocolate river, jelly)
+	buzz = 9112823813, -- Light Bulb Buzz (hospital corridors, TVs)
+}
 -- Halloween dressing in every room (orange / purple bunting, paper bats)
 Config.HALLOWEEN = true
 -- the coach for new players: tips during their first games

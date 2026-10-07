@@ -23,6 +23,42 @@ local H = Config.WALL_H
 local HT = 24 -- tall rooms (as in House)
 
 local Rooms = {}
+local Sfx = require(ReplicatedStorage.Shared.Sfx)
+local current = { world = nil, room = nil } -- the world and room being dressed
+
+-- a prompt that makes a noise (TV, radio, drums, arcade): the host comes to look
+local function noisy(p, label, soundId, seconds)
+	local pp = Instance.new("ProximityPrompt")
+	pp.ActionText = "Switch on"
+	pp.ObjectText = label .. " (noisy!)"
+	pp.HoldDuration = 0.3
+	pp.MaxActivationDistance = 9
+	pp.RequiresLineOfSight = false
+	pp.Parent = p
+	local world = current.world
+	pp.Triggered:Connect(function(plr)
+		pp.Enabled = false
+		if soundId and soundId > 0 then
+			local s = Instance.new("Sound")
+			s.SoundId = "rbxassetid://" .. soundId
+			s.Volume = 1.2
+			s.Looped = true
+			s.RollOffMaxDistance = 90
+			s.SoundGroup = Sfx.group()
+			s.Parent = p
+			s:Play()
+			task.delay(seconds or 6, function()
+				s:Destroy()
+			end)
+		end
+		if world and world.onLure then
+			world.onLure(plr, p.Position, label)
+		end
+		task.delay(40, function()
+			pp.Enabled = true
+		end)
+	end)
+end
 
 local function cell(map, x, y)
 	if y < 0 or y >= map.h or x < 0 or x >= map.w then
@@ -273,6 +309,28 @@ PIECES.HoneyDrips = { size = Vector3.new(8, 10, 1), build = function(f, b)
 	add(f, b, { size = Vector3.new(2.6, 0.12, 2), at = Vector3.new(0.5, 0.07, 1.2), color = C(240, 160, 30), mat = GLASS, alpha = 0.2 })
 end }
 
+PIECES.LightSwitch = { size = Vector3.new(1, 2, 1), build = function(f, b)
+	local plate = add(f, b, { size = Vector3.new(0.8, 1.2, 0.12), at = Vector3.new(0, 4.6, T / 2 - 0.08), color = C(240, 236, 225) })
+	add(f, b, { size = Vector3.new(0.25, 0.45, 0.12), at = Vector3.new(0, 4.6, T / 2 - 0.16), color = C(255, 210, 63), mat = NEON })
+	local pp = Instance.new("ProximityPrompt")
+	pp.ActionText = "Lights off"
+	pp.ObjectText = "Light switch"
+	pp.HoldDuration = 0
+	pp.MaxActivationDistance = 8
+	pp.RequiresLineOfSight = false
+	pp.Parent = plate
+	local world, room = current.world, current.room
+	pp.Triggered:Connect(function(plr)
+		if world and world.onSwitch then
+			world.onSwitch(plr, room)
+		end
+	end)
+	if world then
+		world.switches = world.switches or {}
+		world.switches[room] = pp
+	end
+end }
+
 -- ---- hospital
 PIECES.Ambulance = { size = Vector3.new(8, 7, 14), build = function(f, b)
 	add(f, b, { size = Vector3.new(6, 5.5, 10), at = Vector3.new(0, 3.4, 0), color = C(245, 245, 245) })
@@ -349,7 +407,7 @@ PIECES.TV = { size = Vector3.new(4, 5, 2), build = function(f, b)
 	local scr = add(f, b, { size = Vector3.new(3.6, 2.2, 0.3), at = Vector3.new(0, 3.2, 2.9), color = C(20, 20, 25) })
 	local inner = add(f, b, { size = Vector3.new(3.2, 1.8, 0.05), at = Vector3.new(0, 3.2, 2.73), color = C(120, 160, 200), mat = NEON, alpha = 0.3 })
 	glow(inner, C(140, 180, 255), 8, 0.6)
-	local _ = scr
+	noisy(scr, "TV", Config.AMBIENT.buzz, 6)
 end }
 
 PIECES.Beakers = { size = Vector3.new(4, 3, 2), build = function(f, b)
@@ -371,7 +429,9 @@ PIECES.RadioDesk = { size = Vector3.new(5, 6, 3), build = function(f, b)
 	for i = -1, 1 do
 		glow(add(f, b, { size = Vector3.new(0.3, 0.3, 0.1), at = Vector3.new(i * 0.6, 4.1, 1.28), shape = Enum.PartType.Ball, color = i == 0 and C(255, 60, 60) or C(80, 255, 120), mat = NEON }), C(80, 255, 120), 4, 0.5)
 	end
-	add(f, b, { size = Vector3.new(0.15, 5, 0.15), at = Vector3.new(1.6, 6.5, 2.5), color = C(180, 180, 185), mat = METAL })
+	local mast = add(f, b, { size = Vector3.new(0.15, 5, 0.15), at = Vector3.new(1.6, 6.5, 2.5), color = C(180, 180, 185), mat = METAL })
+	local _ = mast
+	noisy(f:FindFirstChildWhichIsA("BasePart") or mast, "Radio", Config.AMBIENT.buzz, 6)
 end }
 
 PIECES.LiftDoors = { size = Vector3.new(6, 9, 1), build = function(f, b)
@@ -428,6 +488,7 @@ PIECES.Arcade = { size = Vector3.new(3, 7, 3), build = function(f, b)
 	local scr = add(f, b, { size = Vector3.new(2, 1.6, 0.1), at = Vector3.new(0, 4.6, 0.98), color = C(80, 220, 255), mat = NEON })
 	label(scr, Enum.NormalId.Front, "\u{1F47E}", C(255, 255, 255))
 	glow(scr, C(120, 220, 255), 8, 0.6)
+	noisy(scr, "Arcade machine", Config.SOUNDS.beep, 4)
 	add(f, b, { size = Vector3.new(2.4, 0.6, 1), at = Vector3.new(0, 3.2, 0.8), color = C(30, 30, 35) })
 end }
 
@@ -536,7 +597,9 @@ PIECES.Drums = { size = Vector3.new(5, 4, 3), build = function(f, b)
 	add(f, b, { size = Vector3.new(0.1, 1.6, 1.6), at = Vector3.new(1.8, 3.6, 1.8), rot = UP, shape = Enum.PartType.Cylinder, color = C(220, 190, 80), mat = METAL })
 	-- a guitar on the wall
 	add(f, b, { size = Vector3.new(1.6, 2, 0.4), at = Vector3.new(-1.5, 5, T / 2 - 0.4), shape = Enum.PartType.Ball, color = C(190, 110, 40), mat = WOOD })
-	add(f, b, { size = Vector3.new(0.3, 2.6, 0.2), at = Vector3.new(-1.5, 7, T / 2 - 0.4), color = C(90, 60, 40), mat = WOOD })
+	local neck = add(f, b, { size = Vector3.new(0.3, 2.6, 0.2), at = Vector3.new(-1.5, 7, T / 2 - 0.4), color = C(90, 60, 40), mat = WOOD })
+	local _ = neck
+	noisy(f:FindFirstChildWhichIsA("BasePart") or neck, "Drums", Config.SOUNDS.pop, 2)
 end }
 
 PIECES.Globe = { size = Vector3.new(4, 5, 3), build = function(f, b)
@@ -706,6 +769,171 @@ local LOOKS = {
 	{ { "hall", "corridor" }, "wood", { "CoatRack", "Runner", "Plants" } },
 }
 
+local SOUNDS_BY_NAME = {
+	{ { "boiler", "generator", "water tank" }, "hum" },
+	{ { "conveyor", "factory", "wrapper", "packing", "taffy" }, "factory" },
+	{ { "parlour", "library" }, "fire" },
+	{ { "clock" }, "tick" },
+	{ { "trunk", "dusty", "box room", "doll", "rooftop", "attic" }, "wind" },
+	{ { "ward", "x-ray", "nurses", "records", "pharmacy", "medicine" }, "beep" },
+	{ { "corridor", "waiting", "reception", "lift", "lab", "canteen" }, "buzz", "hospital" },
+	{ { "chocolate", "jelly" }, "bubble" },
+	{ { "bath", "laundry", "linen", "sticky", "archive" }, "drip" },
+}
+-- effects: steam, dust, bubbles, sparkles, mist
+local EFFECTS_BY_NAME = {
+	{ { "boiler", "generator", "laundry" }, "steam" },
+	{ { "trunk", "dusty", "box room", "clock", "doll", "storage" }, "dust" },
+	{ { "chocolate" }, "bubbles" },
+	{ { "vault", "gold", "jelly bank" }, "sparkles" },
+	{ { "jelly pool", "wobble" }, "mist" },
+}
+-- a room light's colour (and red warning lights in machine rooms)
+local LIGHT_BY_LOOK = {
+	brick = C(255, 120, 80), steel = C(200, 225, 255), tiles = C(230, 240, 255),
+	wood = C(255, 200, 140), choc = C(255, 180, 120), gold = C(255, 215, 120),
+	mint = C(170, 255, 210), lilac = C(220, 180, 255), pastel = C(255, 190, 220),
+	green = C(255, 210, 150), red = C(255, 180, 130), blue = C(200, 210, 255),
+	teal = C(160, 240, 255), purple = C(210, 160, 255), grey = C(220, 235, 255), honey = C(255, 200, 110),
+}
+
+local function firstMatch(list, name, theme)
+	local n = string.lower(name)
+	for _, l in ipairs(list) do
+		for _, w in ipairs(l[1]) do
+			if string.find(n, w, 1, true) and (l[3] == nil or l[3] == theme) then
+				return l[2]
+			end
+		end
+	end
+	return nil
+end
+
+local function effect(folder, f, kind)
+	local holder = Instance.new("Part")
+	holder.Anchored, holder.CanCollide, holder.CanQuery, holder.CanTouch = true, false, false, false
+	holder.Transparency = 1
+	holder.Name = "RoomEffect"
+	local w, d = (f.x1 - f.x0 + 1) * T, (f.y1 - f.y0 + 1) * T
+	holder.Size = Vector3.new(w * 0.8, kind == "mist" and 1 or 6, d * 0.8)
+	holder.Position = Vector3.new((f.x0 + f.x1 + 1) / 2 * T, kind == "mist" and 1 or (kind == "steam" and 7 or 5), (f.y0 + f.y1 + 1) / 2 * T)
+	holder.Parent = folder
+	local e = Instance.new("ParticleEmitter")
+	e.Shape = Enum.ParticleEmitterShape.Box
+	e.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+	e.Texture = "rbxasset://textures/particles/smoke_main.dds"
+	e.LightInfluence = 0.6
+	if kind == "steam" then
+		e.Rate, e.Lifetime, e.Speed = 4, NumberRange.new(2, 4), NumberRange.new(1, 2)
+		e.Size = NumberSequence.new(1.5, 4)
+		e.Transparency = NumberSequence.new(0.6, 1)
+		e.Color = ColorSequence.new(Color3.fromRGB(235, 235, 235))
+	elseif kind == "dust" then
+		e.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		e.Rate, e.Lifetime, e.Speed = 6, NumberRange.new(5, 8), NumberRange.new(0.1, 0.4)
+		e.Size = NumberSequence.new(0.15)
+		e.Transparency = NumberSequence.new(0.4, 1)
+		e.Color = ColorSequence.new(Color3.fromRGB(220, 210, 190))
+	elseif kind == "bubbles" then
+		e.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		e.Rate, e.Lifetime, e.Speed = 5, NumberRange.new(1, 2), NumberRange.new(1, 2)
+		e.Size = NumberSequence.new(0.4, 0)
+		e.Color = ColorSequence.new(Color3.fromRGB(140, 85, 45))
+	elseif kind == "sparkles" then
+		e.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		e.Rate, e.Lifetime, e.Speed = 6, NumberRange.new(1, 2), NumberRange.new(0.2, 0.6)
+		e.Size = NumberSequence.new(0.5, 0)
+		e.LightEmission = 1
+		e.Color = ColorSequence.new(Color3.fromRGB(255, 220, 120))
+	else -- mist
+		e.Rate, e.Lifetime, e.Speed = 3, NumberRange.new(4, 6), NumberRange.new(0.2, 0.5)
+		e.Size = NumberSequence.new(3, 6)
+		e.Transparency = NumberSequence.new(0.75, 1)
+		e.Color = ColorSequence.new(Color3.fromRGB(200, 255, 230))
+	end
+	e.Parent = holder
+end
+
+local function ambience(folder, f, id)
+	if not id or id <= 0 then
+		return
+	end
+	local holder = Instance.new("Part")
+	holder.Anchored, holder.CanCollide, holder.CanQuery, holder.CanTouch = true, false, false, false
+	holder.Transparency = 1
+	holder.Size = Vector3.new(1, 1, 1)
+	holder.Name = "RoomSound"
+	holder.Position = Vector3.new((f.x0 + f.x1 + 1) / 2 * T, 6, (f.y0 + f.y1 + 1) / 2 * T)
+	holder.Parent = folder
+	local s = Instance.new("Sound")
+	s.SoundId = "rbxassetid://" .. id
+	s.Looped = true
+	s.Volume = 0.3
+	s.RollOffMode = Enum.RollOffMode.InverseTapered
+	s.RollOffMinDistance = 6
+	s.RollOffMaxDistance = math.max(f.x1 - f.x0, f.y1 - f.y0) * T * 0.75 + 10
+	s.SoundGroup = Sfx.group()
+	s.Parent = holder
+	s:Play()
+end
+
+-- a sign above every doorway, on both sides, naming the room it leads to
+local function doorSigns(folder, map)
+	local function roomAt(x, y)
+		for _, f in ipairs(map.floors) do
+			if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
+				return f
+			end
+		end
+		return nil
+	end
+	for y = 1, map.h - 2 do
+		for x = 1, map.w - 2 do
+			local c = cell(map, x, y)
+			if c == "." or c == "L" then
+				local ns = cell(map, x - 1, y) == "#" and cell(map, x + 1, y) == "#"
+				local ew = cell(map, x, y - 1) == "#" and cell(map, x, y + 1) == "#"
+				if ns or ew then
+					local a = ns and roomAt(x, y - 1) or roomAt(x - 1, y)
+					local b2 = ns and roomAt(x, y + 1) or roomAt(x + 1, y)
+					local here = roomAt(x, y)
+					if a and b2 and a.name ~= b2.name and not here then
+						local top = (a.tall and b2.tall) and HT or H
+						local y0 = c == "L" and 13.4 or 10.6
+						if y0 + 1.4 <= top then
+							for side = -1, 1, 2 do
+								local beyond = side < 0 and b2 or a
+								local pos = ns and Vector3.new(x * T + T / 2, y0 + 0.7, (side < 0 and y * T or (y + 1) * T) + side * 0.07)
+									or Vector3.new((side < 0 and x * T or (x + 1) * T) + side * 0.07, y0 + 0.7, y * T + T / 2)
+								local board = Instance.new("Part")
+								board.Anchored, board.CanCollide, board.CanQuery, board.CanTouch = true, false, false, false
+								board.Name = "DoorSign"
+								board.Size = ns and Vector3.new(T * 0.85, 1.3, 0.1) or Vector3.new(0.1, 1.3, T * 0.85)
+								board.Position = pos
+								board.Color = C(40, 28, 46)
+								board.Parent = folder
+								local sg = Instance.new("SurfaceGui")
+								sg.Face = ns and (side < 0 and Enum.NormalId.Front or Enum.NormalId.Back) or (side < 0 and Enum.NormalId.Left or Enum.NormalId.Right)
+								sg.CanvasSize = Vector2.new(400, 60)
+								sg.LightInfluence = 0
+								sg.Parent = board
+								local t = Instance.new("TextLabel")
+								t.Size = UDim2.fromScale(1, 1)
+								t.BackgroundTransparency = 1
+								t.TextScaled = true
+								t.Font = Enum.Font.FredokaOne
+								t.TextColor3 = C(255, 210, 63)
+								t.Text = beyond.name
+								t.Parent = sg
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 local function lookFor(name, theme)
 	local n = string.lower(name)
 	for _, l in ipairs(LOOKS) do
@@ -846,8 +1074,38 @@ function Rooms.dress(world)
 		end
 	end
 
+	current.world = world
+	doorSigns(folder, map)
 	for _, f in ipairs(map.floors) do
-		local look, pieces = lookFor(f.name, map.theme or "party")
+		current.room = f.name
+		local look, listed = lookFor(f.name, map.theme or "party")
+		local pieces = table.clone(listed) -- this game's own copy (the switch is added below)
+		local theme = map.theme or "party"
+		ambience(folder, f, Config.AMBIENT[firstMatch(SOUNDS_BY_NAME, f.name, theme) or ""])
+		local fx = firstMatch(EFFECTS_BY_NAME, f.name, theme)
+		if fx then
+			effect(folder, f, fx)
+		end
+		-- the room's own light colour; machine rooms get a slow red warning glow
+		local roomLight = world.roomLights and world.roomLights[f.name]
+		if roomLight and look and LIGHT_BY_LOOK[look] then
+			roomLight.Color = LIGHT_BY_LOOK[look]
+		end
+		if look == "brick" and (string.find(string.lower(f.name), "boiler") or string.find(string.lower(f.name), "generator")) then
+			local lamp = Instance.new("Part")
+			lamp.Anchored, lamp.CanCollide, lamp.CanQuery, lamp.CanTouch = true, false, false, false
+			lamp.Shape = Enum.PartType.Ball
+			lamp.Size = Vector3.new(1, 1, 1)
+			lamp.Material, lamp.Color = Enum.Material.Neon, C(255, 40, 30)
+			lamp.Position = Vector3.new((f.x0 + f.x1 + 1) / 2 * T, H - 1, (f.y0 + f.y1 + 1) / 2 * T)
+			lamp.Parent = folder
+			local l = glow(lamp, C(255, 40, 30), 26, 0)
+			TweenService:Create(l, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Brightness = 1.5 }):Play()
+		end
+		-- every room has a light switch (Party House and Hospital: a dark room hides you)
+		if theme ~= "gummy" then
+			table.insert(pieces, "LightSwitch")
+		end
 		if look then
 			lineWalls(folder, map, f, look)
 			local fl = FLOORS[look]

@@ -1771,6 +1771,47 @@ function round.start()
 	if not okDress then
 		warn("Room dressing failed (the game goes on without it): " .. tostring(dressErr))
 	end
+	-- light switches: a dark room hides you (the host sees less far there)
+	world.dark = {}
+	local function paintDark()
+		local names = {}
+		for n in pairs(world.dark) do
+			table.insert(names, n)
+		end
+		RoundState:SetAttribute("DarkRooms", table.concat(names, ","))
+	end
+	paintDark()
+	world.setDark = function(room, dark)
+		local light = world.roomLights and world.roomLights[room]
+		if light then
+			light.Enabled = not dark
+		end
+		world.dark[room] = dark or nil
+		local sw = world.switches and world.switches[room]
+		if sw then
+			sw.ActionText = dark and "Lights on" or "Lights off"
+		end
+		paintDark()
+	end
+	world.onSwitch = function(plr, room)
+		if state.status ~= "playing" or not room then
+			return
+		end
+		local nowDark = not world.dark[room]
+		world.setDark(room, nowDark)
+		Effects.sound(hrpOf(plr) and hrpOf(plr).Position or Vector3.zero, "pick", 0.5)
+		say("info", nowDark and ("Lights off in the " .. room .. " - the host can't see as far in here.") or ("Lights on in the " .. room .. "."), nil, plr)
+	end
+	-- a TV, radio, drums or arcade machine switched on: the host comes to look
+	world.onLure = function(plr, pos, label)
+		if state.status ~= "playing" then
+			return
+		end
+		if host and host.model then
+			host:alert(pos)
+		end
+		say("info", plr.DisplayName .. " switched on the " .. label .. " - the host is coming to look!")
+	end
 	local upDoor = world.root:FindFirstChild("NextFloorDoor")
 	if upDoor then
 		local told = {}
@@ -1924,6 +1965,7 @@ function round.start()
 	host.kind = kind
 	RoundState:SetAttribute("HostKind", kind)
 	RoundState:SetAttribute("Blackout", "")
+	RoundState:SetAttribute("DarkRooms", "")
 	local grace = diff.grace + extraGrace
 	-- nothing starts until everyone has chosen a character (or PICK_WAIT runs out)
 	state.endsAt = math.huge

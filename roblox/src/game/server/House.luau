@@ -247,7 +247,12 @@ local function candyFurniture(root, kind, x, y, room)
 		end
 	elseif kind == "counter" then
 		part(root, { Name = "Conveyor", Size = Vector3.new(T, 3.4, T), Position = at(x, y, 1.7), Material = Enum.Material.Metal, Color = Color3.fromRGB(190, 195, 205) })
-		part(root, { Name = "Belt", Size = Vector3.new(T, 0.3, T * 0.8), Position = at(x, y, 3.55), Material = Enum.Material.Rubber, Color = Color3.fromRGB(40, 40, 46) })
+		local belt = part(root, { Name = "Belt", Size = Vector3.new(T, 0.3, T * 0.8), Position = at(x, y, 3.55), Material = Enum.Material.Rubber, Color = Color3.fromRGB(40, 40, 46) })
+		-- in the factory rooms the belts really move: stand on one and ride
+		local r = string.lower(room or "")
+		if string.find(r, "conveyor", 1, true) or string.find(r, "factory", 1, true) or string.find(r, "wrapper", 1, true) then
+			belt.AssemblyLinearVelocity = Vector3.new(y % 2 == 0 and 9 or -9, 0, 0)
+		end
 		for j = -1, 1 do
 			part(root, { Name = "Sweet", Shape = Enum.PartType.Ball, Size = Vector3.new(1.3, 1.3, 1.3), Position = at(x, y, 4.3) + Vector3.new(j * 2.5, 0, ((x + j) % 2) - 0.5), Color = CANDY[(x + j + 2) % #CANDY + 1], Material = Enum.Material.SmoothPlastic, CanCollide = false })
 		end

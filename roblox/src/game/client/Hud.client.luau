@@ -1455,7 +1455,8 @@ RunService.RenderStepped:Connect(function(dt)
 	-- where am I, and how close is the host?
 	local r = roomAt(hrp.Position)
 	local dark = RoundState:GetAttribute("Blackout")
-	local nowDark = dark ~= nil and dark ~= "" and r == dark
+	local nowDark = (dark ~= nil and dark ~= "" and r == dark)
+		or (r ~= nil and string.find("," .. (RoundState:GetAttribute("DarkRooms") or "") .. ",", "," .. r .. ",", 1, true) ~= nil)
 	if nowDark ~= inBlackout then
 		inBlackout = nowDark
 		TweenService:Create(LightingService, TweenInfo.new(0.4), nowDark and darkLight or normalLight):Play()

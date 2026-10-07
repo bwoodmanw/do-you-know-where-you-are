@@ -219,6 +219,15 @@ function Host:canSee(char)
 		range = Config.HOST.shadowSight
 	end
 	range *= plr:GetAttribute("SightMult") or 1
+	-- a kid in a dark room (lights switched off) is harder to spot
+	if self.world.dark and next(self.world.dark) then
+		local tx, ty = math.floor(target.Position.X / Config.TILE), math.floor(target.Position.Z / Config.TILE)
+		for _, f in ipairs(self.world.map.floors) do
+			if tx >= f.x0 and tx <= f.x1 and ty >= f.y0 and ty <= f.y1 and self.world.dark[f.name] then
+				range *= 0.55
+			end
+		end
+	end
 	if dist > range then
 		return false
 	end
@@ -293,6 +302,16 @@ function Host:step(dt)
 		self.mode = "patrol"
 		self.goal = nil
 		self.stuckPos, self.stuckAt = self.root.Position, clock
+	end
+	-- walking into a dark room, it switches the light back on
+	if self.world.dark and self.world.setDark and clock - (self.lastRoomCheck or 0) > 1 then
+		self.lastRoomCheck = clock
+		local tx, ty = math.floor(self.root.Position.X / Config.TILE), math.floor(self.root.Position.Z / Config.TILE)
+		for _, f in ipairs(self.world.map.floors) do
+			if tx >= f.x0 and tx <= f.x1 and ty >= f.y0 and ty <= f.y1 and self.world.dark[f.name] then
+				self.world.setDark(f.name, false)
+			end
+		end
 	end
 	-- who can it see? the nearest wins
 	local best, bestD = nil, math.huge
