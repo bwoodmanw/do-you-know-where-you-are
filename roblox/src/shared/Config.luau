@@ -198,6 +198,8 @@ Config.MAP_IMAGES = {
 	gummy_2 = 85279894455333, -- Candy Factory
 	gummy_3 = 113575969259861, -- Jelly Vault
 	hospital = 92023239477557,
+	hospital_2 = 93751751639136, -- Wards
+	hospital_3 = 70614819830022, -- Labs
 }
 -- character portraits (face with a skill badge) by skill id
 Config.PORTRAITS = {
