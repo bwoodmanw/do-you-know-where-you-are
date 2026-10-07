@@ -224,6 +224,78 @@ local function say(kind, text, data, toPlayer)
 	end
 end
 
+-- daily quests: count something this player did; a finished quest pays at once
+local Quests = require(ReplicatedStorage.Shared.Quests)
+local function quest(plr, kind, n)
+	local data = Profile.get(plr)
+	if not data then
+		return
+	end
+	for _, d in ipairs(Quests.bump(data, plr.UserId, kind, n)) do
+		say("quest", "\u{1F4DC} Quest done: " .. d.text .. "! +" .. d.points .. " points", { userId = plr.UserId, points = d.points }, plr)
+	end
+	Profile.publish(plr)
+end
+
+-- play with a friend: a Roblox friend in this game gives +10% points
+local friendPair = {}
+local function friends(a, b)
+	local key = math.min(a.UserId, b.UserId) .. ":" .. math.max(a.UserId, b.UserId)
+	if friendPair[key] == nil then
+		local ok, yes = pcall(function()
+			return a:IsFriendsWith(b.UserId)
+		end)
+		friendPair[key] = ok and yes == true
+	end
+	return friendPair[key]
+end
+local function paintFriends()
+	local list = Players:GetPlayers()
+	for _, p in ipairs(list) do
+		local any = false
+		for _, q in ipairs(list) do
+			if q ~= p and friends(p, q) then
+				any = true
+			end
+		end
+		p:SetAttribute("FriendBonus", any or nil)
+	end
+end
+
+-- the model a player's character uses: their chosen skin, if they own it
+-- and its model is here, else the character itself
+local MarketplaceService = game:GetService("MarketplaceService")
+local passCache = {}
+local function ownsSkin(plr, skin)
+	if RunService:IsStudio() and Config.SKINS_FREE_IN_STUDIO then
+		return true
+	end
+	if not skin.pass or skin.pass <= 0 then
+		return false
+	end
+	local key = plr.UserId .. ":" .. skin.pass
+	if passCache[key] == nil then
+		local ok, yes = pcall(function()
+			return MarketplaceService:UserOwnsGamePassAsync(plr.UserId, skin.pass)
+		end)
+		if not ok then
+			return false
+		end
+		passCache[key] = yes == true
+	end
+	return passCache[key]
+end
+local function modelFor(plr, s)
+	local data = Profile.get(plr)
+	local skinId = data and data.skins and data.skins[s.id]
+	for _, skin in ipairs(Config.SKINS or {}) do
+		if skin.id == skinId and skin.skill == s.id and Characters.has(skin.model) and ownsSkin(plr, skin) then
+			return skin.model
+		end
+	end
+	return s.name
+end
+
 local function hrpOf(plr)
 	local c = plr.Character
 	return c and c:FindFirstChild("HumanoidRootPart")
@@ -380,11 +452,31 @@ local function checkEnd()
 	local rows = {}
 	local mapId = RoundState:GetAttribute("Map") or "partyhouse"
 	local seconds = math.floor(now - state.startedAt)
+	-- playing with a friend: +10% of this game's points
+	local friendBonus = {}
+	for _, plr in ipairs(list) do
+		local got = state.earned[plr.UserId] or 0
+		if plr:GetAttribute("FriendBonus") and got > 0 then
+			local extra = math.max(1, math.floor(got * (Config.FRIEND_BONUS or 0.1) + 0.5))
+			addPoints(plr, extra, true)
+			friendBonus[plr.UserId] = extra
+		end
+	end
 	for _, plr in ipairs(list) do
 		local earned = state.earned[plr.UserId] or 0
 		local skill = plr:GetAttribute("Skill")
 		local out = plr:GetAttribute("Escaped") == true and not plr:GetAttribute("Waiting")
-		local row = { name = plr.DisplayName, points = earned, escaped = out, skill = skill, userId = plr.UserId }
+		local row = { name = plr.DisplayName, points = earned, escaped = out, skill = skill, userId = plr.UserId, friendBonus = friendBonus[plr.UserId] }
+		quest(plr, "play")
+		if plr:GetAttribute("FriendBonus") then
+			quest(plr, "friend")
+		end
+		if won and out then
+			quest(plr, "escape")
+			if state.diff == "hard" or state.diff == "nightmare" then
+				quest(plr, "escapeHard")
+			end
+		end
 		local pd = Profile.get(plr)
 		if pd then
 			local before = Progress.level(pd.xp[skill] or 0)
@@ -505,6 +597,7 @@ local function openDoor(plr, how)
 	TweenService:Create(door, TweenInfo.new(1.2), { Position = door.Position + Vector3.new(0, 9.5, 0) }):Play()
 	world.objects.door.usePrompt.Enabled = false
 	addPoints(plr, 25)
+	quest(plr, "door")
 	say("open", how == "pick" and ("Click! " .. plr.DisplayName .. " picked the lock! Everybody out!") or "The big door is open! Everybody out!")
 end
 
@@ -653,6 +746,7 @@ local function wireStoreRooms()
 				end
 				entry.giftOpened = true
 				entry.giftPrompt.Enabled = false
+				quest(plr, "present")
 				local pos = entry.gift.Position
 				for _, b in ipairs(entry.giftBits) do
 					b:Destroy()
@@ -751,6 +845,7 @@ local function wirePrompts()
 				entry.label.TextColor3 = Color3.new(1, 1, 1)
 				entry.label.Text = def.n .. " " .. (Config.COLOR_SHAPE[col] or "")
 				addPoints(plr, 5)
+				quest(plr, "balloon")
 				Effects.burst(entry.part.Position + Vector3.new(0, 4, 0), "pop")
 				say("pop", "Balloon " .. def.n .. " was " .. colourWord(col) .. "! That was LOUD...", { n = def.n, color = col, icon = Config.ITEM_ICONS.balloon, userId = plr.UserId })
 				if host then
@@ -789,6 +884,7 @@ local function wirePrompts()
 				entry.prompt.Enabled = false
 				Effects.burst(entry.part.Position, "reveal")
 				revealAll(plr, "Brainy cracked the invitation!")
+				quest(plr, "skill")
 			end)
 		elseif def.kind == "uv" then
 			entry.prompt.Triggered:Connect(function(plr)
@@ -807,6 +903,7 @@ local function wirePrompts()
 				entry.label.Text = t
 				Effects.burst(entry.part.Position, "light")
 				revealAll(plr, "Glow lit up the secret paint!")
+				quest(plr, "skill")
 			end)
 		elseif def.kind == "plant" then
 			entry.prompt.Triggered:Connect(function(plr)
@@ -816,6 +913,7 @@ local function wirePrompts()
 				entry.prompt.Enabled = false
 				Effects.burst(entry.part.Position + Vector3.new(0, 3, 0), "plant")
 				revealAll(plr, "The plant whispered the code to Bramble!")
+				quest(plr, "skill")
 			end)
 		elseif def.kind == "door" then
 			entry.usePrompt.Triggered:Connect(function(plr)
@@ -848,6 +946,7 @@ local function wirePrompts()
 				state.known[k] = state.code[k]
 				RoundState:SetAttribute("Known" .. k, state.code[k])
 				addPoints(plr, 15)
+				quest(plr, "skill")
 				Effects.burst(entry.keypad.Position, "pick")
 				say("reveal", "Click! Tinker picked the keypad: colour " .. k .. " is " .. colourWord(state.code[k]) .. "!")
 			end)
@@ -876,6 +975,7 @@ local function wirePrompts()
 					if pd then
 						pd.stats.rescues += freed
 					end
+					quest(plr, "rescue", freed)
 					say("rescue", plr.DisplayName .. " freed " .. freed .. (freed == 1 and " friend" or " friends") .. " from the cage!")
 				end
 				entry.prompt.Enabled = anyCaged()
@@ -889,6 +989,7 @@ local function wirePrompts()
 					return need(plr, "muscle", "Too heavy to move! Muscle could shove it - or find a Confetti Cannon in a drawer or box.")
 				end
 				clearBlock(plr, id, "shove")
+				quest(plr, "skill")
 			end)
 			entry.popperPrompt.Triggered:Connect(function(plr)
 				if state.status ~= "playing" or world.unlocked[id] or entry.fuse then
@@ -965,6 +1066,7 @@ local function wirePrompts()
 				end
 				Effects.burst(entry.lockPart.Position, "pick")
 				openLock(plr, id, "pick")
+				quest(plr, "skill")
 			end)
 		elseif def.kind == "search" then
 			entry.prompt.Triggered:Connect(function(plr)
@@ -973,6 +1075,7 @@ local function wirePrompts()
 				end
 				entry.searched = true
 				entry.prompt.Enabled = false
+				quest(plr, "search")
 				Effects.sound(entry.part.Position, "hide")
 				-- rummaging is noisy
 				if host and math.random() < 0.5 then
@@ -987,12 +1090,14 @@ local function wirePrompts()
 					RoundState:SetAttribute("Poppers", world.poppers)
 					Effects.burst(entry.part.Position, "boost")
 					addPoints(plr, 10)
+					quest(plr, "key")
 					say("key", plr.DisplayName .. " found a Confetti Cannon! It blasts open any blocked doorway.", { icon = "\u{1F389}", userId = plr.UserId, item = "Confetti Cannon" })
 				elseif lock then
 					world.keys[lock] = true
 					RoundState:SetAttribute("Key_" .. lock, true)
 					Effects.burst(entry.part.Position, "boost")
 					addPoints(plr, 10)
+					quest(plr, "key")
 					say("key", plr.DisplayName .. " found the key to the " .. world.objects[lock].def.name .. "!", { icon = "\u{1F511}", userId = plr.UserId, item = "Key" })
 				else
 					local what = NOTHING[math.random(1, #NOTHING)]
@@ -1023,6 +1128,7 @@ local function wirePrompts()
 				end
 				state.ventCool[plr.UserId] = nowT + 1.6 + Config.VENT_REUSE
 				plr:SetAttribute("Crawling", true)
+				quest(plr, "vent")
 				local h = hrpOf(plr)
 				if h then
 					h.Anchored = true
@@ -1055,6 +1161,7 @@ local function wirePrompts()
 				end
 				plr:SetAttribute("Hidden", true)
 				plr:SetAttribute("HideSpot", id)
+				quest(plr, "hide")
 				local hrp = hrpOf(plr)
 				if hrp then
 					hrp.CFrame = CFrame.new(entry.inside)
@@ -1384,10 +1491,40 @@ end
 local votes = {}
 local voting = false
 
+-- ---------- rejoining after a dropped connection ----------
+-- The Lobby sends this server's access code in the teleport data. A player
+-- who drops out mid-game (not on purpose) is remembered here and in a
+-- MemoryStore the Lobby reads: back in the Lobby they are offered "Rejoin".
+-- While this server runs it says so every 30 s (EC_Live), so the Lobby never
+-- sends anyone to a game that has closed.
+local MemoryStoreService = game:GetService("MemoryStoreService")
+local rejoinMap, liveMap
+pcall(function()
+	rejoinMap = MemoryStoreService:GetHashMap("EC_Rejoin")
+	liveMap = MemoryStoreService:GetHashMap("EC_Live")
+end)
+local serverCode = nil -- this reserved server's access code (from the Lobby)
+local leaving = {} -- [userId] = true: going to the Lobby on purpose
+local dropped = {} -- [userId] = { skill, caged, escaped }: dropped out mid-game
+local rejoining = {} -- [userId] = what they had, while they come back in
+task.spawn(function()
+	while true do
+		if serverCode and liveMap then
+			pcall(function()
+				liveMap:SetAsync(game.JobId, true, 90)
+			end)
+		end
+		task.wait(30)
+	end
+end)
+
 local function toLobby(list)
 	local lobbyId = Places.lobby()
 	if not lobbyId or #list == 0 then
 		return false
+	end
+	for _, p in ipairs(list) do
+		leaving[p.UserId] = true
 	end
 	local ok = pcall(function()
 		TeleportService:TeleportAsync(lobbyId, list)
@@ -1486,7 +1623,7 @@ end)
 local function pickFor(plr, s)
 	plr:SetAttribute("Skill", s.id)
 	applyMods(plr)
-	if not Characters.apply(plr, s.name) then
+	if not Characters.apply(plr, modelFor(plr, s)) then
 		local char = plr.Character
 		if char and char:GetAttribute("EscapeCrewChar") then
 			plr:LoadCharacter()
@@ -1509,7 +1646,7 @@ PickSkill.OnServerEvent:Connect(function(plr, id)
 		if s.id == id then
 			plr:SetAttribute("Skill", id)
 			applyMods(plr)
-			if not Characters.apply(plr, s.name) then
+			if not Characters.apply(plr, modelFor(plr, s)) then
 				local char = plr.Character
 				if char and char:GetAttribute("EscapeCrewChar") then
 					-- leaving a 3D character for one without a model yet:
@@ -1600,6 +1737,7 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		say("lure", "Echo threw a noise - the host has gone to look!", { pos = pos, userId = plr.UserId })
 	end
 	plr:SetAttribute("CoolUntil", now + cd * (plr:GetAttribute("CooldownMult") or 1))
+	quest(plr, "skill")
 end)
 
 AskClue.OnServerEvent:Connect(function(plr)
@@ -1861,6 +1999,71 @@ function round.start()
 		end
 		say("info", plr.DisplayName .. " switched on the " .. label .. " - the host is coming to look!")
 	end
+	-- the Jelly Vault's vault door: the wheel creaks (the host hears it), then
+	-- the treasure inside is points for everyone and a free clue for the team
+	world.onVaultTurn = function(plr, pos)
+		if state.status ~= "playing" then
+			return false
+		end
+		if host and host.model then
+			host:alert(pos)
+		end
+		say("info", "CREEEAK! " .. plr.DisplayName .. " turned the vault wheel - the vault is open! (The host heard that...)")
+		return true
+	end
+	world.onVaultTreasure = function(plr, pos)
+		if state.status ~= "playing" then
+			return false
+		end
+		Effects.surprise(pos, "confetti")
+		Effects.burst(pos, "boost")
+		for _, p in ipairs(playersInRound()) do
+			local n = math.random(Config.VAULT.points[1], Config.VAULT.points[2])
+			addPoints(p, n, true)
+			say("boost", "\u{1F4B0} Vault treasure: +" .. n .. " points for you!", { icon = "\u{1F4B0}", userId = p.UserId, item = "+" .. n .. " points" }, p)
+		end
+		state.cluesLeft += 1
+		state.freeClues = (state.freeClues or 0) + 1
+		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+		RoundState:SetAttribute("FreeClues", state.freeClues)
+		quest(plr, "present")
+		say("info", plr.DisplayName .. " found the vault treasure - points for everyone and a free clue!")
+		return true
+	end
+	-- the laundry chute: a one-way slide to a far room (the host can't follow)
+	if world.chute then
+		local chute = world.chute
+		local used = {}
+		chute.prompt.Triggered:Connect(function(plr)
+			if state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") or plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling") then
+				return
+			end
+			if (used[plr.UserId] or 0) > os.clock() then
+				return say("info", "The chute needs a moment - try again in a few seconds.", nil, plr)
+			end
+			used[plr.UserId] = os.clock() + Config.CHUTE.seconds + Config.CHUTE.reuse
+			plr:SetAttribute("Crawling", true)
+			local h = hrpOf(plr)
+			if h then
+				h.Anchored = true
+			end
+			setVisible(plr, false)
+			Effects.sound(chute.from, "throw", 1)
+			say("info", "Wheee! Down the laundry chute...", nil, plr)
+			task.delay(Config.CHUTE.seconds, function()
+				teleport(plr, chute.to)
+				local h2 = hrpOf(plr)
+				if h2 then
+					h2.Anchored = false
+				end
+				setVisible(plr, true)
+				plr:SetAttribute("Crawling", false)
+				Effects.sound(chute.to, "bounce", 1)
+				Effects.burst(chute.to + Vector3.new(0, 2, 0), "pop")
+				say("info", "You landed in the laundry basket in the " .. chute.toRoom .. "!", nil, plr)
+			end)
+		end)
+	end
 	local upDoor = world.root:FindFirstChild("NextFloorDoor")
 	if upDoor then
 		local told = {}
@@ -1891,6 +2094,7 @@ function round.start()
 		end
 		barricade(plr, c)
 		plr:SetAttribute("CoolUntil", now + Config.COOLDOWN.muscle * (plr:GetAttribute("CooldownMult") or 1))
+		quest(plr, "skill")
 	end
 	-- each locked door hides its key (the blocked passage: a Confetti Cannon) in a
 	-- random searchable thing on its near side
@@ -2169,6 +2373,25 @@ Players.PlayerAdded:Connect(function(plr)
 			RoundState:SetAttribute("Leader", data.leader)
 		end
 	end
+	if type(data) == "table" and typeof(data.code) == "string" then
+		serverCode = data.code
+	end
+	-- back after a dropped connection: the same character, where they were
+	leaving[plr.UserId] = nil
+	local was = dropped[plr.UserId]
+	dropped[plr.UserId] = nil
+	if rejoinMap then
+		task.spawn(pcall, function()
+			rejoinMap:RemoveAsync("u" .. plr.UserId)
+		end)
+	end
+	if was and state.status == "playing" then
+		rejoining[plr.UserId] = was
+		plr:SetAttribute("Skill", was.skill)
+		applyMods(plr)
+		plr:SetAttribute("Ready", true)
+	end
+	task.spawn(paintFriends) -- asks Roblox who is friends with whom (can take a moment)
 	-- no party leader known (Studio, or they left): the first one here leads
 	if not RoundState:GetAttribute("Leader") then
 		RoundState:SetAttribute("Leader", plr.UserId)
@@ -2178,8 +2401,8 @@ Players.PlayerAdded:Connect(function(plr)
 		-- the real character, if this skill's model has been imported
 		if not char:GetAttribute("EscapeCrewChar") then
 			for _, s in ipairs(Config.SKILLS) do
-				if s.id == plr:GetAttribute("Skill") and Characters.has(s.name) then
-					if Characters.apply(plr, s.name) then
+				if s.id == plr:GetAttribute("Skill") and Characters.has(modelFor(plr, s)) then
+					if Characters.apply(plr, modelFor(plr, s)) then
 						return -- CharacterAdded fires again for the new model
 					end
 				end
@@ -2188,7 +2411,23 @@ Players.PlayerAdded:Connect(function(plr)
 		gear(plr)
 		local hum = char:WaitForChild("Humanoid")
 		hum.WalkSpeed = Config.WALK
-		if plr:GetAttribute("Caged") then
+		local back = rejoining[plr.UserId]
+		if back then
+			rejoining[plr.UserId] = nil
+			plr:SetAttribute("Waiting", false)
+			if back.escaped then
+				plr:SetAttribute("Escaped", true)
+				teleport(plr, world.gardenSpot)
+			elseif back.caged then
+				plr:SetAttribute("Caged", true)
+				teleport(plr, world.objects.cage.inside)
+				setSpeed(plr, 0)
+				world.objects.cage.prompt.Enabled = true
+			else
+				teleport(plr, at(HouseMap.start[1][1], HouseMap.start[1][2], 0))
+			end
+			say("info", plr.DisplayName .. " is back in the game!")
+		elseif plr:GetAttribute("Caged") then
 			teleport(plr, world.objects.cage.inside)
 			setSpeed(plr, 0)
 		elseif plr:GetAttribute("Escaped") then
@@ -2210,8 +2449,21 @@ Players.PlayerAdded:Connect(function(plr)
 end)
 
 Players.PlayerRemoving:Connect(function(plr)
+	-- dropped out mid-game (friends still playing): they can rejoin from the Lobby
+	local underway = state.status == "playing" and (RoundState:GetAttribute("HostOut") or RoundState:GetAttribute("EndsAt") ~= nil)
+	if not leaving[plr.UserId] and underway and serverCode and #Players:GetPlayers() > 1 and plr:GetAttribute("Skill") and not plr:GetAttribute("Waiting") then
+		dropped[plr.UserId] = { skill = plr:GetAttribute("Skill"), caged = plr:GetAttribute("Caged") == true, escaped = plr:GetAttribute("Escaped") == true }
+		if rejoinMap then
+			local info = { code = serverCode, job = game.JobId, map = RoundState:GetAttribute("Map") or "partyhouse", t = os.time() }
+			task.spawn(pcall, function()
+				rejoinMap:SetAsync("u" .. plr.UserId, info, Config.REJOIN_SECONDS)
+			end)
+		end
+	end
+	leaving[plr.UserId] = nil
 	savePlayer(plr)
 	said[plr.UserId] = nil
+	task.defer(paintFriends)
 	task.defer(checkEnd)
 	if #Players:GetPlayers() <= 1 then
 		started = false

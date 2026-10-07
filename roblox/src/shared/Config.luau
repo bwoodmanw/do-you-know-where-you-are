@@ -341,4 +341,54 @@ Config.SOUNDS = {
 -- the longest a sound plays, in seconds (some library sounds are long)
 Config.SOUND_MAX = { hide = 1.6, unhide = 1.5, escape = 5, cage = 2.5, rescue = 2, shove = 1.6, wrong = 1.2 }
 
+-- play with a friend: +10% of the points from a game when a Roblox friend
+-- plays it with you
+Config.FRIEND_BONUS = 0.1
+-- the chocolate river: wading slows kids (and the host); the bridge does not
+Config.WADE = { kid = 0.5, host = 0.6 }
+-- the laundry chute: a one-way slide from the Laundry / Linen Room to a far
+-- room on the same side of the locked doors (seconds in the chute)
+Config.CHUTE = { seconds = 1.2, reuse = 6 }
+-- the Jelly Vault's vault door: hold E on the wheel, then a treasure inside
+-- gives everyone points and the team a free clue
+Config.VAULT = { hold = 4, points = { 25, 50 } }
+-- windows with a moonlit view on the outer walls (at most this many a room)
+Config.WINDOWS = { perRoom = 2 }
+-- a player who drops out of a game can rejoin it from the Lobby for this long
+Config.REJOIN_SECONDS = 600
+-- daily quests: 3 a day from this list, points paid when done.
+-- kind = what the game counts; goal = how many; points = the reward
+Config.QUESTS = {
+	{ id = "escape2", kind = "escape", goal = 2, points = 60, text = "Escape 2 floors" },
+	{ id = "escapeHard", kind = "escapeHard", goal = 1, points = 80, text = "Escape on Hard or Nightmare" },
+	{ id = "rescue", kind = "rescue", goal = 1, points = 50, text = "Free a friend from the cage" },
+	{ id = "keys3", kind = "key", goal = 3, points = 40, text = "Find 3 keys or Confetti Cannons" },
+	{ id = "balloons5", kind = "balloon", goal = 5, points = 40, text = "Pop 5 real clue balloons" },
+	{ id = "search10", kind = "search", goal = 10, points = 30, text = "Search 10 drawers, boxes or coats" },
+	{ id = "games3", kind = "play", goal = 3, points = 40, text = "Play 3 games" },
+	{ id = "skill5", kind = "skill", goal = 5, points = 40, text = "Use your character's skill 5 times" },
+	{ id = "hide3", kind = "hide", goal = 3, points = 30, text = "Hide 3 times" },
+	{ id = "vents3", kind = "vent", goal = 3, points = 30, text = "Crawl through 3 vents" },
+	{ id = "door", kind = "door", goal = 1, points = 40, text = "Open the big exit door" },
+	{ id = "friend", kind = "friend", goal = 1, points = 50, text = "Play a game with a friend" },
+	{ id = "present", kind = "present", goal = 1, points = 40, text = "Open a bonus present" },
+}
+-- "Your daily reward is ready" (Roblox experience notifications; players 13+
+-- who said yes). messageId: the notification string's asset id from Creator
+-- Hub -> Engagement -> Notifications (0 = off). secret: the name of the
+-- Creator Hub secret that holds the Open Cloud API key. hours: how long
+-- after a daily reward is claimed the reminder is sent.
+Config.NOTIFY = { messageId = "", secret = "notifications", hours = 22 }
+-- character skins for Robux (each one a Game Pass; 0 = not on sale yet, so
+-- not shown). model = the model's name in Party House
+-- ServerStorage/Characters (or in CHARACTER_ASSETS once saved to Roblox).
+Config.SKINS = {
+	{ id = "tinker_pumpkin", skill = "tinker", name = "Pumpkin Patch Tinker", model = "TinkerPumpkin", pass = 0 },
+	{ id = "shadow_ghost", skill = "shadow", name = "Ghostly Shadow", model = "ShadowGhost", pass = 0 },
+	{ id = "glow_candy", skill = "glow", name = "Candy Glow", model = "GlowCandy", pass = 0 },
+	{ id = "patch_nurse", skill = "patch", name = "Night Nurse Patch", model = "PatchNurse", pass = 0 },
+}
+-- the owner can try every skin in Studio without buying it
+Config.SKINS_FREE_IN_STUDIO = true
+
 return Config

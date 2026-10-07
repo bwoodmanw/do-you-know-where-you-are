@@ -1,8 +1,9 @@
 # Escape Crew - session handoff
 
-Last updated: 7 Oct 2026, end of the third session (very long: 10 levels,
-Muscle and Tinker redesign, Gummy floors 2-3, Hospital floors 1-3, room
-dressing, Halloween, save safety, badges, Quick Play). Latest commit 0635102.
+Last updated: 7 Oct 2026, fourth session (everything left in
+IMPROVEMENTS.md except B8 analytics: controller, friends bonus, chocolate
+wading, rejoin, daily quests, notifications, laundry chute, vault, windows,
+skins code). See TEST_PLAN.md round 12.
 
 ## What it is
 
@@ -55,6 +56,9 @@ roblox/
     MusicPlayer.luau  shuffled songs, next song on end, now-playing, music
                       volume and the game-sounds volume button
     Sfx.luau          the GameSounds SoundGroup every effect sound plays in
+    Gamepad.luau      controller support for both screens (button tags,
+                      panels picked with the stick, B closes, bindings)
+    Quests.luau       daily quests (3 a day per player, Config.QUESTS)
     Places.luau       Lobby / Party House place ids
   src/game/server/
     Main.server.luau  the referee: rounds, pick-wait, prompts, skills, host
@@ -84,6 +88,9 @@ roblox/
   src/lobby/client/LobbyUi.client.luau  lobby screens (shop, characters with
                       portraits and arrows, party panel, map screen)
 tools/make_housemap.py  floor plans + 2,000-game validation per plan
+tools/check_rooms.luau  vault / chute / window placement on every plan
+                      (.tools/luau.exe tools/check_rooms.luau)
+tools/count_locals.py   top-level locals of a script (Studio stops at 200)
 tools/studio-plugins/SoftenPatch.lua  Studio plugin (copied to %LOCALAPPDATA%\Roblox\Plugins):
                       Plugins tab -> Escape Crew -> Soften Patch (selected model or
                       Characters/Patch: ColorMap -> TextureID, Ctrl+Z undoes)
@@ -178,6 +185,30 @@ art/sheets/ art/models/ art/model-input/   design art and Meshy files
 - Store page: description (`art/roblox-store/description.txt`, no emoji, no
   filtered words), Halloween icon, badge art (`art/roblox-store/badges/`).
 
+## Built in the fourth session (7 Oct) - see TEST_PLAN.md round 12
+
+- Controller (B10): `shared/Gamepad.luau`; HUD and Lobby bindings; F prompts
+  on Y.
+- Friends bonus (B6): +10% (`Config.FRIEND_BONUS`) at the end of a game.
+- Chocolate river (C4): floor-level channels named ChocolateRiver (half speed,
+  `Config.WADE`), ChocolateBridge footbridges; PathfindingModifier
+  "Chocolate" (cost 4) so the host walks round.
+- Rejoin (B11): Lobby sends the reserved server's access code in the teleport
+  data; the game writes MemoryStore `EC_Rejoin` on a mid-game drop and keeps
+  `EC_Live` fresh; the Lobby offers "Rejoin". Works while friends are still
+  in that game (a server closes when its last player leaves).
+- Daily quests (B5): profile `quests`; counted in Main (`quest(plr, kind)`);
+  Lobby "Daily quests" panel.
+- Notifications (B7): opt-in after the daily reward; MemoryStore sorted map
+  `EC_Remind`; sent by Lobby servers via Open Cloud with the secret
+  `notifications`. Off until `Config.NOTIFY.messageId` is set
+  (`NOTIFICATIONS.md`).
+- Laundry chute and vault (C4), windows (C7): `Rooms.luau` (buildChute,
+  buildVault, buildWindows); Main wires world.chute / onVaultTurn /
+  onVaultTreasure.
+- Skins (B9): `Config.SKINS` (Game Pass ids, 0 = hidden), profile `skins`,
+  Lobby Characters row, `modelFor` in Main. Art and steps: `SKINS.md`.
+
 ## Open items and decisions waiting on Brent
 
 0. **Seasonal icon:** `art/roblox-store/icon-halloween-512.png` is live. From
@@ -186,17 +217,18 @@ art/sheets/ art/models/ art/model-input/   design art and Meshy files
 1. **Badges:** 3 still to make (Hero of the Crew, Untouchable, Nightmare
    Escaper; art in `art/roblox-store/badges/`), then their ids into
    `Config.BADGES` (rescuer, untouched, nightmare).
-2. **Build next (Brent said yes, 7 Oct):** everything left in IMPROVEMENTS.md
-   except B8 analytics - B10 controller support, B6 friends bonus, C4
-   chocolate wading, B5 daily quests, B7 notifications, B9 character skins
-   (needs art), B11 rejoin after a drop, C4 laundry chute and vault wheel,
-   C7 windows with a view.
+2. **Built 7 Oct (fourth session), untested:** TEST_PLAN.md round 12. Still
+   needs Brent: B7 Creator Hub steps (`NOTIFICATIONS.md`), B9 art, models
+   and Game Passes (`SKINS.md`), the console tick (Creator Hub) for Xbox.
+   F9 showed asset 11490522280 refused (not in our code: something in the
+   place - find it with the Command Bar line in the session notes).
 3. **Play test** TEST_PLAN.md rounds 4-11 (most untested), then **publish
    both places from Studio before 29 Oct** (Rojo connected -> File ->
    Publish to Roblox; never a .rbxlx).
 4. **Patch's face:** Soften Patch plugin installed (Studio stopped ->
    Plugins -> Escape Crew -> Soften Patch; a window shows the result). Brent
-   has not reported the result yet. Then re-save Patch to Roblox.
+   (7 Oct): it worked. Still to do: re-save Patch to Roblox (right-click ->
+   Save to Roblox) so the Lobby's 3D Patch is soft too.
 5. **Host balance:** after a week live, read the 📊 Balance table and tune
    toward 70 / 50 / 35 / 20% wins on Easy / Normal / Hard / Nightmare.
 6. Still to confirm live: friends invites, others seeing you run, Quick

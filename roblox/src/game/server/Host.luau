@@ -160,7 +160,8 @@ function Host:spawn(diff)
 	self.mode = "patrol"
 	self.skill = (Config.HOSTS[self.kind or "pumpkin"] or Config.HOSTS.pumpkin).skill
 	self.nextSkill = os.clock() + 4
-	self.path = PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 11, AgentCanJump = false, WaypointSpacing = 6 })
+	-- the chocolate river is slow going: it walks round it when it can
+	self.path = PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 11, AgentCanJump = false, WaypointSpacing = 6, Costs = { Chocolate = 4 } })
 	return self.model
 end
 
@@ -362,6 +363,16 @@ function Host:step(dt)
 		end
 	end
 	self.hum.WalkSpeed = self.mode == "hunt" and (self.diff.hunt + (self.frenzy and 2 or 0)) or (self.mode == "search" and Config.HOST.search or Config.HOST.patrol)
+	-- wading through the chocolate river slows it down too
+	do
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances = { self.model }
+		local below = workspace:Raycast(self.root.Position, Vector3.new(0, -14, 0), params)
+		if below and below.Instance.Name == "ChocolateRiver" then
+			self.hum.WalkSpeed *= Config.WADE.host
+		end
+	end
 
 	-- catch anyone close enough who is not hidden
 	for _, plr in ipairs(Players:GetPlayers()) do

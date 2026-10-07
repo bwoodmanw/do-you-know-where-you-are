@@ -16,6 +16,7 @@ if game.PlaceId == Config.PLACE_IDS.game then
 	return
 end
 local Places = require(ReplicatedStorage.Shared.Places)
+local offerRejoin, queueReminder, Quests -- set further down
 local Profile = require(ReplicatedStorage.Shared.Profile)
 local Progress = require(ReplicatedStorage.Shared.Progress)
 
@@ -712,7 +713,7 @@ local function start(party)
 		local code = TeleportService:ReserveServer(placeId)
 		local options = Instance.new("TeleportOptions")
 		options.ReservedServerAccessCode = code
-		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook, map = mapId, leader = party.leader.UserId })
+		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook, map = mapId, leader = party.leader.UserId, code = code })
 		TeleportService:TeleportAsync(placeId, party.members, options)
 	end)
 	if not ok then
@@ -1120,6 +1121,221 @@ task.spawn(function()
 	end
 end)
 
+-- ---------- daily quests (shared/Quests.luau; the game counts them) ----------
+Quests = require(ReplicatedStorage.Shared.Quests)
+
+-- ---------- rejoining a game after a dropped connection ----------
+-- The game server writes EC_Rejoin["u<userId>"] when a player drops out
+-- mid-game, and keeps EC_Live[<its job id>] fresh while it runs.
+local MemoryStoreService = game:GetService("MemoryStoreService")
+local rejoinMap, liveMap
+pcall(function()
+	rejoinMap = MemoryStoreService:GetHashMap("EC_Rejoin")
+	liveMap = MemoryStoreService:GetHashMap("EC_Live")
+end)
+local RejoinOffer = remote("RejoinOffer") -- server -> client: { map = name }
+local Rejoin = remote("Rejoin") -- client -> server: true (rejoin) | false (no thanks)
+local function rejoinInfo(plr)
+	if not rejoinMap or not liveMap then
+		return nil
+	end
+	local ok, info = pcall(function()
+		return rejoinMap:GetAsync("u" .. plr.UserId)
+	end)
+	if not ok or type(info) ~= "table" or typeof(info.code) ~= "string" then
+		return nil
+	end
+	if os.time() - (info.t or 0) > Config.REJOIN_SECONDS then
+		return nil
+	end
+	local okLive, alive = pcall(function()
+		return liveMap:GetAsync(info.job)
+	end)
+	if not okLive or not alive then
+		return nil
+	end
+	return info
+end
+function offerRejoin(plr)
+	local info = rejoinInfo(plr)
+	if info and plr.Parent then
+		local i = Progress.mapIndex(info.map or "")
+		RejoinOffer:FireClient(plr, { map = i and Progress.MAPS[i].name or "your game" })
+	end
+end
+Rejoin.OnServerEvent:Connect(function(plr, yes)
+	local info = rejoinInfo(plr)
+	if not info then
+		return Notice:FireClient(plr, "That game has finished - start a new one!")
+	end
+	if yes ~= true then
+		pcall(function()
+			rejoinMap:RemoveAsync("u" .. plr.UserId)
+		end)
+		return
+	end
+	local placeId = Places.game()
+	if not placeId then
+		return Notice:FireClient(plr, "Rejoining only works in the published game.")
+	end
+	leave(plr)
+	broadcast()
+	Notice:FireClient(plr, "Back to your game...")
+	local ok, err = pcall(function()
+		local options = Instance.new("TeleportOptions")
+		options.ReservedServerAccessCode = info.code
+		options:SetTeleportData({ rejoin = true, map = info.map, code = info.code })
+		TeleportService:TeleportAsync(placeId, { plr }, options)
+	end)
+	if not ok then
+		Notice:FireClient(plr, "Couldn't get back into that game: " .. tostring(err))
+	end
+end)
+
+-- ---------- "your daily reward is ready" (Roblox experience notifications) ----------
+-- Claiming the daily reward puts a reminder in a queue (EC_Remind, sorted by
+-- when it is due). Any Lobby server sends the reminders that are due, through
+-- Open Cloud with the API key kept in the experience's Secrets. Only players
+-- 13 and over who said yes to notifications get them (Roblox's rule), at most
+-- one a day.
+local remindQueue
+pcall(function()
+	remindQueue = MemoryStoreService:GetSortedMap("EC_Remind")
+end)
+function queueReminder(plr)
+	if not remindQueue or (Config.NOTIFY.messageId or "") == "" then
+		return
+	end
+	local due = os.time() + math.floor((Config.NOTIFY.hours or 22) * 3600)
+	task.spawn(pcall, function()
+		remindQueue:SetAsync(tostring(plr.UserId), due, 3 * 86400, due)
+	end)
+end
+local function sendReminder(userId)
+	local HttpService = game:GetService("HttpService")
+	local ok, err = pcall(function()
+		local key = HttpService:GetSecret(Config.NOTIFY.secret)
+		local body = HttpService:JSONEncode({
+			source = { universe = "universes/" .. game.GameId },
+			payload = { message_id = Config.NOTIFY.messageId, type = "MOMENT" },
+		})
+		local res = HttpService:RequestAsync({
+			Url = "https://apis.roblox.com/cloud/v2/users/" .. userId .. "/notifications",
+			Method = "POST",
+			Headers = { ["Content-Type"] = "application/json", ["x-api-key"] = key },
+			Body = body,
+		})
+		if not res.Success then
+			error(res.StatusCode .. " " .. tostring(res.Body))
+		end
+	end)
+	if not ok then
+		warn("Daily reminder to " .. userId .. " not sent: " .. tostring(err))
+	end
+end
+task.spawn(function()
+	if game:GetService("RunService"):IsStudio() then
+		return -- secrets only work in live servers
+	end
+	while true do
+		task.wait(120 + math.random(0, 60))
+		if remindQueue and (Config.NOTIFY.messageId or "") ~= "" then
+			local ok, due = pcall(function()
+				return remindQueue:GetRangeAsync(Enum.SortDirection.Ascending, 20, nil, { sortKey = os.time() })
+			end)
+			for _, entry in ipairs(ok and due or {}) do
+				-- take it off the queue first (another Lobby may be looking too)
+				local took = false
+				pcall(function()
+					remindQueue:UpdateAsync(entry.key, function(old)
+						took = old ~= nil
+						return nil
+					end, 1)
+				end)
+				pcall(function()
+					remindQueue:RemoveAsync(entry.key)
+				end)
+				if took and not Players:GetPlayerByUserId(tonumber(entry.key) or 0) then
+					sendReminder(entry.key)
+				end
+			end
+		end
+	end
+end)
+
+-- ---------- character skins (Game Passes; shown in Characters) ----------
+local EquipSkin = remote("EquipSkin") -- (skill, skinId or "") wear a skin, or the plain character
+local OwnedSkins = Instance.new("RemoteFunction")
+OwnedSkins.Name = "OwnedSkins"
+OwnedSkins.Parent = remotes
+local skinOwned = {} -- ["userId:passId"] = true
+local function ownsSkin(plr, skin)
+	if game:GetService("RunService"):IsStudio() and Config.SKINS_FREE_IN_STUDIO then
+		return true
+	end
+	if not skin.pass or skin.pass <= 0 then
+		return false
+	end
+	local key = plr.UserId .. ":" .. skin.pass
+	if skinOwned[key] == nil then
+		local ok, yes = pcall(function()
+			return MarketplaceService:UserOwnsGamePassAsync(plr.UserId, skin.pass)
+		end)
+		if not ok then
+			return false
+		end
+		skinOwned[key] = yes == true
+	end
+	return skinOwned[key]
+end
+OwnedSkins.OnServerInvoke = function(plr)
+	local out = {}
+	for _, skin in ipairs(Config.SKINS or {}) do
+		out[skin.id] = ownsSkin(plr, skin)
+	end
+	return out
+end
+MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, passId, bought)
+	if bought then
+		skinOwned[plr.UserId .. ":" .. passId] = true
+		for _, skin in ipairs(Config.SKINS or {}) do
+			if skin.pass == passId then
+				local data = Profile.get(plr)
+				if data then
+					data.skins = data.skins or {}
+					data.skins[skin.skill] = skin.id
+					Profile.publish(plr)
+					Profile.save(plr)
+				end
+				Notice:FireClient(plr, "\u{2728} " .. skin.name .. " is yours - wear it in your next game!")
+			end
+		end
+	end
+end)
+EquipSkin.OnServerEvent:Connect(function(plr, skill, skinId)
+	local data = Profile.get(plr)
+	if not data or typeof(skill) ~= "string" or typeof(skinId) ~= "string" then
+		return
+	end
+	data.skins = data.skins or {}
+	if skinId == "" then
+		data.skins[skill] = nil
+		Profile.publish(plr)
+		return
+	end
+	for _, skin in ipairs(Config.SKINS or {}) do
+		if skin.id == skinId and skin.skill == skill then
+			if not ownsSkin(plr, skin) then
+				return Notice:FireClient(plr, "Get " .. skin.name .. " first!")
+			end
+			data.skins[skill] = skin.id
+			Profile.publish(plr)
+			Profile.save(plr)
+			return Notice:FireClient(plr, "\u{2728} Wearing " .. skin.name .. " next game!")
+		end
+	end
+end)
+
 -- daily login reward: claimed on arrival once a day; an unbroken run of days
 -- climbs the 7-day ladder, a missed day starts it again at day 1
 local function dailyReward(plr, data)
@@ -1143,12 +1359,18 @@ local function dailyReward(plr, data)
 	end
 	Profile.publish(plr)
 	Profile.save(plr)
+	queueReminder(plr)
 	plr:SetAttribute("DailyShow", game:GetService("HttpService"):JSONEncode({ streak = data.daily.streak, day = day, points = pts, boost = r.boost, premium = premium }))
 end
 
 Players.PlayerAdded:Connect(function(plr)
 	local data = Profile.load(plr)
 	dailyReward(plr, data)
+	if data then
+		Quests.ensure(data, plr.UserId)
+		Profile.publish(plr)
+	end
+	task.spawn(offerRejoin, plr)
 	task.wait(1)
 	broadcast()
 end)

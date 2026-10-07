@@ -13,6 +13,7 @@ local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
 local Sfx = require(game:GetService("ReplicatedStorage").Shared.Sfx)
+local Gamepad = require(ReplicatedStorage.Shared.Gamepad)
 local HttpService = game:GetService("HttpService")
 local Progress = require(ReplicatedStorage.Shared.Progress)
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
@@ -429,6 +430,24 @@ local function paintCandy()
 end
 player:GetAttributeChangedSignal("CandyCharges"):Connect(paintCandy)
 paintCandy()
+-- controller: which button does what (tags show only with a controller)
+do
+	Gamepad.hint(runBtn, "L3")
+	Gamepad.hint(skillBtn, "RB")
+	Gamepad.hint(sayBtn, "Right")
+	Gamepad.hint(clueBtn, "Up")
+	Gamepad.hint(outBtn, "A")
+	-- hold the left trigger to run (like Shift); click the left stick to keep running
+	Gamepad.bind(Enum.KeyCode.ButtonL2, function()
+		shiftHeld = true
+	end)
+	Gamepad.bindRelease(Enum.KeyCode.ButtonL2, function()
+		shiftHeld = false
+	end)
+	Gamepad.bind(Enum.KeyCode.ButtonL3, function()
+		runToggle = not runToggle
+	end)
+end
 
 do
 -- prompts one character uses (Pick the lock, Shove) show only to them, and
@@ -472,7 +491,7 @@ ProximityPromptService.PromptShown:Connect(function(prompt)
 end)
 -- mouse look (computers): the camera turns as the mouse moves, no button held
 local mouseLook = false
-local lookBtn = button(acts, "\u{1F5B1} Look (M)", { LayoutOrder = 7, Visible = not TOUCH }, function()
+local lookBtn = button(acts, "\u{1F5B1} Look (M)", { LayoutOrder = 7, Visible = not TOUCH and UserInputService.KeyboardEnabled }, function()
 	mouseLook = not mouseLook
 end)
 
@@ -491,6 +510,10 @@ for i, p in ipairs(Config.PHRASES) do
 	end)
 end
 sayBtn.Activated:Connect(function()
+	sayPanel.Visible = not sayPanel.Visible
+end)
+Gamepad.panel(sayPanel)
+Gamepad.bind(Enum.KeyCode.DPadRight, function()
 	sayPanel.Visible = not sayPanel.Visible
 end)
 remotes.Bubble.OnClientEvent:Connect(function(who, idx)
@@ -661,6 +684,40 @@ chooseBtn = button(picker, "Choose", { Size = UDim2.fromOffset(230, 48), Positio
 end)
 player:GetAttributeChangedSignal("Skill"):Connect(showChar)
 player:GetAttributeChangedSignal("ProfileJson"):Connect(showChar)
+-- controller: LB / RB step through the characters, the right stick turns
+-- the model, B closes (= ready, like the X)
+do
+	Gamepad.panel(picker, chooseBtn, function()
+		if player:GetAttribute("Skill") then
+			remotes.Ready:FireServer()
+		end
+		picker.Visible = false
+	end)
+	local function stepChar(d)
+		if picker.Visible then
+			viewIndex = (viewIndex - 1 + d) % #Config.SKILLS + 1
+			showChar()
+		end
+	end
+	Gamepad.bind(Enum.KeyCode.ButtonL1, function()
+		stepChar(-1)
+	end, true)
+	Gamepad.bind(Enum.KeyCode.ButtonR1, function()
+		stepChar(1)
+	end, true)
+	local padTurn = 0
+	UserInputService.InputChanged:Connect(function(input)
+		if input.KeyCode == Enum.KeyCode.Thumbstick2 then
+			padTurn = math.abs(input.Position.X) > 0.2 and input.Position.X or 0
+		end
+	end)
+	RunService.Heartbeat:Connect(function(dt)
+		if padTurn ~= 0 and picker.Visible then
+			spin += padTurn * dt * 3
+		end
+	end)
+	Gamepad.hint(chooseBtn, "A")
+end
 
 -- drag the model round; it faces you to begin with
 view.InputBegan:Connect(function(input)
@@ -825,6 +882,7 @@ remotes.OpenKeypad.OnClientEvent:Connect(function()
 	entered.Text = "_ _ _"
 	keypad.Visible = true
 end)
+Gamepad.panel(keypad)
 
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
@@ -842,9 +900,17 @@ local function paintSkill()
 end
 player:GetAttributeChangedSignal("Skill"):Connect(paintSkill)
 paintSkill()
-skillBtn.Activated:Connect(function()
+local function useSkill()
 	local s = player:GetAttribute("Skill")
-	if s == "echo" then
+	if s == "echo" and Gamepad.on() then
+		-- a controller throws the noise at the middle of the screen
+		local spot = Gamepad.aimPoint({ player.Character }, 300)
+		if spot then
+			remotes.UseSkill:FireServer(spot)
+		else
+			toast("\u{1F3A7} Point the camera at a floor or wall to throw a noise there.", 3)
+		end
+	elseif s == "echo" then
 		aiming = true
 		toast("\u{1F3A7} Tap or click a spot to throw a noise there.", 3)
 	elseif SKILL_TEXT[s] then
@@ -866,7 +932,18 @@ skillBtn.Activated:Connect(function()
 		local tips = { tinker = "Hold F at a locked door to pick it - no key needed. Once a game, hold F at the big door's keypad to learn a colour.", brainy = "Find the twisty invitation in the " .. roomOfObj("invite") .. " and press E to read it.",
 			muscle = "Find the doorway heaped with junk and hold E to shove it clear.", glow = "Find the painted wall in the " .. roomOfObj("uv") .. " and press E to light it up.",
 			bramble = "Find the big plant in the " .. roomOfObj("plant") .. " and press E to ask it." }
-		toast(tips[s] or "Walk up to things and press E.", 4)
+		local tip = tips[s] or "Walk up to things and press E."
+		if Gamepad.on() then
+			tip = string.gsub(string.gsub(string.gsub(tip, "hold F", "hold Y"), "press E", "press X"), "hold E", "hold X")
+		end
+		toast(tip, 4)
+	end
+end
+skillBtn.Activated:Connect(useSkill)
+-- controller: RB uses the skill (not while choosing a character or caged)
+Gamepad.bind(Enum.KeyCode.ButtonR1, function()
+	if not picker.Visible and not player:GetAttribute("Caged") and not player:GetAttribute("Escaped") then
+		useSkill()
 	end
 end)
 UserInputService.InputBegan:Connect(function(input, processed)
@@ -955,9 +1032,12 @@ local function paintBoosts()
 		end
 	end
 	for i, id in ipairs(split(player:GetAttribute("Bag"))) do
-		boostSlot(id, i, i <= 2 and not TOUCH and ("Tap \u{00B7} " .. i) or "Tap", function()
+		local slot = boostSlot(id, i, i <= 2 and not TOUCH and ("Tap \u{00B7} " .. i) or "Tap", function()
 			remotes.UseBoost:FireServer(id)
 		end)
+		if i == 1 then
+			Gamepad.hint(slot, "LB")
+		end
 	end
 	for i, id in ipairs(split(player:GetAttribute("BoostsOn"))) do
 		local used = id == "shield" and not player:GetAttribute("Shield")
@@ -981,6 +1061,14 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	local n = input.KeyCode == Enum.KeyCode.One and 1 or input.KeyCode == Enum.KeyCode.Two and 2 or nil
 	local id = n and split(player:GetAttribute("Bag"))[n]
 	if id then
+		remotes.UseBoost:FireServer(id)
+	end
+end)
+-- controller: LB uses the first boost in the bag (not while choosing a
+-- character, caged or watching the team)
+Gamepad.bind(Enum.KeyCode.ButtonL1, function()
+	local id = split(player:GetAttribute("Bag"))[1]
+	if id and not picker.Visible and not player:GetAttribute("Caged") and not player:GetAttribute("Escaped") then
 		remotes.UseBoost:FireServer(id)
 	end
 end)
@@ -1013,6 +1101,10 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		showMap(not mapBox.Visible)
 	end
 end)
+Gamepad.bind(Enum.KeyCode.DPadLeft, function()
+	showMap(not mapBox.Visible)
+end)
+Gamepad.hint(mapOpenBtn, "Left")
 
 local roomTiles, found, viewParts, lockConns = {}, {}, {}, {}
 local loftView -- the loft, drawn over its room; bright when you are up there
@@ -1237,12 +1329,15 @@ local function paintPlayers()
 	end
 	playersBox.Size = UDim2.fromOffset(260, 44 + #list * 28)
 end
-playersBtn.Activated:Connect(function()
+local function togglePlayers()
 	playersBox.Visible = not playersBox.Visible
 	if playersBox.Visible then
 		paintPlayers()
 	end
-end)
+end
+playersBtn.Activated:Connect(togglePlayers)
+Gamepad.bind(Enum.KeyCode.DPadDown, togglePlayers)
+Gamepad.hint(playersBtn, "Down")
 task.spawn(function()
 	while true do
 		task.wait(0.5)
@@ -1268,6 +1363,7 @@ end)
 leaveBtn.Activated:Connect(function()
 	leaveBox.Visible = true
 end)
+Gamepad.panel(leaveBox)
 
 -- ---------- waiting for everyone to choose a character ----------
 local pickBanner = label(gui, { Size = UDim2.fromOffset(560, 40), Position = UDim2.new(0.5, -280, 0, 56), BackgroundTransparency = 0.2, BackgroundColor3 = NIGHT, TextColor3 = PUMP, Visible = false, ZIndex = 8 })
@@ -1277,6 +1373,19 @@ local readyBtn = button(gui, "\u{25B6} I'm ready!", { Size = UDim2.fromOffset(17
 		remotes.Ready:FireServer()
 	else
 		picker.Visible = true
+	end
+end)
+-- controller Up: "I'm ready" while waiting, otherwise a clue
+Gamepad.hint(readyBtn, "Up")
+Gamepad.bind(Enum.KeyCode.DPadUp, function()
+	if readyBtn.Visible then
+		if player:GetAttribute("Skill") then
+			remotes.Ready:FireServer()
+		else
+			picker.Visible = true
+		end
+	elseif RoundState:GetAttribute("HostOut") or RoundState:GetAttribute("EndsAt") then
+		askClue()
 	end
 end)
 task.spawn(function()
@@ -1368,6 +1477,9 @@ local LightingService = game:GetService("Lighting")
 local normalLight = { Ambient = LightingService.Ambient, OutdoorAmbient = LightingService.OutdoorAmbient, Brightness = LightingService.Brightness }
 local darkLight = { Ambient = Color3.new(0, 0, 0), OutdoorAmbient = Color3.new(0, 0, 0), Brightness = 0 }
 local inBlackout = false
+local wadeParams = RaycastParams.new()
+wadeParams.FilterType = Enum.RaycastFilterType.Exclude
+local wadeTold = false
 
 local function roomAt(pos)
 	local x, y = math.floor(pos.X / T), math.floor(pos.Z / T)
@@ -1408,6 +1520,16 @@ RunService.RenderStepped:Connect(function(dt)
 				tired = false
 			end
 		end
+		-- wading through the chocolate river is slow (the bridge is not)
+		wadeParams.FilterDescendantsInstances = { char }
+		local below = workspace:Raycast(hrp.Position, Vector3.new(0, -8, 0), wadeParams)
+		if below and below.Instance.Name == "ChocolateRiver" then
+			hum.WalkSpeed *= Config.WADE.kid
+			if not wadeTold then
+				wadeTold = true
+				toast("\u{1F36B} Wading through chocolate - slow going! Use the bridge.", 3)
+			end
+		end
 	end
 	runBtn.BackgroundColor3 = (runToggle or shiftHeld) and PUMP or Color3.fromRGB(75, 58, 102)
 	-- the active boosts row
@@ -1421,7 +1543,7 @@ RunService.RenderStepped:Connect(function(dt)
 	freezeText.Text = frozenLeft > 0 and (math.ceil(frozenLeft) .. "s") or ""
 	staminaBar.Size = UDim2.fromScale(stamina / 100, 1)
 	staminaBar.BackgroundColor3 = tired and Color3.fromRGB(255, 77, 94) or Color3.fromRGB(123, 227, 107)
-	gameEarned.Text = "\u{2B50} " .. tostring(player:GetAttribute("GameEarned") or 0) .. " points this game"
+	gameEarned.Text = "\u{2B50} " .. tostring(player:GetAttribute("GameEarned") or 0) .. " points this game" .. (player:GetAttribute("FriendBonus") and "  \u{1F46B} +10%" or "")
 
 	-- skill countdown: active time, then recharge time
 	local serverNow = workspace:GetServerTimeNow()
@@ -1597,6 +1719,17 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end)
 RoundState:GetAttributeChangedSignal("Status"):Connect(paintSpectate)
+-- controller: LB / RB switch who you watch
+Gamepad.bind(Enum.KeyCode.ButtonL1, function()
+	if spec.Visible then
+		watch(-1)
+	end
+end)
+Gamepad.bind(Enum.KeyCode.ButtonR1, function()
+	if spec.Visible then
+		watch(1)
+	end
+end)
 
 -- ---------- end of round: results ----------
 local results = frame(gui, { Size = UDim2.fromOffset(460, 440), Position = UDim2.new(0.5, -230, 0.5, -220), Visible = false, ZIndex = 40 })
@@ -1621,6 +1754,10 @@ end)
 upBtn = button(results, "\u{2B06} Next floor", { Size = UDim2.new(1, -40, 0, 40), Position = UDim2.new(0, 20, 1, -150), BackgroundColor3 = Color3.fromRGB(70, 209, 96), TextColor3 = NIGHT, Visible = false, ZIndex = 41 }, function()
 	chose("next")
 end)
+-- controller: Play again is chosen to begin with (or Next floor after a win)
+Gamepad.panel(results, function()
+	return upBtn.Visible and upBtn or againBtn.Visible and againBtn or nil
+end, function() end)
 local function confetti()
 	local colours = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), PUMP }
 	for i = 1, 70 do
@@ -1653,6 +1790,9 @@ remotes.Results.OnClientEvent:Connect(function(r)
 		end
 		if row.unlocked then
 			extra ..= "  \u{1F513} " .. row.unlocked
+		end
+		if row.friendBonus and row.friendBonus > 0 then
+			extra ..= "  \u{1F46B} +" .. row.friendBonus .. " friend bonus"
 		end
 		table.insert(lines, (row.escaped and "\u{2705} " or "\u{1F512} ") .. row.name .. "  +" .. row.points .. " points" .. extra)
 	end
@@ -1696,6 +1836,8 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 				cam.CFrame = cam.CFrame * CFrame.Angles(0, 0, (math.random() - 0.5) * 0.06)
 			end)
 		end
+	elseif kind == "quest" and data and data.userId == player.UserId then
+		popUp("\u{1F4DC}", "Quest done! +" .. tostring(data.points or 0))
 	elseif (kind == "boost" or kind == "pop") and data and data.userId == player.UserId then
 		popUp(data.icon or "\u{2B50}", data.item or "")
 	elseif (kind == "sneak" or kind == "heal" or kind == "lure") and data and data.userId == player.UserId then

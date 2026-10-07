@@ -16,6 +16,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 local remotes = ReplicatedStorage:WaitForChild("LobbyRemotes")
+local Gamepad = require(ReplicatedStorage.Shared.Gamepad)
 local player = Players.LocalPlayer
 
 local NIGHT = Color3.fromRGB(26, 16, 38)
@@ -137,6 +138,13 @@ local function invite()
 	inviteBox.BackgroundColor3 = Color3.fromRGB(26, 16, 38)
 	inviteBox.ZIndex = 30
 	inviteBox.Parent = gui
+	local thisBox = inviteBox
+	Gamepad.panel(thisBox, nil, function()
+		thisBox:Destroy()
+		if inviteBox == thisBox then
+			inviteBox = nil
+		end
+	end)
 	local c = Instance.new("UICorner")
 	c.CornerRadius = UDim.new(0, 16)
 	c.Parent = inviteBox
@@ -344,6 +352,9 @@ remotes.PartyInvite.OnClientEvent:Connect(function(info)
 		remotes.JoinParty:FireServer(info.id)
 	end)
 	btn("No thanks", 200, Color3.fromRGB(185, 168, 207), function() end)
+	Gamepad.panel(box, nil, function()
+		box:Destroy()
+	end)
 	task.delay(30, function()
 		if box.Parent then
 			box:Destroy()
@@ -352,7 +363,7 @@ remotes.PartyInvite.OnClientEvent:Connect(function(info)
 end)
 
 -- ---------- main menu (left) ----------
-local menu = frame(gui, { Size = UDim2.fromOffset(330, 548), Position = UDim2.new(0, 24, 0.5, -274) })
+local menu = frame(gui, { Size = UDim2.fromOffset(330, 600), Position = UDim2.new(0, 24, 0.5, -300) })
 corner(menu, 18)
 local menuStroke = Instance.new("UIStroke")
 menuStroke.Color, menuStroke.Transparency = PUMP, 0.6
@@ -375,7 +386,25 @@ end)
 button(menu, "\u{2709} Invite friends", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 6 }, invite)
 local shopBtn = button(menu, "\u{1F6D2} Shop", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 7 })
 local charsBtn = button(menu, "\u{1F9D1}\u{200D}\u{1F91D}\u{200D}\u{1F9D1} Characters", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 8 })
-local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 9 })
+local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 10 })
+local questsBtn = button(menu, "\u{1F4DC} Daily quests", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 9, BackgroundColor3 = Color3.fromRGB(110, 70, 150) })
+-- controller: Up jumps into the menu (or your party's buttons)
+do
+	local quick
+	for _, c in ipairs(menu:GetChildren()) do
+		if c:IsA("TextButton") and c.LayoutOrder == 3 then
+			quick = c
+		end
+	end
+	if quick then
+		Gamepad.hint(quick, "Up")
+	end
+	Gamepad.bind(Enum.KeyCode.DPadUp, function()
+		if menu.Visible and quick then
+			Gamepad.select(quick)
+		end
+	end)
+end
 
 -- ---------- the balance table (the experience's owner only) ----------
 task.spawn(function()
@@ -515,6 +544,14 @@ do
 		task.wait(0.2)
 		apply()
 	end)
+	Gamepad.bind(Enum.KeyCode.ButtonL2, function()
+		running = true
+		apply()
+	end)
+	Gamepad.bindRelease(Enum.KeyCode.ButtonL2, function()
+		running = false
+		apply()
+	end)
 	if UserInputService.TouchEnabled then
 		local runBtn
 		runBtn = button(gui, "\u{1F3C3} Run", { Size = UDim2.fromOffset(110, 50), Position = UDim2.new(1, -130, 1, -200), ZIndex = 5 }, function()
@@ -621,6 +658,9 @@ for i = 1, 3 do
 		end
 	end)
 end
+Gamepad.panel(mapScreen, function()
+	return floorCards[1] and floorCards[1].button or nil
+end, function() end)
 local msDone = button(mapScreen, "\u{2705} Done", { Size = UDim2.fromOffset(200, 48), Position = UDim2.new(1, -220, 1, -62), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 42 }, function()
 	opt("mapScreen", false)
 end)
@@ -660,6 +700,13 @@ local startBtn = button(partyBox, "\u{25B6} Start", { Size = UDim2.fromOffset(13
 	remotes.StartParty:FireServer()
 end)
 button(partyBox, "\u{2709} Invite", { Size = UDim2.fromOffset(130, 48), Position = UDim2.new(0.5, -65, 1, -64) }, invite)
+label(partyBox, { Size = UDim2.new(1, -40, 0, 20), Position = UDim2.fromOffset(20, 472), Text = "\u{1F46B} Play with a Roblox friend: +10% points!", TextColor3 = Color3.fromRGB(123, 227, 107) })
+Gamepad.hint(startBtn, "Up")
+Gamepad.bind(Enum.KeyCode.DPadUp, function()
+	if partyBox.Visible and not mapScreen.Visible then
+		Gamepad.select(startBtn.Visible and startBtn or mapBtn)
+	end
+end)
 button(partyBox, "Leave", { Size = UDim2.fromOffset(130, 48), Position = UDim2.new(1, -150, 1, -64) }, function()
 	remotes.LeaveParty:FireServer()
 end)
@@ -892,6 +939,7 @@ end
 shopBtn.Activated:Connect(function()
 	shop.Visible = true
 end)
+Gamepad.panel(shop)
 remotes.OpenShop.OnClientEvent:Connect(function()
 	shop.Visible = true
 end)
@@ -959,7 +1007,7 @@ local xpFill = frame(xpBack, { Size = UDim2.fromScale(0, 1), BackgroundColor3 = 
 corner(xpFill, 7)
 local ladder = {}
 local ladderScroll = Instance.new("ScrollingFrame")
-ladderScroll.Size = UDim2.fromOffset(640, 254)
+ladderScroll.Size = UDim2.fromOffset(640, 204)
 ladderScroll.Position = UDim2.fromOffset(0, 186)
 ladderScroll.BackgroundTransparency = 1
 ladderScroll.BorderSizePixel = 0
@@ -1004,6 +1052,61 @@ end)
 -- choices are for keeps; a reset clears this character's whole ladder
 button(right, "\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(92, 448), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 11 }, function()
 	remotes.ResetLadder:FireServer(selected, "points")
+end)
+-- skins: the plain character, then each skin for it (Game Passes)
+local skinRow = frame(right, { Size = UDim2.new(1, -20, 0, 46), Position = UDim2.fromOffset(10, 396), BackgroundTransparency = 1, ZIndex = 11 })
+local skinOwned = {}
+local function paintSkins()
+	for _, c in ipairs(skinRow:GetChildren()) do
+		if c:IsA("GuiObject") then
+			c:Destroy()
+		end
+	end
+	local mine = {}
+	for _, skin in ipairs(Config.SKINS or {}) do
+		if skin.skill == selected and ((skin.pass or 0) > 0 or skinOwned[skin.id]) then
+			table.insert(mine, skin)
+		end
+	end
+	skinRow.Visible = #mine > 0
+	if #mine == 0 then
+		return
+	end
+	local wearing = profile.skins and profile.skins[selected]
+	label(skinRow, { Size = UDim2.fromOffset(80, 40), Text = "\u{2728} Skins", TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+	local x = 86
+	local function chip(text, on, onClick)
+		local b = button(skinRow, text, { Size = UDim2.fromOffset(170, 40), Position = UDim2.fromOffset(x, 0), BackgroundColor3 = on and Color3.fromRGB(47, 107, 58) or PLUM, ZIndex = 12 }, onClick)
+		x += 176
+		return b
+	end
+	chip((not wearing and "\u{2705} " or "") .. "Plain", not wearing, function()
+		remotes.EquipSkin:FireServer(selected, "")
+	end)
+	for _, skin in ipairs(mine) do
+		local owned = skinOwned[skin.id]
+		chip((wearing == skin.id and "\u{2705} " or "") .. skin.name .. (owned and "" or " (R$)"), wearing == skin.id, function()
+			if owned then
+				remotes.EquipSkin:FireServer(selected, skin.id)
+			else
+				MarketplaceService:PromptGamePassPurchase(player, skin.pass)
+			end
+		end)
+	end
+end
+local function refreshOwned()
+	local ok, got = pcall(function()
+		return remotes:WaitForChild("OwnedSkins"):InvokeServer()
+	end)
+	if ok and type(got) == "table" then
+		skinOwned = got
+	end
+	paintSkins()
+end
+MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(_, _, bought)
+	if bought then
+		task.delay(1, refreshOwned)
+	end
 end)
 local resetRobux = button(right, "\u{1F504} Reset upgrades: Robux", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(364, 448), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 11, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
 	remotes.ResetLadder:FireServer(selected, "robux")
@@ -1116,11 +1219,38 @@ repaintChars = function()
 		end
 		row.tag.Text = reached and ("Lv " .. level) or ("\u{1F512} " .. level)
 	end
+	paintSkins()
 end
 charsBtn.Activated:Connect(function()
 	chars.Visible = true
 	repaintChars()
+	task.spawn(refreshOwned)
 end)
+Gamepad.panel(chars)
+-- controller: LB / RB step through the characters, the right stick turns the model
+do
+	Gamepad.bind(Enum.KeyCode.ButtonL1, function()
+		if chars.Visible then
+			stepChar(-1)
+		end
+	end, true)
+	Gamepad.bind(Enum.KeyCode.ButtonR1, function()
+		if chars.Visible then
+			stepChar(1)
+		end
+	end, true)
+	local padTurn = 0
+	UserInputService.InputChanged:Connect(function(input)
+		if input.KeyCode == Enum.KeyCode.Thumbstick2 then
+			padTurn = math.abs(input.Position.X) > 0.2 and input.Position.X or 0
+		end
+	end)
+	RunService.Heartbeat:Connect(function(dt)
+		if padTurn ~= 0 and chars.Visible then
+			spin += padTurn * dt * 3
+		end
+	end)
+end
 readProfile()
 
 -- ---------- daily reward ----------
@@ -1157,9 +1287,26 @@ local function showDaily()
 			MarketplaceService:PromptPremiumPurchase(player)
 		end)
 	end
-	button(box, "Yay!", { Size = UDim2.fromOffset(150, 38), Position = UDim2.new(1, -170, 0, 276), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 21 }, function()
+	local function done()
 		box:Destroy()
-	end)
+		-- would you like a reminder when tomorrow's reward is ready? (Roblox
+		-- only asks players 13+ who have not said no in the last 30 days)
+		if (Config.NOTIFY.messageId or "") ~= "" then
+			task.spawn(function()
+				local ens = game:GetService("ExperienceNotificationService")
+				local ok, can = pcall(function()
+					return ens:CanPromptOptInAsync()
+				end)
+				if ok and can then
+					pcall(function()
+						ens:PromptOptIn()
+					end)
+				end
+			end)
+		end
+	end
+	local yay = button(box, "Yay!", { Size = UDim2.fromOffset(150, 38), Position = UDim2.new(1, -170, 0, 276), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 21 }, done)
+	Gamepad.panel(box, yay, done)
 end
 if player:GetAttribute("DailyShow") then
 	showDaily()
@@ -1243,7 +1390,11 @@ do
 			.. "\u{1F4A1} Clues show the next step but cost points earned that game.\n"
 			.. "\u{1F392} Boosts from the shop: tap them in the game.\n\n"
 			.. "\u{2B50} Play a character to level them up to 10 - choose upgrades in Characters.\n"
-			.. "\u{1F6AA} Escape a floor to unlock the next one - 3 buildings, 9 floors!",
+			.. "\u{1F6AA} Escape a floor to unlock the next one - 3 buildings, 9 floors!\n\n"
+			.. "\u{1F4DC} Daily quests: three a day, points as soon as you finish one.\n"
+			.. "\u{1F46B} Play with a Roblox friend for +10% points.\n"
+			.. "\u{1F36B} Chocolate is slow to wade through - use the bridge. \u{1F9FA} Slide down the laundry chute. \u{1F512} Turn the vault wheel in the Jelly Vault for treasure!\n\n"
+			.. "\u{1F3AE} Controller: A jump (and come out of hiding), X use, Y pick / plant, LT run, RB skill, LB boost, D-pad: Up clue, Left map, Right chat, Down players. The View button moves round the buttons.",
 	})
 	local _ = t
 end
@@ -1252,4 +1403,94 @@ button(help, "Got it", { Size = UDim2.fromOffset(160, 46), Position = UDim2.new(
 end)
 helpBtn.Activated:Connect(function()
 	help.Visible = true
+end)
+Gamepad.panel(help)
+
+-- ---------- daily quests ----------
+do
+	local Quests = Config.QUESTS
+	local panel = frame(gui, { Size = UDim2.fromOffset(520, 380), Position = UDim2.new(0.5, -260, 0.5, -190), Visible = false, ZIndex = 10 })
+	corner(panel, 18)
+	label(panel, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "\u{1F4DC} Daily quests", TextColor3 = PUMP, ZIndex = 11 })
+	local resets = label(panel, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+	local rows = {}
+	for i = 1, 3 do
+		local r = frame(panel, { Size = UDim2.new(1, -40, 0, 70), Position = UDim2.fromOffset(20, 82 + (i - 1) * 80), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 11 })
+		corner(r, 12)
+		local text = label(r, { Size = UDim2.new(1, -130, 0, 30), Position = UDim2.fromOffset(12, 6), Text = "", TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+		local reward = label(r, { Size = UDim2.fromOffset(110, 30), Position = UDim2.new(1, -120, 0, 6), Text = "", TextColor3 = Color3.fromRGB(255, 210, 63), ZIndex = 12 })
+		local back = frame(r, { Size = UDim2.new(1, -24, 0, 14), Position = UDim2.fromOffset(12, 44), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 12 })
+		corner(back, 7)
+		local fill = frame(back, { Size = UDim2.fromScale(0, 1), BackgroundColor3 = Color3.fromRGB(123, 227, 107), BackgroundTransparency = 0, ZIndex = 13 })
+		corner(fill, 7)
+		rows[i] = { text = text, reward = reward, fill = fill }
+	end
+	local closeQ = button(panel, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -56), ZIndex = 11 }, function()
+		panel.Visible = false
+	end)
+	local function defOf(id)
+		for _, q in ipairs(Quests) do
+			if q.id == id then
+				return q
+			end
+		end
+		return nil
+	end
+	local function paint()
+		local qs = profile.quests
+		local today = math.floor(os.time() / 86400)
+		local list = (qs and qs.day == today and qs.list) or {}
+		local doneCount = 0
+		for i = 1, 3 do
+			local q = list[i]
+			local d = q and defOf(q.id)
+			local r = rows[i]
+			if d then
+				r.text.Text = (q.done and "\u{2705} " or "") .. d.text .. "  (" .. q.n .. "/" .. d.goal .. ")"
+				r.reward.Text = "+" .. d.points .. " \u{2B50}"
+				r.fill.Size = UDim2.fromScale(math.clamp(q.n / d.goal, 0, 1), 1)
+				if q.done then
+					doneCount += 1
+				end
+			else
+				r.text.Text = "New quests arrive when you join"
+				r.reward.Text = ""
+				r.fill.Size = UDim2.fromScale(0, 1)
+			end
+		end
+		local left = (today + 1) * 86400 - os.time()
+		resets.Text = "Finish them in a game - points are paid at once. New quests in " .. math.floor(left / 3600) .. "h " .. math.floor(left % 3600 / 60) .. "m"
+		questsBtn.Text = "\u{1F4DC} Daily quests  " .. doneCount .. "/3"
+	end
+	player:GetAttributeChangedSignal("ProfileJson"):Connect(function()
+		task.defer(paint)
+	end)
+	paint()
+	questsBtn.Activated:Connect(function()
+		panel.Visible = not panel.Visible
+		paint()
+	end)
+	Gamepad.panel(panel, closeQ)
+end
+
+-- ---------- back into a game after a dropped connection ----------
+remotes:WaitForChild("RejoinOffer").OnClientEvent:Connect(function(info)
+	local box = frame(gui, { Size = UDim2.fromOffset(420, 170), Position = UDim2.new(0.5, -210, 0.3, -85), ZIndex = 60 })
+	corner(box, 16)
+	local stroke = Instance.new("UIStroke")
+	stroke.Color, stroke.Thickness = PUMP, 2
+	stroke.Parent = box
+	label(box, { Size = UDim2.new(1, -30, 0, 70), Position = UDim2.fromOffset(15, 12), TextWrapped = true, ZIndex = 61,
+		Text = "\u{1F50C} You dropped out of " .. tostring(info.map) .. " - your crew is still playing! Go back in?" })
+	local yes = button(box, "\u{25B6} Rejoin", { Size = UDim2.fromOffset(180, 50), Position = UDim2.fromOffset(20, 100), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 61 }, function()
+		remotes.Rejoin:FireServer(true)
+		box:Destroy()
+	end)
+	button(box, "No thanks", { Size = UDim2.fromOffset(180, 50), Position = UDim2.new(1, -200, 0, 100), ZIndex = 61 }, function()
+		remotes.Rejoin:FireServer(false)
+		box:Destroy()
+	end)
+	Gamepad.panel(box, yes, function()
+		box:Destroy()
+	end)
 end)

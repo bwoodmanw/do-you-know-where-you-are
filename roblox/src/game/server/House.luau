@@ -225,14 +225,51 @@ end
 -- the Gummy Bounce House's furniture: candy-jar shelves, sweet conveyors,
 -- chocolate vats, gumball machines, marshmallow beds, frosted tables
 local CANDY = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(190, 110, 230), Color3.fromRGB(255, 150, 200) }
-local function candyFurniture(root, kind, x, y, room)
+local function candyFurniture(root, kind, x, y, room, map)
 	if kind == "counter" and string.find(string.lower(room or ""), "chocolate", 1, true) then
-		-- a channel of flowing chocolate with a caramel bank, marshmallows bobbing along
-		part(root, { Name = "RiverBank", Size = Vector3.new(T, 1.6, T), Position = at(x, y, 0.8), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(200, 140, 70) })
-		part(root, { Name = "ChocolateRiver", Size = Vector3.new(T, 0.3, T - 1.4), Position = at(x, y, 1.66), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(95, 55, 30), Reflectance = 0.15 })
+		-- a channel of flowing chocolate at floor level with caramel banks:
+		-- kids can wade through it, slowly (and so can the host); the wooden
+		-- bridge across the middle of each run is not slow
+		for _, side in ipairs({ -1, 1 }) do
+			part(root, { Name = "RiverBank", Size = Vector3.new(T, 0.5, 0.7), Position = at(x, y, 0.25) + Vector3.new(0, 0, side * (T / 2 - 0.35)), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(200, 140, 70), CanCollide = false })
+		end
+		local river = part(root, { Name = "ChocolateRiver", Size = Vector3.new(T, 0.5, T - 1.4), Position = at(x, y, 0.2), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(95, 55, 30), Reflectance = 0.15, CanCollide = false })
+		local mod = Instance.new("PathfindingModifier")
+		mod.Label = "Chocolate"
+		mod.Parent = river
 		if (x + y) % 2 == 0 then
-			local mallow = part(root, { Name = "Marshmallow", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.1, 1.3, 1.3), CFrame = CFrame.new(at(x, y, 2.1) - Vector3.new(T * 0.35, 0, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(255, 245, 250), CanCollide = false })
-			TweenService:Create(mallow, TweenInfo.new(3 + (x % 3), Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = CFrame.new(at(x, y, 2.1) + Vector3.new(T * 0.35, 0, 0)) * CFrame.Angles(0, math.rad(40), math.rad(90)) }):Play()
+			local mallow = part(root, { Name = "Marshmallow", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.1, 1.3, 1.3), CFrame = CFrame.new(at(x, y, 0.7) - Vector3.new(T * 0.35, 0, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(255, 245, 250), CanCollide = false, CanQuery = false })
+			TweenService:Create(mallow, TweenInfo.new(3 + (x % 3), Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = CFrame.new(at(x, y, 0.7) + Vector3.new(T * 0.35, 0, 0)) * CFrame.Angles(0, math.rad(40), math.rad(90)) }):Play()
+		end
+		-- the middle tile of a run of river: a little wooden footbridge across it
+		local function isRiver(cx, cy)
+			if cell(map, cx, cy) ~= "T" then
+				return false
+			end
+			local f = furnitureAt(map, cx, cy)
+			return f ~= nil and f.kind == "counter"
+		end
+		local x0, x1 = x, x
+		while isRiver(x0 - 1, y) do
+			x0 -= 1
+		end
+		while isRiver(x1 + 1, y) do
+			x1 += 1
+		end
+		if x == math.floor((x0 + x1) / 2) then
+			local wood = Color3.fromRGB(150, 100, 60)
+			part(root, { Name = "ChocolateBridge", Size = Vector3.new(3.6, 0.3, T + 0.4), Position = at(x, y, 0.75), Material = Enum.Material.WoodPlanks, Color = wood })
+			for _, side in ipairs({ -1, 1 }) do
+				-- a gentle ramp at each end, and a rail along each side
+				local ramp = Instance.new("WedgePart")
+				ramp.Anchored, ramp.CanQuery = true, true
+				ramp.Name = "ChocolateBridge"
+				ramp.Size = Vector3.new(3.6, 0.9, 1.8)
+				ramp.Material, ramp.Color = Enum.Material.WoodPlanks, wood
+				ramp.CFrame = CFrame.new(at(x, y, 0.45) + Vector3.new(0, 0, side * (T / 2 + 1.1))) * CFrame.Angles(0, side < 0 and 0 or math.pi, 0)
+				ramp.Parent = root
+				part(root, { Name = "BridgeRail", Size = Vector3.new(0.25, 1.4, T), Position = at(x, y, 1.6) + Vector3.new(side * 1.7, 0, 0), Material = Enum.Material.Wood, Color = Color3.fromRGB(120, 80, 45), CanCollide = false, CanQuery = false })
+			end
 		end
 		return
 	end
@@ -388,7 +425,7 @@ function House.build(map)
 				if kind == "shelf" and styledShelf(root, map, x, y) then
 					-- a shelf that matches its room
 				elseif map.theme == "gummy" and kind ~= "pit" and kind ~= "planter" then
-					candyFurniture(root, kind, x, y, roomNameAt(map, x, y))
+					candyFurniture(root, kind, x, y, roomNameAt(map, x, y), map)
 				elseif map.theme == "hospital" and kind ~= "planter" and kind ~= "pit" then
 					hospitalFurniture(root, kind, x, y)
 				elseif kind == "table" then
@@ -635,6 +672,7 @@ function House.buildObjects(world)
 			-- Tinker can pick the keypad once a game to learn one colour
 			entry.padPrompt = prompt(entry.keypad, "Pick the keypad", "Tinker: learn one colour", 6)
 			entry.padPrompt.KeyboardKeyCode = Enum.KeyCode.F
+			entry.padPrompt.GamepadKeyCode = Enum.KeyCode.ButtonY -- X is every other prompt
 			entry.padPrompt:SetAttribute("Only", "tinker")
 			entry.padPrompt.UIOffset = Vector2.new(0, 96) -- below "Use keypad", not on top of it
 			entry.exit = part(root, { Name = "ExitDoor", Size = Vector3.new(T, 10, 2), Position = base + Vector3.new(0, 5, -T / 2 + 1), Transparency = 1, CanCollide = false })
@@ -787,6 +825,7 @@ function House.buildObjects(world)
 			entry.shovePrompt = prompt(entry.part, "Shove", (o.bonus and "Junk Cupboard" or "Blocked passage") .. " - Muscle", 3)
 			entry.popperPrompt = prompt(entry.part, "Plant Confetti Cannon", o.bonus and "Junk Cupboard" or "Blocked passage", 1)
 			entry.popperPrompt.KeyboardKeyCode = Enum.KeyCode.F
+			entry.popperPrompt.GamepadKeyCode = Enum.KeyCode.ButtonY -- X is every other prompt
 			-- Muscle sees Shove; everyone else sees the Confetti Cannon
 			entry.shovePrompt:SetAttribute("Only", "muscle")
 			entry.popperPrompt:SetAttribute("Not", "muscle")
@@ -814,6 +853,7 @@ function House.buildObjects(world)
 			entry.unlockPrompt = prompt(entry.lockPart, "Unlock", o.name or "Locked door", 0.5)
 			entry.pickPrompt = prompt(entry.lockPart, "Pick the lock", "Tinker", 4)
 			entry.pickPrompt.KeyboardKeyCode = Enum.KeyCode.F
+			entry.pickPrompt.GamepadKeyCode = Enum.KeyCode.ButtonY -- X is every other prompt
 			-- Tinker sees Pick; everyone else sees Unlock
 			entry.pickPrompt:SetAttribute("Only", "tinker")
 			entry.unlockPrompt:SetAttribute("Not", "tinker")
@@ -1295,6 +1335,8 @@ function House.decorate(world)
 		for _, x in ipairs({ f.x0 + 2, f.x1 - 2, math.floor((f.x0 + f.x1) / 2) }) do
 			if hung < 2 and cell(map, x, f.y0 - 1) == "#" and not busy[x .. "," .. (f.y0 - 1)] and cell(map, x, f.y0) ~= "#" then
 				hung += 1
+				world.wallUsed = world.wallUsed or {}
+				world.wallUsed[x .. "," .. (f.y0 - 1)] = true -- no window over a picture
 				local pic = deco({ Name = "Picture", Size = Vector3.new(3.4, 2.8, 0.2), Position = at(x, f.y0 - 1, 7.5) + Vector3.new(0, 0, T / 2 + 0.15), Color = Color3.fromRGB(110, 80, 40), Material = Enum.Material.Wood })
 				local inner = deco({ Name = "Painting", Size = Vector3.new(2.8, 2.2, 0.05), Position = pic.Position + Vector3.new(0, 0, 0.12), Color = Color3.fromRGB(40, 30, 55) })
 				local pics = candy and CANDY_PICTURES or hosp and HOSPITAL_PICTURES or PICTURES

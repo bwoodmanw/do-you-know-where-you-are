@@ -10,7 +10,56 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
-## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
+## Round 12 (7 Oct, fourth session) - the rest of IMPROVEMENTS.md - test these first
+
+Studio Play builds the Candy Factory (`gummy_2`). For the vault ask for
+`gummy_3`; for the laundry chute `partyhouse_2`, `hospital` or `hospital_2`.
+
+Controller (B10) - plug an Xbox / PlayStation controller into the PC, or in
+Studio **Test** tab -> **Device** -> an Xbox; tags like "RB" appear on buttons
+only while you use the controller:
+- [ ] Character picker: the Choose button is picked (white outline); LB / RB step through characters; the right stick turns the model; the left stick moves between buttons, A presses; B closes it (= ready)
+- [ ] In the game: LT (hold) runs, clicking the left stick keeps running; RB uses the skill (Echo throws at the middle of the screen); LB uses the first boost; D-pad Up = clue (before the start: I'm ready), Left = map, Right = chat phrases, Down = players list; A comes out of hiding
+- [ ] Prompts: X for E prompts, **Y** for Tinker's pick / the keypad pick / planting a Confetti Cannon (never two prompts on one button)
+- [ ] Keypad: the first colour is picked, A presses, B closes; results: Play again (or Next floor) is picked
+- [ ] Caught: LB / RB switch who you watch
+- [ ] Lobby: D-pad Up jumps into the menu (Quick Play); LT runs; Shop, Characters (LB / RB, right stick), How to play, Daily quests, map screen, invite list, daily reward: the first button is picked, B closes
+- [ ] The Look (M) button is gone when there is no keyboard
+
+Friends bonus (B6):
+- [ ] Two accounts that are Roblox friends in one game: under the stamina bar "👫 +10%"; results show "👫 +N friend bonus" (live only - Studio test players are not friends)
+- [ ] Lobby party panel: "👫 Play with a Roblox friend: +10% points!"
+
+Chocolate river (C4) - Candy Factory:
+- [ ] The two chocolate channels are at floor level now (low caramel banks, marshmallows bobbing); walking in the chocolate is half speed and says "Wading through chocolate"
+- [ ] A wooden footbridge (with ramps and rails) across the middle of each channel: full speed on it
+- [ ] The host walks round the chocolate when he can, and is slow in it too
+
+Rejoin (B11) - live only, needs two players:
+- [ ] Two players in a game; one closes Roblox mid-game (or switches off Wi-Fi), opens Escape Crew again: in the Lobby "You dropped out of ... Go back in?" -> Rejoin: back in the same game with the same character (caged if they were caged, in the garden if they had escaped), "... is back in the game!"
+- [ ] "No thanks" makes it go away; leaving on purpose (Lobby button, Back to lobby) never offers it
+
+Daily quests (B5):
+- [ ] Lobby menu: "📜 Daily quests 0/3" opens three quests with bars and points and "New quests in Xh Ym"
+- [ ] In a game, finishing one: a 📜 pop-up "Quest done! +N" and the message; back in the Lobby the bar is full and ✅
+- [ ] The next day (UTC) three new quests
+
+Notifications (B7): see `NOTIFICATIONS.md` (Creator Hub first; live only)
+- [ ] After pressing Yay! on the daily reward (13+ account): Roblox asks about notifications; the next day "Your Escape Crew daily reward is ready"
+
+Laundry chute and vault (C4):
+- [ ] Bedrooms (Linen Room), Hospital Ground (Laundry), Wards (Linen Room): a steel hatch "LAUNDRY CHUTE" on a wall; hold E "Slide down": you vanish, "Wheee!", and land in a laundry basket in a far room (Kids' Bedroom / X-Ray Room / Children's Ward); one way; the host can't follow
+- [ ] Jelly Vault, Vault Door Hall: a giant round gold door with a wheel and "VAULT" sign in the outer wall; hold E 4 s: the wheel spins, CREAK (the host comes to look), the door swings open; inside a little steel vault with a chest and gold; "Grab the treasure": +25 to 50 points each and a free clue for the team
+
+Windows (C7):
+- [ ] One or two windows on the outside walls of most rooms: a night sky with stars, the moon (a bat on it), black hills and trees (candy-pink sky and clouds in the Gummy House, town lights at the hospital), a pale moonbeam into the room
+- [ ] Windows never cover a picture, a shelf, a set piece or a doorway; none in vault, boiler, generator, store or locker rooms
+
+Skins (B9): see `SKINS.md` - nothing shows until the art and Game Passes exist
+
+Earlier: F9 showed "The experience doesn't have access permission to use asset id 11490522280" (not from our code - see the finder in the session notes).
+
+## Hospital, Halloween and fixes (built 7 Oct, evening)
 
 Round 11 (7 Oct) - the improvements list:
 - [ ] Saves: play a game, go back to the Lobby, play again - points, XP and boosts always carry over (the next place may wait a second or two)

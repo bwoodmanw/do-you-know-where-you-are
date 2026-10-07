@@ -202,7 +202,9 @@ PIECES.CandyMachine = { size = Vector3.new(4, 7, 4), build = function(f, b)
 end }
 
 PIECES.ChocolateRiver = { size = Vector3.new(8, 1, 8), build = function(f, b)
-	add(f, b, { size = Vector3.new(T, 0.2, T * 0.7), at = Vector3.new(0, 0.12, 0), color = C(95, 55, 30), shine = 0.15 })
+	-- a pool at the foot of the waterfall: wading through it is slow
+	local pool = add(f, b, { name = "ChocolateRiver", size = Vector3.new(T, 0.2, T * 0.7), at = Vector3.new(0, 0.12, 0), color = C(95, 55, 30), shine = 0.15 })
+	pool.CanQuery = true
 	add(f, b, { size = Vector3.new(3.4, H - 0.5, 0.4), at = Vector3.new(0, (H - 0.5) / 2, T / 2 - 0.4), color = C(110, 65, 35), shine = 0.2 })
 	for i = -1, 1 do
 		add(f, b, { size = Vector3.new(0.8, 0.25, 3.4), at = Vector3.new(i * 1.6, 0.4, 0), color = C(160, 110, 60), mat = WOOD })
@@ -724,6 +726,8 @@ local LOOKS = {
 	{ { "jelly corridor", "wobble" }, "mint", { "JellyCube", "JellyCube", "JellyCube" } },
 	{ { "jelly bank" }, "gold", { "GoldGumdrops", "Counter", "VaultDoor" } },
 	{ { "gold gumdrop" }, "gold", { "GoldGumdrops", "GoldGumdrops", "GoldGumdrops" } },
+	-- the Vault Door Hall's own vault door opens (Rooms.vault), so no extra one
+	{ { "vault door hall" }, "steel", { "GoldGumdrops", "Monitors", "GoldGumdrops" } },
 	{ { "vault" }, "steel", { "VaultDoor", "GoldGumdrops", "Monitors" } },
 	{ { "gumball" }, "pastel", { "CandyMachine", "CandyMachine", "CandyMachine" } },
 	{ { "sticky" }, "honey", { "Crates", "HoneyDrips", "Sacks" } },
@@ -947,7 +951,7 @@ local function lookFor(name, theme)
 end
 
 -- the room's own walls: thin panels on every wall face round the room
-local function lineWalls(folder, map, f, look)
+local function lineWalls(folder, map, f, look, openings)
 	local w = WALLS[look]
 	if not w then
 		return
@@ -983,7 +987,7 @@ local function lineWalls(folder, map, f, look)
 			local wall = false
 			if i <= s[2] then
 				local cx, cy = s[3](i)
-				wall = cell(map, cx, cy) == "#"
+				wall = cell(map, cx, cy) == "#" and not (openings and openings[cx .. "," .. cy])
 			end
 			if wall and not runStart then
 				runStart = i
@@ -1025,6 +1029,439 @@ local function imported(name, base, size, folder)
 	m:PivotTo(m:GetPivot() + (base.Position + Vector3.new(0, s2.Y / 2, 0) - cf.Position))
 	m.Parent = folder
 	return true
+end
+
+-- ---------------------------------------------------------------- the house's edges
+local function onEdge(map, x, y)
+	return x == 0 or y == 0 or x == map.w - 1 or y == map.h - 1
+end
+local DIRS = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } }
+
+-- tiles anyone can reach from the start without opening a door (no store rooms)
+local function openTiles(map)
+	local seen, queue = {}, {}
+	for _, s in ipairs(map.start) do
+		local k = s[1] .. "," .. s[2]
+		if not seen[k] then
+			seen[k] = true
+			table.insert(queue, { s[1], s[2] })
+		end
+	end
+	local i = 1
+	while i <= #queue do
+		local x, y = queue[i][1], queue[i][2]
+		i += 1
+		for _, d in ipairs(DIRS) do
+			local nx, ny = x + d[1], y + d[2]
+			local k = nx .. "," .. ny
+			if not seen[k] and cell(map, nx, ny) == "." then
+				seen[k] = true
+				table.insert(queue, { nx, ny })
+			end
+		end
+	end
+	return seen
+end
+
+-- the wall part built for tile (wx, wy), if it is a plain wall
+local function wallPart(world, wx, wy)
+	local p = Vector3.new(wx * T + T / 2, 0, wy * T + T / 2)
+	for _, c in ipairs(world.root:GetChildren()) do
+		if c:IsA("BasePart") and c.Name == "Wall" and math.abs(c.Position.X - p.X) < 0.1 and math.abs(c.Position.Z - p.Z) < 0.1 then
+			return c
+		end
+	end
+	return nil
+end
+
+-- ---------------------------------------------------------------- the vault door
+-- In the Jelly Vault's Vault Door Hall a giant round vault door sits in the
+-- outer wall. Hold E on its wheel: it spins, the door swings open, and a
+-- little vault behind it holds a treasure chest (points for everyone and a
+-- free clue - world.onVaultTreasure in Main).
+local function buildVault(folder, world, map, f, busy, openings)
+	-- a tile against the house's outer wall, the wall either side of it solid
+	local best, bestD, bestDir
+	local cx, cy = (f.x0 + f.x1) / 2, (f.y0 + f.y1) / 2
+	for y = f.y0, f.y1 do
+		for x = f.x0, f.x1 do
+			if cell(map, x, y) == "." and not busy[x .. "," .. y] then
+				for _, d in ipairs(DIRS) do
+					local wx, wy = x + d[1], y + d[2]
+					local ax, ay = d[2] ~= 0 and 1 or 0, d[1] ~= 0 and 1 or 0 -- along the wall
+					if onEdge(map, wx, wy) and cell(map, wx, wy) == "#" and cell(map, wx - ax, wy - ay) == "#" and cell(map, wx + ax, wy + ay) == "#"
+						and not (world.wallUsed and world.wallUsed[wx .. "," .. wy]) and wallPart(world, wx, wy) then
+						local dist = math.abs(x - cx) + math.abs(y - cy)
+						if not best or dist < bestD then
+							best, bestD, bestDir = { x, y }, dist, d
+						end
+					end
+				end
+			end
+		end
+	end
+	if not best then
+		return false
+	end
+	local x, y, d = best[1], best[2], bestDir
+	local wx, wy = x + d[1], y + d[2]
+	busy[x .. "," .. y] = true
+	openings[wx .. "," .. wy] = true
+	world.wallUsed = world.wallUsed or {}
+	world.wallUsed[wx .. "," .. wy] = true
+	local dirV = Vector3.new(d[1], 0, d[2]) -- from the room into the wall
+	local centre = Vector3.new(wx * T + T / 2, 0, wy * T + T / 2)
+	-- the wall becomes a thin back wall, a lintel over a 10-stud opening and a floor
+	local wall = wallPart(world, wx, wy)
+	local h = wall.Size.Y
+	local across = d[1] ~= 0 -- the wall runs along Z
+	local function slab(size, pos)
+		local p = wall:Clone()
+		p.Size = across and Vector3.new(size.Z, size.Y, size.X) or size
+		p.Position = pos
+		p.Name = "VaultWall"
+		p.Parent = world.root
+		return p
+	end
+	slab(Vector3.new(T, h, 1), centre + dirV * (T / 2 - 0.5) + Vector3.new(0, h / 2, 0))
+	slab(Vector3.new(T, h - 10, T - 1), centre - dirV * 0.5 + Vector3.new(0, 10 + (h - 10) / 2, 0))
+	local floor = slab(Vector3.new(T, 1, T - 1), centre - dirV * 0.5 + Vector3.new(0, -0.5, 0))
+	floor.Material, floor.Color = Enum.Material.DiamondPlate, C(150, 150, 160)
+	wall:Destroy()
+	-- the vault: steel walls inside, the treasure, a warm gold light
+	local face = centre - dirV * (T / 2) -- where the wall meets the room
+	local base = CFrame.lookAt(face, face - dirV) -- looking into the room
+	local inside = CFrame.lookAt(centre - dirV * 0.5, centre - dirV * 0.5 - dirV)
+	for _, sx in ipairs({ -1, 1 }) do
+		add(folder, inside, { size = Vector3.new(0.2, 10, T - 1), at = Vector3.new(sx * (T / 2 - 0.15), 5, 0), color = C(130, 135, 145), mat = Enum.Material.DiamondPlate })
+	end
+	add(folder, inside, { size = Vector3.new(T, 10, 0.2), at = Vector3.new(0, 5, T / 2 - 0.65), color = C(130, 135, 145), mat = Enum.Material.DiamondPlate })
+	local chestBase = inside * CFrame.new(0, 0, 1)
+	local chest = add(folder, chestBase, { name = "TreasureChest", size = Vector3.new(3.2, 2, 2), at = Vector3.new(0, 1, 0), color = C(130, 80, 40), mat = WOOD })
+	local lid = add(folder, chestBase, { size = Vector3.new(3.3, 0.6, 2.1), at = Vector3.new(0, 2.3, 0), color = C(200, 160, 60), mat = METAL })
+	local gold = {}
+	for i = 1, 14 do
+		table.insert(gold, add(folder, chestBase, { size = Vector3.new(0.9, 0.9, 0.9), at = Vector3.new(math.cos(i * 1.3) * (0.6 + (i % 3) * 0.5), 0.45 + (i > 9 and 0.8 or 0), -1.8 + math.sin(i * 1.3) * 0.6), shape = Enum.PartType.Ball, color = C(255, 200, 60), mat = Enum.Material.Foil, shine = 0.2 }))
+	end
+	glow(chest, C(255, 210, 90), 14, 1.2)
+	-- the door: a big round steel door with a wheel, hinged on its left
+	local doorParts, wheelParts = {}, {}
+	local discCF = CFrame.new(0, 5, -0.45) * CFrame.Angles(0, math.rad(90), 0)
+	table.insert(doorParts, add(folder, base, { name = "VaultDoorDisc", size = Vector3.new(0.9, 9.4, 9.4), at = discCF.Position, rot = discCF.Rotation, shape = Enum.PartType.Cylinder, color = C(200, 170, 80), mat = METAL, shine = 0.1 }))
+	doorParts[1].CanCollide = true
+	for k = 0, 7 do
+		local a = k / 8 * math.pi * 2
+		table.insert(doorParts, add(folder, base, { size = Vector3.new(0.5, 0.5, 0.3), at = Vector3.new(math.cos(a) * 3.9, 5 + math.sin(a) * 3.9, -0.95), color = C(120, 100, 50), mat = METAL, shape = Enum.PartType.Ball }))
+	end
+	for k = 0, 5 do
+		table.insert(wheelParts, add(folder, base, { size = Vector3.new(3.6, 0.35, 0.35), at = Vector3.new(0, 5, -1.35), rot = CFrame.Angles(0, 0, math.rad(k * 30)), color = C(90, 80, 70), mat = METAL }))
+	end
+	local hub = add(folder, base, { name = "VaultWheel", size = Vector3.new(1.1, 1.1, 1.1), at = Vector3.new(0, 5, -1.4), shape = Enum.PartType.Ball, color = C(90, 80, 70), mat = METAL })
+	hub.CanQuery = true
+	table.insert(wheelParts, hub)
+	local sign = add(folder, base, { size = Vector3.new(4, 1, 0.1), at = Vector3.new(0, 10.6, -0.1), color = C(40, 28, 46) })
+	label(sign, Enum.NormalId.Front, "\u{1F512} VAULT", C(255, 210, 63))
+	for _, p in ipairs(wheelParts) do
+		table.insert(doorParts, p)
+	end
+	local pp = Instance.new("ProximityPrompt")
+	pp.ActionText = "Turn the wheel"
+	pp.ObjectText = "Vault door"
+	pp.HoldDuration = Config.VAULT.hold
+	pp.MaxActivationDistance = 9
+	pp.RequiresLineOfSight = false
+	pp.Parent = hub
+	local axisCF = base * CFrame.new(0, 5, -1.35) -- the wheel turns about the door's middle
+	local hinge = base * CFrame.new(-4.7, 0, -0.45)
+	pp.Triggered:Connect(function(plr)
+		if not (world.onVaultTurn and world.onVaultTurn(plr, hub.Position)) then
+			return
+		end
+		pp.Enabled = false
+		local relWheel, relDoor = {}, {}
+		for i, p in ipairs(wheelParts) do
+			relWheel[i] = axisCF:ToObjectSpace(p.CFrame)
+		end
+		local s = Instance.new("Sound")
+		s.SoundId = "rbxassetid://" .. Config.SOUNDS.unhide
+		s.Volume = 1.5
+		s.PlaybackSpeed = 0.6
+		s.SoundGroup = Sfx.group()
+		s.Parent = hub
+		s:Play()
+		game:GetService("Debris"):AddItem(s, 3)
+		for step = 1, 30 do
+			for i, p in ipairs(wheelParts) do
+				p.CFrame = axisCF * CFrame.Angles(0, 0, step / 30 * math.pi * 2) * relWheel[i]
+			end
+			task.wait(0.04)
+		end
+		for i, p in ipairs(doorParts) do
+			relDoor[i] = hinge:ToObjectSpace(p.CFrame)
+			p.CanCollide = false
+		end
+		for step = 1, 30 do
+			local a = math.rad(100) * (1 - (1 - step / 30) ^ 2)
+			for i, p in ipairs(doorParts) do
+				p.CFrame = hinge * CFrame.Angles(0, a, 0) * relDoor[i]
+			end
+			task.wait(0.04)
+		end
+		-- the treasure
+		local grab = Instance.new("ProximityPrompt")
+		grab.ActionText = "Grab the treasure"
+		grab.ObjectText = "Vault treasure"
+		grab.HoldDuration = 0.5
+		grab.MaxActivationDistance = 9
+		grab.RequiresLineOfSight = false
+		grab.Parent = chest
+		grab.Triggered:Connect(function(p2)
+			if not (world.onVaultTreasure and world.onVaultTreasure(p2, chest.Position)) then
+				return
+			end
+			grab:Destroy()
+			for _, g in ipairs(gold) do
+				TweenService:Create(g, TweenInfo.new(0.6), { Transparency = 1, Position = g.Position + Vector3.new(0, 3, 0) }):Play()
+			end
+			TweenService:Create(lid, TweenInfo.new(0.4), { CFrame = lid.CFrame * CFrame.new(0, 0.6, 0.9) * CFrame.Angles(math.rad(-80), 0, 0) }):Play()
+		end)
+	end)
+	return true
+end
+
+-- ---------------------------------------------------------------- the laundry chute
+-- A one-way slide from the Laundry / Linen Room down into a laundry basket
+-- in the room furthest away on the same side of the locked doors (Main moves
+-- the player; the host can't follow).
+local function buildChute(folder, world, map, busy, open)
+	local from
+	for _, f in ipairs(map.floors) do
+		local n = string.lower(f.name)
+		if not from and (string.find(n, "laundry", 1, true) or string.find(n, "linen", 1, true)) then
+			from = f
+		end
+	end
+	if not from then
+		return
+	end
+	-- a free tile against a wall (h), or anywhere free
+	local function spot(f, needWall)
+		local cx, cy = (f.x0 + f.x1) / 2, (f.y0 + f.y1) / 2
+		local best, bestD, bestDir
+		for y = f.y0, f.y1 do
+			for x = f.x0, f.x1 do
+				if cell(map, x, y) == "." and open[x .. "," .. y] and not busy[x .. "," .. y] then
+					local dir
+					for _, d in ipairs(DIRS) do
+						if not dir and cell(map, x + d[1], y + d[2]) == "#" then
+							dir = d
+						end
+					end
+					if dir or not needWall then
+						local dist = math.abs(x - cx) + math.abs(y - cy)
+						if not best or dist < bestD then
+							best, bestD, bestDir = { x, y }, dist, dir
+						end
+					end
+				end
+			end
+		end
+		return best, bestDir
+	end
+	local a, aDir = spot(from, true)
+	if not a then
+		return
+	end
+	-- the landing: the room furthest away that anyone can walk to
+	local to, toDist
+	local fx, fy = (from.x0 + from.x1) / 2, (from.y0 + from.y1) / 2
+	for _, f in ipairs(map.floors) do
+		if f ~= from then
+			local b = spot(f, false)
+			if b then
+				local dist = math.abs((f.x0 + f.x1) / 2 - fx) + math.abs((f.y0 + f.y1) / 2 - fy)
+				if not to or dist > toDist then
+					to, toDist = f, dist
+				end
+			end
+		end
+	end
+	if not to then
+		return
+	end
+	local b = spot(to, true) or spot(to, false)
+	busy[a[1] .. "," .. a[2]] = true
+	busy[b[1] .. "," .. b[2]] = true
+	-- the hatch in the wall: a steel door with a chute sign
+	local centre = at(a[1], a[2])
+	local wallDir = Vector3.new(aDir[1], 0, aDir[2])
+	local base = CFrame.lookAt(centre, centre - wallDir)
+	add(folder, base, { size = Vector3.new(3.6, 3.6, 0.3), at = Vector3.new(0, 3.2, T / 2 - 0.15), color = C(110, 115, 125), mat = METAL })
+	local hatch = add(folder, base, { name = "ChuteHatch", size = Vector3.new(3, 3, 0.2), at = Vector3.new(0, 3.2, T / 2 - 0.35), color = C(160, 165, 175), mat = METAL, shine = 0.1 })
+	add(folder, base, { size = Vector3.new(1.2, 0.3, 0.3), at = Vector3.new(0, 2.2, T / 2 - 0.5), color = C(60, 60, 65), mat = METAL })
+	label(add(folder, base, { size = Vector3.new(3.6, 0.9, 0.1), at = Vector3.new(0, 5.6, T / 2 - 0.1), color = C(40, 28, 46) }), Enum.NormalId.Front, "LAUNDRY CHUTE \u{2193}", C(255, 210, 63))
+	local pp = Instance.new("ProximityPrompt")
+	pp.ActionText = "Slide down"
+	pp.ObjectText = "Laundry chute (to the " .. to.name .. ")"
+	pp.HoldDuration = 0.4
+	pp.MaxActivationDistance = 8
+	pp.RequiresLineOfSight = false
+	pp.Parent = hatch
+	-- the landing: a big basket of towels
+	local land = at(b[1], b[2])
+	local basket = CFrame.new(land)
+	add(folder, basket, { size = Vector3.new(1.4, 4.2, 4.2), at = Vector3.new(0, 0.7, 0), rot = UP, shape = Enum.PartType.Cylinder, color = C(190, 160, 110), mat = Enum.Material.Fabric })
+	for i = 1, 4 do
+		add(folder, basket, { size = Vector3.new(1.6, 0.5, 1.2), at = Vector3.new(math.cos(i * 1.6) * 0.9, 1.5 + (i % 2) * 0.2, math.sin(i * 1.6) * 0.9), rot = CFrame.Angles(0, i, 0), color = ({ C(150, 200, 235), C(250, 250, 250), C(255, 190, 210), C(200, 240, 170) })[i], mat = Enum.Material.Fabric })
+	end
+	world.chute = { prompt = pp, from = hatch.Position, to = land, toRoom = to.name }
+end
+
+-- ---------------------------------------------------------------- windows
+-- Windows on the house's outer walls looking out on a moonlit night (a
+-- painted view, so nothing outside needs building): stars, the moon, hills
+-- and trees (candy clouds at the Gummy Bounce House, town lights at the
+-- hospital). One soft beam of moonlight per room.
+local NO_WINDOWS = { "vault", "bank", "security", "boiler", "generator", "water tank", "lift", "x-ray", "store", "cupboard", "archive", "locker" }
+local function paintView(sg, theme, seed)
+	local rng = Random.new(seed)
+	local sky = Instance.new("Frame")
+	sky.Size = UDim2.fromScale(1, 1)
+	sky.BorderSizePixel = 0
+	sky.BackgroundColor3 = Color3.new(1, 1, 1)
+	sky.Parent = sg
+	local grad = Instance.new("UIGradient")
+	grad.Rotation = 90
+	grad.Color = theme == "gummy" and ColorSequence.new(C(70, 40, 110), C(230, 130, 190)) or ColorSequence.new(C(8, 12, 40), C(60, 50, 110))
+	grad.Parent = sky
+	local function blob(x, y, w, h, col, alpha, round)
+		local b = Instance.new("Frame")
+		b.AnchorPoint = Vector2.new(0.5, 0.5)
+		b.Position = UDim2.fromScale(x, y)
+		b.Size = UDim2.fromScale(w, h)
+		b.BackgroundColor3 = col
+		b.BackgroundTransparency = alpha or 0
+		b.BorderSizePixel = 0
+		b.Parent = sky
+		if round then
+			local c = Instance.new("UICorner")
+			c.CornerRadius = UDim.new(round, 0)
+			c.Parent = b
+		end
+		return b
+	end
+	for _ = 1, 18 do
+		local s = rng:NextNumber(0.008, 0.018)
+		blob(rng:NextNumber(0.03, 0.97), rng:NextNumber(0.03, 0.55), s, s, C(255, 255, 240), rng:NextNumber(0, 0.5), 0.5)
+	end
+	local mx, my = rng:NextNumber(0.25, 0.75), rng:NextNumber(0.18, 0.3)
+	blob(mx, my, 0.34, 0.34, C(255, 250, 220), 0.85, 0.5)
+	blob(mx, my, 0.2, 0.2, C(255, 248, 215), 0, 0.5)
+	blob(mx + 0.04, my - 0.03, 0.05, 0.05, C(230, 225, 195), 0, 0.5)
+	if Config.HALLOWEEN then
+		local bat = Instance.new("TextLabel")
+		bat.BackgroundTransparency = 1
+		bat.AnchorPoint = Vector2.new(0.5, 0.5)
+		bat.Position = UDim2.fromScale(mx + 0.18, my + 0.12)
+		bat.Size = UDim2.fromScale(0.12, 0.12)
+		bat.TextScaled = true
+		bat.Text = "\u{1F987}"
+		bat.Parent = sky
+	end
+	if theme == "gummy" then
+		for i = 1, 3 do
+			local cx, cy = rng:NextNumber(0.15, 0.85), rng:NextNumber(0.5, 0.7)
+			for k = -1, 1 do
+				blob(cx + k * 0.08, cy - (k == 0 and 0.03 or 0), 0.16, 0.12, i % 2 == 0 and C(255, 200, 230) or C(250, 240, 255), 0.1, 0.5)
+			end
+		end
+		blob(0.5, 0.95, 1.2, 0.25, C(120, 70, 140), 0, 0.5)
+	else
+		-- hills and the garden's trees, black against the sky
+		blob(0.25, 1.0, 0.9, 0.42, C(12, 14, 26), 0, 0.5)
+		blob(0.8, 1.02, 0.9, 0.36, C(18, 20, 34), 0, 0.5)
+		for _ = 1, 3 do
+			local tx = rng:NextNumber(0.08, 0.92)
+			blob(tx, 0.82, 0.03, 0.2, C(8, 8, 16), 0)
+			blob(tx, 0.68, 0.14, 0.18, C(8, 8, 16), 0, 0.5)
+		end
+		if theme == "hospital" then
+			for _ = 1, 10 do
+				blob(rng:NextNumber(0.05, 0.95), rng:NextNumber(0.8, 0.92), 0.012, 0.012, C(255, 220, 120), 0, 0.5)
+			end
+		end
+	end
+end
+
+local function buildWindows(folder, world, map, busy, pieceAt)
+	local objAt = {}
+	for _, o in ipairs(map.objects) do
+		objAt[o.x .. "," .. o.y] = true
+	end
+	local theme = map.theme or "party"
+	for r, f in ipairs(map.floors) do
+		local n = string.lower(f.name)
+		local skip = false
+		for _, w in ipairs(NO_WINDOWS) do
+			if string.find(n, w, 1, true) then
+				skip = true
+			end
+		end
+		local made, lit, last = 0, false, nil
+		if not skip then
+			for y = f.y0, f.y1 do
+				for x = f.x0, f.x1 do
+					local corner = (x == f.x0 or x == f.x1) and (y == f.y0 or y == f.y1)
+					if made < (Config.WINDOWS.perRoom or 2) and not corner and cell(map, x, y) == "." and not busy[x .. "," .. y] and not pieceAt[x .. "," .. y] and not objAt[x .. "," .. y] then
+						for _, d in ipairs(DIRS) do
+							local wx, wy = x + d[1], y + d[2]
+							local ax, ay = d[2] ~= 0 and 1 or 0, d[1] ~= 0 and 1 or 0
+							local key = wx .. "," .. wy
+							local farEnough = not last or math.abs(x - last[1]) + math.abs(y - last[2]) >= 3
+							if made < (Config.WINDOWS.perRoom or 2) and farEnough and onEdge(map, wx, wy) and cell(map, wx, wy) == "#"
+								and cell(map, wx - ax, wy - ay) == "#" and cell(map, wx + ax, wy + ay) == "#"
+								and not (world.wallUsed and world.wallUsed[key]) and not objAt[key] then
+								made += 1
+								last = { x, y }
+								world.wallUsed = world.wallUsed or {}
+								world.wallUsed[key] = true
+								local face = at(x, y) + Vector3.new(d[1], 0, d[2]) * (T / 2)
+								local base = CFrame.lookAt(face, face - Vector3.new(d[1], 0, d[2]))
+								local wood = theme == "hospital" and C(235, 238, 240) or theme == "gummy" and C(255, 170, 210) or C(95, 62, 40)
+								local view = add(folder, base, { name = "WindowView", size = Vector3.new(4.4, 4.4, 0.1), at = Vector3.new(0, 8, -0.28), color = C(10, 10, 30) })
+								local sg = Instance.new("SurfaceGui")
+								sg.Face = Enum.NormalId.Front
+								sg.CanvasSize = Vector2.new(240, 240)
+								sg.LightInfluence = 0
+								sg.Brightness = 1.2
+								sg.Parent = view
+								paintView(sg, theme, r * 97 + x * 13 + y)
+								add(folder, base, { size = Vector3.new(4.4, 4.4, 0.05), at = Vector3.new(0, 8, -0.38), color = C(200, 220, 255), mat = Enum.Material.Glass, alpha = 0.8, shine = 0.15 })
+								for _, bar in ipairs({
+									{ Vector3.new(5.2, 0.4, 0.3), Vector3.new(0, 10.4, -0.4) }, { Vector3.new(5.2, 0.4, 0.3), Vector3.new(0, 5.6, -0.4) },
+									{ Vector3.new(0.4, 5.2, 0.3), Vector3.new(-2.4, 8, -0.4) }, { Vector3.new(0.4, 5.2, 0.3), Vector3.new(2.4, 8, -0.4) },
+									{ Vector3.new(0.2, 4.4, 0.2), Vector3.new(0, 8, -0.42) }, { Vector3.new(4.4, 0.2, 0.2), Vector3.new(0, 8, -0.42) },
+								}) do
+									add(folder, base, { size = bar[1], at = bar[2], color = wood, mat = theme == "party" and WOOD or Enum.Material.SmoothPlastic })
+								end
+								add(folder, base, { size = Vector3.new(5.6, 0.3, 0.9), at = Vector3.new(0, 5.35, -0.5), color = wood, mat = theme == "party" and WOOD or Enum.Material.SmoothPlastic })
+								if not lit then
+									lit = true
+									local beam = Instance.new("SpotLight")
+									beam.Face = Enum.NormalId.Front
+									beam.Color = theme == "gummy" and C(255, 200, 235) or C(170, 190, 255)
+									beam.Brightness = 1.2
+									beam.Range = 20
+									beam.Angle = 70
+									beam.Parent = view
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 -- dress every room
@@ -1075,6 +1512,8 @@ function Rooms.dress(world)
 	end
 
 	current.world = world
+	world.chute = nil
+	local openings = {} -- wall tiles opened up (the vault)
 	doorSigns(folder, map)
 	for _, f in ipairs(map.floors) do
 		current.room = f.name
@@ -1106,8 +1545,15 @@ function Rooms.dress(world)
 		if theme ~= "gummy" then
 			table.insert(pieces, "LightSwitch")
 		end
+		-- the Jelly Vault's vault door, in the outer wall
+		if string.find(string.lower(f.name), "vault door hall", 1, true) then
+			local okV, errV = pcall(buildVault, folder, world, map, f, busy, openings)
+			if not okV then
+				warn("Room dressing: the vault door failed - " .. tostring(errV))
+			end
+		end
 		if look then
-			lineWalls(folder, map, f, look)
+			lineWalls(folder, map, f, look, openings)
 			local fl = FLOORS[look]
 			if fl and f.kind ~= "tiles" and f.kind ~= "pinktiles" and f.kind ~= "whitetiles" then
 				local p = Instance.new("Part")
@@ -1162,6 +1608,15 @@ function Rooms.dress(world)
 				end
 			end
 		end
+	end
+	-- the laundry chute, then windows on the outer walls
+	local okC, errC = pcall(buildChute, folder, world, map, busy, openTiles(map))
+	if not okC then
+		warn("Room dressing: the laundry chute failed - " .. tostring(errC))
+	end
+	local okW, errW = pcall(buildWindows, folder, world, map, busy, {})
+	if not okW then
+		warn("Room dressing: windows failed - " .. tostring(errW))
 	end
 	return folder
 end

@@ -74,6 +74,21 @@ B4 colour pictures; C1 doorway signs, C2 room sounds, C3 effects, C4 light
 switches, noisy things, conveyor belts; C5 room lighting. Still open: B5-B11,
 C4 laundry chute / vault wheel / chocolate wading, C6 real models, C7 windows.
 
+## Built 7 Oct (fourth session) - TEST_PLAN.md round 12
+
+B10 controller support (`shared/Gamepad.luau`: button tags, panels picked
+with the stick, B closes, LT run, RB skill, LB boost, D-pad clue / map / chat /
+players, Y for the F prompts); B6 friends bonus (+10% of a game's points with
+a Roblox friend in it); C4 chocolate wading (floor-level channels, half speed,
+footbridges; the host is slowed too and walks round); B11 rejoin after a
+drop (while friends are still playing); B5 daily quests (`shared/Quests.luau`,
+13 kinds, 3 a day, Lobby panel); B7 daily-reward notifications (needs the
+Creator Hub steps in `NOTIFICATIONS.md`); C4 laundry chute and the vault
+door's bonus vault; C7 moonlit windows; B9 skins (code ready and hidden:
+art, models and Game Passes in `SKINS.md`).
+
+Still open: B8 analytics (Brent: not now), C6 real models (Brent, any time).
+
 ## Suggested order for the next sessions
 
 1. Save safety (A1).
