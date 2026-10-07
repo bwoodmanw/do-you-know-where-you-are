@@ -199,6 +199,17 @@ Config.PORTRAITS = {
 	bramble = 127007527181153,
 	brainy = 123589958200522,
 }
+-- the same portraits uploaded for the Party House place
+Config.PORTRAITS_GAME = {
+	tinker = 81932514363214,
+	shadow = 105545933114977,
+	patch = 86747214933789,
+	muscle = 110255384055800,
+	glow = 100607581544171,
+	echo = 73829813302256,
+	bramble = 79169071934599,
+	brainy = 96437377458580,
+}
 -- daily login rewards: day 1-7 of an unbroken streak (then round again);
 -- miss a day and it starts again at day 1. Roblox Premium members get
 -- PREMIUM_DAILY_MULT times the points.

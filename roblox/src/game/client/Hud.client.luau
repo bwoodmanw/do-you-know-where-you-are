@@ -523,7 +523,7 @@ local function showChar()
 	end
 	view.BackgroundColor3 = sk.color:Lerp(Color3.fromRGB(26, 16, 38), 0.75)
 	local si = Config.SKILL_INFO[sk.id] or {}
-	local portrait = Config.PORTRAITS and Config.PORTRAITS[sk.id] or 0
+	local portrait = Config.PORTRAITS_GAME[sk.id] or Config.PORTRAITS[sk.id] or 0
 	infoPortrait.Image = portrait > 0 and ("rbxassetid://" .. portrait) or ""
 	infoPortrait.Visible = portrait > 0
 	infoIcon.Text = portrait > 0 and "" or sk.icon
