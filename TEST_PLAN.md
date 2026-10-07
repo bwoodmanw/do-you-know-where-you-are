@@ -12,6 +12,12 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 7 (7 Oct) - rooms that look like their names (Rooms.luau):
+- [ ] Every room has its own walls: brick (boiler, generator, water tank, docks, ambulance bay), steel (conveyor, factory, labs, X-ray, vault, lift), tiles (kitchens, bathrooms, laundry, canteen, pharmacy), wallpaper colours (parlour red, library green, bedrooms blue, nurseries pastel...), wood panelling in halls and attic rooms
+- [ ] Set pieces: Boiler Room boiler with a glowing furnace and pipes; Conveyor Hall two moving conveyor belts (sweets ride along) and a candy machine; Chocolate River a chocolate river and waterfall; Vault Door Hall a giant round vault door; Ambulance Bay an ambulance with flashing lights; X-Ray Room the machine and a glowing x-ray; wards curtains and drip stands; Waiting Room rows of chairs and a TV; Parlour/Library a fireplace that flickers; Game Room arcade machines; Clock Room clocks with swinging pendulums; gummy bear statues, lollipops, wobbling jelly cubes, gold gumdrops in the candy rooms
+- [ ] Nothing new blocks a doorway, hiding place, search spot or the start
+- [ ] F9: no "Room dressing: ... failed" lines
+
 Round 6 (7 Oct):
 - [ ] Bonus present: everyone in the game gets their own +20 to +60 points (pop-up shows the exact number), sometimes plus a free clue or a Shield for the opener
 - [ ] Every room: a little spider going up and down on a thread, orange/purple lights along the top of a wall; every third room a floating ghost

@@ -56,3 +56,38 @@ crops of `art/sheets/room-party-*.png`: the **party table with the cake**, the
 **wardrobe**, the **cage**, the **fireplace** (if the store has none you like).
 Import them like the characters (File -> Import), skip Avatar Setup, and drop
 them into ServerStorage -> Props with the name above.
+
+## Room set pieces (every building) - optional upgrades
+
+Every room is already dressed by `roblox/src/game/server/Rooms.luau` with
+set pieces built from parts (a boiler with pipes, moving conveyor belts, a
+vault door, an ambulance...). Each one is replaced by a real model if
+**ServerStorage -> Props** holds a model with exactly its **Name**: same
+steps as above (Toolbox -> Creator Store -> Models). These are scenery: they
+are fitted into the size shown, stand on the floor, and are never solid.
+
+| Name | Rooms | Search words | Fits in (studs, w x h x d) |
+|---|---|---|---|
+| Boiler | Boiler Room | old boiler, industrial boiler | 6 x 9 x 6 |
+| Generator | Generator Room | generator, diesel generator | 6 x 5 x 4 |
+| WaterTank | Water Tank Room | water tank, metal tank | 6 x 9 x 6 |
+| Conveyor | Conveyor Hall, Factory Floor, Wrapper Room | conveyor belt | 8 x 4 x 3 |
+| CandyMachine | Conveyor Hall, Taste Lab, Gumball Store, Candy Kitchen | candy machine, cotton candy machine | 4 x 7 x 4 |
+| TaffyPuller | Taffy Hall | taffy machine, candy factory machine | 5 x 7 x 4 |
+| GummyBear | Bear Gallery, Gummy Lobby, Ball Pit | gummy bear | 4 x 7 x 4 |
+| Lollipop | Lollipop Garden, Sprinkle Room, Slide Tower | giant lollipop | 4 x 9 x 2 |
+| VaultDoor | Vault Door Hall | bank vault door | 8 x 9 x 1 |
+| Ambulance | Ambulance Bay | ambulance | 8 x 7 x 14 |
+| XRay | X-Ray Room | x-ray machine, hospital scanner | 6 x 8 x 5 |
+| WashingMachines | Laundry, Linen Room | washing machine | 8 x 4 x 3 |
+| Sofa | Day Room, Quiet Room, Staff Room | sofa, couch | 7 x 4 x 3 |
+| TV | Day Room, Waiting Room | old tv, retro tv | 4 x 5 x 2 |
+| LiftDoors | Lift Lobby, hospital stairwells | elevator doors | 6 x 9 x 1 |
+| Fireplace | Parlour, Library | fireplace | 6 x 7 x 2 |
+| Arcade | Game Room | arcade machine | 3 x 7 x 3 |
+| Stove | Kitchen, Candy Kitchen | stove, old stove | 6 x 6 x 3 |
+| Lockers | Locker Room | lockers | 6 x 8 x 2 |
+| Wardrobe | bedrooms, nurseries | wardrobe | 4 x 8 x 2 |
+
+Check each model before keeping it: no brand logos or known characters (the
+game is public). Send Claude a screenshot if unsure.

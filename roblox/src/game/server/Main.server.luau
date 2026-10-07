@@ -1698,6 +1698,8 @@ function round.start()
 	wirePrompts()
 	wireStoreRooms()
 	House.placeCrates(world, Config.BARRICADE.crates)
+	-- every room dressed to look like what it is called (game/server/Rooms.luau)
+	require(script.Parent.Rooms).dress(world)
 	-- the Barricade prompt on a crate works like Muscle's button
 	world.onCrate = function(plr, c)
 		if state.status ~= "playing" or plr:GetAttribute("Skill") ~= "muscle" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") or c.busy then

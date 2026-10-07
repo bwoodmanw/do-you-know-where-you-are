@@ -65,6 +65,9 @@ roblox/
     Host.luau         host model + AI (patrol, hear, see, chase, alert)
     Characters.luau   swaps avatars for imported characters; server Animator
     Effects.luau      bursts, sounds, surprise (bats / tissue / confetti)
+    Rooms.luau        dresses every room by its name: wall linings + set
+                      pieces (LOOKS table); Props models of the same name
+                      replace the built ones (FURNITURE.md)
     Props.luau        furniture from ServerStorage/Props
   src/game/client/Hud.client.luau  every game screen: character picker
                       (portraits, 3D view), bars, bag of boosts, active-boost
