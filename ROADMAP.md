@@ -57,7 +57,12 @@ Brent approved this plan as written; build in order, asking before each step.
   lilac / caramel / pink-tile floors, candy pictures, gumdrops), gumdrop ball
   pit, Slide Tower with a loft, Bounce Room with 3 bounce pads, exit to the
   cotton-candy clouds. HouseMap is now building -> floor -> plans.
-  Candy Factory and Jelly Vault: next.
+- Built 7 Oct (untested): floor 2 Candy Factory (plans fac_a + mirror: Conveyor
+  Hall and Factory Floor across the middle, Chocolate River + Wrapper Room
+  behind the first door, Packing Hall + Taste Lab behind the second, stairs
+  "Up to the Jelly Vault"); floor 3 Jelly Vault (vault_a + mirror: 3 x 3,
+  jelly pool, jelly bounce pads, 3 vents, clouds exit). Both `ready`.
+  The generator no longer has the old hole and cabinet.
 
 Later: "Tower Run" (several floors in one game).
 
@@ -109,12 +114,15 @@ near side (where that door's key would be) is planted with F: 3 s fuse,
 BOOM, confetti, the host comes to look (15 points). Tinker can't pick it.
 The secret hole is gone (plain wall; the cabinet is furniture). The plan
 data in `make_housemap.py` still lists hole + cabinet; harmless.
-Also 7 Oct: points reset 800; vents take any number of players, each
+Also 7 Oct: game-sounds volume button beside the music one (SoundService/
+GameSounds, `shared/Sfx.luau`, saved as settings.sfx); points reset 800; vents take any number of players, each
 waits `Config.VENT_REUSE` (2.5 s) before crawling again; the game starts
 only when everyone presses Play.
 
 ## Next, waiting on Brent's yes
 1. Skill Reset Developer Product 49 -> 79 Robux (Brent changes it in Creator
    Hub; the Lobby button now reads the price from Roblox).
-2. Gummy floors 2-3 (Candy Factory, Jelly Vault), then the Hospital.
+2. Tinker / Muscle balance (Claude's proposal 7 Oct: 2 bonus store rooms per
+   floor, one locked, one blocked; Muscle's Barricade skill button).
+3. The Hospital.
 4. Halloween polish for 29 Oct: tutorial, balance, dressed rooms.

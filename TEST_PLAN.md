@@ -29,12 +29,17 @@ Party House:
 - [ ] Tinker cannot pick the blocked doorway; the other locked door still works with a key or Tinker
 - [ ] No secret hole any more; the Music Room cabinet is just furniture
 - [ ] Lobby: the points reset button says 800
+- [ ] Sound buttons (Lobby and game): a 🔊 button left of the 🎵 one; 🔊 steps 100 / 50 / 25 / Off for pops, doors, bounces, the host's breathing; 🎵 still only the music; both remembered next visit and between Lobby and game
+- [ ] Studio Play now builds the Candy Factory (`Config.STUDIO_MAP = "gummy_2"`): pink candy walls, Conveyor Hall with two conveyor counters, Chocolate River and Packing Hall upstairs behind the doors, stairs up "Up to the Jelly Vault"
+- [ ] Ask Claude to switch to `gummy_3` for the Jelly Vault: jelly pool (ball pit), two jelly bounce pads in the Security Room, three vents, exit to the cotton-candy clouds
+- [ ] Live: escaping Bounce Hall unlocks Candy Factory; Candy Factory unlocks Jelly Vault; the Lobby map screen shows both floors with their pictures
 
-Patch's face (Party House place, in Studio, not playing):
+Patch's face (Party House place, in Studio, NOT playing - press Stop first; the
+"Face softening skipped" lines come from Play mode and are expected):
 1. **View** tab -> **Command Bar** (a box opens at the bottom).
 2. Copy this whole line, paste it in the Command Bar, press **Enter**:
    `local n=0 for _,d in ipairs(game.ServerStorage.Characters.Patch:GetDescendants()) do if d:IsA("SurfaceAppearance") and d.Parent:IsA("MeshPart") then local ok,c=pcall(function() return d.ColorMap end) if not ok or c=="" then local ok2,cc=pcall(function() return d.ColorMapContent.Uri end) c=ok2 and cc or "" end print(d.Parent:GetFullName(),"colour map:",c) if c~="" then d.Parent.TextureID=c d.Parent=nil n+=1 end end end print("Patch: softened",n,"parts")`
-3. **View** tab -> **Output** (in the "Show" group; it opens a panel, usually at the bottom). Photograph what it printed. If you can't see an Output button, send a photo of the View tab.
+3. **View** tab -> **Output** (in the "Show" group; it opens a panel, usually at the bottom). Photograph the line that starts `Patch: softened`. If you can't see an Output button, send a photo of the View tab.
 4. If it says `softened 1` or more: **Test** -> **Play** and photograph Patch's face close up.
    Then in Explorer, right-click **ServerStorage -> Characters -> Patch** -> **Save to Roblox...**
    and overwrite the existing Patch asset (if it only offers a new one, save it and send Claude the new id).

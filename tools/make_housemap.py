@@ -6,15 +6,16 @@ Each game the server (shared/MapGen.luau) picks one floor plan at random and
 scatters the balloons, presents, search spots, hiding places and skill puzzles
 over that plan's checked SLOTS. This script:
   - checks every plan: rooms behind the locked doors only reachable through
-    them, the exit and Muscle's hole reachable once both are open;
+    them, the exit reachable once both are open (each game one of the two
+    locked doors is Muscle's blocked passage instead - same check);
   - works out the slots (floor tiles against a wall or furniture, clear of
-    doorways, starts, patrol points, the cage and the cabinet; wall tiles
+    doorways, starts, patrol points and the cage; wall tiles
     with a room to their south for the posters);
   - plays MapGen's picking 2000 times per plan and checks every result: every
     room still reachable, every object can be walked up to.
 
-Map key: # wall, . floor, T furniture, L locked door, D the big exit door,
-H the hole behind the cabinet (Muscle), C the host's door.
+Map key: # wall, . floor, T furniture, L locked door (or the blocked passage),
+D the big exit door, C the host's door.
 """
 import os
 import random
@@ -73,7 +74,6 @@ def plan_a():
     p.put(15, 9, 'L')
     p.put(20, 5, 'L')
     p.put(25, 0, 'D')
-    p.put(39, 6, 'H')
     p.put(0, 14, 'C')
     p.rect(20, 22, 20, 24)
     p.rect(25, 11, 25, 13)
@@ -89,7 +89,7 @@ def plan_a():
                 (31, 1, 38, 8, 'purple', 'Music Room'), (1, 10, 9, 18, 'tiles', 'Kitchen'), (11, 10, 19, 18, 'wood', 'Dining Room'),
                 (21, 10, 29, 18, 'purple', 'Game Room'), (31, 10, 38, 18, 'green', 'Conservatory'), (1, 20, 9, 28, 'boards', 'Pantry'),
                 (11, 20, 29, 28, 'wood', 'Front Hall'), (31, 20, 38, 28, 'tiles', 'Bathroom')]
-    p.fixed = [dict(id='door', kind='door', x=25, y=0), dict(id='hole', kind='hole', x=39, y=6), dict(id='cab', kind='cabinet', x=38, y=6),
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
                dict(id='L1', kind='lock', x=15, y=9, name='Library door'), dict(id='L2', kind='lock', x=20, y=5, name='Corridor door'),
                dict(id='cage', kind='cage', x=12, y=27),
                # crawl vents: through a wall between two rooms of the same zone
@@ -164,7 +164,6 @@ def plan_bounce():
     p.put(5, 9, 'L')     # L1: Candy Kitchen -> Sprinkle Room
     p.put(20, 4, 'L')    # L2: Bear Gallery -> Jelly Corridor
     p.put(25, 0, 'D')
-    p.put(39, 5, 'H')
     p.put(0, 14, 'C')
     for x, y in [(23, 3), (27, 3), (23, 6), (27, 6)]:
         p.put(x, y, '#')             # candy-cane pillars
@@ -179,7 +178,7 @@ def plan_bounce():
     p.tall = {'Slide Tower'}
     p.loft = dict(x0=21, y0=10, x1=29, y1=12, h=7, stair_x=28, stair_y0=13, stair_y1=16)
     p.pads = [(33, 12), (36, 15), (33, 16)]
-    p.fixed = [dict(id='door', kind='door', x=25, y=0), dict(id='hole', kind='hole', x=39, y=5), dict(id='cab', kind='cabinet', x=38, y=5),
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
                dict(id='L1', kind='lock', x=5, y=9, name='Sprinkle Room door'), dict(id='L2', kind='lock', x=20, y=4, name='Jelly Corridor door'),
                dict(id='cage', kind='cage', x=12, y=27),
                dict(id='v1a', kind='vent', pair='v1', x=9, y=26), dict(id='v1b', kind='vent', pair='v1', x=11, y=26),
@@ -188,6 +187,86 @@ def plan_bounce():
     p.spawn, p.cake = (1, 14), (15, 23)
     p.patrol = [(5, 15), (12, 18), (24, 15), (35, 13), (35, 25), (25, 25), (15, 25), (5, 25),
                 (7, 7, 'L1'), (15, 5, 'L1'), (25, 5, 'L2'), (35, 6, 'L2')]
+    return p
+
+
+# ---------------------------------------------------------------- Gummy Bounce House, floor 2: Candy Factory
+def plan_factory():
+    p = Plan('fac_a', 'Gummy Bounce House - Candy Factory')
+    p.building, p.floor_no, p.theme = 'gummy', 2, 'gummy'
+    p.exit_style, p.exit_text = 'stairs', 'Up to the Jelly Vault'
+    for x in (8, 20, 31):
+        p.rect(x, 0, x, H - 1)
+    for y in (10, 19):
+        p.rect(0, y, W - 1, y)
+    for y in range(1, H - 1):
+        p.grid[y][0] = '#'
+        p.grid[y][W - 1] = '#'
+    p.rect(20, 11, 20, 18, '.')     # the Conveyor Hall spans the middle
+    p.rect(20, 20, 20, 28, '.')     # and so does the Factory Floor
+    for x, y in [(8, 14), (31, 15), (4, 19), (14, 19), (26, 19), (35, 19), (8, 24), (31, 25), (8, 5), (31, 4)]:
+        p.put(x, y, '.')
+    p.put(14, 10, 'L')   # L1: Conveyor Hall -> Chocolate River
+    p.put(20, 5, 'L')    # L2: Chocolate River -> Packing Hall
+    p.put(25, 0, 'D')
+    p.put(0, 14, 'C')
+    for x, y in [(23, 3), (27, 3), (23, 7), (27, 7)]:
+        p.put(x, y, '#')             # giant lollipop sticks holding up the roof
+    for f in [(11, 14, 18, 14, 'counter'), (22, 16, 28, 16, 'counter'), (2, 12, 6, 12, 'shelf'), (2, 16, 4, 16, 'shelf'),
+              (2, 22, 6, 22, 'shelf'), (2, 26, 6, 26, 'shelf'), (14, 22, 16, 23, 'table'), (24, 22, 26, 23, 'table'),
+              (34, 23, 36, 24, 'table'), (34, 12, 36, 13, 'bath'), (11, 3, 17, 3, 'counter'), (11, 7, 17, 7, 'counter'),
+              (3, 3, 5, 4, 'table'), (2, 8, 6, 8, 'shelf'), (34, 3, 36, 4, 'table'), (33, 7, 34, 7, 'desk')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 7, 9, 'mint', 'Wrapper Room'), (9, 1, 19, 9, 'caramel', 'Chocolate River'), (21, 1, 30, 9, 'pinktiles', 'Packing Hall'),
+                (32, 1, 38, 9, 'lilac', 'Taste Lab'), (1, 11, 7, 18, 'caramel', 'Sugar Store'), (9, 11, 30, 18, 'pinktiles', 'Conveyor Hall'),
+                (32, 11, 38, 18, 'mint', 'Boiler Room'), (1, 20, 7, 28, 'lilac', 'Locker Room'), (9, 20, 30, 28, 'mint', 'Factory Floor'),
+                (32, 20, 38, 28, 'caramel', 'Loading Dock')]
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
+               dict(id='L1', kind='lock', x=14, y=10, name='Chocolate River door'), dict(id='L2', kind='lock', x=20, y=5, name='Packing Hall door'),
+               dict(id='cage', kind='cage', x=10, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=7, y=17), dict(id='v1b', kind='vent', pair='v1', x=9, y=17),
+               dict(id='v2a', kind='vent', pair='v2', x=30, y=22), dict(id='v2b', kind='vent', pair='v2', x=32, y=22)]
+    p.start = [(17, 27), (18, 27), (19, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 14), (15, 22)
+    p.patrol = [(4, 14), (15, 16), (25, 13), (35, 15), (35, 25), (25, 25), (12, 24), (4, 24),
+                (14, 5, 'L1'), (4, 6, 'L1'), (25, 5, 'L2'), (35, 5, 'L2')]
+    return p
+
+
+# ---------------------------------------------------------------- Gummy Bounce House, floor 3: Jelly Vault
+def plan_vault():
+    p = Plan('vault_a', 'Gummy Bounce House - Jelly Vault')
+    p.building, p.floor_no, p.theme = 'gummy', 3, 'gummy'
+    p.exit_style = 'clouds'
+    for x in (13, 26):
+        p.rect(x, 0, x, H - 1)
+    for y in (10, 20):
+        p.rect(0, y, W - 1, y)
+    for x, y in [(13, 24), (26, 25), (19, 20), (13, 14), (26, 12), (36, 20), (6, 20), (26, 4)]:
+        p.put(x, y, '.')
+    p.put(6, 10, 'L')    # L1: Wobble Room -> Gold Gumdrop Room
+    p.put(13, 5, 'L')    # L2: Gold Gumdrop Room -> Vault Door Hall
+    p.put(19, 0, 'D')
+    p.put(0, 24, 'C')
+    for x, y in [(17, 3), (22, 3), (17, 7), (22, 7)]:
+        p.put(x, y, '#')             # the vault's striped pillars
+    for f in [(16, 14, 21, 16, 'pit'), (2, 13, 4, 14, 'table'), (8, 17, 10, 17, 'shelf'), (29, 13, 30, 14, 'table'),
+              (33, 16, 36, 16, 'shelf'), (2, 23, 9, 23, 'shelf'), (16, 23, 18, 24, 'table'), (30, 23, 32, 23, 'desk'),
+              (3, 3, 10, 3, 'shelf'), (3, 6, 9, 6, 'shelf'), (29, 7, 35, 7, 'shelf'), (30, 3, 32, 3, 'counter')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 12, 9, 'caramel', 'Gold Gumdrop Room'), (14, 1, 25, 9, 'pinktiles', 'Vault Door Hall'), (27, 1, 38, 9, 'lilac', 'Jelly Bank'),
+                (1, 11, 12, 19, 'mint', 'Wobble Room'), (14, 11, 25, 19, 'lilac', 'Jelly Pool'), (27, 11, 38, 19, 'caramel', 'Sticky Archive'),
+                (1, 21, 12, 28, 'pinktiles', 'Gumball Store'), (14, 21, 25, 28, 'mint', 'Vault Entrance'), (27, 21, 38, 28, 'lilac', 'Security Room')]
+    p.pads = [(34, 25), (29, 27)]   # wobbly jelly you can bounce on
+    p.fixed = [dict(id='door', kind='door', x=19, y=0),
+               dict(id='L1', kind='lock', x=6, y=10, name='Gold Gumdrop door'), dict(id='L2', kind='lock', x=13, y=5, name='Vault door'),
+               dict(id='cage', kind='cage', x=15, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=3, y=19), dict(id='v1b', kind='vent', pair='v1', x=3, y=21),
+               dict(id='v2a', kind='vent', pair='v2', x=25, y=17), dict(id='v2b', kind='vent', pair='v2', x=27, y=17),
+               dict(id='v3a', kind='vent', pair='v3', x=31, y=19), dict(id='v3b', kind='vent', pair='v3', x=31, y=21)]
+    p.start = [(18, 27), (19, 27), (20, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 24), (17, 23)
+    p.patrol = [(6, 16), (23, 12), (32, 18), (35, 22), (20, 25), (6, 26), (6, 5, 'L1'), (10, 8, 'L1'), (19, 5, 'L2'), (33, 4, 'L2')]
     return p
 
 
@@ -205,7 +284,6 @@ def plan_attic():
     p.put(6, 10, 'L')    # L1: Trunk Room -> Clock Room
     p.put(13, 5, 'L')    # L2: Clock Room -> Rooftop Stairs
     p.put(19, 0, 'D')
-    p.put(39, 5, 'H')
     p.put(0, 24, 'C')
     for x, y in [(17, 13), (22, 13), (17, 17), (22, 17), (17, 3), (22, 3), (17, 7), (22, 7)]:
         p.put(x, y, '#')             # rafters holding up the roof
@@ -216,7 +294,7 @@ def plan_attic():
     p.floors = [(1, 1, 12, 9, 'boards', 'Clock Room'), (14, 1, 25, 9, 'boards', 'Rooftop Stairs'), (27, 1, 38, 9, 'purple', 'Doll Room'),
                 (1, 11, 12, 19, 'wood', 'Trunk Room'), (14, 11, 25, 19, 'boards', 'Dusty Storage'), (27, 11, 38, 19, 'carpet', 'Old Nursery'),
                 (1, 21, 12, 28, 'boards', 'Box Room'), (14, 21, 25, 28, 'wood', 'Attic Landing'), (27, 21, 38, 28, 'tiles', 'Water Tank Room')]
-    p.fixed = [dict(id='door', kind='door', x=19, y=0), dict(id='hole', kind='hole', x=39, y=5), dict(id='cab', kind='cabinet', x=38, y=5),
+    p.fixed = [dict(id='door', kind='door', x=19, y=0),
                dict(id='L1', kind='lock', x=6, y=10, name='Clock Room door'), dict(id='L2', kind='lock', x=13, y=5, name='Roof door'),
                dict(id='cage', kind='cage', x=15, y=27),
                dict(id='v1a', kind='vent', pair='v1', x=3, y=19), dict(id='v1b', kind='vent', pair='v1', x=3, y=21),
@@ -246,7 +324,6 @@ def plan_bedrooms():
     p.put(5, 9, 'L')     # L1: Kids' Bedroom -> Master Bedroom
     p.put(20, 4, 'L')    # L2: Study -> Stairwell Hall
     p.put(25, 0, 'D')
-    p.put(39, 5, 'H')
     p.put(0, 14, 'C')
     for x, y in [(23, 3), (27, 3), (23, 6), (27, 6)]:
         p.put(x, y, '#')
@@ -262,7 +339,7 @@ def plan_bedrooms():
     p.tall = {'Gallery'}
     # the loft: rows 10-12 of the Gallery, 7 studs up, a ramp down at x 28
     p.loft = dict(x0=11, y0=10, x1=29, y1=12, h=7, stair_x=28, stair_y0=13, stair_y1=16)
-    p.fixed = [dict(id='door', kind='door', x=25, y=0), dict(id='hole', kind='hole', x=39, y=5), dict(id='cab', kind='cabinet', x=38, y=5),
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
                dict(id='L1', kind='lock', x=5, y=9, name='Master Bedroom door'), dict(id='L2', kind='lock', x=20, y=4, name='Stairwell door'),
                dict(id='cage', kind='cage', x=12, y=27),
                dict(id='v1a', kind='vent', pair='v1', x=9, y=26), dict(id='v1b', kind='vent', pair='v1', x=11, y=26),
@@ -286,7 +363,6 @@ def plan_c():
     p.put(6, 10, 'L')
     p.put(13, 5, 'L')
     p.put(19, 0, 'D')
-    p.put(39, 5, 'H')
     p.put(0, 24, 'C')
     for x, y in [(17, 3), (22, 3), (17, 7), (22, 7)]:
         p.put(x, y, '#')
@@ -300,7 +376,7 @@ def plan_c():
     p.floors = [(1, 1, 12, 9, 'green', 'Library'), (14, 1, 25, 9, 'boards', 'Corridor'), (27, 1, 38, 9, 'purple', 'Music Room'),
                 (1, 11, 12, 19, 'tiles', 'Kitchen'), (14, 11, 25, 19, 'purple', 'Game Room'), (27, 11, 38, 19, 'wood', 'Dining Room'),
                 (1, 21, 12, 28, 'boards', 'Pantry'), (14, 21, 25, 28, 'wood', 'Front Hall'), (27, 21, 38, 28, 'tiles', 'Bathroom')]
-    p.fixed = [dict(id='door', kind='door', x=19, y=0), dict(id='hole', kind='hole', x=39, y=5), dict(id='cab', kind='cabinet', x=38, y=5),
+    p.fixed = [dict(id='door', kind='door', x=19, y=0),
                dict(id='L1', kind='lock', x=6, y=10, name='Library door'), dict(id='L2', kind='lock', x=13, y=5, name='Corridor door'),
                dict(id='cage', kind='cage', x=15, y=27),
                dict(id='v1a', kind='vent', pair='v1', x=12, y=18), dict(id='v1b', kind='vent', pair='v1', x=14, y=18),
@@ -345,7 +421,7 @@ def reach(p, open_locks, blocked=()):
 def check(p):
     problems = []
     for o in p.fixed:
-        want = {'door': 'D', 'hole': 'H', 'lock': 'L'}.get(o['kind'], '.')
+        want = {'door': 'D', 'lock': 'L'}.get(o['kind'], '.')
         if p.c(o['x'], o['y']) != want:
             problems.append('%s on %r, wants %r' % (o['id'], p.c(o['x'], o['y']), want))
     for t in p.start + [p.spawn]:
@@ -368,11 +444,8 @@ def check(p):
     if len(zones[3]) != len(p.floors):
         problems.append('rooms never reachable: %s' % ({f[5] for f in p.floors} - zones[3]))
     allopen = reach(p, {'L1', 'L2'})
-    cab = [o for o in p.fixed if o['kind'] == 'cabinet'][0]
-    if (cab['x'], cab['y'] + 1) not in allopen:
-        problems.append('the cabinet has nowhere to be shoved')
     for o in p.fixed:
-        if o['kind'] in ('cage', 'cabinet') and not any((o['x'] + dx, o['y'] + dy) in allopen for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+        if o['kind'] == 'cage' and not any((o['x'] + dx, o['y'] + dy) in allopen for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
             problems.append('%s cannot be reached' % o['id'])
     # vents: floor at both ends, one wall between, same zone (no way round a lock)
     zone_tiles = {n: reach(p, set(l)) for n, l in ((1, ()), (2, ('L1',)), (3, ('L1', 'L2')))}
@@ -414,8 +487,6 @@ def slots(p, zone_of, allopen):
         for dx in (-1, 0, 1):
             for dy in (-1, 0, 1):
                 keep.add((o['x'] + dx, o['y'] + dy))
-    cab = [o for o in p.fixed if o['kind'] == 'cabinet'][0]
-    keep.add((cab['x'], cab['y'] + 2))
     for s in p.props:
         if len(s) > 7 or s[5] <= 1:
             continue
@@ -538,8 +609,11 @@ a = plan_a()
 bed = plan_bedrooms()
 att = plan_attic()
 gum = plan_bounce()
+fac = plan_factory()
+vault = plan_vault()
 for p in (a, mirror(a, 'b', 'The Party House'), plan_c(), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms'),
-          att, mirror(att, 'attic_b', 'The Party House - Attic'), gum, mirror(gum, 'gum_b', 'Gummy Bounce House - Bounce Hall')):
+          att, mirror(att, 'attic_b', 'The Party House - Attic'), gum, mirror(gum, 'gum_b', 'Gummy Bounce House - Bounce Hall'),
+          fac, mirror(fac, 'fac_b', 'Gummy Bounce House - Candy Factory'), vault, mirror(vault, 'vault_b', 'Gummy Bounce House - Jelly Vault')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (
@@ -570,8 +644,8 @@ out = ['--[[',
        '\tedit that file and run it, do not edit this one by hand.',
        '\tEach game shared/MapGen.luau picks a plan and scatters the movable',
        '\tobjects over its checked slots { x, y, zone, room }.',
-       '\tMap key: # wall, . floor, T furniture, L locked door, D the big exit',
-       '\tdoor, H the hole behind the cabinet (Muscle), C the host\'s door.',
+       '\tMap key: # wall, . floor, T furniture, L locked door (or the blocked',
+       '\tpassage), D the big exit door, C the host\'s door.',
        '\tReturns building -> floor number -> list of plans.',
        ']]', '', 'return {']
 for bld in ('partyhouse', 'gummy'):
