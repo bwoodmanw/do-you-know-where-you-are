@@ -47,8 +47,8 @@ for Meshy.
 - **Space Cadet Brainy** - very good: the badge is a plain ringed planet, no
   flags or agency marks. The air tanks behind his shoulders may merge into
   the back in 3D (fine).
-- **Snow Day Muscle** - good, and the plain snow boots fix his usual
-  trainers' logo problem. Note: a red-and-gold striped scarf is the look of a
+- **Snow Day Muscle** - good; plain snow boots with no marks (plain Muscle's
+  own trainers still have the swoosh-like mark - a separate fix). Note: a red-and-gold striped scarf is the look of a
   famous wizard-school scarf. Low risk, but if you want to be safe, make it
   again with "a red and white striped scarf" (decision in chat).
 - **Starlight Echo** - good: gold stars, crescent-moon backpack, star
