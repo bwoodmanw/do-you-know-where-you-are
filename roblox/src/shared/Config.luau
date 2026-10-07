@@ -386,6 +386,7 @@ Config.SKINS = {
 	{ id = "shadow_ghost", skill = "shadow", name = "Ghostly Shadow", model = "ShadowGhost", pass = 0 },
 	{ id = "glow_candy", skill = "glow", name = "Candy Glow", model = "GlowCandy", pass = 0 },
 	{ id = "patch_nurse", skill = "patch", name = "Night Nurse Patch", model = "PatchNurse", pass = 0 },
+	{ id = "patch_halloween", skill = "patch", name = "Halloween Nurse Patch", model = "PatchHalloween", pass = 0 },
 	{ id = "brainy_space", skill = "brainy", name = "Space Cadet Brainy", model = "BrainySpace", pass = 0 },
 	{ id = "muscle_snow", skill = "muscle", name = "Snow Day Muscle", model = "MuscleSnow", pass = 0 },
 	{ id = "echo_star", skill = "echo", name = "Starlight Echo", model = "EchoStar", pass = 0 },

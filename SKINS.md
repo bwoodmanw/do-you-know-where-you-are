@@ -9,7 +9,7 @@ A skin is a whole different 3D model of the same kid. The player buys it once
 skill ladder), and from the next game their character uses that model; the 3D
 previews show it too. Skins change looks only, never skills.
 
-## The eight skins
+## The nine skins
 
 | # | Skin | Character | Picture folder (`art/model-input/`) | Model file (`art/models/`) | Name in Studio | Picture |
 |---|---|---|---|---|---|---|
@@ -17,17 +17,18 @@ previews show it too. Skins change looks only, never skills.
 | 2 | Ghostly Shadow | Shadow | `ghostly-shadow/` | `ghostly-shadow.glb` | `ShadowGhost` | ready (checked 7 Oct) |
 | 3 | Candy Glow | Glow | `candy-glow/` | `candy-glow.glb` | `GlowCandy` | ready (checked 7 Oct) |
 | 4 | Night Nurse Patch | Patch | `night-nurse-patch/` | `night-nurse-patch.glb` | `PatchNurse` | ready (checked 7 Oct) |
-| 5 | Space Cadet Brainy | Brainy | `space-brainy/` | `space-brainy.glb` | `BrainySpace` | to make |
-| 6 | Snow Day Muscle | Muscle | `snow-muscle/` | `snow-muscle.glb` | `MuscleSnow` | to make |
-| 7 | Starlight Echo | Echo | `starlight-echo/` | `starlight-echo.glb` | `EchoStar` | to make |
-| 8 | Autumn Leaf Bramble | Bramble | `autumn-bramble/` | `autumn-bramble.glb` | `BrambleAutumn` | to make |
+| 5 | Space Cadet Brainy | Brainy | `space-cadet-brainy/` | `space-cadet-brainy.glb` | `BrainySpace` | ready (checked 7 Oct) |
+| 6 | Snow Day Muscle | Muscle | `snow-day-muscle/` | `snow-day-muscle.glb` | `MuscleSnow` | ready - see the scarf note |
+| 7 | Starlight Echo | Echo | `starlight-echo/` | `starlight-echo.glb` | `EchoStar` | ready (checked 7 Oct) |
+| 8 | Autumn Leaf Bramble | Bramble | `autumn-leaf-bramble/` | `autumn-leaf-bramble.glb` | `BrambleAutumn` | ready (checked 7 Oct) |
+| 9 | Halloween Nurse Patch | Patch | `halloween-nurse-patch/` | `halloween-nurse-patch.glb` | `PatchHalloween` | ready (checked 7 Oct) |
 
 The **Name in Studio** must be exact (capitals too): the game finds the model
 by that name. Suggested price 99 Robux each.
 
-### What I checked on the first four (7 Oct)
+### What I checked (7 Oct)
 
-All four: full body, A-pose, facing the camera, plain grey background, the
+All nine: full body, A-pose, facing the camera, plain grey background, the
 same face as the character, no logos, no likeness to known characters - ready
 for Meshy.
 - **Pumpkin Patch Tinker** - very good; same proportions as Tinker.
@@ -41,6 +42,21 @@ for Meshy.
   kept, a clear A-pose. (Folder renamed from `Night nurse patch` to
   `night-nurse-patch` to match the others.) If Avatar Setup joins the
   shoulder bag to her arm, regenerate in Meshy with **T-Pose**.
+- **Halloween Nurse Patch** (Brent's own extra) - good: black scrubs and grey
+  cardigan, orange trousers, pumpkin faces on the pocket, bag and trainers.
+- **Space Cadet Brainy** - very good: the badge is a plain ringed planet, no
+  flags or agency marks. The air tanks behind his shoulders may merge into
+  the back in 3D (fine).
+- **Snow Day Muscle** - good, and the plain snow boots fix his usual
+  trainers' logo problem. Note: a red-and-gold striped scarf is the look of a
+  famous wizard-school scarf. Low risk, but if you want to be safe, make it
+  again with "a red and white striped scarf" (decision in chat).
+- **Starlight Echo** - good: gold stars, crescent-moon backpack, star
+  headphones, no brand marks on the trainers. (Its file had no `.png` ending;
+  renamed.)
+- **Autumn Leaf Bramble** - good. The leaf poncho is very spiky and hangs
+  over the arms: if Avatar Setup joins the leaves to the arms, regenerate in
+  Meshy with **T-Pose** (the first Bramble's poncho worked).
 
 ## Art prompts
 
