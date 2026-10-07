@@ -237,7 +237,7 @@ end
 function MapGen.forClient(map)
 	local objects = {}
 	for _, o in ipairs(map.objects) do
-		table.insert(objects, { id = o.id, kind = o.kind, x = o.x, y = o.y, n = o.n, zone = o.zone, name = o.name, blocked = o.blocked })
+		table.insert(objects, { id = o.id, kind = o.kind, x = o.x, y = o.y, n = o.n, zone = o.zone, name = o.name, blocked = o.blocked, bonus = o.bonus })
 	end
 	return { id = map.id, name = map.name, w = map.w, h = map.h, map = map.map, floors = map.floors, objects = objects, loft = map.loft }
 end

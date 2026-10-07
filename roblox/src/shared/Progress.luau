@@ -97,7 +97,7 @@ end
 	  staminaMult  runMult  energyStart  sightMult (how far the host sees you)
 	  holdMult (pick/shove/read/light/ask/free hold times)  clues  revealOne
 	  shield (start each game with a shield)  cooldownMult  sneakTime
-	  glowRange  healAmount  healShield  echoRange  freeAll
+	  glowRange  healAmount  healShield  echoRange  freeAll  barricadeHold
 ]]
 local GENERIC = {
 	[2] = {
@@ -195,11 +195,11 @@ local SPECIAL = {
 		},
 		[7] = {
 			{ id = "push", name = "Strong Push", say = "Shove 20% faster", mods = { holdMult = 0.8 } },
-			{ id = "chest", name = "Big Chest", say = "15% more stamina", mods = { staminaMult = 1.15 } },
+			{ id = "sturdy", name = "Sturdy Barricade", say = "The host is stuck at your barricade 2 s longer", mods = { barricadeHold = 6 } },
 		},
 		[9] = {
 			{ id = "power", name = "Power Shove", say = "Shove 30% faster", mods = { holdMult = 0.7 } },
-			{ id = "charge", name = "Charge", say = "Run 8% faster", mods = { runMult = 1.08 } },
+			{ id = "builder", name = "Quick Builder", say = "Barricade recharges 25% faster", mods = { cooldownMult = 0.75 } },
 		},
 		[10] = {
 			{ id = "titan", name = "Titan", say = "Shove twice as fast", mods = { holdMult = 0.5 } },
@@ -324,7 +324,7 @@ function Progress.mods(skill, picks, xp)
 							m[k] *= v
 						elseif k == "energyStart" or k == "clues" then
 							m[k] += v
-						elseif k == "glowRange" or k == "healAmount" or k == "echoRange" or k == "sneakTime" then
+						elseif k == "glowRange" or k == "healAmount" or k == "echoRange" or k == "sneakTime" or k == "barricadeHold" then
 							m[k] = math.max(m[k] or 0, v)
 						else
 							m[k] = v

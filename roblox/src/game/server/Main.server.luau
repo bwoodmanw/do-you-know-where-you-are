@@ -190,6 +190,7 @@ local function applyMods(plr)
 	plr:SetAttribute("HealAmount", m.healAmount or 40)
 	plr:SetAttribute("HealShield", m.healShield == true)
 	plr:SetAttribute("EchoRange", m.echoRange or 70)
+	plr:SetAttribute("BarricadeHold", m.barricadeHold or Config.BARRICADE.hold)
 	return m
 end
 
@@ -534,6 +535,9 @@ local function openLock(plr, id, how)
 	Effects.sound(entry.lockPart.Position, "unlock", 1)
 	TweenService:Create(entry.part, TweenInfo.new(1), { Position = entry.part.Position + Vector3.new(0, 13, 0) }):Play()
 	entry.lockPart:Destroy()
+	if entry.giftPrompt then
+		entry.giftPrompt.Enabled = true
+	end
 	addPoints(plr, 15)
 	say("open", (how == "pick" and ("Click! " .. plr.DisplayName .. " picked the lock on the ") or (plr.DisplayName .. " unlocked the ")) .. entry.def.name .. "!")
 end
@@ -549,6 +553,9 @@ local function clearBlock(plr, id, how)
 	entry.part.CanCollide = false
 	entry.shovePrompt.Enabled = false
 	entry.popperPrompt.Enabled = false
+	if entry.giftPrompt then
+		entry.giftPrompt.Enabled = true
+	end
 	for _, g in ipairs(entry.part:GetChildren()) do
 		if g:IsA("SurfaceGui") then
 			g:Destroy()
@@ -563,12 +570,81 @@ local function clearBlock(plr, id, how)
 	if how == "shove" then
 		Effects.sound(entry.part.Position, "shove", 1)
 		Effects.burst(entry.part.Position, "shove")
+		House.addCrate(world, entry.def.x, entry.def.y)
 		addPoints(plr, 25)
-		say("open", "Muscle shoved the junk out of the " .. entry.def.name .. "!")
+		say("open", "Muscle shoved the junk out of the " .. entry.def.name .. "!" .. (entry.def.bonus and " A bonus present inside!" or ""))
 	else
 		addPoints(plr, 15)
-		say("open", "BOOM! The Party Popper blasted open the " .. entry.def.name .. "... and the host heard it!")
+		say("open", "BOOM! The Party Popper blasted open the " .. entry.def.name .. "... and the host heard it!" .. (entry.def.bonus and " A bonus present inside!" or ""))
 	end
+end
+
+-- a store room's present: points and one surprise for whoever opens it
+local function wireStoreRooms()
+	for id, entry in pairs(world.objects) do
+		if entry.giftPrompt then
+			entry.giftPrompt.Triggered:Connect(function(plr)
+				if state.status ~= "playing" or entry.giftOpened or not world.unlocked[id] then
+					return
+				end
+				entry.giftOpened = true
+				entry.giftPrompt.Enabled = false
+				local pos = entry.gift.Position
+				for _, b in ipairs(entry.giftBits) do
+					b:Destroy()
+				end
+				Effects.surprise(pos, "confetti")
+				Effects.burst(pos, "boost")
+				addPoints(plr, 30)
+				local roll = math.random(1, 3)
+				local what
+				if roll == 1 then
+					state.cluesLeft += 1
+					RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+					what = "+1 clue for the team and 30 points"
+				elseif roll == 2 then
+					plr:SetAttribute("Shield", true)
+					what = "a Party Shield and 30 points"
+				else
+					addPoints(plr, 30)
+					what = "60 points"
+				end
+				say("boost", plr.DisplayName .. " opened a bonus present: " .. what .. "!", { icon = "\u{1F381}", userId = plr.UserId, item = "Bonus present" })
+			end)
+		end
+	end
+end
+
+-- Muscle's Barricade: the nearest crate slides into its doorway. Kids walk
+-- through it; the host has to smash through (stuck for BarricadeHold s).
+local function barricade(plr, c)
+	c.busy = true
+	Effects.sound(c.part.Position, "shove", 1)
+	TweenService:Create(c.part, TweenInfo.new(0.35, Enum.EasingStyle.Quad), { CFrame = c.door }):Play()
+	say("info", plr.DisplayName .. " shoved a crate into the doorway - the host can't get through!")
+	local hold = plr:GetAttribute("BarricadeHold") or Config.BARRICADE.hold
+	local myWorld = world
+	task.spawn(function()
+		local stopAt = os.clock() + Config.BARRICADE.stands
+		while os.clock() < stopAt and world == myWorld and state.status == "playing" do
+			if host and host.model and host.root and (host.root.Position - c.door.Position).Magnitude < 7 then
+				host:stun(hold)
+				say("info", "CRASH! The host is smashing through Muscle's barricade!")
+				for _ = 1, math.max(1, math.floor(hold)) do
+					Effects.sound(c.door.Position, "shove", 1.2)
+					task.wait(1)
+				end
+				break
+			end
+			task.wait(0.1)
+		end
+		if world ~= myWorld or not c.part.Parent then
+			return
+		end
+		TweenService:Create(c.part, TweenInfo.new(0.6), { CFrame = c.home }):Play()
+		task.wait(0.6)
+		c.busy = false
+	end)
 end
 
 local function wirePrompts()
@@ -672,6 +748,34 @@ local function wirePrompts()
 				if not state.doorOpen then
 					OpenKeypad:FireClient(plr)
 				end
+			end)
+			entry.padPrompt.Triggered:Connect(function(plr)
+				if state.status ~= "playing" or state.doorOpen then
+					return
+				end
+				if plr:GetAttribute("Skill") ~= "tinker" then
+					return need(plr, "tinker", "Only Tinker can pick a keypad. Everyone else needs the colour code!")
+				end
+				if state.padPicked then
+					return say("info", "The keypad has already been picked this game.", nil, plr)
+				end
+				local unknown = {}
+				for i = 1, 3 do
+					if not state.known[i] then
+						table.insert(unknown, i)
+					end
+				end
+				if #unknown == 0 then
+					return say("info", "You already know the whole code!", nil, plr)
+				end
+				state.padPicked = true
+				entry.padPrompt.Enabled = false
+				local k = unknown[math.random(1, #unknown)]
+				state.known[k] = state.code[k]
+				RoundState:SetAttribute("Known" .. k, state.code[k])
+				addPoints(plr, 15)
+				Effects.burst(entry.keypad.Position, "pick")
+				say("reveal", "Click! Tinker picked the keypad: colour " .. k .. " is " .. colourWord(state.code[k]) .. "!")
 			end)
 			entry.exit.Touched:Connect(function(hit)
 				local plr = Players:GetPlayerFromCharacter(hit.Parent)
@@ -1349,6 +1453,18 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		end
 		Effects.at(plr, "heal")
 		say("heal", given == 0 and "Patch gave herself a Party Shield!" or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!"), { userId = plr.UserId })
+	elseif skill == "muscle" then
+		local best, bd = nil, Config.BARRICADE.reach
+		for _, c in ipairs(world.crates or {}) do
+			local d = (c.part.Position - hrp.Position).Magnitude
+			if not c.busy and d < bd then
+				best, bd = c, d
+			end
+		end
+		if not best then
+			return say("info", "No \u{1F4AA} crate close by - Barricade works next to one beside a doorway.", nil, plr)
+		end
+		barricade(plr, best)
 	elseif skill == "echo" then
 		if typeof(pos) ~= "Vector3" or (pos - hrp.Position).Magnitude > (plr:GetAttribute("EchoRange") or 70) then
 			return say("info", "Throw it somewhere closer!", nil, plr)
@@ -1504,7 +1620,7 @@ function round.start()
 	-- junk away, or anyone plants the Party Popper hidden in a search spot
 	local lockDefs = {}
 	for _, o in ipairs(HouseMap.objects) do
-		if o.kind == "lock" then
+		if o.kind == "lock" and not o.bonus then
 			table.insert(lockDefs, o)
 		end
 	end
@@ -1520,13 +1636,15 @@ function round.start()
 	end
 	Props.place(world)
 	wirePrompts()
+	wireStoreRooms()
+	House.placeCrates(world, Config.BARRICADE.crates)
 	-- each locked door hides its key (the blocked passage: a Party Popper) in a
 	-- random searchable thing on its near side
 	world.unlocked, world.keys, world.keyIn = {}, {}, {}
-	for _, lock in ipairs({ { "L1", 1 }, { "L2", 2 } }) do
+	for _, lock in ipairs({ { "L1", 1 }, { "L2", 2 }, { "B1", 1 }, { "B2", 1 } }) do
 		local choices = {}
 		for oid, e in pairs(world.objects) do
-			if e.def.kind == "search" and e.def.zone == lock[2] then
+			if e.def.kind == "search" and e.def.zone == lock[2] and not world.keyIn[oid] then
 				table.insert(choices, oid)
 			end
 		end

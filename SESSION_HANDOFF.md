@@ -152,7 +152,8 @@ Checklist in `TEST_PLAN.md` ("This round").
    read ColorMap, so it silently did nothing. It now prints "Face softening
    skipped for Patch..." in F9 when that happens. The fix is done once by hand
    in Studio. Brent could not find ColorMap in Properties (7 Oct), so he was
-   given a Command Bar line (TEST_PLAN.md, "Patch's face") that does it and
+   given a Command Bar line (TEST_PLAN.md, "Patch's face"; new Studio's
+   Command Bar runs with its Run button, not Enter) that does it and
    prints each part's colour map. If it prints "softened 0", Patch has no
    SurfaceAppearance and the blotches are in the texture itself: ask for the
    Output photo. Then re-save Patch to Roblox so the Lobby copy matches.
@@ -164,8 +165,8 @@ Checklist in `TEST_PLAN.md` ("This round").
    moment a character was chosen); vents: any number, 2.5 s per player.
 4. **Gummy floors 2-3** built 7 Oct, untested (`Config.STUDIO_MAP` is
    `gummy_2`). **Hospital** next after the Tinker/Muscle decision.
-4b. **Tinker / Muscle balance** - Brent asked for ideas (7 Oct); proposal in
-   chat and ROADMAP "Next". Waiting on his pick.
+4b. **Tinker / Muscle balance** - built 7 Oct, untested (ROADMAP): store
+   rooms, Muscle's Barricade, Tinker's keypad pick.
 5. **Halloween polish, live by 29 Oct:** first-game tutorial, host balance per
    difficulty, more dressed rooms.
 6. Still to confirm live: Lobby window peek lined up (F9 lines "Lobby peek:"),

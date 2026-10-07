@@ -119,10 +119,22 @@ GameSounds, `shared/Sfx.luau`, saved as settings.sfx); points reset 800; vents t
 waits `Config.VENT_REUSE` (2.5 s) before crawling again; the game starts
 only when everyone presses Play.
 
+## Tinker / Muscle balance (built 7 Oct, Brent's yes) - untested
+- Store rooms: `add_closets` in the generator carves two 3 x 3 rooms into
+  corners of zone-1 rooms on every plan (furniture there removed; host patrol
+  points moved out): B1 "Store Room door" locked (Tinker / key), B2 "Junk
+  Cupboard" blocked (Muscle / its own Party Popper). Off the way out. A
+  present inside: 30 points + a clue, a Shield or 30 more.
+- Muscle's Barricade (skill button, 25 s): 6 crates marked 💪 beside inner
+  doorways each game, plus the junk he shoves aside. The nearest crate in 16
+  studs slides into its doorway for 10 s; kids walk through; the host is
+  stuck 4 s smashing it, then it slides home (`Config.BARRICADE`). Ladder:
+  Sturdy Barricade (+2 s) at 7, Quick Builder (recharge 25% faster) at 9.
+- Tinker: no limit on picking (main door and Store Room); once a game holds F
+  6 s at the big door's keypad to learn one colour.
+
 ## Next, waiting on Brent's yes
 1. Skill Reset Developer Product 49 -> 79 Robux (Brent changes it in Creator
    Hub; the Lobby button now reads the price from Roblox).
-2. Tinker / Muscle balance (Claude's proposal 7 Oct: 2 bonus store rooms per
-   floor, one locked, one blocked; Muscle's Barricade skill button).
-3. The Hospital.
+2. The Hospital.
 4. Halloween polish for 29 Oct: tutorial, balance, dressed rooms.

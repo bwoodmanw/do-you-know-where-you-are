@@ -288,6 +288,115 @@ function House.build(map)
 	return world
 end
 
+-- a store room's bonus present (opens once its door is open)
+local function storeRoomGift(root, entry, o)
+	if not (o.bonus and o.ix and o.iy) then
+		return
+	end
+	local pos = at(o.ix, o.iy, 0) + Vector3.new(0, 1.3, 0)
+	local box = part(root, { Name = "BonusPresent", Size = Vector3.new(2.6, 2.6, 2.6), Position = pos, Color = Color3.fromRGB(255, 210, 63), Material = Enum.Material.SmoothPlastic })
+	local r1 = part(root, { Name = "Ribbon", Size = Vector3.new(2.7, 2.7, 0.5), Position = pos, Color = Color3.fromRGB(232, 80, 91), Material = Enum.Material.SmoothPlastic, CanCollide = false })
+	local r2 = part(root, { Name = "Ribbon", Size = Vector3.new(0.5, 2.7, 2.7), Position = pos, Color = Color3.fromRGB(232, 80, 91), Material = Enum.Material.SmoothPlastic, CanCollide = false })
+	local bow = part(root, { Name = "Bow", Shape = Enum.PartType.Ball, Size = Vector3.new(1, 1, 1), Position = pos + Vector3.new(0, 1.6, 0), Color = Color3.fromRGB(232, 80, 91), Material = Enum.Material.SmoothPlastic, CanCollide = false })
+	entry.gift = box
+	entry.giftBits = { box, r1, r2, bow }
+	entry.giftPrompt = prompt(box, "Open", "Bonus present", 0.5)
+	entry.giftPrompt.Enabled = false
+end
+
+--[[
+	Muscle's barricade crates: a heavy crate standing beside a doorway, marked
+	with a big arm, that Muscle's Barricade button slides into the doorway.
+	Kids walk through it; the host has to smash through. Returns the crate
+	(or nil when there is no free tile beside that doorway).
+]]
+function House.addCrate(world, x, y)
+	local map = world.map
+	world.crates = world.crates or {}
+	world.crateAt = world.crateAt or {}
+	if world.crateAt[x .. "," .. y] then
+		return nil
+	end
+	local busy = {}
+	for _, o in ipairs(map.objects) do
+		busy[o.x .. "," .. o.y] = true
+	end
+	for _, s in ipairs(map.start) do
+		busy[s[1] .. "," .. s[2]] = true
+	end
+	for _, c in ipairs(world.crates) do
+		busy[c.hx .. "," .. c.hy] = true
+	end
+	-- walls left and right: people go through north-south
+	local ns = cell(map, x - 1, y) == "#" and cell(map, x + 1, y) == "#"
+	for _, side in ipairs({ 1, -1 }) do
+		for _, along in ipairs({ -1, 1 }) do
+			local hx, hy = x + along, y + side
+			if not ns then
+				hx, hy = x + side, y + along
+			end
+			if cell(map, hx, hy) == "." and not busy[hx .. "," .. hy] then
+				local size = ns and Vector3.new(T * 0.9, 6, 2.6) or Vector3.new(2.6, 6, T * 0.9)
+				local home = CFrame.new(at(hx, hy, 0) + Vector3.new(0, 3, 0))
+				local door = CFrame.new(at(x, y, 0) + Vector3.new(0, 3, 0))
+				local crate = part(world.root, { Name = "BarricadeCrate", Size = size, CFrame = home, Color = Color3.fromRGB(150, 98, 52), Material = Enum.Material.WoodPlanks, CanCollide = false })
+				local mark = Instance.new("BillboardGui")
+				mark.Size = UDim2.fromOffset(70, 56)
+				mark.StudsOffset = Vector3.new(0, 5, 0)
+				mark.MaxDistance = 60
+				mark.Parent = crate
+				local icon = Instance.new("TextLabel")
+				icon.Size = UDim2.fromScale(1, 0.7)
+				icon.BackgroundTransparency = 1
+				icon.TextScaled = true
+				icon.Text = "\u{1F4AA}"
+				icon.Parent = mark
+				local word = Instance.new("TextLabel")
+				word.Size = UDim2.fromScale(1, 0.3)
+				word.Position = UDim2.fromScale(0, 0.7)
+				word.BackgroundTransparency = 1
+				word.TextScaled = true
+				word.Font = Enum.Font.FredokaOne
+				word.TextColor3 = Color3.fromRGB(255, 120, 120)
+				word.TextStrokeTransparency = 0.4
+				word.Text = "Muscle's crate"
+				word.Parent = mark
+				local c = { part = crate, home = home, door = door, hx = hx, hy = hy, x = x, y = y, busy = false }
+				table.insert(world.crates, c)
+				world.crateAt[x .. "," .. y] = c
+				return c
+			end
+		end
+	end
+	return nil
+end
+
+-- up to n crates beside the house's inner doorways
+function House.placeCrates(world, n)
+	local map = world.map
+	local doors = {}
+	for y = 1, map.h - 2 do
+		for x = 1, map.w - 2 do
+			if cell(map, x, y) == "." and ((cell(map, x - 1, y) == "#" and cell(map, x + 1, y) == "#") or (cell(map, x, y - 1) == "#" and cell(map, x, y + 1) == "#")) then
+				table.insert(doors, { x, y })
+			end
+		end
+	end
+	for i = #doors, 2, -1 do
+		local j = math.random(1, i)
+		doors[i], doors[j] = doors[j], doors[i]
+	end
+	local made = 0
+	for _, d in ipairs(doors) do
+		if made >= n then
+			break
+		end
+		if House.addCrate(world, d[1], d[2]) then
+			made += 1
+		end
+	end
+end
+
 function House.buildObjects(world)
 	local root, map = world.root, world.map
 	for _, o in ipairs(map.objects) do
@@ -301,6 +410,9 @@ function House.buildObjects(world)
 				part(root, { Name = "Key", Size = Vector3.new(0.5, 0.5, 0.1), Position = entry.keypad.Position + Vector3.new(((i - 1) % 2) * 0.7 - 0.35, 0.4 - math.floor((i - 1) / 2) * 0.7, 0.18), Material = Enum.Material.Neon, Color = Config.COLOR3[col], CanCollide = false })
 			end
 			entry.usePrompt = prompt(entry.keypad, "Use keypad", "Big door")
+			-- Tinker can pick the keypad once a game to learn one colour
+			entry.padPrompt = prompt(entry.keypad, "Pick the keypad", "Tinker: learn one colour", 6)
+			entry.padPrompt.KeyboardKeyCode = Enum.KeyCode.F
 			entry.exit = part(root, { Name = "ExitDoor", Size = Vector3.new(T, 10, 2), Position = base + Vector3.new(0, 5, -T / 2 + 1), Transparency = 1, CanCollide = false })
 		elseif o.kind == "hole" then
 			-- the old secret hole (Muscle's, before the blocked passage): plain wall now
@@ -445,13 +557,14 @@ function House.buildObjects(world)
 				txt.Font = Enum.Font.FredokaOne
 				txt.TextColor3 = Color3.fromRGB(255, 120, 120)
 				txt.TextStrokeTransparency = 0.4
-				txt.Text = "\u{1F6A7} Blocked!"
+				txt.Text = o.bonus and "\u{1F6A7} Junk Cupboard" or "\u{1F6A7} Blocked!"
 				txt.Parent = sg
 			end
-			entry.shovePrompt = prompt(entry.part, "Shove", "Blocked passage - Muscle", 3)
-			entry.popperPrompt = prompt(entry.part, "Plant Party Popper", "Blocked passage", 1)
+			entry.shovePrompt = prompt(entry.part, "Shove", (o.bonus and "Junk Cupboard" or "Blocked passage") .. " - Muscle", 3)
+			entry.popperPrompt = prompt(entry.part, "Plant Party Popper", o.bonus and "Junk Cupboard" or "Blocked passage", 1)
 			entry.popperPrompt.KeyboardKeyCode = Enum.KeyCode.F
 			entry.popperPrompt.Enabled = false
+			storeRoomGift(root, entry, o)
 		elseif o.kind == "lock" then
 			-- walls left and right: the door spans X, otherwise Z
 			local alongX = cell(map, o.x - 1, o.y) ~= "."
@@ -475,6 +588,7 @@ function House.buildObjects(world)
 			entry.unlockPrompt = prompt(entry.lockPart, "Unlock", o.name or "Locked door", 0.5)
 			entry.pickPrompt = prompt(entry.lockPart, "Pick the lock", "Tinker", 4)
 			entry.pickPrompt.KeyboardKeyCode = Enum.KeyCode.F
+			storeRoomGift(root, entry, o)
 		elseif o.kind == "vent" then
 			-- a grate low on the wall towards the other end
 			local dir = Vector3.new(0, 0, 0)

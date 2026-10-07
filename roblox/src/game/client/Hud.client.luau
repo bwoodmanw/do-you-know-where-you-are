@@ -712,7 +712,7 @@ end)
 
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
-local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise" }
+local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade" }
 local function paintSkill()
 	local s = player:GetAttribute("Skill")
 	local icon = "\u{2B50}"
@@ -746,7 +746,7 @@ skillBtn.Activated:Connect(function()
 			end
 			return "house"
 		end
-		local tips = { tinker = "Walk up to a locked door and hold F to pick it - no key needed.", brainy = "Find the twisty invitation in the " .. roomOfObj("invite") .. " and press E to read it.",
+		local tips = { tinker = "Hold F at a locked door to pick it - no key needed. Once a game, hold F at the big door's keypad to learn a colour.", brainy = "Find the twisty invitation in the " .. roomOfObj("invite") .. " and press E to read it.",
 			muscle = "Find the doorway heaped with junk and hold E to shove it clear.", glow = "Find the painted wall in the " .. roomOfObj("uv") .. " and press E to light it up.",
 			bramble = "Find the big plant in the " .. roomOfObj("plant") .. " and press E to ask it." }
 		toast(tips[s] or "Walk up to things and press E.", 4)

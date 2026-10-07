@@ -32,14 +32,19 @@ Party House:
 - [ ] Sound buttons (Lobby and game): a 🔊 button left of the 🎵 one; 🔊 steps 100 / 50 / 25 / Off for pops, doors, bounces, the host's breathing; 🎵 still only the music; both remembered next visit and between Lobby and game
 - [ ] Studio Play now builds the Candy Factory (`Config.STUDIO_MAP = "gummy_2"`): pink candy walls, Conveyor Hall with two conveyor counters, Chocolate River and Packing Hall upstairs behind the doors, stairs up "Up to the Jelly Vault"
 - [ ] Ask Claude to switch to `gummy_3` for the Jelly Vault: jelly pool (ball pit), two jelly bounce pads in the Security Room, three vents, exit to the cotton-candy clouds
+- [ ] Store rooms (every floor): two small rooms in corners of the first rooms - a "Store Room door" (locked: Tinker picks it, or its key from a search spot) and a "Junk Cupboard" (blocked: Muscle shoves it, or its own Party Popper). A gold present inside each: Open = 30 points plus a clue, a Shield or 30 more
+- [ ] Muscle's Barricade button: next to a 💪 crate (6 beside doorways, plus the junk he shoves aside) it slides into the doorway; friends walk straight through it; the host stops and smashes it ("CRASH!") for 4 s, then it slides home; recharges 25 s; with no crate near: "No 💪 crate close by"
+- [ ] Tinker: hold F at the big door's keypad (6 s) - "colour N is ..." once per game; others get "Only Tinker can pick a keypad"
 - [ ] Live: escaping Bounce Hall unlocks Candy Factory; Candy Factory unlocks Jelly Vault; the Lobby map screen shows both floors with their pictures
 
 Patch's face (Party House place, in Studio, NOT playing - press Stop first; the
 "Face softening skipped" lines come from Play mode and are expected):
-1. **View** tab -> **Command Bar** (a box opens at the bottom).
-2. Copy this whole line, paste it in the Command Bar, press **Enter**:
+1. The Command Bar is the small code box at the bottom of the 3D view (newer Studio:
+   Script tab or Window menu -> Command Bar). It is a little editor: Enter only adds a line.
+2. Copy this whole line, paste it in the Command Bar, then click **Run** (the play
+   arrow at its right) - not Enter:
    `local n=0 for _,d in ipairs(game.ServerStorage.Characters.Patch:GetDescendants()) do if d:IsA("SurfaceAppearance") and d.Parent:IsA("MeshPart") then local ok,c=pcall(function() return d.ColorMap end) if not ok or c=="" then local ok2,cc=pcall(function() return d.ColorMapContent.Uri end) c=ok2 and cc or "" end print(d.Parent:GetFullName(),"colour map:",c) if c~="" then d.Parent.TextureID=c d.Parent=nil n+=1 end end end print("Patch: softened",n,"parts")`
-3. **View** tab -> **Output** (in the "Show" group; it opens a panel, usually at the bottom). Photograph the line that starts `Patch: softened`. If you can't see an Output button, send a photo of the View tab.
+3. Output panel (bottom right): clear the search box (it must be empty, not "output"), keep All Messages / All Contexts. Photograph the line that starts `Patch: softened`.
 4. If it says `softened 1` or more: **Test** -> **Play** and photograph Patch's face close up.
    Then in Explorer, right-click **ServerStorage -> Characters -> Patch** -> **Save to Roblox...**
    and overwrite the existing Patch asset (if it only offers a new one, save it and send Claude the new id).

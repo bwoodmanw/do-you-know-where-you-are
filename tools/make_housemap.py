@@ -14,6 +14,8 @@ over that plan's checked SLOTS. This script:
   - plays MapGen's picking 2000 times per plan and checks every result: every
     room still reachable, every object can be walked up to.
 
+Each plan also gets two bonus store rooms (add_closets): B1 locked, B2 blocked.
+
 Map key: # wall, . floor, T furniture, L locked door (or the blocked passage),
 D the big exit door, C the host's door.
 """
@@ -22,6 +24,7 @@ import random
 from collections import deque
 
 W, H = 40, 30
+TRIALS = int(os.environ.get("TRIALS", "2000"))
 
 
 class Plan:
@@ -41,6 +44,7 @@ class Plan:
         self.building, self.floor_no = 'partyhouse', 1
         self.theme = 'party'         # colours, materials and decorations
         self.pads = []               # bounce pads (Gummy Bounce House)
+        self.closets = []            # the two bonus store rooms' inside tiles (add_closets)
 
     def rect(self, x0, y0, x1, y1, ch='#'):
         for y in range(y0, y1 + 1):
@@ -139,6 +143,8 @@ def mirror(a, pid, name):
     p.exit_style, p.tall, p.exit_text = a.exit_style, set(a.tall), a.exit_text
     p.building, p.floor_no, p.theme = a.building, a.floor_no, a.theme
     p.pads = [(m(x), y) for x, y in a.pads]
+    p.fixed = [dict(o, ix=m(o['ix'])) if 'ix' in o else o for o in p.fixed]
+    p.closets = [(m(x), y) for x, y in a.closets]
     if a.loft:
         L = dict(a.loft)
         L['x0'], L['x1'], L['stair_x'] = m(a.loft['x1']), m(a.loft['x0']), m(a.loft['stair_x'])
@@ -387,6 +393,88 @@ def plan_c():
     return p
 
 
+# ---------------------------------------------------------------- bonus store rooms
+def add_closets(p):
+    """Carves two 3 x 3 store rooms into corners of rooms open from the start:
+    B1 behind a locked door (Tinker or its key), B2 behind a blocked door
+    (Muscle or a Party Popper). A present waits inside each. They are off the
+    way out, so a team without Tinker or Muscle can still escape."""
+    z1 = reach(p, ())
+    rooms1 = [f for f in p.floors if any((x, y) in z1 for y in range(f[1], f[3] + 1) for x in range(f[0], f[2] + 1))]
+    keep = set(p.start) | {p.spawn}
+    for o in p.fixed:
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                keep.add((o['x'] + dx, o['y'] + dy))
+    for dx in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            keep.add((p.cake[0] + dx, p.cake[1] + dy))
+            for x, y in p.pads:
+                keep.add((x + dx, y + dy))
+    for y in range(H):
+        for x in range(W):
+            if gap(p, x, y):
+                for dx in (-1, 0, 1):
+                    for dy in (-1, 0, 1):
+                        keep.add((x + dx, y + dy))
+    if p.loft:
+        L = p.loft
+        for y in range(L['y0'] - 1, L['stair_y1'] + 2):
+            for x in range(L['x0'] - 1, L['x1'] + 2):
+                keep.add((x, y))
+
+    def hits(rect, tiles):
+        return any(rect[0] <= x <= rect[2] and rect[1] <= y <= rect[3] for x, y in tiles)
+
+    found = []
+    for f in rooms1:
+        if f[5] in p.tall or (f[2] - f[0]) < 6 or (f[3] - f[1]) < 6:
+            continue
+        for cx, cy, dx, dy in ((f[0], f[1], 1, 1), (f[2], f[1], -1, 1), (f[0], f[3], 1, -1), (f[2], f[3], -1, -1)):
+            inside = [(cx + i * dx, cy + j * dy) for i in range(3) for j in range(3)]
+            walls = [(cx + 3 * dx, cy + j * dy) for j in range(4)] + [(cx + i * dx, cy + 3 * dy) for i in range(3)]
+            door = (cx + 3 * dx, cy + dy)
+            around = [(cx + 4 * dx, cy + j * dy) for j in range(5)] + [(cx + i * dx, cy + 4 * dy) for i in range(4)]
+            if any(p.c(*t) not in '.T' or t in keep for t in inside + walls):
+                continue
+            # furniture in the corner goes (never the cake's table)
+            gone = [fu for fu in p.furniture if hits(fu, inside + walls)]
+            if any(hits(fu, [p.cake]) for fu in gone):
+                continue
+            freed = {(x, y) for fu in gone for y in range(fu[1], fu[3] + 1) for x in range(fu[0], fu[2] + 1)}
+            if any(p.c(*t) not in '.T' or (p.c(*t) == 'T' and t not in freed) for t in around):
+                continue
+            found.append((len(gone), f, inside, walls, door, gone))
+    found.sort(key=lambda c: (c[0], any(s in c[2] for s in p.start), c[1][5]))
+    found = [c[1:] for c in found]
+    picked, used = [], set()
+    for c in found:
+        if c[0][5] not in used and not any(set(c[1] + c[2]) & set(d[1] + d[2]) for d in picked):
+            picked.append(c)
+            used.add(c[0][5])
+        if len(picked) == 2:
+            break
+    assert len(picked) == 2, 'plan %s: room for only %d store rooms' % (p.id, len(picked))
+    for n, (f, inside, walls, door, gone) in enumerate(picked):
+        for fu in gone:
+            p.furniture.remove(fu)
+            p.rect(fu[0], fu[1], fu[2], fu[3], '.')
+        p.props = [s for s in p.props if len(s) > 7 or not hits((s[1], s[2], s[1] + s[3] - 1, s[2] + s[4] - 1), inside + walls)]
+        for t in walls:
+            p.put(t[0], t[1], '#')
+        p.put(door[0], door[1], 'L')
+        mid = inside[4]
+        if n == 0:
+            p.fixed.append(dict(id='B1', kind='lock', bonus=True, name='Store Room door', x=door[0], y=door[1], ix=mid[0], iy=mid[1]))
+        else:
+            p.fixed.append(dict(id='B2', kind='lock', bonus=True, blocked=True, name='Junk Cupboard door', x=door[0], y=door[1], ix=mid[0], iy=mid[1]))
+        p.closets += inside
+        # the host's patrol points never inside: moved just outside the door
+        out = (door[0] + (door[0] - mid[0]), door[1])
+        p.patrol = [((out[0], out[1]) + tuple(t[2:])) if (t[0], t[1]) in inside or (t[0], t[1]) in walls else t for t in p.patrol]
+    return p
+
+
 # ---------------------------------------------------------------- checks and slots
 def gap(p, x, y):
     c = p.c(x, y)
@@ -465,6 +553,10 @@ def check(p):
             problems.append('vent %s ends must be two tiles apart with a wall between' % pid)
         if zone_at(ends[0]) != zone_at(ends[1]):
             problems.append('vent %s would skip a locked door' % pid)
+    every = reach(p, {'L1', 'L2', 'B1', 'B2'})
+    for o in p.fixed:
+        if o.get('bonus') and (o['ix'], o['iy']) not in every:
+            problems.append('store room %s cannot be reached' % o['id'])
     cage = [o for o in p.fixed if o['kind'] == 'cage'][0]
     if (cage['x'] + 1, cage['y']) not in allopen:
         problems.append('the cage has no outside tile')
@@ -482,7 +574,7 @@ def slots(p, zone_of, allopen):
                 for dx in (-1, 0, 1):
                     for dy in (-1, 0, 1):
                         keep.add((x + dx, y + dy))
-    keep |= set(p.start) | {(t[0], t[1]) for t in p.patrol} | {p.spawn}
+    keep |= set(p.start) | {(t[0], t[1]) for t in p.patrol} | {p.spawn} | set(p.closets)
     for o in p.fixed:
         for dx in (-1, 0, 1):
             for dy in (-1, 0, 1):
@@ -605,13 +697,13 @@ def trial(p, floor, wall, rnd):
 
 # ---------------------------------------------------------------- run
 plans = []
-a = plan_a()
-bed = plan_bedrooms()
-att = plan_attic()
-gum = plan_bounce()
-fac = plan_factory()
-vault = plan_vault()
-for p in (a, mirror(a, 'b', 'The Party House'), plan_c(), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms'),
+a = add_closets(plan_a())
+bed = add_closets(plan_bedrooms())
+att = add_closets(plan_attic())
+gum = add_closets(plan_bounce())
+fac = add_closets(plan_factory())
+vault = add_closets(plan_vault())
+for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms'),
           att, mirror(att, 'attic_b', 'The Party House - Attic'), gum, mirror(gum, 'gum_b', 'Gummy Bounce House - Bounce Hall'),
           fac, mirror(fac, 'fac_b', 'Gummy Bounce House - Candy Factory'), vault, mirror(vault, 'vault_b', 'Gummy Bounce House - Jelly Vault')):
     problems, zone_of, allopen = check(p)
@@ -620,7 +712,7 @@ for p in (a, mirror(a, 'b', 'The Party House'), plan_c(), bed, mirror(bed, 'bed_
         p.id, {z: sorted(r for r in zone_of if zone_of[r] == z) for z in (1, 2, 3)}, len(floor), len(wall), sum(1 for s in wall if s[2] == 2)))
     rnd = random.Random(1)
     seen = set()
-    for _ in range(2000):
+    for _ in range(TRIALS):
         for prob in trial(p, floor, wall, rnd):
             seen.add(prob)
     problems += sorted(seen)
@@ -675,7 +767,7 @@ for bld in ('partyhouse', 'gummy'):
             '\t\tpatrol = { %s },' % ', '.join(('{ %d, %d, lock = "%s" }' % t) if len(t) == 3 else ('{ %d, %d }' % t) for t in p.patrol),
             '\t\tfixed = {']
     for o in p.fixed:
-        out.append('\t\t\t{ %s },' % ', '.join('%s = %s' % (k, lua(o[k])) for k in ('id', 'kind', 'name', 'pair', 'x', 'y') if k in o))
+        out.append('\t\t\t{ %s },' % ', '.join('%s = %s' % (k, lua(o[k])) for k in ('id', 'kind', 'name', 'pair', 'x', 'y', 'bonus', 'blocked', 'ix', 'iy') if k in o))
     out += ['\t\t},', '\t\tprops = {']
     for s in p.props:
         out.append('\t\t\t{ name = "%s", x = %d, y = %d, w = %d, d = %d, h = %s, face = "%s"%s },' % (s[0], s[1], s[2], s[3], s[4], s[5], s[6], ', hang = true' if len(s) > 7 else ''))
