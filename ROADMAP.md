@@ -60,3 +60,19 @@ Brent approved this plan as written; build in order, asking before each step.
   Candy Factory and Jelly Vault: next.
 
 Later: "Tower Run" (several floors in one game).
+
+## Round of 6 Oct (late) - built, untested
+Shared map screen with votes and pictures; portraits (Lobby and game);
+leaderboard avatars; swing set and soccer ball; active-boost timers;
+Patch's breather aura (+50% stamina near her, 10 s per friend) and 3.5 s
+cage freeing (Patch half); bats / tissue / confetti from empty finds; hides
+marked and in every pair of joined rooms (1-3 players); interactive party
+clutter (cake candles, jack-in-the-box, gift pile).
+
+## Next, waiting on Brent's yes
+1. 10 levels per character (XP 300 / 800 / 1,600 / 3,000 / 4,800 / 7,000 /
+   9,600 / 12,600 / 16,000; smaller bonuses; scrolling ladder).
+2. Muscle's blocked passage + Party Popper (replaces one locked door and the
+   secret hole).
+3. Gummy floors 2-3 (Candy Factory, Jelly Vault), then the Hospital.
+4. Halloween polish for 29 Oct: tutorial, balance, dressed rooms.

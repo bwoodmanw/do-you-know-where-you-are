@@ -10,6 +10,25 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## This round (built 6 Oct late) - test these first
+
+Lobby:
+- [ ] Characters screen: a portrait on every character button; the arrows under the 3D view step through characters
+- [ ] Leaderboards: a round avatar picture beside every name
+- [ ] Party leader taps the map button: building cards with pictures, then floor cards; a second player sees the same screen and both votes (with names) show at once; Done closes it for everyone
+- [ ] Swing set: sit on either swing and it swings; two players at once
+- [ ] Soccer ball: walk into it and it rolls; it comes back if it leaves the lawn
+
+Party House:
+- [ ] Character picker shows the portrait in the info panel
+- [ ] Active boosts row (above the bag): Shield shows "ON" after a present gives one; Candy counts down; Frozen Pop counts down 10 s
+- [ ] Patch: a friend standing near her gets "+50% stamina" (not more than once every 10 s); her Shield button still works
+- [ ] Freeing a friend takes 3.5 s; Patch takes about 1.75 s
+- [ ] Empty search spot: bats fly out, or tissue paper floats down, or confetti, with a matching message; an empty present drops tissue paper
+- [ ] Hiding places have a monkey 🙈 above them and say Fits 1, 2 or 3 (wardrobes 3); every two joined rooms have one between them
+- [ ] Party clutter in the middle of rooms, not solid: cake (Blow out the candles; they relight after 40 s), jack-in-the-box (pops and the host comes to look), pile of presents (Shake: tissue paper), chair with balloons
+- [ ] Patch's face: F9 shows "Face softening skipped for Patch..." if the in-game fix cannot run - then do the Studio fix
+
 ## Lobby (Escape Crew place, Rojo port 34873)
 - [ ] House model in place, facing the lawn; no glowing boxes in front of it
 - [ ] A host face in a window every 18-40 s, lined up with a window (exact: add Parts named PeekSpot on the windows)
@@ -35,7 +54,7 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 - [ ] Locked doors: key found in a search spot (gold key floats up) or Tinker picks it
 - [ ] Opened things open: lids, drawers, coats, vases, presents
 - [ ] Trick balloons pop with nothing inside; real ones show a colour
-- [ ] Hiding spots say Fits 1 / Fits 2 and keep to it
+- [ ] Hiding spots say Fits 1 / 2 / 3 and keep to it
 - [ ] Vents: Crawl takes you to the next room; the host cannot follow
 - [ ] Clues cost 10 / 20 / 30 points from this game; the points line counts up
 - [ ] The host walks faster than you walk, slower than you run

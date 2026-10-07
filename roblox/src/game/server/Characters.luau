@@ -86,6 +86,9 @@ local function soften(model)
 				end)
 				if ok then
 					d:Destroy()
+				else
+					-- a running game usually cannot read ColorMap: soften it in Studio instead
+					warn("Face softening skipped for " .. model.Name .. "." .. part.Name .. " - move its SurfaceAppearance ColorMap into TextureID in Studio")
 				end
 			end
 		end
