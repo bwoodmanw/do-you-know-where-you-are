@@ -52,19 +52,59 @@ local function fill(p)
 	return p
 end
 
+--[[
+	Save safety. A player's save is "held" by the server they are in: the
+	save carries _lock = { job = that server, t = when }. A server only loads
+	a save nobody else holds (it waits up to LOCK_WAIT seconds for the place
+	they came from to let go), and only writes a save it still holds. Leaving
+	writes the save and lets go in one step. So the trip Lobby -> game ->
+	Lobby can never load old data or write over newer data.
+]]
+local LOCK_WAIT = 20 -- seconds to wait for the last server to let go
+local LOCK_STALE = 300 -- a hold older than this belongs to a server that died
+local JOB = game.JobId
+
+local function heldByOther(v)
+	return type(v) == "table" and type(v._lock) == "table" and v._lock.job ~= JOB and os.time() - (v._lock.t or 0) < LOCK_STALE
+end
+
 function Profile.load(plr)
 	local key = "u" .. plr.UserId
 	local data
 	if store then
-		local ok, v = pcall(function()
-			return store:GetAsync(key)
-		end)
-		if ok and type(v) == "table" then
-			data = v
+		local started = os.clock()
+		while plr.Parent and not data do
+			local force = os.clock() - started > LOCK_WAIT
+			local got
+			local ok = pcall(function()
+				store:UpdateAsync(key, function(old)
+					got = nil -- Roblox may run this more than once: only the last run counts
+					if heldByOther(old) and not force then
+						return nil -- another server still has it: wait
+					end
+					local d = type(old) == "table" and old or { _new = true }
+					d._lock = { job = JOB, t = os.time() }
+					got = d
+					return d
+				end)
+			end)
+			if ok and got then
+				data = got
+			elseif not ok then
+				task.wait(2)
+			else
+				task.wait(1.5)
+			end
+			if not ok and os.clock() - started > LOCK_WAIT + 10 then
+				break -- the save service is down: play on with a fresh profile, saved later
+			end
 		end
 	end
-	if not data then
+	if not data or data._new then
+		-- a first visit: a fresh profile (still holding the lock if we took one)
+		local lock = data and data._lock
 		data = fresh()
+		data._lock = lock
 		-- bring over points from the first version of the game
 		if oldStore then
 			local ok, v = pcall(function()
@@ -87,20 +127,47 @@ function Profile.get(plr)
 	return cache[plr.UserId]
 end
 
-function Profile.save(plr)
-	local data = cache[plr.UserId]
+-- write the save (and keep holding it, unless letting go); false if it could
+-- not be written, or another server holds it now
+local function write(userId, letGo)
+	local data = cache[userId]
 	if not data or not store then
 		return false
 	end
+	local wrote = false
 	local ok = pcall(function()
-		store:SetAsync("u" .. plr.UserId, data)
+		store:UpdateAsync("u" .. userId, function(old)
+			wrote = false -- Roblox may run this more than once: only the last run counts
+			if heldByOther(old) then
+				return nil -- someone else has it now: never write over newer data
+			end
+			data._lock = (not letGo) and { job = JOB, t = os.time() } or nil
+			wrote = true
+			return data
+		end)
 	end)
-	return ok
+	return ok and wrote
+end
+
+function Profile.save(plr)
+	return write(plr.UserId, false)
 end
 
 function Profile.release(plr)
-	Profile.save(plr)
+	write(plr.UserId, true)
 	cache[plr.UserId] = nil
+end
+
+-- every minute: save everyone here (keeps the hold fresh; a crash loses a minute at most)
+if game:GetService("RunService"):IsServer() then
+	task.spawn(function()
+		while true do
+			task.wait(60)
+			for userId in pairs(cache) do
+				task.spawn(write, userId, false)
+			end
+		end
+	end)
 end
 
 -- copy what screens need onto the player (attributes replicate to clients)
