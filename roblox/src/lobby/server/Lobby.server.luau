@@ -251,6 +251,8 @@ task.spawn(function()
 			end
 		end
 		local w = table.remove(peekTest, 1) or windows[math.random(1, math.max(1, #windows))]
+		-- one peek going wrong must never stop the peeks for the rest of the server's life
+		local okPeek, peekErr = pcall(function()
 		if w then
 			local old = w.Color
 			w.Color = Color3.fromRGB(200, 60, 40)
@@ -296,6 +298,11 @@ task.spawn(function()
 				shadow:Destroy()
 			end
 			w.Color = old
+		end
+		end)
+		if not okPeek then
+			warn("Lobby peek failed (trying again next time): " .. tostring(peekErr))
+			task.wait(5)
 		end
 	end
 end)

@@ -10,6 +10,15 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 13 (7 Oct, late) - fixes from Brent's play test
+
+- [ ] Caught while crawling through a vent or the laundry chute (the host only catches you there in a frenzy): you appear in the cage, everyone can see you, friends can free you
+- [ ] Anyone caged always stays in the cage (if something moves them out, they are put straight back)
+- [ ] Characters with "one code colour" on their ladder (Tinker, Brainy, Glow 3; Bramble 5): one colour shows on the code bar when the clock starts, on every floor and in the first game too (it used to come from the character you played LAST game, so it went missing); two such players show two different colours
+- [ ] Ladder "+1 clue" upgrades: when the clock starts "+N free clues from your upgrades"; the Clue button says "Clue FREE" and no points are taken until those are used
+- [ ] Lobby: the host's face (or shadow) keeps peeking in a window every 18 to 40 seconds for as long as the server runs; F9 Server never shows "Lobby peek failed" (if it does, photo please)
+- [ ] Skins in Studio: Lobby -> Characters -> Tinker -> Skins row -> Pumpkin Patch Tinker: the 3D view shows the pumpkin outfit
+
 ## Round 12 (7 Oct, fourth session) - the rest of IMPROVEMENTS.md - test these first
 
 Studio Play builds the Candy Factory (`gummy_2`). For the vault ask for

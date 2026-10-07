@@ -166,3 +166,25 @@ made by `tools/repaint_shoes.py`). To put it on him:
     window; after buying, "... is yours" and it is worn next game.
 
 If a screen looks different from these steps, send me a photo of it.
+
+## Remaking Echo herself (her face looks squashed, 7 Oct)
+
+In the render of `art/models/echo.glb` her big goggles fill the top half of
+the head, so the face is squeezed into the bottom third and one eye came out
+half closed. That is the 3D shape Meshy made from the picture, so the fix is
+a new picture and a new model (texture tricks cannot reshape a head).
+
+1. **Picture** - attach `art/model-input/echo/a-pose-front.png` as the
+   reference, use this prompt, save as `art/model-input/echo-remake/a-pose-front.png`
+   and tell me (I check it before you build):
+   > The same girl as the reference picture: same curly brown hair in a messy bun, freckles and big brown eyes, and the same outfit (yellow bomber jacket over a purple hoodie, big headphones round her neck, purple cargo trousers, chunky purple and yellow trainers, a small backpack). Change only her head: her face is large and clear and fills most of the head, both eyes wide open and the same size, a calm confident look; her goggles are small and pushed far back on top of her hair bun, not covering her forehead. Stylised 3D animated-film look, full body, standing in a T-pose facing the camera, arms straight out to the sides, plain light grey background, soft even lighting, no text, no logos.
+2. **Meshy** - **T-Pose**, the usual settings; check the face from the front
+   before downloading; save as `art/models/echo-remake.glb`. Optionally tell me
+   first and I run `tools/face_boost.py` on it (a sharper face).
+3. **Studio, Party House** - delete the old **Echo** in ServerStorage ->
+   Characters (or drag it to Workspace and rename it `EchoOld` until the new
+   one works), import the new file, **Avatar Setup** -> **Body**, put it in
+   Characters named `Echo`, **Soften Patch**, Play and check.
+4. **Save to Roblox** -> **Overwrite** the existing `Escape Crew - Echo` asset
+   (its id 121427930738516 stays, so the Lobby shows the new face with no
+   code change) -> **File -> Publish to Roblox**.

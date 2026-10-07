@@ -1124,6 +1124,8 @@ local function wirePrompts()
 					return say("info", "Catch your breath - you can crawl again in a moment.", nil, plr)
 				end
 				state.ventCool[plr.UserId] = nowT + 1.6 + Config.VENT_REUSE
+				local crawlId = (plr:GetAttribute("CrawlId") or 0) + 1
+				plr:SetAttribute("CrawlId", crawlId)
 				plr:SetAttribute("Crawling", true)
 				quest(plr, "vent")
 				local h = hrpOf(plr)
@@ -1134,6 +1136,9 @@ local function wirePrompts()
 				Effects.sound(entry.part.Position, "hide")
 				say("info", "Crawling through the vent...", nil, plr)
 				task.delay(1.6, function()
+					if plr:GetAttribute("CrawlId") ~= crawlId or plr:GetAttribute("Caged") then
+						return -- caught on the way: the cage has them now
+					end
 					teleport(plr, at(other.def.x, other.def.y, 0))
 					local h2 = hrpOf(plr)
 					if h2 then
@@ -1386,8 +1391,25 @@ function round.hostHit(_, plr)
 	end)
 end
 
+-- put a caged player in the cage, seen by everyone, unable to walk
+local function intoCage(plr)
+	local h = hrpOf(plr)
+	if h then
+		h.Anchored = false
+	end
+	setVisible(plr, true)
+	teleport(plr, world.objects.cage.inside)
+	setSpeed(plr, 0)
+	world.objects.cage.prompt.Enabled = true
+end
+
 function round.hostCaught(_, plr)
 	unhide(plr)
+	-- caught in a vent or the laundry chute (only in a frenzy): out of it first
+	if plr:GetAttribute("Crawling") then
+		plr:SetAttribute("CrawlId", (plr:GetAttribute("CrawlId") or 0) + 1)
+		plr:SetAttribute("Crawling", false)
+	end
 	if state.everCaught and not plr:GetAttribute("Shield") then
 		state.everCaught[plr.UserId] = true
 	end
@@ -1401,9 +1423,7 @@ function round.hostCaught(_, plr)
 		host:stun(2.8) -- holds still for the close-up
 	end
 	plr:SetAttribute("Caged", true)
-	teleport(plr, world.objects.cage.inside)
-	setSpeed(plr, 0)
-	world.objects.cage.prompt.Enabled = true
+	intoCage(plr)
 	say("caught", plr.DisplayName .. " was caught! Free them from the cage in the " .. roomOf("cage") .. "!", { userId = plr.UserId })
 	checkEnd()
 end
@@ -2039,6 +2059,8 @@ function round.start()
 				return say("info", "The chute needs a moment - try again in a few seconds.", nil, plr)
 			end
 			used[plr.UserId] = os.clock() + Config.CHUTE.seconds + Config.CHUTE.reuse
+			local crawlId = (plr:GetAttribute("CrawlId") or 0) + 1
+			plr:SetAttribute("CrawlId", crawlId)
 			plr:SetAttribute("Crawling", true)
 			local h = hrpOf(plr)
 			if h then
@@ -2048,6 +2070,9 @@ function round.start()
 			Effects.sound(chute.from, "throw", 1)
 			say("info", "Wheee! Down the laundry chute...", nil, plr)
 			task.delay(Config.CHUTE.seconds, function()
+				if plr:GetAttribute("CrawlId") ~= crawlId or plr:GetAttribute("Caged") then
+					return -- caught on the way: the cage has them now
+				end
 				teleport(plr, chute.to)
 				local h2 = hrpOf(plr)
 				if h2 then
@@ -2140,7 +2165,7 @@ function round.start()
 	for _, l in ipairs(world.lights) do
 		l.Brightness = spook == "spooky" and 0.45 or 1.2
 	end
-	local extraClues, extraGrace, reveal = 0, 0, false
+	local extraGrace = 0
 	for i, plr in ipairs(Players:GetPlayers()) do
 		plr:SetAttribute("Waiting", false)
 		plr:SetAttribute("Escaped", false)
@@ -2154,11 +2179,6 @@ function round.start()
 		end
 		setVisible(plr, true)
 		setSpeed(plr, Config.WALK)
-		local mods = applyMods(plr)
-		plr:SetAttribute("Energy", 100 + mods.energyStart)
-		plr:SetAttribute("Shield", mods.shield == true)
-		extraClues += mods.clues
-		reveal = reveal or mods.revealOne == true
 		-- boosts brought from the Lobby shop, used up in this game
 		local pd = Profile.get(plr)
 		local on = {}
@@ -2167,6 +2187,7 @@ function round.start()
 			for _, id in ipairs(pd.loadout) do
 				if id == "shield" then
 					plr:SetAttribute("Shield", true)
+					plr:SetAttribute("ShieldBoost", true)
 					table.insert(on, id)
 				elseif id == "headstart" then
 					extraGrace = 10
@@ -2184,17 +2205,8 @@ function round.start()
 		local s = HouseMap.start[((i - 1) % #HouseMap.start) + 1]
 		teleport(plr, at(s[1], s[2], 0))
 	end
-	state.freeClues = extraClues
-	RoundState:SetAttribute("FreeClues", extraClues)
-	if extraClues > 0 then
-		state.cluesLeft += extraClues
-		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
-	end
-	if reveal then
-		local k = math.random(1, 3)
-		state.known[k] = state.code[k]
-		RoundState:SetAttribute("Known" .. k, state.code[k])
-	end
+	state.freeClues = 0
+	RoundState:SetAttribute("FreeClues", 0)
 	host = Host.new(world, round)
 	-- tonight's host: half the time the building's own, otherwise another
 	local mapI = Progress.mapIndex(RoundState:GetAttribute("Map") or "partyhouse")
@@ -2252,6 +2264,44 @@ function round.start()
 		end
 		RoundState:SetAttribute("WaitingToPick", 0)
 		RoundState:SetAttribute("PickDeadline", nil)
+		-- everyone has their character now: its ladder upgrades count from here
+		-- (free clues - never paid for with points - a code colour, stamina, a Shield)
+		local bonusClues, reveals = 0, 0
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p:GetAttribute("Skill") and not p:GetAttribute("Waiting") then
+				local mods = applyMods(p)
+				p:SetAttribute("Energy", 100 + (mods.energyStart or 0))
+				p:SetAttribute("Shield", mods.shield == true or p:GetAttribute("ShieldBoost") == true)
+				bonusClues += mods.clues or 0
+				if mods.revealOne then
+					reveals += 1
+				end
+			end
+			p:SetAttribute("ShieldBoost", nil)
+		end
+		if bonusClues > 0 then
+			state.freeClues = (state.freeClues or 0) + bonusClues
+			state.cluesLeft += bonusClues
+			RoundState:SetAttribute("FreeClues", state.freeClues)
+			RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+		end
+		-- each character with "one code colour" shows a different colour (never all three)
+		for _ = 1, math.min(reveals, 2) do
+			local unknown = {}
+			for k = 1, 3 do
+				if not state.known[k] then
+					table.insert(unknown, k)
+				end
+			end
+			if #unknown > 1 then
+				local k = unknown[math.random(1, #unknown)]
+				state.known[k] = state.code[k]
+				RoundState:SetAttribute("Known" .. k, state.code[k])
+			end
+		end
+		if reveals > 0 or bonusClues > 0 then
+			say("info", (reveals > 0 and "Your upgrades showed a colour of the code! " or "") .. (bonusClues > 0 and ("+" .. bonusClues .. " free " .. (bonusClues == 1 and "clue" or "clues") .. " from your upgrades.") or ""))
+		end
 		-- the escape timer starts now
 		local t0 = workspace:GetServerTimeNow()
 		state.startedAt = t0
@@ -2313,7 +2363,10 @@ RunService.Heartbeat:Connect(function(dt)
 		local hrp = hrpOf(plr)
 		if hrp then
 			local pos = hrp.Position
-			if pos.Y < -20 then
+			if plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped") and world.objects.cage
+				and (pos - world.objects.cage.inside).Magnitude > 7 then
+				intoCage(plr)
+			elseif pos.Y < -20 then
 				-- fell off the world: back to safety
 				teleport(plr, plr:GetAttribute("Escaped") and world.gardenSpot or at(HouseMap.start[1][1], HouseMap.start[1][2], 0))
 			elseif not plr:GetAttribute("Escaped") and not plr:GetAttribute("Caged") and not plr:GetAttribute("Waiting") then
