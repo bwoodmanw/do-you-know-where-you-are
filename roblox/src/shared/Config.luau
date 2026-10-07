@@ -43,7 +43,9 @@ Config.CLUE_COSTS = { 10, 20, 30 }
 Config.POINT_SCALE = 0.67
 -- reset one character's skill ladder (the Robux price is set on the
 -- Developer Product in Creator Hub; the Lobby button reads it from there)
-Config.RESET_POINTS = 500
+Config.RESET_POINTS = 800
+-- seconds before the same player can crawl through a vent again
+Config.VENT_REUSE = 2.5
 -- the heartbeat that speeds up near the host (off: only the breathing tells)
 Config.HEARTBEAT = false
 -- host skills; cooldowns by difficulty
@@ -90,10 +92,10 @@ Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25 }
 
 -- what each skill does, and how you use it, for the character select screen
 Config.SKILL_INFO = {
-	tinker = { about = "Picks the locked doors inside the house, so the team never needs to hunt for their keys. (The big exit door still needs the colour code.)", how = "Walk up to a locked door and hold F." },
+	tinker = { about = "Picks the locked doors inside the house, so the team never needs to hunt for their keys. (Not the blocked passage, and the big exit door still needs the colour code.)", how = "Walk up to a locked door and hold F." },
 	shadow = { about = "Sneaks: for a few seconds the host can't see or grab Shadow. Shadow is also harder to spot than anyone.", how = "Press the Sneak button. It recharges." },
 	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as many points.", how = "Find the invitation in the Parlour and press E." },
-	muscle = { about = "Shoves the heavy cabinet in the Music Room aside, opening a secret way out.", how = "Hold E at the cabinet." },
+	muscle = { about = "Shoves away the junk heaped in a blocked doorway, quietly. Without Muscle, the team needs the Party Popper hidden in a search spot - and its BOOM brings the host.", how = "Hold E at the blocked doorway." },
 	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.", how = "Press E at the painted wall in the Library." },
 	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). Her Shield button gives a friend a Party Shield. She frees every caged friend at once, faster than anyone.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
 	echo = { about = "Hears the host coming from further away, and throws a noise that sends the host to look somewhere else.", how = "Press Noise, then tap where to throw it." },

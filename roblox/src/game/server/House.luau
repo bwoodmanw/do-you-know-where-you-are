@@ -303,11 +303,10 @@ function House.buildObjects(world)
 			entry.usePrompt = prompt(entry.keypad, "Use keypad", "Big door")
 			entry.exit = part(root, { Name = "ExitDoor", Size = Vector3.new(T, 10, 2), Position = base + Vector3.new(0, 5, -T / 2 + 1), Transparency = 1, CanCollide = false })
 		elseif o.kind == "hole" then
+			-- the old secret hole (Muscle's, before the blocked passage): plain wall now
 			entry.panel = part(root, { Name = "HolePanel", Size = Vector3.new(T, 10, T), Position = base + Vector3.new(0, 5, 0), Material = Enum.Material.Plaster, Color = wallColor })
-			entry.exit = part(root, { Name = "ExitHole", Size = Vector3.new(2, 10, T), Position = base + Vector3.new((T / 2 + 1) * (o.x == 0 and -1 or 1), 5, 0), Transparency = 1, CanCollide = false })
 		elseif o.kind == "cabinet" then
 			entry.part = part(root, { Name = "Cabinet", Size = Vector3.new(T * 0.8, 9, T * 0.9), Position = base + Vector3.new(0, 4.5, 0), Material = Enum.Material.Wood, Color = Color3.fromRGB(107, 66, 38) })
-			entry.prompt = prompt(entry.part, "Shove", "Heavy cabinet - Muscle", 2.5)
 		elseif o.kind == "cage" then
 			local cage = Instance.new("Model")
 			cage.Name = "Cage"
@@ -378,7 +377,11 @@ function House.buildObjects(world)
 				part(root, { Name = "Leaf", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 4.2, 2.4), Position = base + Vector3.new(math.cos(a) * 1.6, 4.8 + (i % 3) * 1.1, math.sin(a) * 1.6), Color = i % 2 == 0 and Color3.fromRGB(58, 160, 78) or Color3.fromRGB(120, 210, 110), Material = Enum.Material.Grass, CanCollide = false })
 			end
 			-- a big flower on top so it reads as "the plant", a soft glow and sparkles
-			part(root, { Name = "Bloom", Shape = Enum.PartType.Ball, Size = Vector3.new(2, 2, 2), Position = base + Vector3.new(0, 8.4, 0), Color = Color3.fromRGB(255, 120, 190), Material = Enum.Material.Neon, CanCollide = false })
+			part(root, { Name = "BloomMiddle", Shape = Enum.PartType.Ball, Size = Vector3.new(1, 1, 1), Position = base + Vector3.new(0, 8.6, 0), Color = Color3.fromRGB(255, 210, 63), Material = Enum.Material.SmoothPlastic, CanCollide = false })
+			for k = 1, 5 do
+				local pa = k / 5 * math.pi * 2
+				part(root, { Name = "Petal", Shape = Enum.PartType.Ball, Size = Vector3.new(1.2, 0.4, 1.2), Position = base + Vector3.new(math.cos(pa) * 0.9, 8.5, math.sin(pa) * 0.9), Color = Color3.fromRGB(255, 120, 190), Material = Enum.Material.SmoothPlastic, CanCollide = false })
+			end
 			local glow = Instance.new("PointLight")
 			glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(150, 255, 150), 14, 1.5
 			glow.Parent = pot
@@ -407,6 +410,48 @@ function House.buildObjects(world)
 			icon.Parent = marker
 			entry.part = pot
 			entry.prompt = prompt(pot, "Ask the plant", "Big plant - Bramble", 1.5)
+		elseif o.kind == "lock" and o.blocked then
+			-- a doorway heaped with party junk: Muscle shoves it, or a Party Popper
+			local alongX = cell(map, o.x - 1, o.y) ~= "."
+			entry.part = part(root, { Name = "BlockedPassage", Size = alongX and Vector3.new(T, 13, 1.4) or Vector3.new(1.4, 13, T), Position = base + Vector3.new(0, 6.5, 0), Transparency = 1 })
+			entry.pile = {}
+			-- { size (across the doorway, up, through), offset (across, up, through), colour, material, tilt }
+			local JUNK = {
+				{ Vector3.new(T * 0.95, 3, 2.4), Vector3.new(0, 1.5, 0), Color3.fromRGB(107, 66, 38), Enum.Material.Wood, 0 },
+				{ Vector3.new(3, 3, 2.6), Vector3.new(-T * 0.27, 4.5, 0.2), Color3.fromRGB(181, 139, 87), Enum.Material.WoodPlanks, 10 },
+				{ Vector3.new(2.6, 2.6, 2.4), Vector3.new(T * 0.24, 4.3, -0.2), Color3.fromRGB(255, 77, 94), Enum.Material.SmoothPlastic, -8 },
+				{ Vector3.new(3.6, 2.2, 2.2), Vector3.new(0.3, 7, 0), Color3.fromRGB(123, 227, 107), Enum.Material.SmoothPlastic, 18 },
+				{ Vector3.new(0.8, 7, 0.8), Vector3.new(-T * 0.38, 8.5, 0.3), Color3.fromRGB(60, 40, 30), Enum.Material.Wood, 30 },
+				{ Vector3.new(2.4, 2, 2.2), Vector3.new(T * 0.3, 7.4, 0), Color3.fromRGB(110, 60, 160), Enum.Material.Fabric, -15 },
+				{ Vector3.new(2, 1.6, 2), Vector3.new(-0.8, 9.6, 0.1), Color3.fromRGB(255, 210, 63), Enum.Material.SmoothPlastic, 25 },
+			}
+			for _, j in ipairs(JUNK) do
+				local size = alongX and j[1] or Vector3.new(j[1].Z, j[1].Y, j[1].X)
+				local off = alongX and j[2] or Vector3.new(j[2].Z, j[2].Y, j[2].X)
+				local tilt = alongX and CFrame.Angles(0, 0, math.rad(j[5])) or CFrame.Angles(math.rad(j[5]), 0, 0)
+				table.insert(entry.pile, part(root, { Name = "Junk", Size = size, CFrame = CFrame.new(base + off) * tilt, Color = j[3], Material = j[4], CanCollide = false }))
+			end
+			for _, face in ipairs(alongX and { Enum.NormalId.Front, Enum.NormalId.Back } or { Enum.NormalId.Left, Enum.NormalId.Right }) do
+				local sg = Instance.new("SurfaceGui")
+				sg.Face = face
+				sg.CanvasSize = Vector2.new(400, 650)
+				sg.LightInfluence = 0
+				sg.Parent = entry.part
+				local txt = Instance.new("TextLabel")
+				txt.Size = UDim2.new(1, -40, 0.16, 0)
+				txt.Position = UDim2.new(0, 20, 0.04, 0)
+				txt.BackgroundTransparency = 1
+				txt.TextScaled = true
+				txt.Font = Enum.Font.FredokaOne
+				txt.TextColor3 = Color3.fromRGB(255, 120, 120)
+				txt.TextStrokeTransparency = 0.4
+				txt.Text = "\u{1F6A7} Blocked!"
+				txt.Parent = sg
+			end
+			entry.shovePrompt = prompt(entry.part, "Shove", "Blocked passage - Muscle", 3)
+			entry.popperPrompt = prompt(entry.part, "Plant Party Popper", "Blocked passage", 1)
+			entry.popperPrompt.KeyboardKeyCode = Enum.KeyCode.F
+			entry.popperPrompt.Enabled = false
 		elseif o.kind == "lock" then
 			-- walls left and right: the door spans X, otherwise Z
 			local alongX = cell(map, o.x - 1, o.y) ~= "."

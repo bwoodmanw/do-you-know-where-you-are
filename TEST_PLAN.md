@@ -21,12 +21,20 @@ Lobby:
 Party House:
 - [ ] Character picker: the boosts line ends with "(get them in the Lobby shop)" with the bracket showing
 - [ ] Character picker: the level matches the Lobby's ladder screen (it used an old XP table before)
+- [ ] Solo: choosing a character does NOT start the game; the clock and host start only after you press Play (with friends: when everyone has pressed Play, or after 2 min)
+- [ ] Vents: two or more players can crawl through the same vent one after another; you can't crawl again for about 2.5 s after coming out ("Catch your breath")
+- [ ] Bramble's plant has a pink flower with a yellow middle on top (no glowing orb)
+- [ ] Muscle: one of the two locked doors is a doorway heaped with junk saying "Blocked!" (red on the corner map); Muscle holds E 3 s and it clears quietly; anyone else gets "Too heavy..."
+- [ ] Party Popper: one search spot on the near side holds it ("found a Party Popper!"); at the blocked doorway hold F to plant it; 3-2-1 countdown, BOOM with confetti, the doorway clears and the host comes to look
+- [ ] Tinker cannot pick the blocked doorway; the other locked door still works with a key or Tinker
+- [ ] No secret hole any more; the Music Room cabinet is just furniture
+- [ ] Lobby: the points reset button says 800
 
 Patch's face (Party House place, in Studio, not playing):
 1. **View** tab -> **Command Bar** (a box opens at the bottom).
 2. Copy this whole line, paste it in the Command Bar, press **Enter**:
    `local n=0 for _,d in ipairs(game.ServerStorage.Characters.Patch:GetDescendants()) do if d:IsA("SurfaceAppearance") and d.Parent:IsA("MeshPart") then local ok,c=pcall(function() return d.ColorMap end) if not ok or c=="" then local ok2,cc=pcall(function() return d.ColorMapContent.Uri end) c=ok2 and cc or "" end print(d.Parent:GetFullName(),"colour map:",c) if c~="" then d.Parent.TextureID=c d.Parent=nil n+=1 end end end print("Patch: softened",n,"parts")`
-3. **View** -> **Output**. Photograph what it printed.
+3. **View** tab -> **Output** (in the "Show" group; it opens a panel, usually at the bottom). Photograph what it printed. If you can't see an Output button, send a photo of the View tab.
 4. If it says `softened 1` or more: **Test** -> **Play** and photograph Patch's face close up.
    Then in Explorer, right-click **ServerStorage -> Characters -> Patch** -> **Save to Roblox...**
    and overwrite the existing Patch asset (if it only offers a new one, save it and send Claude the new id).

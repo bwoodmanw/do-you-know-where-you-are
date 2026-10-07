@@ -156,9 +156,9 @@ Checklist in `TEST_PLAN.md` ("This round").
 2. **10 levels per character** - built 7 Oct, untested (table in
    ROADMAP.md). **Skill Reset price:** Claude agrees with 79 Robux; Brent
    changes it in Creator Hub (the Lobby button reads the live price).
-3. **Muscle redesign** (no answer yet): a blocked passage replaces one locked
-   door; Muscle shoves it, or anyone plants a Party Popper found in a search
-   spot (3 s fuse, BOOM brings the host). The secret hole goes.
+3. **Muscle redesign** - built 7 Oct, untested (ROADMAP.md). Also the
+   game now waits for every player's Play press (solo used to start the
+   moment a character was chosen); vents: any number, 2.5 s per player.
 4. **Gummy floors 2-3** (Candy Factory, Jelly Vault) and the **Hospital**.
 5. **Halloween polish, live by 29 Oct:** first-game tutorial, host balance per
    difficulty, more dressed rooms.

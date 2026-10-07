@@ -101,10 +101,20 @@ is in `roblox/src/shared/Progress.luau`.
 
 (Patch's "shield all nearby" stays at level 3 where players already took it.)
 
+## Muscle's blocked passage (built 7 Oct, Brent's yes) - untested
+Each game one of the two locked doors (random) is a doorway heaped with
+party junk instead. Muscle holds E 3 s and shoves it clear (quiet, 25
+points). Without Muscle, the Party Popper hidden in a search spot on the
+near side (where that door's key would be) is planted with F: 3 s fuse,
+BOOM, confetti, the host comes to look (15 points). Tinker can't pick it.
+The secret hole is gone (plain wall; the cabinet is furniture). The plan
+data in `make_housemap.py` still lists hole + cabinet; harmless.
+Also 7 Oct: points reset 800; vents take any number of players, each
+waits `Config.VENT_REUSE` (2.5 s) before crawling again; the game starts
+only when everyone presses Play.
+
 ## Next, waiting on Brent's yes
 1. Skill Reset Developer Product 49 -> 79 Robux (Brent changes it in Creator
    Hub; the Lobby button now reads the price from Roblox).
-2. Muscle's blocked passage + Party Popper (replaces one locked door and the
-   secret hole).
-3. Gummy floors 2-3 (Candy Factory, Jelly Vault), then the Hospital.
+2. Gummy floors 2-3 (Candy Factory, Jelly Vault), then the Hospital.
 4. Halloween polish for 29 Oct: tutorial, balance, dressed rooms.

@@ -86,6 +86,7 @@ local Notify = remote("Notify") -- server -> clients: (kind, text, data)
 local OpenKeypad = remote("OpenKeypad") -- server -> one client
 local Press = remote("Press") -- client -> server: colour
 local PickSkill = remote("PickSkill") -- client -> server: skill id
+local ReadyUp = remote("Ready") -- client -> server: pressed Play on the character screen
 local UseSkill = remote("UseSkill") -- client -> server: optional position (Echo)
 local AskClue = remote("AskClue")
 local Say = remote("Say") -- client -> server: phrase index
@@ -507,11 +508,11 @@ local function besideTile(x, y, h)
 end
 
 local NOTHING = {
-	{ "A flutter of bats! But no key.", "bats" },
-	{ "Just tissue paper. No key here.", "tissue" },
-	{ "Confetti everywhere! No key though.", "confetti" },
+	{ "A flutter of bats! Nothing useful.", "bats" },
+	{ "Just tissue paper. Nothing here.", "tissue" },
+	{ "Confetti everywhere! Nothing else though.", "confetti" },
 	{ "Nothing but old socks and tissue paper.", "tissue" },
-	{ "Squeak! Bats! The key must be somewhere else.", "bats" },
+	{ "Squeak! Bats! Try somewhere else.", "bats" },
 }
 
 -- a locked inner door opens (with its key, or Tinker picks it)
@@ -530,6 +531,39 @@ local function openLock(plr, id, how)
 	entry.lockPart:Destroy()
 	addPoints(plr, 15)
 	say("open", (how == "pick" and ("Click! " .. plr.DisplayName .. " picked the lock on the ") or (plr.DisplayName .. " unlocked the ")) .. entry.def.name .. "!")
+end
+
+-- the blocked passage clears (Muscle shoved it, or the Party Popper went off)
+local function clearBlock(plr, id, how)
+	if world.unlocked[id] then
+		return
+	end
+	world.unlocked[id] = true
+	RoundState:SetAttribute("Lock_" .. id, true)
+	local entry = world.objects[id]
+	entry.part.CanCollide = false
+	entry.shovePrompt.Enabled = false
+	entry.popperPrompt.Enabled = false
+	for _, g in ipairs(entry.part:GetChildren()) do
+		if g:IsA("SurfaceGui") then
+			g:Destroy()
+		end
+	end
+	for _, p in ipairs(entry.pile) do
+		local to = how == "popper" and p.Position + Vector3.new(math.random(-5, 5), 8 + math.random(0, 6), math.random(-5, 5))
+			or p.Position - Vector3.new(0, p.Size.Y + 1, 0)
+		TweenService:Create(p, TweenInfo.new(how == "popper" and 0.7 or 1.2), { Position = to, Transparency = 1 }):Play()
+		game:GetService("Debris"):AddItem(p, 1.5)
+	end
+	if how == "shove" then
+		Effects.sound(entry.part.Position, "shove", 1)
+		Effects.burst(entry.part.Position, "shove")
+		addPoints(plr, 25)
+		say("open", "Muscle shoved the junk out of the " .. entry.def.name .. "!")
+	else
+		addPoints(plr, 15)
+		say("open", "BOOM! The Party Popper blasted open the " .. entry.def.name .. "... and the host heard it!")
+	end
 end
 
 local function wirePrompts()
@@ -628,22 +662,6 @@ local function wirePrompts()
 				Effects.burst(entry.part.Position + Vector3.new(0, 3, 0), "plant")
 				revealAll(plr, "The plant whispered the code to Bramble!")
 			end)
-		elseif def.kind == "cabinet" then
-			entry.prompt.Triggered:Connect(function(plr)
-				if plr:GetAttribute("Skill") ~= "muscle" then
-					return need(plr, "muscle", "Too heavy! Muscle could shove it.")
-				end
-				if state.holeOpen then
-					return
-				end
-				state.holeOpen = true
-				entry.prompt.Enabled = false
-				TweenService:Create(entry.part, TweenInfo.new(1), { Position = entry.part.Position + Vector3.new(0, 0, T) }):Play()
-				Effects.burst(entry.part.Position, "shove")
-				o.hole.panel:Destroy()
-				addPoints(plr, 25)
-				say("open", "Muscle shoved the cabinet - a secret hole! Squeeze through!")
-			end)
 		elseif def.kind == "door" then
 			entry.usePrompt.Triggered:Connect(function(plr)
 				if not state.doorOpen then
@@ -654,13 +672,6 @@ local function wirePrompts()
 				local plr = Players:GetPlayerFromCharacter(hit.Parent)
 				if plr and state.doorOpen and state.status == "playing" then
 					escape(plr, false)
-				end
-			end)
-		elseif def.kind == "hole" then
-			entry.exit.Touched:Connect(function(hit)
-				local plr = Players:GetPlayerFromCharacter(hit.Parent)
-				if plr and state.holeOpen and state.status == "playing" then
-					escape(plr, true)
 				end
 			end)
 		elseif def.kind == "cage" then
@@ -685,6 +696,67 @@ local function wirePrompts()
 					say("rescue", plr.DisplayName .. " freed " .. freed .. (freed == 1 and " friend" or " friends") .. " from the cage!")
 				end
 				entry.prompt.Enabled = anyCaged()
+			end)
+		elseif def.kind == "lock" and def.blocked then
+			entry.shovePrompt.Triggered:Connect(function(plr)
+				if state.status ~= "playing" or world.unlocked[id] then
+					return
+				end
+				if plr:GetAttribute("Skill") ~= "muscle" then
+					return need(plr, "muscle", "Too heavy to move! Muscle could shove it - or find a Party Popper in a drawer or box.")
+				end
+				clearBlock(plr, id, "shove")
+			end)
+			entry.popperPrompt.Triggered:Connect(function(plr)
+				if state.status ~= "playing" or world.unlocked[id] or entry.fuse or not world.keys[id] then
+					return
+				end
+				entry.fuse = true
+				entry.popperPrompt.Enabled = false
+				local myWorld = world
+				local pos = entry.part.Position - Vector3.new(0, 5.6, 0)
+				local popper = Instance.new("Part")
+				popper.Name = "PartyPopper"
+				popper.Shape = Enum.PartType.Cylinder
+				popper.Size = Vector3.new(1.6, 0.9, 0.9)
+				popper.CFrame = CFrame.new(pos) * CFrame.Angles(0, 0, math.rad(90))
+				popper.Color = Color3.fromRGB(255, 77, 160)
+				popper.Material = Enum.Material.Neon
+				popper.Anchored, popper.CanCollide = true, false
+				popper.Parent = workspace
+				local count = Instance.new("BillboardGui")
+				count.Size = UDim2.fromOffset(80, 60)
+				count.StudsOffset = Vector3.new(0, 3, 0)
+				count.AlwaysOnTop = true
+				count.Parent = popper
+				local num = Instance.new("TextLabel")
+				num.Size = UDim2.fromScale(1, 1)
+				num.BackgroundTransparency = 1
+				num.Font = Enum.Font.FredokaOne
+				num.TextScaled = true
+				num.TextColor3 = Color3.fromRGB(255, 210, 63)
+				num.TextStrokeTransparency = 0.3
+				num.Parent = count
+				say("info", plr.DisplayName .. " planted the Party Popper - stand back!")
+				task.spawn(function()
+					for n = 3, 1, -1 do
+						num.Text = "\u{1F389} " .. n
+						Effects.sound(pos, "beep", 1)
+						task.wait(1)
+					end
+					popper:Destroy()
+					if world ~= myWorld or state.status ~= "playing" then
+						return
+					end
+					Effects.sound(pos, "pop", 1.5)
+					Effects.surprise(pos, "confetti")
+					Effects.burst(pos, "shove")
+					-- BOOM: the host comes to look
+					if host and host.model then
+						host:alert(pos)
+					end
+					clearBlock(plr, id, "popper")
+				end)
 			end)
 		elseif def.kind == "lock" then
 			entry.unlockPrompt.Triggered:Connect(function(plr)
@@ -719,8 +791,16 @@ local function wirePrompts()
 					host:alert(entry.part.Position)
 				end
 				local lock = world.keyIn[id]
-				House.openObject(entry, lock ~= nil)
-				if lock then
+				local isPopper = lock ~= nil and world.objects[lock].def.blocked
+				House.openObject(entry, lock ~= nil and not isPopper)
+				if isPopper then
+					world.keys[lock] = true
+					RoundState:SetAttribute("Key_" .. lock, true)
+					world.objects[lock].popperPrompt.Enabled = true
+					Effects.burst(entry.part.Position, "boost")
+					addPoints(plr, 10)
+					say("key", plr.DisplayName .. " found a Party Popper! Plant it at the blocked " .. world.objects[lock].def.name .. ".", { icon = "\u{1F389}", userId = plr.UserId, item = "Party Popper" })
+				elseif lock then
 					world.keys[lock] = true
 					RoundState:SetAttribute("Key_" .. lock, true)
 					Effects.burst(entry.part.Position, "boost")
@@ -747,12 +827,13 @@ local function wirePrompts()
 				if not other then
 					return
 				end
+				-- any number can crawl; each player waits 2.5 s after coming out
 				state.ventCool = state.ventCool or {}
 				local nowT = os.clock()
-				if (state.ventCool[def.pair] or 0) > nowT then
-					return say("info", "Someone just crawled through - wait a moment.", nil, plr)
+				if (state.ventCool[plr.UserId] or 0) > nowT then
+					return say("info", "Catch your breath - you can crawl again in a moment.", nil, plr)
 				end
-				state.ventCool[def.pair] = nowT + 10
+				state.ventCool[plr.UserId] = nowT + 1.6 + Config.VENT_REUSE
 				plr:SetAttribute("Crawling", true)
 				local h = hrpOf(plr)
 				if h then
@@ -1013,9 +1094,6 @@ local function hintFor()
 	if state.doorOpen then
 		return "door", "The big door is open - everybody out!"
 	end
-	if state.holeOpen then
-		return "hole", "The secret hole in the " .. roomOf("cab") .. " is open - squeeze through!"
-	end
 	local skills = {}
 	for _, p in ipairs(playersInRound()) do
 		if not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
@@ -1024,6 +1102,20 @@ local function hintFor()
 	end
 	local function lockHint(id)
 		local name = o[id].def.name
+		if o[id].def.blocked then
+			if skills.muscle then
+				return id, "Muscle can shove the junk blocking the " .. name .. "."
+			end
+			if world.keys[id] then
+				return id, "Plant the Party Popper at the blocked " .. name .. " - it's loud, so be ready to run!"
+			end
+			for sid, lock in pairs(world.keyIn) do
+				if lock == id and not o[sid].searched then
+					return sid, "A Party Popper is hidden in the " .. roomOf(sid) .. " - it can blast open the " .. name .. "."
+				end
+			end
+			return id, "The " .. name .. " is blocked. Bring Muscle, or search drawers and boxes for a Party Popper!"
+		end
 		if skills.tinker then
 			return id, "Tinker can pick the lock on the " .. name .. "."
 		end
@@ -1066,9 +1158,6 @@ local function hintFor()
 	end
 	if not world.unlocked.L2 then
 		return lockHint("L2")
-	end
-	if skills.muscle then
-		return "cab", "That cabinet in the " .. roomOf("cab") .. " hides something. Muscle can shove it!"
 	end
 	return "door", "Try the keypad by the big door in the " .. roomOf("door") .. "."
 end
@@ -1199,6 +1288,14 @@ PickSkill.OnServerEvent:Connect(function(plr, id)
 			end
 			return
 		end
+	end
+end)
+
+-- Play on the character screen: this player is ready (the game starts when
+-- everyone is, or when PICK_WAIT runs out)
+ReadyUp.OnServerEvent:Connect(function(plr)
+	if plr:GetAttribute("Skill") then
+		plr:SetAttribute("Ready", true)
 	end
 end)
 
@@ -1398,6 +1495,17 @@ function round.start()
 	local mapInfo = mapIdx and Progress.MAPS[mapIdx]
 	local floors = Plans[mapInfo and mapInfo.building or "partyhouse"] or Plans.partyhouse
 	HouseMap = MapGen.make(floors[mapInfo and mapInfo.floor or 1] or Plans.partyhouse[1])
+	-- one of the locked doors is a blocked passage instead: Muscle shoves the
+	-- junk away, or anyone plants the Party Popper hidden in a search spot
+	local lockDefs = {}
+	for _, o in ipairs(HouseMap.objects) do
+		if o.kind == "lock" then
+			table.insert(lockDefs, o)
+		end
+	end
+	if #lockDefs > 0 then
+		lockDefs[math.random(1, #lockDefs)].blocked = true
+	end
 	RoundState:SetAttribute("MapJson", HttpService:JSONEncode(MapGen.forClient(HouseMap)))
 	world = House.build(HouseMap)
 	world.onNoise = function(pos)
@@ -1407,7 +1515,8 @@ function round.start()
 	end
 	Props.place(world)
 	wirePrompts()
-	-- each locked door hides its key in a random searchable thing on its near side
+	-- each locked door hides its key (the blocked passage: a Party Popper) in a
+	-- random searchable thing on its near side
 	world.unlocked, world.keys, world.keyIn = {}, {}, {}
 	for _, lock in ipairs({ { "L1", 1 }, { "L2", 2 } }) do
 		local choices = {}
@@ -1429,7 +1538,7 @@ function round.start()
 	local diffKey = RoundState:GetAttribute("Difficulty") or "normal"
 	local diff = Config.DIFFICULTY[diffKey]
 	local now = workspace:GetServerTimeNow()
-	state = { status = "playing", code = code, known = {}, entry = {}, doorOpen = false, holeOpen = false, cluesLeft = diff.clues,
+	state = { status = "playing", code = code, known = {}, entry = {}, doorOpen = false, cluesLeft = diff.clues,
 		diff = diffKey, earned = {}, startedAt = now, endsAt = now + diff.timer, frenzy = false }
 	RoundState:SetAttribute("Status", "playing")
 	RoundState:SetAttribute("ClueCost", Config.CLUE_COSTS[1])
@@ -1525,13 +1634,16 @@ function round.start()
 	-- nothing starts until everyone has chosen a character (or PICK_WAIT runs out)
 	state.endsAt = math.huge
 	RoundState:SetAttribute("EndsAt", nil)
+	for _, p in ipairs(Players:GetPlayers()) do
+		p:SetAttribute("Ready", nil)
+	end
 	local deadline = workspace:GetServerTimeNow() + Config.PICK_WAIT
 	RoundState:SetAttribute("PickDeadline", deadline)
 	hostTimer = task.spawn(function()
 		while state.status == "playing" do
 			local waiting = 0
 			for _, p in ipairs(Players:GetPlayers()) do
-				if not p:GetAttribute("Skill") and not p:GetAttribute("Waiting") then
+				if not (p:GetAttribute("Skill") and p:GetAttribute("Ready")) and not p:GetAttribute("Waiting") then
 					waiting += 1
 				end
 			end
@@ -1610,7 +1722,7 @@ RunService.Heartbeat:Connect(function(dt)
 	if host and host.model then
 		host:step(step)
 	end
-	local W, Hh = HouseMap.w * T, HouseMap.h * T
+	local _W, Hh = HouseMap.w * T, HouseMap.h * T
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local hrp = hrpOf(plr)
 		if hrp then
@@ -1621,8 +1733,6 @@ RunService.Heartbeat:Connect(function(dt)
 			elseif not plr:GetAttribute("Escaped") and not plr:GetAttribute("Caged") and not plr:GetAttribute("Waiting") then
 				if state.doorOpen and pos.Z < -1 then
 					escape(plr, false)
-				elseif state.holeOpen and pos.X > W + 1 then
-					escape(plr, true)
 				end
 			end
 		end

@@ -625,6 +625,7 @@ button(picker, "\u{25B6} Play", { Size = UDim2.fromOffset(240, 52), Position = U
 	if not player:GetAttribute("Skill") then
 		remotes.PickSkill:FireServer(Config.SKILLS[viewIndex].id)
 	end
+	remotes.Ready:FireServer()
 	picker.Visible = false
 end)
 local diffBtns = {}
@@ -744,7 +745,7 @@ skillBtn.Activated:Connect(function()
 			return "house"
 		end
 		local tips = { tinker = "Walk up to a locked door and hold F to pick it - no key needed.", brainy = "Find the twisty invitation in the " .. roomOfObj("invite") .. " and press E to read it.",
-			muscle = "Find the heavy cabinet in the " .. roomOfObj("cab") .. " and hold E to shove it.", glow = "Find the painted wall in the " .. roomOfObj("uv") .. " and press E to light it up.",
+			muscle = "Find the doorway heaped with junk and hold E to shove it clear.", glow = "Find the painted wall in the " .. roomOfObj("uv") .. " and press E to light it up.",
 			bramble = "Find the big plant in the " .. roomOfObj("plant") .. " and press E to ask it." }
 		toast(tips[s] or "Walk up to things and press E.", 4)
 	end
@@ -932,11 +933,11 @@ local function buildView()
 			local ch = string.sub(row, x, x)
 			if (ch == "." or ch == "L") and not floorOf(tx, ty) then
 				local d = mapRect(tx, ty, tx, ty, ROOM_COLOR)
-				-- locked doors show gold until they open
+				-- locked doors show gold (the blocked passage red) until they open
 				for _, o in ipairs(HouseMap.objects) do
 					if o.kind == "lock" and o.x == tx and o.y == ty then
 						local function paint()
-							d.BackgroundColor3 = RoundState:GetAttribute("Lock_" .. o.id) and ROOM_COLOR or Color3.fromRGB(255, 210, 63)
+							d.BackgroundColor3 = RoundState:GetAttribute("Lock_" .. o.id) and ROOM_COLOR or (o.blocked and Color3.fromRGB(232, 80, 91) or Color3.fromRGB(255, 210, 63))
 						end
 						table.insert(lockConns, RoundState:GetAttributeChangedSignal("Lock_" .. o.id):Connect(paint))
 						paint()
@@ -1160,8 +1161,8 @@ task.spawn(function()
 		pickBanner.Visible = show
 		if show then
 			local left = math.max(0, math.floor(deadline - workspace:GetServerTimeNow()))
-			local mine = player:GetAttribute("Skill") == nil
-			pickBanner.Text = (mine and "Choose your character! " or "Waiting for friends to choose... ")
+			local mine = not player:GetAttribute("Ready")
+			pickBanner.Text = (mine and "Choose your character and press \u{25B6} Play! " or "Waiting for friends to choose... ")
 				.. waiting .. " still choosing \u{00B7} starts anyway in " .. string.format("%d:%02d", math.floor(left / 60), left % 60)
 		end
 	end
