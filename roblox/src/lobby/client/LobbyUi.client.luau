@@ -462,7 +462,7 @@ local function paintParty(p)
 		return
 	end
 	amLeader = p.leaderId == player.UserId
-	partyTitle.Text = (amLeader and "Your party" or (p.leader .. "'s party")) .. "  (" .. #p.members .. "/" .. p.max .. ")"
+	partyTitle.Text = p.max == 1 and "Solo game - choose a floor, then Start" or ((amLeader and "Your party" or (p.leader .. "'s party")) .. "  (" .. #p.members .. "/" .. p.max .. ")")
 	for i = 1, Config.MAX_PARTY do
 		local m = p.members[i]
 		local s = slotLabels[i]

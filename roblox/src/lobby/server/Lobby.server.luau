@@ -228,7 +228,10 @@ task.spawn(function()
 	end
 end)
 -- a silhouette at the top window
-part({ Name = "Watcher", Shape = Enum.PartType.Ball, Size = Vector3.new(3, 3, 3), Position = Vector3.new(20, 27, -89.4), Material = Enum.Material.Neon, Color = Color3.fromRGB(230, 110, 20) })
+local watcher = part({ Name = "Watcher", Shape = Enum.PartType.Ball, Size = Vector3.new(3, 3, 3), Position = Vector3.new(20, 27, -89.4), Material = Enum.Material.Neon, Color = Color3.fromRGB(230, 110, 20) })
+if customHouse then
+	watcher.Transparency = 1
+end
 -- the gate with balloons, and lamps along the lane
 part({ Name = "GatePostL", Size = Vector3.new(2, 8, 2), Position = Vector3.new(-9, 4, -60), Material = Enum.Material.Brick, Color = Color3.fromRGB(70, 50, 50) })
 part({ Name = "GatePostR", Size = Vector3.new(2, 8, 2), Position = Vector3.new(9, 4, -60), Material = Enum.Material.Brick, Color = Color3.fromRGB(70, 50, 50) })
@@ -368,6 +371,9 @@ local function padFor(party)
 	return nil
 end
 local function standOnPad(party, plr)
+	if party.max <= 1 then
+		return -- solo games have no circle
+	end
 	local i = padFor(party)
 	local char = plr.Character
 	if not i or not char then
@@ -580,9 +586,6 @@ CreateParty.OnServerEvent:Connect(function(plr, solo)
 	partyOf[plr] = party
 	broadcast()
 	standOnPad(party, plr)
-	if solo then
-		start(party)
-	end
 end)
 
 local function joinParty(plr, id)

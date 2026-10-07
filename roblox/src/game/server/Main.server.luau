@@ -1176,8 +1176,9 @@ PickSkill.OnServerEvent:Connect(function(plr, id)
 		return
 	end
 	-- choose freely until the host comes out; after that, wait for the next game
-	if state.status == "playing" and RoundState:GetAttribute("HostOut") then
-		return say("info", "The host is out! You can change character before the next game.", nil, plr)
+	-- characters are locked once the game's clock starts (everyone has chosen)
+	if state.status == "playing" and (RoundState:GetAttribute("HostOut") or (state.endsAt and state.endsAt ~= math.huge)) and plr:GetAttribute("Skill") then
+		return say("info", "The game has started - you can change character before the next game.", nil, plr)
 	end
 	for _, s in ipairs(Config.SKILLS) do
 		if s.id == id then

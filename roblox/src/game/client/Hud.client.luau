@@ -235,6 +235,7 @@ if player.Character then
 end
 
 -- the camera rushes in on the host's face (works with any host model)
+local scareBusyUntil = 0 -- the results wait for the close-up to finish
 local function hostCloseUp(intense)
 	local host = workspace:FindFirstChild("PartyHost")
 	local head = host and (host:FindFirstChild("Head") or host.PrimaryPart)
@@ -256,6 +257,7 @@ local function hostCloseUp(intense)
 	local r = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2
 	local t0 = os.clock()
 	local dur = intense and 2.6 or 2
+	scareBusyUntil = os.clock() + dur + (intense and 1.4 or 0.2)
 	local rootPart = host:FindFirstChild("HumanoidRootPart") or head
 	local conn
 	conn = RunService.RenderStepped:Connect(function()
@@ -638,7 +640,7 @@ RoundState:GetAttributeChangedSignal("Spook"):Connect(paintSpook)
 paintSpook()
 -- characters are chosen before a game starts: no changing in the middle
 local function midGame()
-	return RoundState:GetAttribute("Status") == "playing" and RoundState:GetAttribute("HostOut") == true
+	return RoundState:GetAttribute("Status") == "playing" and (RoundState:GetAttribute("HostOut") == true or RoundState:GetAttribute("EndsAt") ~= nil)
 end
 local function paintPick()
 	pickBtn.Visible = not midGame()
@@ -648,10 +650,11 @@ local function paintPick()
 end
 RoundState:GetAttributeChangedSignal("Status"):Connect(paintPick)
 RoundState:GetAttributeChangedSignal("HostOut"):Connect(paintPick)
+RoundState:GetAttributeChangedSignal("EndsAt"):Connect(paintPick)
 paintPick()
 pickBtn.Activated:Connect(function()
 	if midGame() then
-		return toast("The host is out! You can change character before the next game.", 3)
+		return toast("The game has started - you can change character before the next game.", 3)
 	end
 	picker.Visible = not picker.Visible
 end)
@@ -765,6 +768,11 @@ UserInputService.InputEnded:Connect(function(input)
 end)
 UserInputService.JumpRequest:Connect(function()
 	if player:GetAttribute("Hidden") then
+		remotes.Unhide:FireServer()
+	end
+end)
+UserInputService.InputBegan:Connect(function(input)
+	if input.KeyCode == Enum.KeyCode.Space and player:GetAttribute("Hidden") then
 		remotes.Unhide:FireServer()
 	end
 end)
@@ -1445,6 +1453,10 @@ remotes.Results.OnClientEvent:Connect(function(r)
 		table.insert(lines, (row.escaped and "\u{2705} " or "\u{1F512} ") .. row.name .. "  +" .. row.points .. " points" .. extra)
 	end
 	resList.Text = table.concat(lines, "\n")
+	local waitFor = scareBusyUntil - os.clock()
+	if waitFor > 0 then
+		task.wait(waitFor)
+	end
 	results.Visible = true
 	againBtn.Visible, lobbyBtn.Visible = r.vote == true, r.vote == true
 	spec.Visible = false
