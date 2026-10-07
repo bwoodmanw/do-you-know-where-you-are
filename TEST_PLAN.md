@@ -12,6 +12,13 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 8 (7 Oct):
+- [ ] Chocolate River: the two long benches are now chocolate river channels with caramel banks and marshmallows bobbing along; a chocolate waterfall on a wall
+- [ ] Upper floors' way out: the glowing door no longer flickers; a big orange sign "Up to ..." with "Step through when the game ends"
+- [ ] Walking into the door during the game: "Wait here for your crew! When the game ends, step through to go up together."
+- [ ] After a win: a green "Next floor: <name>" button on the results; stepping through the door also chooses it; if most of those staying choose it, the next floor is built (a tie goes up)
+- [ ] Lobby: no Windows button (Config.WINDOW_SETUP = false); the faces stay where you clicked them
+
 Round 7 (7 Oct) - rooms that look like their names (Rooms.luau):
 - [ ] Every room has its own walls: brick (boiler, generator, water tank, docks, ambulance bay), steel (conveyor, factory, labs, X-ray, vault, lift), tiles (kitchens, bathrooms, laundry, canteen, pharmacy), wallpaper colours (parlour red, library green, bedrooms blue, nurseries pastel...), wood panelling in halls and attic rooms
 - [ ] Set pieces: Boiler Room boiler with a glowing furnace and pipes; Conveyor Hall two moving conveyor belts (sweets ride along) and a candy machine; Chocolate River a chocolate river and waterfall; Vault Door Hall a giant round vault door; Ambulance Bay an ambulance with flashing lights; X-Ray Room the machine and a glowing x-ray; wards curtains and drip stands; Waiting Room rows of chairs and a TV; Parlour/Library a fireplace that flickers; Game Room arcade machines; Clock Room clocks with swinging pendulums; gummy bear statues, lollipops, wobbling jelly cubes, gold gumdrops in the candy rooms
