@@ -142,6 +142,11 @@ function Characters.apply(plr, name)
 	if animate then
 		animate:Clone().Parent = m
 	end
+	-- an Animator made here on the server lets everyone else see this
+	-- character's walk and run (without it they glide)
+	if not hum:FindFirstChildOfClass("Animator") then
+		Instance.new("Animator").Parent = hum
+	end
 	local oldRoot = old:FindFirstChild("HumanoidRootPart")
 	m:PivotTo(oldRoot and oldRoot.CFrame or CFrame.new(0, 5, 0))
 	m.Parent = workspace

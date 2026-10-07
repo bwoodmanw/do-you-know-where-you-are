@@ -118,6 +118,8 @@ Config.PLACE_IDS = { lobby = 115501124890066, game = 110069561824739 }
 Config.VOTE_SECONDS = 10
 -- the host waits until everyone has chosen a character, or this many seconds
 Config.PICK_WAIT = 120
+-- a party in the Lobby closes if it has not started after this many seconds
+Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
 Config.STUDIO_MAP = "gummy" -- partyhouse, partyhouse_2, partyhouse_3, gummy
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
@@ -190,24 +192,26 @@ Config.PREMIUM_DAILY_MULT = 2
 -- Each list is shuffled; players set the volume with the music button.
 Config.MUSIC = {
 	lobby = {
-		76200647114315, -- Go up - yeah!
-		110219102405339, -- Turn me up right
-		104532983177380, -- Run it like a crown
-		81622815713100, -- Sweet but violent
-		114943415877728, -- Shadow self
+		{ id = 76200647114315, name = "Go up - yeah!" },
+		{ id = 110219102405339, name = "Turn me up right" },
+		{ id = 104532983177380, name = "Run it like a crown" },
+		{ id = 81622815713100, name = "Sweet but violent" },
+		{ id = 114943415877728, name = "Shadow self" },
 	},
 	game = {
-		103218912557232, -- Transmission
-		118449494725489, -- Dead Frequency
-		123797473965749, -- Sweet but violent
-		91340190574155, -- Null Reckoning
-		127026458726333, -- Override
-		129518539620106, -- Teeth in
-		136562208725905, -- I am the monster (Remastered)
-		124336285623807, -- Hollow Veil
-		118983463747469, -- Unknown Caller
+		{ id = 103218912557232, name = "Transmission" },
+		{ id = 118449494725489, name = "Dead Frequency" },
+		{ id = 123797473965749, name = "Sweet but violent" },
+		{ id = 91340190574155, name = "Null Reckoning" },
+		{ id = 127026458726333, name = "Override" },
+		{ id = 129518539620106, name = "Teeth in" },
+		{ id = 136562208725905, name = "I am the monster (Remastered)" },
+		{ id = 124336285623807, name = "Hollow Veil" },
+		{ id = 118983463747469, name = "Unknown Caller" },
 	},
 }
+-- shown under the music button with the song's name
+Config.MUSIC_ARTIST = "When Bears and Lions Attack"
 -- where the Lobby house model's windows are, as fractions of its width (from
 -- the middle) and height, for the host's peeks
 Config.LOBBY_HOUSE_WINDOWS = { { -0.23, 0.72 }, { 0.02, 0.69 }, { 0.24, 0.73 }, { -0.3, 0.33 }, { 0.23, 0.33 } }

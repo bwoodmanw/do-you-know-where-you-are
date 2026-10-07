@@ -35,6 +35,19 @@ function MusicPlayer.start(listName, gui, position, setRemote)
 	corner.Parent = btn
 	btn.Visible = #ids > 0
 	btn.Parent = gui
+	-- what is playing, under the button
+	local nowPlaying = Instance.new("TextLabel")
+	nowPlaying.Size = UDim2.fromOffset(240, 18)
+	nowPlaying.Position = position + UDim2.fromOffset(-144, 38)
+	nowPlaying.BackgroundTransparency = 1
+	nowPlaying.Font = Enum.Font.FredokaOne
+	nowPlaying.TextSize = 14
+	nowPlaying.TextXAlignment = Enum.TextXAlignment.Right
+	nowPlaying.TextColor3 = Color3.fromRGB(205, 190, 225)
+	nowPlaying.TextStrokeTransparency = 0.5
+	nowPlaying.Text = ""
+	nowPlaying.ZIndex = 5
+	nowPlaying.Parent = gui
 
 	local sound = Instance.new("Sound")
 	sound.Name = "Music"
@@ -43,6 +56,7 @@ function MusicPlayer.start(listName, gui, position, setRemote)
 	local function paint()
 		btn.Text = level == 0 and "\u{1F507} Off" or ("\u{1F3B5} " .. math.floor(level * 100 + 0.5) .. "%")
 		sound.Volume = BASE * level
+		nowPlaying.Visible = level > 0
 	end
 
 	-- a shuffled playlist that goes round and round (a fresh shuffle every
@@ -61,17 +75,25 @@ function MusicPlayer.start(listName, gui, position, setRemote)
 		end
 		index = index % #order + 1
 		startedAt = os.clock()
-		sound.SoundId = "rbxassetid://" .. order[index]
+		local song = order[index]
+		local id = type(song) == "table" and song.id or song
+		local name = type(song) == "table" and song.name or nil
+		nowPlaying.Text = name and ("\u{266A} " .. name .. (Config.MUSIC_ARTIST and (" - " .. Config.MUSIC_ARTIST) or "")) or ""
+		nowPlaying.Visible = level > 0
+		sound.SoundId = "rbxassetid://" .. id
 		sound.TimePosition = 0
 		sound:Play()
 	end
 	sound.Ended:Connect(nextSong)
-	-- a song that still has not loaded after 20 seconds (not allowed in this
-	-- game, or not approved yet): skip it. Long songs can take a while to load.
+	-- keep the music going: when a song has finished (or never loaded in 20
+	-- seconds) the next one starts, round and round
 	task.spawn(function()
 		while sound.Parent do
-			task.wait(2)
-			if #order > 1 and not sound.IsLoaded and os.clock() - startedAt > 20 then
+			task.wait(1)
+			local age = os.clock() - startedAt
+			if sound.IsLoaded and not sound.IsPlaying and age > 3 then
+				nextSong()
+			elseif not sound.IsLoaded and age > 20 then
 				warn("Music: skipping " .. sound.SoundId .. " (did not load)")
 				nextSong()
 			end

@@ -86,9 +86,9 @@ local function list(parent, padding)
 end
 
 -- ---------- messages ----------
-local note = frame(gui, { Size = UDim2.new(0.5, 0, 0, 50), Position = UDim2.new(0.25, 0, 0, 70), Visible = false })
+local note = frame(gui, { Size = UDim2.new(0.5, 0, 0, 50), Position = UDim2.new(0.25, 0, 0, 70), Visible = false, ZIndex = 80 })
 corner(note, 14)
-local noteText = label(note, { Size = UDim2.new(1, -20, 1, -10), Position = UDim2.fromOffset(10, 5) })
+local noteText = label(note, { Size = UDim2.new(1, -20, 1, -10), Position = UDim2.fromOffset(10, 5), ZIndex = 81 })
 local noteToken = 0
 local function notice(text)
 	noteToken += 1
@@ -544,7 +544,7 @@ player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 -- ---------- the shop ----------
 local shop = frame(gui, { Size = UDim2.fromOffset(620, 610), Position = UDim2.new(0.5, -310, 0.5, -305), Visible = false, ZIndex = 10 })
 corner(shop, 18)
-label(shop, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "\u{1F6D2} Boost Shop", TextColor3 = PUMP, ZIndex = 11 })
+local shopTitle = label(shop, { Size = UDim2.new(1, -40, 0, 40), Position = UDim2.fromOffset(20, 10), Text = "\u{1F6D2} Boost Shop", TextColor3 = PUMP, ZIndex = 11 })
 label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "+ buys, - sells back. Tap Take on up to " .. Progress.MAX_BOOSTS .. " to bring into your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 local shopRows = {}
 for i, id in ipairs(Progress.BOOST_ORDER) do
@@ -609,6 +609,7 @@ button(shop, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0
 	shop.Visible = false
 end)
 repaintShop = function()
+	shopTitle.Text = "\u{1F6D2} Boost Shop  \u{00B7}  \u{2B50} " .. tostring(profile.points or 0) .. " points"
 	for id, r in pairs(shopRows) do
 		local n = (profile.inv and profile.inv[id]) or 0
 		r.owned.Text = "You have " .. n

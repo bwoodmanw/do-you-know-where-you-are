@@ -150,19 +150,67 @@ else
 	label(scare, { Size = UDim2.fromScale(1, 0.7), Position = UDim2.fromScale(0, 0.15), Text = "\u{1F383}", ZIndex = 51 })
 end
 local redFlash = frame(gui, { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(200, 0, 20), BackgroundTransparency = 1, ZIndex = 49 })
+-- the scare shows tonight's host's real 3D face, filling the screen
+local scareView = Instance.new("ViewportFrame")
+scareView.Size = UDim2.fromScale(1, 1)
+scareView.BackgroundColor3 = Color3.new(0, 0, 0)
+scareView.Ambient = Color3.fromRGB(150, 110, 90)
+scareView.LightColor = Color3.fromRGB(255, 170, 90)
+scareView.LightDirection = Vector3.new(0, -0.6, -1)
+scareView.ZIndex = 52
+scareView.Visible = false
+scareView.Parent = scare
+local scareCam = Instance.new("Camera")
+scareCam.FieldOfView = 45
+scareCam.Parent = scareView
+scareView.CurrentCamera = scareCam
+local scareFace -- head, direction and size, while a scare is on
 local function jumpscare()
 	scare.Visible = true
+	scareFace = nil
+	for _, c in ipairs(scareView:GetChildren()) do
+		if c ~= scareCam then
+			c:Destroy()
+		end
+	end
+	local host = workspace:FindFirstChild("PartyHost")
+	local ok, copy = pcall(function()
+		return host and host:Clone()
+	end)
+	if ok and copy then
+		for _, d in ipairs(copy:GetDescendants()) do
+			if d:IsA("Script") or d:IsA("LocalScript") then
+				d:Destroy()
+			end
+		end
+		copy.Parent = scareView
+		local head = copy:FindFirstChild("Head") or copy.PrimaryPart
+		local root = copy:FindFirstChild("HumanoidRootPart") or head
+		if head then
+			local look = root.CFrame.LookVector
+			local dir = Vector3.new(look.X, 0, look.Z)
+			dir = dir.Magnitude > 0.1 and dir.Unit or Vector3.new(0, 0, -1)
+			scareFace = { head = head, dir = dir, r = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2 }
+		end
+	end
+	scareView.Visible = scareFace ~= nil
 	local cam = workspace.CurrentCamera
 	local t0 = os.clock()
 	local conn
 	conn = RunService.RenderStepped:Connect(function()
 		local f = os.clock() - t0
+		if scareFace then
+			-- rush in on the face
+			local d = scareFace.r * (2.6 - math.min(1, f * 2.5) * 1.3)
+			local aim = scareFace.head.Position + Vector3.new(0, scareFace.r * 0.3, 0)
+			scareCam.CFrame = CFrame.lookAt(aim + scareFace.dir * d + Vector3.new((math.random() - 0.5) * 0.15, scareFace.r * 0.1, 0), aim)
+		end
 		if scareImg then
 			scareImg.Size = UDim2.fromScale(1 + f * 0.4, 1 + f * 0.4)
 			scareImg.Position = UDim2.fromScale(-f * 0.2, -f * 0.2)
 		end
 		cam.CFrame = cam.CFrame * CFrame.Angles(0, 0, (math.random() - 0.5) * 0.05)
-		if f > 0.7 then
+		if f > (scareFace and 1.2 or 0.7) then
 			conn:Disconnect()
 			scare.Visible = false
 		end
@@ -224,7 +272,7 @@ local function hostCloseUp(intense)
 		end
 		-- rush in on the face, then hold it filling the screen, shaking
 		local e = 1 - (1 - math.min(1, f * 1.6)) ^ 3
-		local dist = r + 9 - e * 8
+		local dist = r + 9.5 - e * 7.7
 		cam.FieldOfView = fov - e * 25
 		local s = (intense and 0.3 or 0.1) * e
 		-- the face points the way the host walks (its root); a head part's own
@@ -232,9 +280,10 @@ local function hostCloseUp(intense)
 		local look = rootPart.CFrame.LookVector
 		local faceDir = Vector3.new(look.X, 0, look.Z)
 		faceDir = faceDir.Magnitude > 0.1 and faceDir.Unit or Vector3.new(0, 0, -1)
-		local front = head.Position + faceDir * dist + Vector3.new(0, r * 0.15, 0)
+		-- aim a little above the middle of the head: the whole face, not the chest
+		local front = head.Position + faceDir * dist + Vector3.new(0, r * 0.45, 0)
 		local shake = Vector3.new((math.random() - 0.5) * s, (math.random() - 0.5) * s, (math.random() - 0.5) * s)
-		cam.CFrame = CFrame.lookAt(front + shake, head.Position)
+		cam.CFrame = CFrame.lookAt(front + shake, head.Position + Vector3.new(0, r * 0.3, 0))
 	end)
 end
 
@@ -413,7 +462,10 @@ end
 local infoAbout = para(96, 78)
 local infoHow = para(178, 46)
 infoHow.TextColor3 = Color3.fromRGB(123, 227, 107)
-local infoLevel = para(228, 90)
+local infoLevel = para(220, 48)
+-- the boosts you are bringing into this game
+local infoBag = para(272, 24)
+infoBag.TextColor3 = Color3.fromRGB(255, 210, 63)
 infoLevel.TextColor3 = Color3.fromRGB(205, 190, 225)
 
 local viewIndex = 1
@@ -433,6 +485,17 @@ end
 
 local function showChar()
 	local sk = Config.SKILLS[viewIndex]
+	local bring = {}
+	for _, attr in ipairs({ "Bag", "BoostsOn" }) do
+		for bid in string.gmatch(player:GetAttribute(attr) or "", "[^,]+") do
+			local b = Progress.BOOSTS[bid]
+			if b then
+				table.insert(bring, b.icon .. " " .. b.name)
+			end
+		end
+	end
+	infoBag.Text = #bring > 0 and ("\u{1F392} Bringing: " .. table.concat(bring, ", ")) or "\u{1F392} No boosts this game (buy them in the Lobby shop)"
+
 	if shown then
 		shown:Destroy()
 		shown = nil

@@ -406,25 +406,46 @@ local function paintPads()
 		disc.Anchored, disc.CanCollide = true, false
 		disc.Parent = padsFolder
 		local sign = Instance.new("BillboardGui")
-		sign.Size = UDim2.fromOffset(240, 70)
+		sign.Size = UDim2.fromOffset(330, 80)
 		sign.StudsOffset = Vector3.new(0, 8, 0)
 		sign.AlwaysOnTop = false
 		sign.MaxDistance = 120
 		sign.Parent = disc
+		-- the leader's avatar headshot beside the words
+		local face = Instance.new("ImageLabel")
+		face.Size = UDim2.fromOffset(80, 80)
+		face.BackgroundColor3 = Color3.fromRGB(75, 58, 102)
+		face.Image = "rbxthumb://type=AvatarHeadShot&id=" .. party.leader.UserId .. "&w=150&h=150"
+		face.Parent = sign
+		local fc = Instance.new("UICorner")
+		fc.CornerRadius = UDim.new(0.5, 0)
+		fc.Parent = face
 		local t = Instance.new("TextLabel")
-		t.Size = UDim2.fromScale(1, 1)
+		t.Size = UDim2.new(1, -86, 1, 0)
+		t.Position = UDim2.fromOffset(86, 0)
 		t.BackgroundTransparency = 0.3
 		t.BackgroundColor3 = Color3.fromRGB(26, 16, 38)
 		t.TextColor3 = Color3.fromRGB(255, 244, 224)
 		t.Font = Enum.Font.FredokaOne
 		t.TextScaled = true
-		local status = party.starting and "Starting!" or full and "Full - ready to start" or "Waiting for players"
+		local left = math.max(0, math.floor(Config.PARTY_HOLD - (os.clock() - (party.created or os.clock()))))
+		local status = party.starting and "Starting!" or (full and "Full - ready to start" or "Waiting for players") .. string.format(" (closes in %d:%02d)", math.floor(left / 60), left % 60)
 		t.Text = party.leader.DisplayName .. "'s party\n" .. #party.members .. " / " .. party.max .. "  \u{00B7}  " .. status .. (party.friendsOnly and "\n(friends only)" or "")
 		t.Parent = sign
 		local corner = Instance.new("UICorner")
 		corner.CornerRadius = UDim.new(0, 12)
 		corner.Parent = t
 		if not full and not party.starting then
+			-- walk onto the circle to join (the same rules as the Join button)
+			local tried = {}
+			disc.CanTouch = true
+			disc.Touched:Connect(function(hit)
+				local plr = Players:GetPlayerFromCharacter(hit.Parent)
+				if plr and partyOf[plr] ~= party and joinPartyFn and (tried[plr] or 0) < os.clock() then
+					tried[plr] = os.clock() + 3
+					joinPartyFn(plr, party.id)
+				end
+			end)
 			local pp = Instance.new("ProximityPrompt")
 			pp.ActionText = "Join party"
 			pp.ObjectText = party.leader.DisplayName .. "'s party"
@@ -440,7 +461,31 @@ local function paintPads()
 	end
 end
 
-local function broadcast()
+local broadcast
+-- parties wait at most PARTY_HOLD seconds to start, then close
+task.spawn(function()
+	while true do
+		task.wait(5)
+		local changed = false
+		for id, party in pairs(parties) do
+			if not party.starting and party.max > 1 and os.clock() - (party.created or os.clock()) > Config.PARTY_HOLD then
+				for _, m in ipairs(party.members) do
+					partyOf[m] = nil
+					Notice:FireClient(m, "Your party closed after " .. math.floor(Config.PARTY_HOLD / 60) .. " minutes without starting. Make a new one when you're ready!")
+				end
+				parties[id] = nil
+				changed = true
+			end
+		end
+		if changed and broadcast then
+			broadcast()
+		elseif next(parties) then
+			paintPads() -- the countdown on the signs
+		end
+	end
+end)
+
+function broadcast()
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local list = {}
 		for _, party in pairs(parties) do
@@ -524,6 +569,7 @@ CreateParty.OnServerEvent:Connect(function(plr, solo)
 		leader = plr,
 		members = { plr },
 		max = solo and 1 or Config.MAX_PARTY,
+		created = os.clock(),
 		friendsOnly = true,
 		difficulty = "normal",
 		spook = "giggly",
