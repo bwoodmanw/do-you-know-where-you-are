@@ -16,7 +16,7 @@ previews show it too. Skins change looks only, never skills.
 | 1 | Pumpkin Patch Tinker | Tinker | `tinker-pumpkin/` | `tinker-pumpkin.glb` | `TinkerPumpkin` | ready (checked 7 Oct) |
 | 2 | Ghostly Shadow | Shadow | `ghostly-shadow/` | `ghostly-shadow.glb` | `ShadowGhost` | ready (checked 7 Oct) |
 | 3 | Candy Glow | Glow | `candy-glow/` | `candy-glow.glb` | `GlowCandy` | ready (checked 7 Oct) |
-| 4 | Night Nurse Patch | Patch | `night-nurse-patch/` | `night-nurse-patch.glb` | `PatchNurse` | not in the folder yet |
+| 4 | Night Nurse Patch | Patch | `night-nurse-patch/` | `night-nurse-patch.glb` | `PatchNurse` | ready (checked 7 Oct) |
 | 5 | Space Cadet Brainy | Brainy | `space-brainy/` | `space-brainy.glb` | `BrainySpace` | to make |
 | 6 | Snow Day Muscle | Muscle | `snow-muscle/` | `snow-muscle.glb` | `MuscleSnow` | to make |
 | 7 | Starlight Echo | Echo | `starlight-echo/` | `starlight-echo.glb` | `EchoStar` | to make |
@@ -25,9 +25,9 @@ previews show it too. Skins change looks only, never skills.
 The **Name in Studio** must be exact (capitals too): the game finds the model
 by that name. Suggested price 99 Robux each.
 
-### What I checked on the first three (7 Oct)
+### What I checked on the first four (7 Oct)
 
-All three: full body, A-pose, facing the camera, plain grey background, the
+All four: full body, A-pose, facing the camera, plain grey background, the
 same face as the character, no logos, no likeness to known characters - ready
 for Meshy.
 - **Pumpkin Patch Tinker** - very good; same proportions as Tinker.
@@ -37,9 +37,10 @@ for Meshy.
 - **Candy Glow** - good. The see-through raincoat comes out as solid pink (the
   same happened with Glow's green coat and looked fine).
 
-**Night Nurse Patch** is not in `art/model-input/` yet: save it as
-`art/model-input/night-nurse-patch/a-pose-front.png` and tell me, and I will
-check it the same way.
+- **Night Nurse Patch** - good: hearts, no cross, the plaster and freckles
+  kept, a clear A-pose. (Folder renamed from `Night nurse patch` to
+  `night-nurse-patch` to match the others.) If Avatar Setup joins the
+  shoulder bag to her arm, regenerate in Meshy with **T-Pose**.
 
 ## Art prompts
 

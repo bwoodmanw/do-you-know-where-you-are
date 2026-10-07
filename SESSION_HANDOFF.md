@@ -219,7 +219,7 @@ art/sheets/ art/models/ art/model-input/   design art and Meshy files
   a profile that had it today gets another quest instead.
 - Skins: 8 (4 Halloween-ish + Space Cadet Brainy, Snow Day Muscle, Starlight
   Echo, Autumn Leaf Bramble), 99 Robux each, art and steps in `SKINS.md`.
-  Pictures 1-3 checked and ready; Patch's picture not in the repo yet.
+  Pictures 1-4 checked and ready for Meshy.
 - Muscle's own picture (`art/model-input/muscle/a-pose-front.png`) has
   trainers with a swoosh-like mark: decision pending (see below).
 

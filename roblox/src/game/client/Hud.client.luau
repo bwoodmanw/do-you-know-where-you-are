@@ -752,7 +752,7 @@ RunService.RenderStepped:Connect(function()
 	end
 	-- Roblox characters face -Z; turn it round to face the camera on +Z
 	shown:PivotTo(CFrame.Angles(0, math.pi + spin, 0))
-	local cf, size = shown:GetBoundingBox()
+	local cf, size = require(ReplicatedStorage.Shared.ModelBounds)(shown) -- the parts you can see
 	local dist = size.Y * 0.62 / math.tan(math.rad(viewCam.FieldOfView / 2))
 	viewCam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0, size.Y * 0.05, dist), cf.Position)
 end)
