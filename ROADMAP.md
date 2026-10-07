@@ -133,8 +133,22 @@ only when everyone presses Play.
 - Tinker: no limit on picking (main door and Store Room); once a game holds F
   6 s at the big door's keypad to learn one colour.
 
+## Hospital floor 1 and Halloween polish (built 7 Oct evening) - untested
+- Abandoned Hospital, Ground Floor (plans hosp_a + mirror, theme "hospital":
+  pale green walls, white/mint/grey floors, flickering strip lights, no flags
+  or rugs, wheelchairs to spin, medical pictures). Unlocked by escaping the
+  Candy Factory. Host: the Robot half the time.
+- Halloween (`Config.HALLOWEEN`): orange/purple/black bunting, two paper bats
+  per room. First-game coach (`Config.COACH_GAMES` = 2): six tips moved on by
+  what happens in the game.
+- Lobby: fence, trees, jack-o'-lanterns round the edge; drive-in of three
+  cars; house sunk 2 studs (`Config.LOBBY_HOUSE_SINK`); windows re-measured.
+- Fixes: Echo's noise holds the host 5 s (`Config.ECHO_LURE`); prompts per
+  character; characters' hip height from their model (Echo's shaking run).
+
 ## Next, waiting on Brent's yes
 1. Skill Reset Developer Product 49 -> 79 Robux (Brent changes it in Creator
    Hub; the Lobby button now reads the price from Roblox).
-2. The Hospital.
+2. Host balance per difficulty - needs play data (see SESSION_HANDOFF).
+3. Hospital floors 2-3.
 4. Halloween polish for 29 Oct: tutorial, balance, dressed rooms.

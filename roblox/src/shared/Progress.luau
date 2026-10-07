@@ -16,7 +16,7 @@ Progress.MAPS = {
 	{ id = "gummy", building = "gummy", floor = 1, name = "Gummy: Bounce Hall", icon = "\u{1F36C}", ready = true },
 	{ id = "gummy_2", building = "gummy", floor = 2, name = "Gummy: Candy Factory", icon = "\u{1F36D}", ready = true },
 	{ id = "gummy_3", building = "gummy", floor = 3, name = "Gummy: Jelly Vault", icon = "\u{1F36F}", ready = true },
-	{ id = "hospital", building = "hospital", floor = 1, name = "Abandoned Hospital", icon = "\u{1F3E5}", ready = false },
+	{ id = "hospital", building = "hospital", floor = 1, name = "Abandoned Hospital", icon = "\u{1F3E5}", ready = true },
 }
 
 Progress.BUILDINGS = {

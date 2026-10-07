@@ -163,8 +163,11 @@ Checklist in `TEST_PLAN.md` ("This round").
 3. **Muscle redesign** - built 7 Oct, untested (ROADMAP.md). Also the
    game now waits for every player's Play press (solo used to start the
    moment a character was chosen); vents: any number, 2.5 s per player.
-4. **Gummy floors 2-3** built 7 Oct, untested (`Config.STUDIO_MAP` is
-   `gummy_2`). **Hospital** next after the Tinker/Muscle decision.
+4. **Gummy floors 2-3** and **Hospital floor 1** built 7 Oct, untested
+   (`Config.STUDIO_MAP` is `hospital`). Plans: hosp_a, hosp_b.
+5b. **Host balance per difficulty** - not changed blind; proposal: log each
+   game's difficulty, floor and escaped yes/no, then tune to roughly 70%
+   escapes on Easy, 50% Normal, 35% Hard. Waiting on Brent.
 4b. **Tinker / Muscle balance** - built 7 Oct, untested (ROADMAP): store
    rooms, Muscle's Barricade, Tinker's keypad pick.
 5. **Halloween polish, live by 29 Oct:** first-game tutorial, host balance per

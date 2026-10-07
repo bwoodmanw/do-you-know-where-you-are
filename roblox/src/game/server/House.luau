@@ -18,6 +18,7 @@ local wallColor = Color3.fromRGB(70, 46, 96)
 local THEMES = {
 	party = { wall = Color3.fromRGB(70, 46, 96), light = Color3.fromRGB(255, 196, 120), ceiling = Color3.fromRGB(30, 20, 40) },
 	gummy = { wall = Color3.fromRGB(255, 150, 200), light = Color3.fromRGB(255, 200, 225), ceiling = Color3.fromRGB(255, 205, 225) },
+	hospital = { wall = Color3.fromRGB(150, 172, 160), light = Color3.fromRGB(215, 235, 255), ceiling = Color3.fromRGB(70, 76, 80) },
 }
 local HT = 24 -- ceiling height of tall rooms (the Gallery with its loft)
 
@@ -42,6 +43,9 @@ local FLOOR = {
 	lilac = { Enum.Material.SmoothPlastic, Color3.fromRGB(205, 175, 240) },
 	caramel = { Enum.Material.SmoothPlastic, Color3.fromRGB(210, 140, 70) },
 	pinktiles = { Enum.Material.CeramicTiles, Color3.fromRGB(255, 190, 215) },
+	whitetiles = { Enum.Material.CeramicTiles, Color3.fromRGB(222, 228, 226) },
+	mintlino = { Enum.Material.SmoothPlastic, Color3.fromRGB(165, 200, 185) },
+	greylino = { Enum.Material.SmoothPlastic, Color3.fromRGB(150, 156, 166) },
 	door = { Enum.Material.WoodPlanks, Color3.fromRGB(62, 44, 34) },
 }
 
@@ -851,12 +855,15 @@ end
 -- ---------- decorations: streamers, pictures, cobwebs, pumpkins, balloon
 -- bunches, rugs. None of it is solid or blocks the host's eyes. ----------
 local DECOR = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(138, 107, 209), Color3.fromRGB(255, 138, 31) }
+local HOSPITAL_PICTURES = { "\u{1FA7A}", "\u{1F48A}", "\u{1FA79}", "\u{1F9F8}", "\u{1F3E5}", "\u{1F47B}", "\u{1F987}", "\u{1F383}" }
+local HALLOWEEN_DECOR = { Color3.fromRGB(255, 138, 31), Color3.fromRGB(110, 60, 160), Color3.fromRGB(30, 24, 34), Color3.fromRGB(150, 220, 60) }
 local CANDY_PICTURES = { "\u{1F36C}", "\u{1F36D}", "\u{1F9C1}", "\u{1F369}", "\u{1F36B}", "\u{1F370}", "\u{1F366}", "\u{1F388}" }
 local PICTURES = { "\u{1F383}", "\u{1F47B}", "\u{1F987}", "\u{1F578}", "\u{1F382}", "\u{1F388}", "\u{1F315}", "\u{1F36D}" }
 
 function House.decorate(world)
 	local root, map = world.root, world.map
 	local candy = map.theme == "gummy"
+	local hosp = map.theme == "hospital"
 	local busy = {}
 	for _, o in ipairs(map.objects) do
 		busy[o.x .. "," .. o.y] = true
@@ -905,8 +912,23 @@ function House.decorate(world)
 	end
 	for r, f in ipairs(map.floors) do
 		local x0, z0, x1, z1 = f.x0 * T, f.y0 * T, (f.x1 + 1) * T, (f.y1 + 1) * T
-		-- two swags of party flags across the ceiling
-		for s = 0, 1 do
+		if hosp then
+			local strip = deco({ Name = "StripLight", Size = Vector3.new(6, 0.3, 1), Position = Vector3.new((x0 + x1) / 2, H - 0.2, (z0 + z1) / 2), Color = Color3.fromRGB(225, 240, 255), Material = Enum.Material.Neon })
+			task.spawn(function()
+				local rng = Random.new()
+				while strip.Parent do
+					task.wait(rng:NextNumber(1.5, 6))
+					for _ = 1, rng:NextInteger(1, 3) do
+						strip.Transparency = 0.85
+						task.wait(rng:NextNumber(0.05, 0.15))
+						strip.Transparency = 0
+						task.wait(rng:NextNumber(0.05, 0.2))
+					end
+				end
+			end)
+		end
+		-- two swags of party flags across the ceiling (not in the hospital)
+		for s = 0, hosp and -1 or 1 do
 			local top = (f.tall and HT or H) - 1.2
 			local a = Vector3.new(x0 + 1, top, s == 0 and z0 + 1 or z1 - 1)
 			local b = Vector3.new(x1 - 1, top, s == 0 and z1 - 1 or z0 + 1)
@@ -915,7 +937,37 @@ function House.decorate(world)
 			for i = 0, n do
 				local t = i / n
 				local p = a:Lerp(b, t) - Vector3.new(0, math.sin(t * math.pi) * 2.5, 0)
-				deco({ Name = "Flag", Size = Vector3.new(1.3, 1.5, 0.08), CFrame = CFrame.lookAt(p, p + side), Color = DECOR[(i + r) % #DECOR + 1], Material = Enum.Material.Fabric })
+				local flags = Config.HALLOWEEN and HALLOWEEN_DECOR or DECOR
+				deco({ Name = "Flag", Size = Vector3.new(1.3, 1.5, 0.08), CFrame = CFrame.lookAt(p, p + side), Color = flags[(i + r) % #flags + 1], Material = Enum.Material.Fabric })
+			end
+		end
+		-- Halloween: two paper bats hanging from the ceiling, slowly turning
+		if Config.HALLOWEEN then
+			local brng = Random.new(r * 7)
+			for _ = 1, 2 do
+				local bx = brng:NextNumber(x0 + 3, math.max(x0 + 3.1, x1 - 3))
+				local bz = brng:NextNumber(z0 + 3, math.max(z0 + 3.1, z1 - 3))
+				local top = (f.tall and HT or H)
+				local by = top - brng:NextNumber(2.5, 4)
+				deco({ Name = "BatString", Size = Vector3.new(0.05, top - by, 0.05), Position = Vector3.new(bx, (top + by) / 2, bz), Color = Color3.fromRGB(200, 200, 200) })
+				local body = deco({ Name = "PaperBat", Shape = Enum.PartType.Ball, Size = Vector3.new(0.7, 0.8, 0.7), Position = Vector3.new(bx, by, bz), Color = Color3.fromRGB(25, 20, 30), Material = Enum.Material.SmoothPlastic })
+				local wings = {}
+				for _, sx in ipairs({ -1, 1 }) do
+					table.insert(wings, deco({ Name = "BatWing", Size = Vector3.new(1.4, 0.6, 0.06), CFrame = CFrame.new(bx + sx * 0.9, by + 0.1, bz) * CFrame.Angles(0, 0, math.rad(sx * 18)), Color = Color3.fromRGB(25, 20, 30), Material = Enum.Material.SmoothPlastic }))
+				end
+				local centre = CFrame.new(bx, by, bz)
+				local rel = { centre:ToObjectSpace(wings[1].CFrame), centre:ToObjectSpace(wings[2].CFrame) }
+				task.spawn(function()
+					local a, speed = brng:NextNumber(0, 6), brng:NextNumber(0.3, 0.6)
+					while body.Parent do
+						a += speed * 0.1
+						local turn = centre * CFrame.Angles(0, a, 0)
+						body.CFrame = turn
+						wings[1].CFrame = turn * rel[1]
+						wings[2].CFrame = turn * rel[2]
+						task.wait(0.1)
+					end
+				end)
 			end
 		end
 		-- pictures on the north wall, facing into the room
@@ -925,7 +977,7 @@ function House.decorate(world)
 				hung += 1
 				local pic = deco({ Name = "Picture", Size = Vector3.new(3.4, 2.8, 0.2), Position = at(x, f.y0 - 1, 7.5) + Vector3.new(0, 0, T / 2 + 0.15), Color = Color3.fromRGB(110, 80, 40), Material = Enum.Material.Wood })
 				local inner = deco({ Name = "Painting", Size = Vector3.new(2.8, 2.2, 0.05), Position = pic.Position + Vector3.new(0, 0, 0.12), Color = Color3.fromRGB(40, 30, 55) })
-				local pics = candy and CANDY_PICTURES or PICTURES
+				local pics = candy and CANDY_PICTURES or hosp and HOSPITAL_PICTURES or PICTURES
 				emoji(inner, Enum.NormalId.Back, pics[(x + r) % #pics + 1])
 			end
 		end
@@ -954,7 +1006,34 @@ function House.decorate(world)
 			end
 			local base = at(c[1], c[2], 0)
 			local kind = rng:NextInteger(1, 4)
-			if kind == 1 then
+			if hosp and (kind == 1 or kind == 4) then
+				-- a wheelchair: give it a spin (it creaks)
+				local seat = deco({ Name = "WheelchairSeat", Size = Vector3.new(2, 0.4, 2), Position = base + Vector3.new(0, 1.8, 0), Color = Color3.fromRGB(60, 90, 140), Material = Enum.Material.Fabric })
+				local back = deco({ Name = "WheelchairBack", Size = Vector3.new(2, 2, 0.3), Position = base + Vector3.new(0, 2.9, 0.9), Color = Color3.fromRGB(60, 90, 140), Material = Enum.Material.Fabric })
+				local wheels = {}
+				for _, sx in ipairs({ -1.15, 1.15 }) do
+					table.insert(wheels, deco({ Name = "Wheel", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.2, 2.6, 2.6), CFrame = CFrame.new(base + Vector3.new(sx, 1.3, 0.2)), Color = Color3.fromRGB(180, 185, 190), Material = Enum.Material.Metal }))
+				end
+				local bits = { seat, back, wheels[1], wheels[2] }
+				local centre = base + Vector3.new(0, 1.8, 0)
+				local pp = prompt(seat, "Spin", "Wheelchair", 0.3)
+				pp.Triggered:Connect(function()
+					pp.Enabled = false
+					require(script.Parent.Effects).sound(seat.Position, "unhide", 0.7)
+					local start = {}
+					for i, b in ipairs(bits) do
+						start[i] = CFrame.new(centre):ToObjectSpace(b.CFrame)
+					end
+					for step = 1, 24 do
+						local turn = CFrame.new(centre) * CFrame.Angles(0, step / 24 * math.pi * 2, 0)
+						for i, b in ipairs(bits) do
+							b.CFrame = turn * start[i]
+						end
+						task.wait(0.03)
+					end
+					pp.Enabled = true
+				end)
+			elseif kind == 1 then
 				-- a birthday cake: blow out the candles
 				deco({ Name = "CakeTable", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 4, 4), CFrame = CFrame.new(base + Vector3.new(0, 2.8, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(240, 235, 245), Material = Enum.Material.Fabric })
 				deco({ Name = "CakeTableLeg", Size = Vector3.new(0.5, 2.6, 0.5), Position = base + Vector3.new(0, 1.3, 0), Color = Color3.fromRGB(90, 60, 40) })
@@ -1028,8 +1107,8 @@ function House.decorate(world)
 				end
 			end
 		end
-		-- a rug in the middle (not in the kitchen: it has its tiles)
-		if f.kind ~= "tiles" then
+		-- a rug in the middle (not in the kitchen: it has its tiles; not in the hospital)
+		if f.kind ~= "tiles" and not hosp then
 			local w, d = (f.x1 - f.x0 + 1) * T * 0.4, (f.y1 - f.y0 + 1) * T * 0.4
 			deco({ Name = "Rug", Size = Vector3.new(w, 0.1, d), Position = Vector3.new((x0 + x1) / 2, 0.06, (z0 + z1) / 2), Color = DECOR[r % #DECOR + 1], Material = Enum.Material.Fabric, Transparency = 0.15 })
 		end

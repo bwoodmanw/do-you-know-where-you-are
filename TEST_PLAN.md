@@ -10,7 +10,30 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
-## Fixes and 10 levels (built 7 Oct) - test these first
+## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
+
+Studio Play now builds the Hospital (`Config.STUDIO_MAP = "hospital"`).
+
+Lobby:
+- [ ] The house sits on the ground (no gap under the porch); if still off, say up or down and roughly how much
+- [ ] Faces in the windows line up (upper right no longer above, lower left no longer to the side)
+- [ ] Cars: two on the left lined up facing the house; three on the right facing the leaderboards (outer two angled in), the yellow one furthest back
+- [ ] Round the edge: an iron fence, bare and leafy trees, glowing jack-o'-lanterns (no bare walls)
+
+Party House / any floor:
+- [ ] Echo runs smoothly (no shaking); every character's feet on the floor
+- [ ] Echo's noise: throw it behind the host while he chases you - he turns and goes to it for about 5 s
+- [ ] Prompts: Tinker sees only "Pick the lock" at locked doors, everyone else only "Unlock"; Muscle sees only "Shove" at blocked doors, everyone else only "Plant Party Popper" (without one: "You need a Party Popper..."); Tinker's "Pick the keypad" sits below "Use keypad"
+- [ ] Halloween: orange / purple / black bunting, two paper bats turning slowly in each room
+- [ ] First game (an account with 0 or 1 games): a "Tip 1 of 6" card on the left; tips move on as you pop a balloon, meet a locked door, the host comes out, someone is caught, the code is known; Next and X work
+
+Hospital:
+- [ ] Pale green walls, white / mint / grey floors, a flickering strip light in each room, no party flags or rugs
+- [ ] Reception (start) at the bottom, the Main Corridor across the middle, Pharmacy behind the first door, Ambulance Bay (exit) behind the second
+- [ ] Wheelchairs you can Spin; a Store Room and a Junk Cupboard
+- [ ] Live: escaping Candy Factory unlocks the Hospital
+
+## Fixes and 10 levels (built 7 Oct)
 
 Lobby:
 - [ ] Swings now stand by the party circles on the right with a lamp beside them; new lamps over the whole play lawn; the night is a little brighter

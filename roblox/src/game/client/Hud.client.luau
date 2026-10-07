@@ -1589,6 +1589,74 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 	toast(text, (kind == "clue" or kind == "reveal") and 6 or 3.5)
 end)
 
+-- ---------- the coach: tips for a new player's first games ----------
+do
+	local STEPS = {
+		"\u{1F388} Find the clue balloons and pop them: walk up and press E. Careful - some are tricks!",
+		"A real balloon shows a colour. Three colours = the code for the big exit door.",
+		"\u{1F512} A locked door? Search drawers, boxes and coats for its key. Tinker can pick locks.",
+		"\u{1F47B} The host is out! Hold Shift to run, and press E at a \u{1F648} hiding place to hide.",
+		"Caught? Friends free you from the cage. Stuck? Press \u{1F4A1} Clue for a hint (it costs points).",
+		"\u{1F6AA} You know the code! Go to the big door and type the colours on the keypad.",
+	}
+	local box = frame(gui, { Size = UDim2.fromOffset(330, 116), Position = UDim2.new(0, 10, 0.3, 0), BackgroundColor3 = NIGHT, BackgroundTransparency = 0.15, Visible = false, ZIndex = 9 })
+	corner(box, 12)
+	local stroke = Instance.new("UIStroke")
+	stroke.Color, stroke.Thickness = PUMP, 2
+	stroke.Parent = box
+	local head = label(box, { Size = UDim2.new(1, -60, 0, 24), Position = UDim2.fromOffset(12, 6), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 10 })
+	local body = label(box, { Size = UDim2.new(1, -24, 0, 50), Position = UDim2.fromOffset(12, 30), TextScaled = false, TextSize = 16, TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 10 })
+	local step, on = 0, false
+	local function show(i)
+		if not on or i <= step or i > #STEPS then
+			return
+		end
+		step = i
+		head.Text = "\u{1F393} Tip " .. i .. " of " .. #STEPS
+		body.Text = STEPS[i]
+		box.Visible = true
+	end
+	local nextBtn = button(box, "Next \u{25B6}", { Size = UDim2.fromOffset(110, 28), Position = UDim2.new(1, -122, 1, -34), ZIndex = 10 }, function()
+		if step >= #STEPS then
+			box.Visible = false
+		else
+			show(step + 1)
+		end
+	end)
+	button(box, "X", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(30, 26), Position = UDim2.new(1, -38, 0, 6), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 10 }, function()
+		on = false
+		box.Visible = false
+	end)
+	RunService.Heartbeat:Connect(function()
+		nextBtn.Text = step >= #STEPS and "Got it!" or "Next \u{25B6}"
+	end)
+	remotes.Notify.OnClientEvent:Connect(function(kind)
+		if kind == "start" then
+			local data = profileData()
+			local games = data and data.stats and data.stats.games or 0
+			on = games < (Config.COACH_GAMES or 2)
+			step = 0
+			show(1)
+		elseif kind == "pop" then
+			show(2)
+		elseif kind == "key" or kind == "need" then
+			show(3)
+		elseif kind == "appear" then
+			show(4)
+		elseif kind == "caught" then
+			show(5)
+		end
+	end)
+	for i = 1, 3 do
+		RoundState:GetAttributeChangedSignal("Known" .. i):Connect(function()
+			if RoundState:GetAttribute("Known1") and RoundState:GetAttribute("Known2") and RoundState:GetAttribute("Known3") then
+				show(6)
+			end
+		end)
+	end
+end
+
 -- ---------- mouse look: lock the mouse to the centre unless a menu is open ----------
 local locked = false
 RunService.RenderStepped:Connect(function()

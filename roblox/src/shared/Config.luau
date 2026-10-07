@@ -91,6 +91,10 @@ Config.SKILLS = {
 Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25 }
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
+-- Halloween dressing in every room (orange / purple bunting, paper bats)
+Config.HALLOWEEN = true
+-- the coach for new players: tips during their first games
+Config.COACH_GAMES = 2
 -- Muscle's Barricade: crates beside doorways (crates per floor), how close he
 -- must be (studs), how long it stands, how long the host is stuck smashing it
 Config.BARRICADE = { crates = 6, reach = 16, stands = 10, hold = 4 }
@@ -128,7 +132,7 @@ Config.PICK_WAIT = 120
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "gummy_2" -- partyhouse, partyhouse_2, partyhouse_3, gummy, gummy_2, gummy_3
+Config.STUDIO_MAP = "hospital" -- partyhouse, partyhouse_2, partyhouse_3, gummy, gummy_2, gummy_3, hospital
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot"); nil = random
