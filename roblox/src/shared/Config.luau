@@ -82,11 +82,11 @@ Config.COLOR_SHAPE = { red = "\u{2764}\u{FE0F}", blue = "\u{1F4A7}", yellow = "\
 -- badges: create each in Creator Hub (Escape Crew -> Badges), then put its id
 -- here; 0 = not made yet (skipped)
 Config.BADGES = {
-	firstEscape = 0, -- Escaped! (first escape)
-	partyhouse = 0, -- escaped the Party House's top floor (Attic)
-	gummy = 0, -- escaped the Gummy Bounce House's top floor (Jelly Vault)
-	hospital = 0, -- escaped the Hospital's top floor (Labs)
-	allFloors = 0, -- escaped all 9 floors
+	firstEscape = 4113829508606477, -- Escaped! (first escape)
+	partyhouse = 52874019824656, -- escaped the Party House's top floor (Attic)
+	gummy = 4415169378717199, -- escaped the Gummy Bounce House's top floor (Jelly Vault)
+	hospital = 3323093080758728, -- escaped the Hospital's top floor (Labs)
+	allFloors = 1673377768038318, -- escaped all 9 floors
 	rescuer = 0, -- freed 10 friends from the cage
 	untouched = 0, -- escaped without being caught
 	nightmare = 0, -- escaped on Nightmare
