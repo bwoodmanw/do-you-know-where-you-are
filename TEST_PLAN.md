@@ -12,6 +12,19 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 11 (7 Oct) - the improvements list:
+- [ ] Saves: play a game, go back to the Lobby, play again - points, XP and boosts always carry over (the next place may wait a second or two)
+- [ ] A sign over every doorway naming the room beyond (on both sides)
+- [ ] Room sounds (quiet; the 🔊 button controls them): boiler/generator hum, factory clatter, fireplace crackle, clock ticking, attic wind, hospital beeps and buzz, bubbling chocolate and jelly, dripping in bathrooms and the archive
+- [ ] Effects: steam (boiler, generator, laundry), dust (attic and storage), bubbles (chocolate), sparkles (vault, gold), mist (jelly pool); room light colours; a slow red warning light in boiler and generator rooms
+- [ ] Light switch on a wall of each Party House / Hospital room: "Lights off" makes the room dark on your screen and the host sees you less far; when the host walks in he switches it back on
+- [ ] Noisy things: switch on a TV, radio, drums or arcade machine - a sound plays and the host comes to look (40 s before it works again)
+- [ ] Candy Factory: stand on a conveyor belt in the Conveyor Hall / Factory Floor / Wrapper Room and it carries you along
+- [ ] Colour pictures: red heart, blue drop, yellow star, green clover on balloons, the code bar, the keypad buttons and the painted wall
+- [ ] Lobby: green "Quick Play" at the top of the menu - joins an open party, or starts a solo game on your next unbeaten floor (live only)
+- [ ] First ever escape: a few seconds after the results, Roblox asks "add to favourites?"
+- [ ] Badges (after they are made in Creator Hub and their ids added): awarded at the results
+
 Round 10 (7 Oct):
 - [ ] Team items above the active boosts (gold border): a key icon with the door's name for each key found (gone once that door opens), and a confetti icon with x N for the team's Confetti Cannons (stays through a cage)
 - [ ] Lobby: hold Shift (or the Run button on a phone) to run, no stamina limit

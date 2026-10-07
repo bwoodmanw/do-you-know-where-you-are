@@ -67,6 +67,13 @@ what they are, and that you always know where you are.
 7. **Windows with a view**: moonlit windows on outer walls, the garden or
    clouds outside. **After Halloween.**
 
+## Built 7 Oct
+
+A1 save safety; B1 badges (waiting for ids), B2 favourite prompt, B3 Quick Play,
+B4 colour pictures; C1 doorway signs, C2 room sounds, C3 effects, C4 light
+switches, noisy things, conveyor belts; C5 room lighting. Still open: B5-B11,
+C4 laundry chute / vault wheel / chocolate wading, C6 real models, C7 windows.
+
 ## Suggested order for the next sessions
 
 1. Save safety (A1).

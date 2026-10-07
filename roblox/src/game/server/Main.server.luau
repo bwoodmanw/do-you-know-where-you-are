@@ -259,7 +259,7 @@ local function teleport(plr, pos)
 end
 
 local function colourWord(c)
-	return string.upper(c)
+	return string.upper(c) .. " " .. (Config.COLOR_SHAPE[c] or "")
 end
 
 -- a name tag over each kid showing their character, until the real
@@ -384,7 +384,7 @@ local function checkEnd()
 		local earned = state.earned[plr.UserId] or 0
 		local skill = plr:GetAttribute("Skill")
 		local out = plr:GetAttribute("Escaped") == true and not plr:GetAttribute("Waiting")
-		local row = { name = plr.DisplayName, points = earned, escaped = out, skill = skill }
+		local row = { name = plr.DisplayName, points = earned, escaped = out, skill = skill, userId = plr.UserId }
 		local pd = Profile.get(plr)
 		if pd then
 			local before = Progress.level(pd.xp[skill] or 0)
@@ -396,6 +396,7 @@ local function checkEnd()
 			pd.stats.games += 1
 			if out then
 				pd.stats.escapes += 1
+				row.firstEscape = pd.stats.escapes == 1
 				local key = mapId .. "_" .. state.diff
 				if not pd.best[key] or seconds < pd.best[key] then
 					pd.best[key] = seconds
@@ -422,6 +423,50 @@ local function checkEnd()
 		table.insert(rows, row)
 	end
 	require(ReplicatedStorage.Shared.BalanceLog).record(mapId, state.diff, #list, escaped, seconds, won)
+	-- badges (each only if made in Creator Hub: Config.BADGES)
+	task.spawn(function()
+		local BadgeService = game:GetService("BadgeService")
+		local function award(plr, key)
+			local id = Config.BADGES[key]
+			if id and id > 0 then
+				pcall(function()
+					BadgeService:AwardBadge(plr.UserId, id)
+				end)
+			end
+		end
+		local mi = Progress.mapIndex(mapId)
+		local m = mi and Progress.MAPS[mi]
+		for _, plr in ipairs(list) do
+			local pd = Profile.get(plr)
+			local out = plr:GetAttribute("Escaped") == true and not plr:GetAttribute("Waiting")
+			if out then
+				award(plr, "firstEscape")
+				if m and not nextFloor() then
+					award(plr, m.building)
+				end
+				if not (state.everCaught and state.everCaught[plr.UserId]) then
+					award(plr, "untouched")
+				end
+				if state.diff == "nightmare" then
+					award(plr, "nightmare")
+				end
+				if pd and pd.cleared then
+					local all = true
+					for _, mm in ipairs(Progress.MAPS) do
+						if mm.ready and not pd.cleared[mm.id] then
+							all = false
+						end
+					end
+					if all then
+						award(plr, "allFloors")
+					end
+				end
+			end
+			if pd and (pd.stats.rescues or 0) >= 10 then
+				award(plr, "rescuer")
+			end
+		end
+	end)
 	Results:FireAllClients({
 		won = won,
 		difficulty = diff.name,
@@ -704,6 +749,7 @@ local function wirePrompts()
 				entry.part.Size = Vector3.new(1.4, 1.4, 1.4)
 				entry.part.Position = at(def.x, def.y, 0.8)
 				entry.label.TextColor3 = Color3.new(1, 1, 1)
+				entry.label.Text = def.n .. " " .. (Config.COLOR_SHAPE[col] or "")
 				addPoints(plr, 5)
 				Effects.burst(entry.part.Position + Vector3.new(0, 4, 0), "pop")
 				say("pop", "Balloon " .. def.n .. " was " .. colourWord(col) .. "! That was LOUD...", { n = def.n, color = col, icon = Config.ITEM_ICONS.balloon, userId = plr.UserId })
@@ -756,7 +802,7 @@ local function wirePrompts()
 				local t = ""
 				for i = 1, 3 do
 					local c = Config.COLOR3[state.code[i]]
-					t ..= string.format('<font color="#%02x%02x%02x">&#9679;</font> ', math.floor(c.R * 255 + 0.5), math.floor(c.G * 255 + 0.5), math.floor(c.B * 255 + 0.5))
+					t ..= string.format('<font color="#%02x%02x%02x">&#9679;</font>%s ', math.floor(c.R * 255 + 0.5), math.floor(c.G * 255 + 0.5), math.floor(c.B * 255 + 0.5), Config.COLOR_SHAPE[state.code[i]] or "")
 				end
 				entry.label.Text = t
 				Effects.burst(entry.part.Position, "light")
@@ -1238,6 +1284,9 @@ end
 
 function round.hostCaught(_, plr)
 	unhide(plr)
+	if state.everCaught and not plr:GetAttribute("Shield") then
+		state.everCaught[plr.UserId] = true
+	end
 	if plr:GetAttribute("Shield") then
 		plr:SetAttribute("Shield", false)
 		host:stun(2.5)
@@ -1868,7 +1917,7 @@ function round.start()
 	local diffKey = RoundState:GetAttribute("Difficulty") or "normal"
 	local diff = Config.DIFFICULTY[diffKey]
 	local now = workspace:GetServerTimeNow()
-	state = { status = "playing", code = code, known = {}, entry = {}, doorOpen = false, cluesLeft = diff.clues,
+	state = { status = "playing", code = code, known = {}, entry = {}, doorOpen = false, everCaught = {}, cluesLeft = diff.clues,
 		diff = diffKey, earned = {}, startedAt = now, endsAt = now + diff.timer, frenzy = false }
 	-- clear the last game's clock and host first, so screens see a fresh
 	-- game (not one already under way) and open the character picker

@@ -811,6 +811,50 @@ SetOption.OnServerEvent:Connect(function(plr, key, value)
 	broadcast()
 end)
 
+-- Quick Play: join an open party with room, or straight into a solo game
+-- on the next floor this player has not escaped yet
+local QuickPlay = remote("QuickPlay")
+QuickPlay.OnServerEvent:Connect(function(plr)
+	local mine = partyOf[plr]
+	if mine and mine.starting then
+		return
+	end
+	for id, party in pairs(parties) do
+		if party ~= mine and not party.starting and not party.friendsOnly and #party.members < party.max then
+			return joinParty(plr, id)
+		end
+	end
+	local data = Profile.get(plr)
+	local pick = "partyhouse"
+	if data then
+		for _, m in ipairs(Progress.MAPS) do
+			if m.ready and data.unlocked and data.unlocked[m.id] and not (data.cleared and data.cleared[m.id]) then
+				pick = m.id
+				break
+			end
+		end
+	end
+	leave(plr)
+	local party = {
+		id = nextId,
+		leader = plr,
+		members = { plr },
+		max = 1,
+		created = os.clock(),
+		friendsOnly = true,
+		difficulty = "normal",
+		spook = "giggly",
+		votes = { [tostring(plr.UserId)] = pick },
+	}
+	nextId += 1
+	parties[party.id] = party
+	partyOf[plr] = party
+	broadcast()
+	local i = Progress.mapIndex(pick)
+	Notice:FireClient(plr, "\u{26A1} Quick Play: " .. (i and Progress.MAPS[i].name or pick) .. "!")
+	start(party)
+end)
+
 StartParty.OnServerEvent:Connect(function(plr)
 	local party = partyOf[plr]
 	if party and party.leader == plr then

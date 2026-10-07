@@ -316,7 +316,7 @@ local function paintCode()
 	local parts = {}
 	for i = 1, 3 do
 		local k = RoundState:GetAttribute("Known" .. i)
-		parts[i] = k and ('<font color="' .. hex(Config.COLOR3[k]) .. '">\u{25CF}</font>') or "?"
+		parts[i] = k and ('<font color="' .. hex(Config.COLOR3[k]) .. '">\u{25CF}</font>' .. (Config.COLOR_SHAPE[k] or "")) or "?"
 	end
 	codeLabel.Text = "Code: " .. table.concat(parts, " ")
 	if clueBtn then
@@ -795,7 +795,7 @@ label(keypad, { Size = UDim2.new(1, 0, 0, 34), Position = UDim2.fromOffset(0, 8)
 local entered = label(keypad, { Size = UDim2.new(1, 0, 0, 30), Position = UDim2.fromOffset(0, 44), Text = "_ _ _", RichText = true, ZIndex = 31 })
 local pressed = {}
 for i, c in ipairs(Config.COLORS) do
-	button(keypad, "", {
+	button(keypad, Config.COLOR_SHAPE[c] or "", {
 		Size = UDim2.fromOffset(100, 80),
 		Position = UDim2.fromOffset(18 + ((i - 1) % 2) * 112, 84 + math.floor((i - 1) / 2) * 90),
 		BackgroundColor3 = Config.COLOR3[c],
@@ -804,7 +804,7 @@ for i, c in ipairs(Config.COLORS) do
 		table.insert(pressed, c)
 		local shown = {}
 		for j = 1, 3 do
-			shown[j] = pressed[j] and ('<font color="' .. hex(Config.COLOR3[pressed[j]]) .. '">\u{25CF}</font>') or "_"
+			shown[j] = pressed[j] and (Config.COLOR_SHAPE[pressed[j]] or ('<font color="' .. hex(Config.COLOR3[pressed[j]]) .. '">\u{25CF}</font>')) or "_"
 		end
 		entered.Text = table.concat(shown, " ")
 		playLocal("beep", 0.6)
@@ -1633,6 +1633,16 @@ local function confetti()
 	end
 end
 remotes.Results.OnClientEvent:Connect(function(r)
+	-- your very first escape: ask once to add Escape Crew to your favourites
+	for _, row in ipairs(r.players or {}) do
+		if row.userId == player.UserId and row.firstEscape then
+			task.delay(4, function()
+				pcall(function()
+					game:GetService("AvatarEditorService"):PromptSetFavorite(Config.PLACE_IDS.lobby, Enum.AvatarItemType.Asset, true)
+				end)
+			end)
+		end
+	end
 	resTitle.Text = r.won and "\u{1F389} You escaped the Party House!" or "\u{1F512} Everyone was caught..."
 	resInfo.Text = r.difficulty .. "  \u{00B7}  " .. string.format("%d:%02d", math.floor(r.seconds / 60), r.seconds % 60) .. (r.timeBonus > 0 and ("  \u{00B7}  time bonus +" .. r.timeBonus) or "")
 	local lines = {}

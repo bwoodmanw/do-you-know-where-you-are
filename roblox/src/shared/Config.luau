@@ -76,6 +76,21 @@ Config.COLOR3 = {
 	yellow = Color3.fromRGB(255, 210, 63),
 	green = Color3.fromRGB(70, 209, 96),
 }
+-- a picture for each colour, so colour-blind players can read the code too
+Config.COLOR_SHAPE = { red = "\u{2764}\u{FE0F}", blue = "\u{1F4A7}", yellow = "\u{2B50}", green = "\u{1F340}" }
+
+-- badges: create each in Creator Hub (Escape Crew -> Badges), then put its id
+-- here; 0 = not made yet (skipped)
+Config.BADGES = {
+	firstEscape = 0, -- Escaped! (first escape)
+	partyhouse = 0, -- escaped the Party House's top floor (Attic)
+	gummy = 0, -- escaped the Gummy Bounce House's top floor (Jelly Vault)
+	hospital = 0, -- escaped the Hospital's top floor (Labs)
+	allFloors = 0, -- escaped all 9 floors
+	rescuer = 0, -- freed 10 friends from the cage
+	untouched = 0, -- escaped without being caught
+	nightmare = 0, -- escaped on Nightmare
+}
 
 Config.SKILLS = {
 	{ id = "tinker", name = "Tinker", icon = "\u{1F527}", say = "Picks locks", color = Color3.fromRGB(242, 140, 40) },
