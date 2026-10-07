@@ -12,6 +12,11 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 9 (7 Oct):
+- [ ] Results appear at the end of every game (they could fail after the Next floor change - fixed)
+- [ ] Ground floors with a floor above (Party House Ground, Bounce Hall, Hospital Ground): stairs, a landing and a glowing door in the garden / clouds, sign "Up to the Bedrooms" / "Up to the Candy Factory" / "Up to the Wards"; candy-pink steps in the Gummy House, grey concrete at the Hospital
+- [ ] Every floor's sign names the floor above; top floors (Attic, Jelly Vault, Labs) keep their own sign and the door says you made it
+
 Round 8 (7 Oct):
 - [ ] Chocolate River: the two long benches are now chocolate river channels with caramel banks and marshmallows bobbing along; a chocolate waterfall on a wall
 - [ ] Upper floors' way out: the glowing door no longer flickers; a big orange sign "Up to ..." with "Step through when the game ends"

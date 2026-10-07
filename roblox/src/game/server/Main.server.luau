@@ -115,6 +115,23 @@ RoundState.Parent = ReplicatedStorage
 RoundState:SetAttribute("Spook", "giggly")
 RoundState:SetAttribute("Difficulty", "normal")
 
+-- the floor above this one in the same building (nil on a top floor)
+local function nextFloor()
+	local Progress = require(ReplicatedStorage.Shared.Progress)
+	local mapId = RoundState:GetAttribute("Map") or "partyhouse"
+	local i = Progress.mapIndex(mapId)
+	local m = i and Progress.MAPS[i]
+	if not m then
+		return nil
+	end
+	for _, n in ipairs(Progress.MAPS) do
+		if n.building == m.building and n.floor == m.floor + 1 and n.ready then
+			return n
+		end
+	end
+	return nil
+end
+
 -- realistic night lighting
 local Lighting = game:GetService("Lighting")
 local function effect(class, props)
@@ -1311,21 +1328,6 @@ LeaveToLobby.OnServerEvent:Connect(function(plr)
 	end
 end)
 
--- the floor above this one in the same building (nil on a top floor)
-local function nextFloor()
-	local mapId = RoundState:GetAttribute("Map") or "partyhouse"
-	local i = Progress.mapIndex(mapId)
-	local m = i and Progress.MAPS[i]
-	if not m then
-		return nil
-	end
-	for _, n in ipairs(Progress.MAPS) do
-		if n.building == m.building and n.floor == m.floor + 1 and n.ready then
-			return n
-		end
-	end
-	return nil
-end
 
 function round.startVote()
 	votes = {}
@@ -1719,6 +1721,12 @@ function round.start()
 		lockDefs[math.random(1, #lockDefs)].blocked = true
 	end
 	RoundState:SetAttribute("MapJson", HttpService:JSONEncode(MapGen.forClient(HouseMap)))
+	-- a floor with a floor above gets stairs and a door up, named for it
+	do
+		local nf = nextFloor()
+		HouseMap.hasNext = nf ~= nil
+		HouseMap.upText = nf and ("Up to the " .. (string.match(nf.name, ":%s*(.+)$") or nf.name)) or nil
+	end
 	world = House.build(HouseMap)
 	world.onNoise = function(pos)
 		if host and host.model then
@@ -1730,7 +1738,12 @@ function round.start()
 	wireStoreRooms()
 	House.placeCrates(world, Config.BARRICADE.crates)
 	-- every room dressed to look like what it is called (game/server/Rooms.luau)
-	require(script.Parent.Rooms).dress(world)
+	local okDress, dressErr = pcall(function()
+		require(script.Parent.Rooms).dress(world)
+	end)
+	if not okDress then
+		warn("Room dressing failed (the game goes on without it): " .. tostring(dressErr))
+	end
 	local upDoor = world.root:FindFirstChild("NextFloorDoor")
 	if upDoor then
 		local told = {}

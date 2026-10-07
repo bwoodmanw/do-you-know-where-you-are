@@ -915,12 +915,24 @@ function House.buildGarden(world)
 		groundMat, groundCol = Enum.Material.SmoothPlastic, Color3.fromRGB(255, 215, 232)
 	end
 	local garden = part(root, { Name = "Garden", Size = Vector3.new((gx1 - gx0) * T, 1, 6 * T), Position = Vector3.new((gx0 + gx1) / 2 * T, -0.5, -3 * T), Material = groundMat, Color = groundCol })
-	if stairs then
+	if stairs or map.hasNext then
 		-- solid steps you can climb, a landing at the top and a glowing doorway
-		for i = 1, 8 do
-			part(root, { Name = "StairUp", Size = Vector3.new(16, i * 1.5, 3), Position = Vector3.new(doorX * T + T / 2, i * 0.75, -16 - i * 3), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(95, 62, 40) })
+		-- (indoors on upper floors; out in the garden or the clouds on a
+		-- ground floor that has a floor above)
+		local stepMat, stepCol = Enum.Material.WoodPlanks, Color3.fromRGB(95, 62, 40)
+		if map.theme == "gummy" then
+			stepMat, stepCol = Enum.Material.SmoothPlastic, Color3.fromRGB(255, 160, 200)
+		elseif map.theme == "hospital" then
+			stepMat, stepCol = Enum.Material.Concrete, Color3.fromRGB(150, 155, 160)
 		end
-		part(root, { Name = "Landing", Size = Vector3.new(16, 12, 7), Position = Vector3.new(doorX * T + T / 2, 6, -43.5), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(95, 62, 40) })
+		for i = 1, 8 do
+			part(root, { Name = "StairUp", Size = Vector3.new(16, i * 1.5, 3), Position = Vector3.new(doorX * T + T / 2, i * 0.75, -16 - i * 3), Material = stepMat, Color = stepCol })
+		end
+		part(root, { Name = "Landing", Size = Vector3.new(16, 12, 7), Position = Vector3.new(doorX * T + T / 2, 6, -43.5), Material = stepMat, Color = stepCol })
+		if not stairs then
+			-- outdoors: a door frame standing on the landing
+			part(root, { Name = "UpDoorFrame", Size = Vector3.new(9, 12, 1), Position = Vector3.new(doorX * T + T / 2, 18, -47.2), Material = stepMat, Color = stepCol })
+		end
 		-- a little in front of the landing's back wall (touching it, the two flickered)
 		part(root, { Name = "NextFloorDoor", Size = Vector3.new(7, 10, 0.4), Position = Vector3.new(doorX * T + T / 2, 17, -46.6), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 190, 90), Transparency = 0.2, CanCollide = false })
 		local doorLight = Instance.new("PointLight")
@@ -939,7 +951,7 @@ function House.buildGarden(world)
 		t.TextScaled = true
 		t.Font = Enum.Font.FredokaOne
 		t.TextColor3 = Color3.fromRGB(26, 16, 38)
-		t.Text = "\u{2B06} " .. ((map.exitText and map.exitText ~= "") and map.exitText or "Up to the next floor")
+		t.Text = "\u{2B06} " .. (map.upText or ((map.exitText and map.exitText ~= "") and map.exitText) or "Up to the next floor")
 		t.Parent = sg
 		local t2 = t:Clone()
 		t2.Size = UDim2.new(1, -20, 0.3, 0)
