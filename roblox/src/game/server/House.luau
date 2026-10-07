@@ -125,6 +125,75 @@ local function furnitureAt(map, x, y)
 	return nil
 end
 
+-- the Gummy Bounce House's furniture: candy-jar shelves, sweet conveyors,
+-- chocolate vats, gumball machines, marshmallow beds, frosted tables
+local CANDY = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(190, 110, 230), Color3.fromRGB(255, 150, 200) }
+local function candyFurniture(root, kind, x, y)
+	if kind == "shelf" then
+		part(root, { Name = "CandyShelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 190, 215) })
+		for row = 0, 2 do
+			for j = 0, 2 do
+				local p = at(x, y, 2 + row * 3) + Vector3.new(-2.6 + j * 2.6, 0, T * 0.3 + 0.5)
+				part(root, { Name = "CandyJar", Shape = Enum.PartType.Cylinder, Size = Vector3.new(2.2, 1.9, 1.9), CFrame = CFrame.new(p) * CFrame.Angles(0, 0, math.rad(90)), Material = Enum.Material.Glass, Color = Color3.fromRGB(220, 240, 255), Transparency = 0.5, CanCollide = false })
+				part(root, { Name = "Candy", Shape = Enum.PartType.Ball, Size = Vector3.new(1.3, 1.3, 1.3), Position = p - Vector3.new(0, 0.3, 0), Color = CANDY[(x + j + row) % #CANDY + 1], Material = Enum.Material.SmoothPlastic, CanCollide = false })
+			end
+		end
+	elseif kind == "counter" then
+		part(root, { Name = "Conveyor", Size = Vector3.new(T, 3.4, T), Position = at(x, y, 1.7), Material = Enum.Material.Metal, Color = Color3.fromRGB(190, 195, 205) })
+		part(root, { Name = "Belt", Size = Vector3.new(T, 0.3, T * 0.8), Position = at(x, y, 3.55), Material = Enum.Material.Rubber, Color = Color3.fromRGB(40, 40, 46) })
+		for j = -1, 1 do
+			part(root, { Name = "Sweet", Shape = Enum.PartType.Ball, Size = Vector3.new(1.3, 1.3, 1.3), Position = at(x, y, 4.3) + Vector3.new(j * 2.5, 0, ((x + j) % 2) - 0.5), Color = CANDY[(x + j + 2) % #CANDY + 1], Material = Enum.Material.SmoothPlastic, CanCollide = false })
+		end
+	elseif kind == "bath" then
+		part(root, { Name = "ChocolateVat", Size = Vector3.new(T, 3.4, T), Position = at(x, y, 1.7), Material = Enum.Material.Metal, Color = Color3.fromRGB(200, 205, 215) })
+		part(root, { Name = "Chocolate", Size = Vector3.new(T - 1, 0.2, T - 1), Position = at(x, y, 3.35), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(95, 55, 30) })
+	elseif kind == "desk" then
+		part(root, { Name = "GumballStand", Size = Vector3.new(T * 0.6, 3, T * 0.6), Position = at(x, y, 1.5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(230, 50, 60) })
+		part(root, { Name = "GumballGlobe", Shape = Enum.PartType.Ball, Size = Vector3.new(4, 4, 4), Position = at(x, y, 5), Material = Enum.Material.Glass, Color = Color3.fromRGB(230, 245, 255), Transparency = 0.5, CanCollide = false })
+		for j = 1, 6 do
+			part(root, { Name = "Gumball", Shape = Enum.PartType.Ball, Size = Vector3.new(0.9, 0.9, 0.9), Position = at(x, y, 4.4) + Vector3.new(math.cos(j) * 0.9, (j % 3) * 0.5, math.sin(j * 1.3) * 0.9), Color = CANDY[j % #CANDY + 1], Material = Enum.Material.SmoothPlastic, CanCollide = false })
+		end
+	elseif kind == "bed" then
+		part(root, { Name = "MarshmallowBed", Size = Vector3.new(T, 2.4, T), Position = at(x, y, 1.2), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(252, 248, 252) })
+		part(root, { Name = "Pillow", Size = Vector3.new(T * 0.7, 0.8, 2), Position = at(x, y, 2.8), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 180, 210), CanCollide = false })
+	else
+		part(root, { Name = "Table", Size = Vector3.new(T, 0.6, T), Position = at(x, y, 3.4), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 232, 242) })
+		part(root, { Name = "TableSkirt", Size = Vector3.new(T - 0.2, 3, T - 0.2), Position = at(x, y, 1.6), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(150, 210, 255) })
+	end
+end
+
+-- the hospital's furniture: medicine cabinets, a reception counter, steel
+-- tables and desks, beds with rails
+local function hospitalFurniture(root, kind, x, y)
+	if kind == "shelf" then
+		part(root, { Name = "MedicineCabinet", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(232, 236, 238) })
+		local boxes = { Color3.fromRGB(250, 250, 250), Color3.fromRGB(170, 205, 235), Color3.fromRGB(175, 220, 190), Color3.fromRGB(240, 200, 120) }
+		for row = 0, 2 do
+			for b = 0, 4 do
+				part(root, { Name = "MedicineBox", Size = Vector3.new(1.1, 1.3, 0.8), Position = at(x, y, 1.4 + row * 3) + Vector3.new(-2.8 + b * 1.4, 0, T * 0.3 + 0.3), Color = boxes[((x + b + row) % #boxes) + 1], CanCollide = false })
+			end
+		end
+	elseif kind == "counter" then
+		part(root, { Name = "ReceptionCounter", Size = Vector3.new(T, 4, T), Position = at(x, y, 2), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(165, 200, 185) })
+		part(root, { Name = "CounterTop", Size = Vector3.new(T, 0.4, T), Position = at(x, y, 4.2), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(240, 242, 242) })
+	elseif kind == "bed" then
+		part(root, { Name = "BedFrame", Size = Vector3.new(T, 1.4, T), Position = at(x, y, 0.7), Material = Enum.Material.Metal, Color = Color3.fromRGB(185, 190, 196) })
+		part(root, { Name = "Mattress", Size = Vector3.new(T - 0.6, 1, T - 0.6), Position = at(x, y, 1.9), Material = Enum.Material.Fabric, Color = Color3.fromRGB(245, 247, 250) })
+		part(root, { Name = "Pillow", Size = Vector3.new(T * 0.6, 0.6, 1.6), Position = at(x, y, 2.7), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 255, 255), CanCollide = false })
+		part(root, { Name = "BedRail", Size = Vector3.new(T, 1, 0.2), Position = at(x, y, 3) + Vector3.new(0, 0, T / 2 - 0.2), Material = Enum.Material.Metal, Color = Color3.fromRGB(185, 190, 196), CanCollide = false })
+	elseif kind == "desk" then
+		part(root, { Name = "Desk", Size = Vector3.new(T, 0.4, T * 0.7), Position = at(x, y, 3.6), Material = Enum.Material.Metal, Color = Color3.fromRGB(175, 180, 186) })
+		part(root, { Name = "DeskBody", Size = Vector3.new(T * 0.9, 3.4, T * 0.6), Position = at(x, y, 1.7), Material = Enum.Material.Metal, Color = Color3.fromRGB(140, 146, 152) })
+	elseif kind == "bath" then
+		part(root, { Name = "Tub", Size = Vector3.new(T, 3, T), Position = at(x, y, 1.5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(240, 242, 245) })
+	else
+		part(root, { Name = "SteelTable", Size = Vector3.new(T, 0.6, T), Position = at(x, y, 3.4), Material = Enum.Material.Metal, Color = Color3.fromRGB(200, 205, 210) })
+		for _, o in ipairs({ { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } }) do
+			part(root, { Name = "TableLeg", Size = Vector3.new(0.4, 3.1, 0.4), Position = at(x, y, 1.55) + Vector3.new(o[1] * (T / 2 - 0.5), 0, o[2] * (T / 2 - 0.5)), Material = Enum.Material.Metal, Color = Color3.fromRGB(150, 155, 160) })
+		end
+	end
+end
+
 function House.build(map)
 	local theme = THEMES[map.theme or "party"] or THEMES.party
 	wallColor = theme.wall
@@ -204,7 +273,11 @@ function House.build(map)
 			elseif c == "T" then
 				local f = furnitureAt(map, x, y)
 				local kind = f and f.kind or "table"
-				if kind == "table" then
+				if map.theme == "gummy" and kind ~= "pit" and kind ~= "planter" then
+					candyFurniture(root, kind, x, y)
+				elseif map.theme == "hospital" and kind ~= "planter" and kind ~= "pit" then
+					hospitalFurniture(root, kind, x, y)
+				elseif kind == "table" then
 					part(root, { Name = "Table", Size = Vector3.new(T, 0.6, T), Position = at(x, y, 3.4), Material = Enum.Material.Fabric, Color = Color3.fromRGB(242, 233, 247) })
 					part(root, { Name = "TableSkirt", Size = Vector3.new(T - 0.2, 3, T - 0.2), Position = at(x, y, 1.6), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 138, 31) })
 				elseif kind == "counter" then
@@ -366,6 +439,14 @@ function House.addCrate(world, x, y)
 				word.Text = "Muscle's crate"
 				word.Parent = mark
 				local c = { part = crate, home = home, door = door, hx = hx, hy = hy, x = x, y = y, busy = false }
+				-- Muscle's prompt (only Muscle sees it)
+				c.prompt = prompt(crate, "Barricade", "Muscle's crate", 0)
+				c.prompt:SetAttribute("Only", "muscle")
+				c.prompt.Triggered:Connect(function(plr)
+					if world.onCrate then
+						world.onCrate(plr, c)
+					end
+				end)
 				table.insert(world.crates, c)
 				world.crateAt[x .. "," .. y] = c
 				return c
@@ -937,7 +1018,7 @@ function House.decorate(world)
 			for i = 0, n do
 				local t = i / n
 				local p = a:Lerp(b, t) - Vector3.new(0, math.sin(t * math.pi) * 2.5, 0)
-				local flags = Config.HALLOWEEN and HALLOWEEN_DECOR or DECOR
+				local flags = (Config.HALLOWEEN and not candy) and HALLOWEEN_DECOR or DECOR
 				deco({ Name = "Flag", Size = Vector3.new(1.3, 1.5, 0.08), CFrame = CFrame.lookAt(p, p + side), Color = flags[(i + r) % #flags + 1], Material = Enum.Material.Fabric })
 			end
 		end
@@ -1064,24 +1145,61 @@ function House.decorate(world)
 					end)
 				end)
 			elseif kind == 2 then
-				-- a jack-in-the-box: wind it up... POP! (loud: the host hears it)
-				local box = deco({ Name = "JackBox", Size = Vector3.new(2, 2, 2), Position = base + Vector3.new(0, 1, 0), Color = DECOR[(r % #DECOR) + 1], Material = Enum.Material.SmoothPlastic })
-				local clown = deco({ Name = "Jack", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.4, 1.4), Position = base + Vector3.new(0, 1.4, 0), Color = Color3.fromRGB(255, 230, 200), Transparency = 1 })
-				local pp = prompt(box, "Turn the handle", "Jack-in-the-box", 1)
+				-- a jack-in-the-box: wind the crank... POP! (loud: the host hears it)
+				local box = deco({ Name = "JackBox", Size = Vector3.new(2.2, 2.2, 2.2), Position = base + Vector3.new(0, 1.1, 0), Color = DECOR[(r % #DECOR) + 1], Material = Enum.Material.SmoothPlastic })
+				deco({ Name = "JackStripe", Size = Vector3.new(2.25, 0.4, 2.25), Position = base + Vector3.new(0, 1.5, 0), Color = Color3.fromRGB(255, 210, 63), Material = Enum.Material.SmoothPlastic })
+				deco({ Name = "Crank", Size = Vector3.new(0.9, 0.25, 0.25), Position = base + Vector3.new(1.55, 1.2, 0), Color = Color3.fromRGB(200, 200, 205), Material = Enum.Material.Metal })
+				deco({ Name = "CrankKnob", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 0.5, 0.5), Position = base + Vector3.new(2, 1.2, 0), Color = Color3.fromRGB(232, 80, 91) })
+				local lidRest = CFrame.new(base + Vector3.new(0, 2.33, 0))
+				local lid = deco({ Name = "JackLid", Size = Vector3.new(2.3, 0.25, 2.3), CFrame = lidRest, Color = Color3.fromRGB(255, 210, 63), Material = Enum.Material.SmoothPlastic })
+				-- Jack: a spring, a frilly collar, a grinning head with a jester hat
+				local hidden = base + Vector3.new(0, 1.2, 0)
+				local jack = {
+					{ deco({ Name = "JackSpring", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.6, 0.6, 0.6), CFrame = CFrame.new(hidden) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(190, 190, 200), Material = Enum.Material.Metal, Transparency = 1 }), Vector3.new(0, 3, 0), true },
+					{ deco({ Name = "JackCollar", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.35, 1.9, 1.9), CFrame = CFrame.new(hidden) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(250, 250, 250), Material = Enum.Material.Fabric, Transparency = 1 }), Vector3.new(0, 3.9, 0), true },
+					{ deco({ Name = "JackHead", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.6, 1.6), Position = hidden, Color = Color3.fromRGB(255, 226, 200), Material = Enum.Material.SmoothPlastic, Transparency = 1 }), Vector3.new(0, 4.8, 0) },
+					{ deco({ Name = "JackNose", Shape = Enum.PartType.Ball, Size = Vector3.new(0.45, 0.45, 0.45), Position = hidden, Color = Color3.fromRGB(232, 40, 50), Material = Enum.Material.SmoothPlastic, Transparency = 1 }), Vector3.new(0, 4.75, 0) },
+					{ deco({ Name = "JackHatL", Size = Vector3.new(0.9, 1.1, 0.9), Position = hidden, Color = Color3.fromRGB(110, 60, 160), Material = Enum.Material.Fabric, Transparency = 1 }), Vector3.new(-0.5, 5.8, 0) },
+					{ deco({ Name = "JackHatR", Size = Vector3.new(0.9, 1.1, 0.9), Position = hidden, Color = Color3.fromRGB(255, 138, 31), Material = Enum.Material.Fabric, Transparency = 1 }), Vector3.new(0.5, 5.8, 0) },
+					{ deco({ Name = "JackBellL", Shape = Enum.PartType.Ball, Size = Vector3.new(0.4, 0.4, 0.4), Position = hidden, Color = Color3.fromRGB(255, 210, 63), Material = Enum.Material.Metal, Transparency = 1 }), Vector3.new(-0.9, 6.4, 0) },
+					{ deco({ Name = "JackBellR", Shape = Enum.PartType.Ball, Size = Vector3.new(0.4, 0.4, 0.4), Position = hidden, Color = Color3.fromRGB(255, 210, 63), Material = Enum.Material.Metal, Transparency = 1 }), Vector3.new(0.9, 6.4, 0) },
+				}
+				-- his face always turns to whoever looks at him
+				local face = Instance.new("BillboardGui")
+				face.Size = UDim2.new(1.5, 0, 1.5, 0)
+				face.Enabled = false
+				face.Parent = jack[3][1]
+				local grin = Instance.new("TextLabel")
+				grin.Size = UDim2.fromScale(1, 1)
+				grin.BackgroundTransparency = 1
+				grin.TextScaled = true
+				grin.Text = "\u{1F61C}"
+				grin.Parent = face
+				local pp = prompt(box, "Wind the crank", "Jack-in-the-box", 1)
 				pp.Triggered:Connect(function()
 					pp.Enabled = false
-					task.wait(1.2)
-					clown.Transparency = 0
-					TweenService:Create(clown, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Position = base + Vector3.new(0, 3.6, 0) }):Play()
 					local fx = require(script.Parent.Effects)
+					task.wait(0.8)
+					TweenService:Create(lid, TweenInfo.new(0.15), { CFrame = lidRest * CFrame.new(0, 0.9, -1.1) * CFrame.Angles(math.rad(-100), 0, 0) }):Play()
+					for _, j in ipairs(jack) do
+						j[1].Transparency = 0
+						local goal = base + j[2]
+						local cf = j[3] and CFrame.new(goal) * CFrame.Angles(0, 0, math.rad(90)) or CFrame.new(goal)
+						TweenService:Create(j[1], TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { CFrame = cf }):Play()
+					end
+					face.Enabled = true
 					fx.sound(box.Position, "giggle", 1)
-					fx.burst(box.Position + Vector3.new(0, 3, 0), "pop")
+					fx.burst(box.Position + Vector3.new(0, 4, 0), "pop")
 					if world.onNoise then
 						world.onNoise(box.Position)
 					end
 					task.delay(8, function()
-						clown.Transparency = 1
-						clown.Position = base + Vector3.new(0, 1.4, 0)
+						for _, j in ipairs(jack) do
+							j[1].Transparency = 1
+							j[1].CFrame = j[3] and CFrame.new(hidden) * CFrame.Angles(0, 0, math.rad(90)) or CFrame.new(hidden)
+						end
+						face.Enabled = false
+						lid.CFrame = lidRest
 						pp.Enabled = true
 					end)
 				end)

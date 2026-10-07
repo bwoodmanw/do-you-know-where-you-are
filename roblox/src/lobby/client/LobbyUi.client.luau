@@ -374,6 +374,72 @@ local shopBtn = button(menu, "\u{1F6D2} Shop", { Size = UDim2.new(0.86, 0, 0, 46
 local charsBtn = button(menu, "\u{1F9D1}\u{200D}\u{1F91D}\u{200D}\u{1F9D1} Characters", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 7 })
 local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 46), LayoutOrder = 8 })
 
+-- ---------- the balance table (the experience's owner only) ----------
+task.spawn(function()
+	local tries = 0
+	while player:GetAttribute("IsOwner") == nil and tries < 40 do
+		tries += 1
+		task.wait(0.25)
+	end
+	if not player:GetAttribute("IsOwner") then
+		return
+	end
+	local panel = frame(gui, { Size = UDim2.fromOffset(640, 440), Position = UDim2.new(0.5, -320, 0.5, -220), Visible = false, ZIndex = 30 })
+	corner(panel, 16)
+	label(panel, { Size = UDim2.new(1, -20, 0, 34), Position = UDim2.fromOffset(10, 8), Text = "\u{1F4CA} Host balance - real games so far", TextColor3 = PUMP, ZIndex = 31 })
+	label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 42), Text = "Aim: about 70% of games won on Easy, 50% Normal, 35% Hard, 20% Nightmare", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 31 })
+	local scroll = Instance.new("ScrollingFrame")
+	scroll.Size = UDim2.new(1, -20, 1, -120)
+	scroll.Position = UDim2.fromOffset(10, 68)
+	scroll.BackgroundTransparency = 1
+	scroll.BorderSizePixel = 0
+	scroll.ScrollBarThickness = 8
+	scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	scroll.CanvasSize = UDim2.new()
+	scroll.ZIndex = 31
+	scroll.Parent = panel
+	local rowsList = Instance.new("UIListLayout")
+	rowsList.Padding = UDim.new(0, 4)
+	rowsList.SortOrder = Enum.SortOrder.LayoutOrder
+	rowsList.Parent = scroll
+	local function fill()
+		for _, c in ipairs(scroll:GetChildren()) do
+			if c:IsA("TextLabel") then
+				c:Destroy()
+			end
+		end
+		local ok, data = pcall(function()
+			return remotes.GetBalance:InvokeServer()
+		end)
+		data = ok and data or {}
+		local n = 0
+		for mi, m in ipairs(Progress.MAPS) do
+			for di, d in ipairs(Config.DIFFICULTY_ORDER) do
+				local r = data[m.id .. "|" .. d]
+				if r and r.games > 0 then
+					n += 1
+					local avg = r.won > 0 and math.floor(r.secs / r.won) or 0
+					label(scroll, { Size = UDim2.new(1, -12, 0, 24), LayoutOrder = mi * 10 + di, TextScaled = false, TextSize = 16, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 32,
+						Text = string.format("%s \u{00B7} %s: %d games, won %d (%d%%), kids out %d of %d, a win takes %d:%02d", m.name, Config.DIFFICULTY[d].name, r.games, r.won, math.floor(r.won / r.games * 100 + 0.5), r.escaped, r.kids, math.floor(avg / 60), avg % 60) })
+				end
+			end
+		end
+		if n == 0 then
+			label(scroll, { Size = UDim2.new(1, -12, 0, 48), TextScaled = false, TextSize = 16, TextWrapped = true, ZIndex = 32, Text = "No games logged yet. Every finished game in the live Party House adds a line here (Studio games too, if Studio API access is on)." })
+		end
+	end
+	button(panel, "\u{1F504} Refresh", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, -170, 1, -48), ZIndex = 31 }, fill)
+	button(panel, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, 10, 1, -48), ZIndex = 31 }, function()
+		panel.Visible = false
+	end)
+	button(gui, "\u{1F4CA} Balance", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0, 24, 1, -56), ZIndex = 5 }, function()
+		panel.Visible = not panel.Visible
+		if panel.Visible then
+			fill()
+		end
+	end)
+end)
+
 -- ---------- parties you can join (right) ----------
 local joinBox = frame(gui, { Size = UDim2.fromOffset(330, 400), Position = UDim2.new(1, -354, 0.5, -200) })
 corner(joinBox, 18)
@@ -766,8 +832,13 @@ viewCam.Parent = view
 view.CurrentCamera = viewCam
 local noModel = label(view, { Size = UDim2.fromScale(1, 0.7), Position = UDim2.fromScale(0, 0.12), Text = "", ZIndex = 12 })
 label(view, { Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -24), Text = "drag to turn", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 12 })
-local skillAbout = label(chars, { Size = UDim2.fromOffset(230, 100), Position = UDim2.fromOffset(14, 404), TextScaled = false, TextSize = 16, TextWrapped = true,
+local skillAbout = label(chars, { Size = UDim2.fromOffset(230, 100), Position = UDim2.fromOffset(14, 404), TextScaled = true, TextWrapped = true,
 	TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 11 })
+do
+	local fit = Instance.new("UITextSizeConstraint")
+	fit.MaxTextSize = 16
+	fit.Parent = skillAbout
+end
 -- right: picking a character, their level and the skill ladder
 local right = frame(chars, { Size = UDim2.new(1, -256, 1, -60), Position = UDim2.fromOffset(250, 0), BackgroundTransparency = 1, ZIndex = 11 })
 local charRow = frame(right, { Size = UDim2.new(1, -20, 0, 50), Position = UDim2.fromOffset(10, 56), BackgroundTransparency = 1, ZIndex = 11 })

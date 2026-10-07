@@ -263,8 +263,10 @@ Config.MUSIC_ARTIST = "When Bears and Lions Attack"
 -- (x across from the middle, y up from the ground) as parts of the house's
 -- width and height, measured from Brent's photo of 7 Oct
 Config.LOBBY_HOUSE_WINDOWS = { { -0.2, 0.69 }, { 0.12, 0.66 }, { 0.3, 0.69 }, { -0.28, 0.31 }, { 0.29, 0.31 } }
--- studs the Lobby house sits down into the ground (it stood a little high)
-Config.LOBBY_HOUSE_SINK = 2
+-- studs the Lobby house sits down into the ground, and degrees its front tips
+-- down (the model's front stood lifted, 7 Oct)
+Config.LOBBY_HOUSE_SINK = 0.5
+Config.LOBBY_HOUSE_TILT = 5
 -- seconds between the host's peeks, and how long the face stays
 Config.LOBBY_PEEK_GAP = { 18, 40 }
 Config.LOBBY_PEEK_SECONDS = 2.5

@@ -404,6 +404,7 @@ local function checkEnd()
 		end
 		table.insert(rows, row)
 	end
+	require(ReplicatedStorage.Shared.BalanceLog).record(mapId, state.diff, #list, escaped, seconds, won)
 	Results:FireAllClients({
 		won = won,
 		difficulty = diff.name,
@@ -619,6 +620,9 @@ end
 -- through it; the host has to smash through (stuck for BarricadeHold s).
 local function barricade(plr, c)
 	c.busy = true
+	if c.prompt then
+		c.prompt.Enabled = false
+	end
 	Effects.sound(c.part.Position, "shove", 1)
 	TweenService:Create(c.part, TweenInfo.new(0.35, Enum.EasingStyle.Quad), { CFrame = c.door }):Play()
 	say("info", plr.DisplayName .. " shoved a crate into the doorway - the host can't get through!")
@@ -644,6 +648,9 @@ local function barricade(plr, c)
 		TweenService:Create(c.part, TweenInfo.new(0.6), { CFrame = c.home }):Play()
 		task.wait(0.6)
 		c.busy = false
+		if c.prompt then
+			c.prompt.Enabled = true
+		end
 	end)
 end
 
@@ -1640,6 +1647,18 @@ function round.start()
 	wirePrompts()
 	wireStoreRooms()
 	House.placeCrates(world, Config.BARRICADE.crates)
+	-- the Barricade prompt on a crate works like Muscle's button
+	world.onCrate = function(plr, c)
+		if state.status ~= "playing" or plr:GetAttribute("Skill") ~= "muscle" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") or c.busy then
+			return
+		end
+		local now = workspace:GetServerTimeNow()
+		if (plr:GetAttribute("CoolUntil") or 0) > now then
+			return say("info", "Barricade is recharging... " .. math.ceil(plr:GetAttribute("CoolUntil") - now) .. " seconds", nil, plr)
+		end
+		barricade(plr, c)
+		plr:SetAttribute("CoolUntil", now + Config.COOLDOWN.muscle * (plr:GetAttribute("CooldownMult") or 1))
+	end
 	-- each locked door hides its key (the blocked passage: a Party Popper) in a
 	-- random searchable thing on its near side
 	world.unlocked, world.keys, world.keyIn = {}, {}, {}

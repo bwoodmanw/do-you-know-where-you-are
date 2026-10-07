@@ -204,8 +204,8 @@ local function jumpscare()
 		if scareFace then
 			-- rush in on the face
 			local d = scareFace.r * (2.6 - math.min(1, f * 2.5) * 1.3)
-			local aim = scareFace.head.Position + Vector3.new(0, scareFace.r * 0.3, 0)
-			scareCam.CFrame = CFrame.lookAt(aim + scareFace.dir * d + Vector3.new((math.random() - 0.5) * 0.15, scareFace.r * 0.1, 0), aim)
+			local aim = scareFace.head.Position - Vector3.new(0, scareFace.r * 0.15, 0)
+			scareCam.CFrame = CFrame.lookAt(aim + scareFace.dir * d + Vector3.new((math.random() - 0.5) * 0.15, 0, 0), aim)
 		end
 		if scareImg then
 			scareImg.Size = UDim2.fromScale(1 + f * 0.4, 1 + f * 0.4)
@@ -284,10 +284,11 @@ local function hostCloseUp(intense)
 		local look = rootPart.CFrame.LookVector
 		local faceDir = Vector3.new(look.X, 0, look.Z)
 		faceDir = faceDir.Magnitude > 0.1 and faceDir.Unit or Vector3.new(0, 0, -1)
-		-- aim a little above the middle of the head: the whole face, not the chest
-		local front = head.Position + faceDir * dist + Vector3.new(0, r * 0.45, 0)
+		-- aim a little below the middle of the head part: an imported head part
+		-- is taller than the face, so this keeps the whole face on screen
+		local front = head.Position + faceDir * dist + Vector3.new(0, r * 0.05, 0)
 		local shake = Vector3.new((math.random() - 0.5) * s, (math.random() - 0.5) * s, (math.random() - 0.5) * s)
-		cam.CFrame = CFrame.lookAt(front + shake, head.Position + Vector3.new(0, r * 0.3, 0))
+		cam.CFrame = CFrame.lookAt(front + shake, head.Position - Vector3.new(0, r * 0.2, 0))
 	end)
 end
 
@@ -500,6 +501,12 @@ local function para(y, h)
 		TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 22 })
 end
 local infoAbout = para(96, 78)
+infoAbout.TextScaled = true
+do
+	local fit = Instance.new("UITextSizeConstraint")
+	fit.MaxTextSize = 18
+	fit.Parent = infoAbout
+end
 local infoHow = para(178, 46)
 infoHow.TextColor3 = Color3.fromRGB(123, 227, 107)
 local infoLevel = para(220, 48)

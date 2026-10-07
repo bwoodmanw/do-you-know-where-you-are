@@ -98,7 +98,7 @@ local function placeHouse()
 		return warn("Lobby house: LobbyProps/House has no parts to show")
 	end
 	-- face the lawn (Meshy models face the other way: turned by Config.LOBBY_HOUSE_TURN)
-	m:PivotTo(CFrame.Angles(0, math.rad(Config.LOBBY_HOUSE_TURN or 180), 0))
+	m:PivotTo(CFrame.Angles(math.rad(Config.LOBBY_HOUSE_TILT or 0), 0, 0) * CFrame.Angles(0, math.rad(Config.LOBBY_HOUSE_TURN or 180), 0))
 	local _, size = m:GetBoundingBox()
 	if size.X > 0 then
 		m:ScaleTo(m:GetScale() * 70 / size.X)
@@ -288,6 +288,28 @@ local BuyBoost = remote("BuyBoost") -- (boostId) with points
 local SellBoost = remote("SellBoost") -- (boostId) back for its points
 local ResetLadder = remote("ResetLadder") -- (skill, "points" | "robux")
 local SetMusic = remote("SetMusic") -- (volume 0..1)
+-- the balance table, for the experience's owner only
+local GetBalance = Instance.new("RemoteFunction")
+GetBalance.Name = "GetBalance"
+GetBalance.Parent = remotes
+local function isOwner(plr)
+	if game:GetService("RunService"):IsStudio() then
+		return true
+	end
+	return game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId
+end
+GetBalance.OnServerInvoke = function(plr)
+	if not isOwner(plr) then
+		return nil
+	end
+	return require(ReplicatedStorage.Shared.BalanceLog).read() or {}
+end
+Players.PlayerAdded:Connect(function(plr)
+	plr:SetAttribute("IsOwner", isOwner(plr))
+end)
+for _, plr in ipairs(Players:GetPlayers()) do
+	plr:SetAttribute("IsOwner", isOwner(plr))
+end
 local InviteToParty = remote("InviteToParty") -- (userId) a player in this Lobby
 local PartyInvite = remote("PartyInvite") -- server -> client: { id, leader }
 SetMusic.OnServerEvent:Connect(function(plr, v)

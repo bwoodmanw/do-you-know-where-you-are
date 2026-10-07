@@ -12,6 +12,16 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 2 (7 Oct, late):
+- [ ] Lobby house level: front no longer lifted (`LOBBY_HOUSE_TILT` 5 degrees, sink 0.5); no face above the roof
+- [ ] Lobby (owner only): a 📊 Balance button bottom-left opens the host-balance table (Refresh, Close); it fills as games finish
+- [ ] Characters screen: the whole description fits (text shrinks to fit)
+- [ ] Gummy floors: candy-jar shelves (no bookshelves), sweet conveyor belts, chocolate vats, gumball machines, marshmallow beds, frosted tables, candy-coloured bunting
+- [ ] Hospital: medicine cabinets, green reception counter, steel tables, beds with rails
+- [ ] Muscle at a 💪 crate: a "Barricade" prompt (E) - works like the button, shows the recharge
+- [ ] Jack-in-the-box: wind the crank, the lid flips, Jack pops up on a spring - collar, grinning face, jester hat with bells
+- [ ] Caught close-up and the scare: the host's whole face on screen (aimed lower)
+
 Studio Play now builds the Hospital (`Config.STUDIO_MAP = "hospital"`).
 
 Lobby:
