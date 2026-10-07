@@ -266,7 +266,7 @@ Config.MUSIC_ARTIST = "When Bears and Lions Attack"
 -- width and height. Re-measured 7 Oct: faces showed about a third too high
 -- (the model's box is taller than the house you see), so y is scaled down.
 -- Each face is put on the house's own front, found by a ray.
-Config.LOBBY_HOUSE_WINDOWS = { { -0.2, 0.53 }, { 0.07, 0.51 }, { 0.3, 0.52 }, { -0.28, 0.19 }, { 0.29, 0.19 } }
+Config.LOBBY_HOUSE_WINDOWS = { { -0.2, 0.53 }, { 0.07, 0.51 }, { 0.3, 0.52 }, { -0.28, 0.27 }, { 0.29, 0.27 } }
 -- studs the Lobby house comes forward towards the lawn
 Config.LOBBY_HOUSE_FORWARD = 6
 -- studs the Lobby house sits down into the ground, and degrees its front tips

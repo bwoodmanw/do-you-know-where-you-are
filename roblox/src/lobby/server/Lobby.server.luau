@@ -198,7 +198,11 @@ if okHouse then
 		end)
 		if ok and type(saved) == "table" and #saved > 0 then
 			applyPeekSpots(saved)
-			print("Lobby peek: using " .. #saved .. " window spots set by clicking")
+			print("Lobby peek: using " .. #saved .. " window spots set by clicking (saved)")
+		elseif not ok then
+			warn("Lobby peek: could not read the saved window spots (in Studio: Game Settings -> Security -> Enable Studio Access to API Services) - using the measured spots")
+		else
+			print("Lobby peek: no saved window spots yet - using the measured spots (owner: 🪟 Windows button)")
 		end
 	end)
 end
