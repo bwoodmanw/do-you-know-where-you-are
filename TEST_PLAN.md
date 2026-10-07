@@ -12,6 +12,14 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Hospital, Halloween and fixes (built 7 Oct, evening) - test these first
 
+Round 10 (7 Oct):
+- [ ] Lobby: hold Shift (or the Run button on a phone) to run, no stamina limit
+- [ ] Lobby party panel: the map button says just "Tap to choose a map" (others: "The leader chooses a map")
+- [ ] Jelly Pool: the pool is wobbling jelly (no balls); every other jelly tile bounces you up; four jelly cubes round the room
+- [ ] Sticky Archive: honey-coloured walls, three filing cabinets with an ARCHIVE sign, paper stacks, honey dripping down a wall
+- [ ] Gummy Bear Man's puddles: a sticky heap of little gummy bears on the goo (still sticks you 3 s)
+- [ ] Every room: a floor that matches its walls (concrete in boiler rooms, steel plate in factories and labs, wood in halls, carpet in parlours and bedrooms...) and two to four set pieces
+
 Round 9 (7 Oct):
 - [ ] After Play again OR Next floor (door / button): the character picker opens again with your last character ready; Change works; the game waits for everyone's Play
 - [ ] Results appear at the end of every game (they could fail after the Next floor change - fixed)

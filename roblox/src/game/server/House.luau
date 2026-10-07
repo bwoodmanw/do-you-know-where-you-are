@@ -392,6 +392,12 @@ function House.build(map)
 				elseif kind == "counter" then
 					part(root, { Name = "Counter", Size = Vector3.new(T, 4, T), Position = at(x, y, 2), Material = Enum.Material.Wood, Color = Color3.fromRGB(139, 106, 79) })
 					part(root, { Name = "CounterTop", Size = Vector3.new(T, 0.4, T), Position = at(x, y, 4.2), Material = Enum.Material.Marble, Color = Color3.fromRGB(207, 200, 187) })
+				elseif kind == "pit" and string.find(string.lower(roomNameAt(map, x, y)), "jelly", 1, true) then
+					-- a pool of wobbly jelly; every other tile bounces you up
+					part(root, { Name = "JellyRim", Size = Vector3.new(T, 1.2, T), Position = at(x, y, 0.6), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 190, 220) })
+					local jcol = ({ Color3.fromRGB(80, 220, 120), Color3.fromRGB(255, 80, 140), Color3.fromRGB(90, 160, 255), Color3.fromRGB(255, 200, 60) })[(x + y) % 4 + 1]
+					local jelly = part(root, { Name = (x + y) % 2 == 0 and "BouncePad" or "Jelly", Size = Vector3.new(T - 0.4, 1, T - 0.4), Position = at(x, y, 1.6), Material = Enum.Material.Glass, Color = jcol, Transparency = 0.3 })
+					TweenService:Create(jelly, TweenInfo.new(0.8 + (x % 3) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Size = Vector3.new(T - 0.2, 1.3, T - 0.2) }):Play()
 				elseif kind == "pit" then
 					-- the gumdrop ball pit: a low padded rim full of colourful balls
 					part(root, { Name = "Pit", Size = Vector3.new(T, 1.6, T), Position = at(x, y, 0.8), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 120, 170) })

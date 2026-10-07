@@ -1116,6 +1116,33 @@ function round.hostGummy(_, pos, hostModel)
 	g.Transparency = 0.25
 	g.Anchored, g.CanCollide, g.CanQuery = true, false, false
 	g.Parent = world.root
+	-- a sticky heap of gummy bears on the goo (they go when the puddle does)
+	do
+		local cols = { Color3.fromRGB(230, 40, 80), Color3.fromRGB(255, 160, 40), Color3.fromRGB(80, 200, 90), Color3.fromRGB(255, 220, 60), Color3.fromRGB(150, 80, 220) }
+		local function bit(size, at, col, shape)
+			local b = Instance.new("Part")
+			b.Anchored, b.CanCollide, b.CanQuery, b.CanTouch, b.CastShadow = true, false, false, false, false
+			b.Shape = shape or Enum.PartType.Ball
+			b.Size = size
+			b.Position = at
+			b.Color = col
+			b.Material = Enum.Material.Glass
+			b.Transparency = 0.2
+			b.Parent = g
+		end
+		local base = Vector3.new(pos.X, floorY, pos.Z)
+		bit(Vector3.new(4.2, 1.4, 4.2), base + Vector3.new(0, 0.35, 0), Color3.fromRGB(230, 40, 80))
+		for i = 1, 6 do
+			local a = i / 6 * math.pi * 2
+			local r = (i % 2 == 0) and 1.3 or 0.6
+			local p = base + Vector3.new(math.cos(a) * r, 0.9 + (i % 3) * 0.45, math.sin(a) * r)
+			local col = cols[i % #cols + 1]
+			bit(Vector3.new(0.8, 1, 0.7), p, col)
+			bit(Vector3.new(0.65, 0.6, 0.6), p + Vector3.new(0, 0.7, 0), col)
+			bit(Vector3.new(0.25, 0.25, 0.2), p + Vector3.new(-0.22, 1, 0), col)
+			bit(Vector3.new(0.25, 0.25, 0.2), p + Vector3.new(0.22, 1, 0), col)
+		end
+	end
 	table.insert(state.gummies, g)
 	Effects.sound(g.Position, "pop", 0.5)
 	g.Touched:Connect(function(hitPart)

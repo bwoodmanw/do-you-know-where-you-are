@@ -243,6 +243,36 @@ PIECES.Monitors = { size = Vector3.new(5, 6, 3), build = function(f, b)
 	end
 end }
 
+PIECES.FilingCabinets = { size = Vector3.new(7, 6, 2), build = function(f, b)
+	for i = -1, 1 do
+		local col = ({ C(255, 170, 200), C(170, 220, 255), C(200, 240, 170) })[i + 2]
+		add(f, b, { size = Vector3.new(2.2, 5.4, 1.8), at = Vector3.new(i * 2.3, 2.7, T / 2 - 1), color = col })
+		for d = 0, 3 do
+			add(f, b, { size = Vector3.new(1.9, 1.1, 0.08), at = Vector3.new(i * 2.3, 0.8 + d * 1.3, T / 2 - 1.94), color = C(250, 250, 250), alpha = 0.3 })
+			add(f, b, { size = Vector3.new(0.6, 0.15, 0.1), at = Vector3.new(i * 2.3, 1.1 + d * 1.3, T / 2 - 2), color = C(200, 170, 80), mat = METAL })
+		end
+	end
+	label(add(f, b, { size = Vector3.new(4, 1, 0.1), at = Vector3.new(0, 6.3, T / 2 - 0.2), color = C(255, 210, 63) }), Enum.NormalId.Front, "ARCHIVE", C(90, 40, 60))
+end }
+
+PIECES.PaperStacks = { size = Vector3.new(4, 3, 3), build = function(f, b)
+	for i = -1, 1 do
+		for k = 0, 3 - (i % 2) do
+			add(f, b, { size = Vector3.new(1.4, 0.35, 1), at = Vector3.new(i * 1.5, 0.2 + k * 0.38, 1.2 + (k % 2) * 0.1), rot = CFrame.Angles(0, math.rad(k * 9), 0), color = k % 2 == 0 and C(250, 248, 240) or C(255, 230, 150) })
+		end
+	end
+end }
+
+-- honey dripping down a wall (the archive is sticky)
+PIECES.HoneyDrips = { size = Vector3.new(8, 10, 1), build = function(f, b)
+	for i = -3, 3 do
+		local len = 1.5 + (i % 3) * 1.2
+		add(f, b, { size = Vector3.new(0.7, len, 0.25), at = Vector3.new(i * 1.1, H - 0.5 - len / 2, T / 2 - 0.2), color = C(240, 160, 30), mat = GLASS, alpha = 0.15 })
+		add(f, b, { size = Vector3.new(0.8, 0.8, 0.4), at = Vector3.new(i * 1.1, H - 0.5 - len, T / 2 - 0.25), shape = Enum.PartType.Ball, color = C(240, 160, 30), mat = GLASS, alpha = 0.15 })
+	end
+	add(f, b, { size = Vector3.new(2.6, 0.12, 2), at = Vector3.new(0.5, 0.07, 1.2), color = C(240, 160, 30), mat = GLASS, alpha = 0.2 })
+end }
+
 -- ---- hospital
 PIECES.Ambulance = { size = Vector3.new(8, 7, 14), build = function(f, b)
 	add(f, b, { size = Vector3.new(6, 5.5, 10), at = Vector3.new(0, 3.4, 0), color = C(245, 245, 245) })
@@ -581,79 +611,99 @@ local WALLS = {
 	teal = { Enum.Material.Plaster, C(60, 120, 125) },
 	purple = { Enum.Material.Plaster, C(85, 60, 120) },
 	grey = { Enum.Material.Plaster, C(150, 155, 160) },
+	honey = { Enum.Material.SmoothPlastic, C(225, 165, 70) },
+}
+
+-- the floor that goes with each kind of wall (nil: keep the building's floor)
+local FLOORS = {
+	brick = { Enum.Material.Concrete, C(115, 115, 120) },
+	steel = { Enum.Material.DiamondPlate, C(140, 145, 150) },
+	tiles = { Enum.Material.CeramicTiles, C(232, 232, 230) },
+	wood = { Enum.Material.WoodPlanks, C(125, 85, 52) },
+	choc = { Enum.Material.SmoothPlastic, C(200, 140, 70) },
+	gold = { Enum.Material.SmoothPlastic, C(225, 195, 100) },
+	green = { Enum.Material.Carpet, C(50, 90, 60) },
+	red = { Enum.Material.Carpet, C(120, 35, 45) },
+	blue = { Enum.Material.Carpet, C(70, 90, 140) },
+	teal = { Enum.Material.Carpet, C(40, 100, 105) },
+	purple = { Enum.Material.Carpet, C(80, 55, 110) },
+	grey = { Enum.Material.SmoothPlastic, C(165, 170, 175) },
+	honey = { Enum.Material.SmoothPlastic, C(205, 150, 70) },
 }
 
 -- first match wins: words in the room's name -> its look (a 4th entry: only
 -- in that building)
 local LOOKS = {
-	{ { "stairwell", "stairs" }, "grey", { "LiftDoors" }, "hospital" },
-	{ { "children's ward" }, "pastel", { "ToyBox", "IVStand", "Curtain" } },
-	{ { "vault entrance" }, "steel", { "Monitors", "GoldGumdrops" } },
-	{ { "archive" }, "lilac", { "Monitors", "JellyCube" } },
-	{ { "ball pit" }, "lilac", { "GummyBear", "Lollipop" } },
-	{ { "slide" }, "pastel", { "Lollipop", "Sprinkles" } },
-	{ { "bounce room" }, "mint", { "JellyCube", "Lollipop" } },
-	{ { "boiler" }, "brick", { "Boiler", "Pipes" } },
-	{ { "generator" }, "brick", { "Generator", "Pipes" } },
-	{ { "water tank" }, "brick", { "WaterTank", "Pipes" } },
-	{ { "conveyor" }, "steel", { "Conveyor", "Conveyor", "CandyMachine" } },
-	{ { "factory floor" }, "steel", { "CandyMachine", "Conveyor", "Pipes" } },
-	{ { "chocolate" }, "choc", { "ChocolateRiver" } },
-	{ { "wrapper" }, "steel", { "Conveyor", "Crates" } },
-	{ { "packing", "loading", "dock" }, "brick", { "Crates", "Crates" } },
-	{ { "taste lab" }, "lilac", { "Beakers", "CandyMachine" } },
-	{ { "sugar" }, "pastel", { "Sacks", "Sacks" } },
-	{ { "locker" }, "blue", { "Lockers" } },
-	{ { "taffy" }, "pastel", { "TaffyPuller" } },
-	{ { "sprinkle" }, "pastel", { "Sprinkles", "Lollipop" } },
-	{ { "bear gallery" }, "lilac", { "GummyBear", "GummyBear" } },
+	{ { "stairwell", "stairs" }, "grey", { "LiftDoors", "Plants" }, "hospital" },
+	{ { "children's ward" }, "pastel", { "ToyBox", "IVStand", "Curtain", "ToyBox" } },
+	{ { "vault entrance" }, "steel", { "Monitors", "GoldGumdrops", "VaultDoor" } },
+	{ { "archive" }, "honey", { "FilingCabinets", "FilingCabinets", "HoneyDrips", "PaperStacks" } },
+	{ { "ball pit" }, "lilac", { "GummyBear", "Lollipop", "JellyCube" } },
+	{ { "slide" }, "pastel", { "Lollipop", "Sprinkles", "GummyBear" } },
+	{ { "bounce room" }, "mint", { "JellyCube", "Lollipop", "Sprinkles" } },
+	{ { "boiler" }, "brick", { "Boiler", "Pipes", "Generator" } },
+	{ { "generator" }, "brick", { "Generator", "Pipes", "Crates" } },
+	{ { "water tank" }, "brick", { "WaterTank", "Pipes", "Crates" } },
+	{ { "conveyor" }, "steel", { "Conveyor", "Conveyor", "CandyMachine", "Pipes" } },
+	{ { "factory floor" }, "steel", { "CandyMachine", "Conveyor", "Pipes", "CandyMachine" } },
+	{ { "chocolate" }, "choc", { "ChocolateRiver", "Sacks" } },
+	{ { "wrapper" }, "steel", { "Conveyor", "Crates", "CandyMachine" } },
+	{ { "packing", "loading", "dock" }, "brick", { "Crates", "Crates", "Conveyor" } },
+	{ { "taste lab" }, "lilac", { "Beakers", "CandyMachine", "Beakers" } },
+	{ { "sugar" }, "pastel", { "Sacks", "Sacks", "Crates" } },
+	{ { "locker" }, "blue", { "Lockers", "Lockers" } },
+	{ { "taffy" }, "pastel", { "TaffyPuller", "TaffyPuller", "Sacks" } },
+	{ { "sprinkle" }, "pastel", { "Sprinkles", "Sprinkles", "Lollipop" } },
+	{ { "bear gallery" }, "lilac", { "GummyBear", "GummyBear", "GummyBear" } },
 	{ { "gummy lobby", "lollipop" }, nil, { "Lollipop", "Lollipop", "GummyBear" } },
-	{ { "candy kitchen" }, "tiles", { "Stove", "CandyMachine" } },
-	{ { "jelly corridor", "wobble", "jelly pool" }, "mint", { "JellyCube", "JellyCube" } },
-	{ { "jelly bank" }, "gold", { "GoldGumdrops", "Counter" } },
-	{ { "gold gumdrop" }, "gold", { "GoldGumdrops", "GoldGumdrops" } },
-	{ { "vault" }, "steel", { "VaultDoor", "GoldGumdrops" } },
-	{ { "gumball" }, "pastel", { "CandyMachine", "CandyMachine" } },
-	{ { "sticky" }, "mint", { "Crates", "JellyCube" } },
-	{ { "security" }, "steel", { "Monitors" } },
+	{ { "candy kitchen" }, "tiles", { "Stove", "CandyMachine", "Trays" } },
+	{ { "jelly pool" }, "mint", { "JellyCube", "JellyCube", "JellyCube", "JellyCube" } },
+	{ { "jelly corridor", "wobble" }, "mint", { "JellyCube", "JellyCube", "JellyCube" } },
+	{ { "jelly bank" }, "gold", { "GoldGumdrops", "Counter", "VaultDoor" } },
+	{ { "gold gumdrop" }, "gold", { "GoldGumdrops", "GoldGumdrops", "GoldGumdrops" } },
+	{ { "vault" }, "steel", { "VaultDoor", "GoldGumdrops", "Monitors" } },
+	{ { "gumball" }, "pastel", { "CandyMachine", "CandyMachine", "CandyMachine" } },
+	{ { "sticky" }, "honey", { "Crates", "HoneyDrips", "Sacks" } },
+	{ { "security" }, "steel", { "Monitors", "Monitors" } },
 	-- hospital
-	{ { "ambulance" }, "brick", { "Ambulance" } },
-	{ { "x-ray" }, "steel", { "XRay", "IVStand" } },
-	{ { "ward" }, "mint", { "Curtain", "IVStand", "Curtain" } },
-	{ { "waiting" }, nil, { "WaitingChairs", "WaitingChairs", "TV" } },
-	{ { "laundry" }, "tiles", { "WashingMachines" } },
-	{ { "canteen" }, "tiles", { "Trays", "Trays" } },
+	{ { "ambulance" }, "brick", { "Ambulance", "IVStand", "Crates" } },
+	{ { "x-ray" }, "steel", { "XRay", "IVStand", "Monitors" } },
+	{ { "ward" }, "mint", { "Curtain", "IVStand", "Curtain", "Monitors" } },
+	{ { "waiting" }, nil, { "WaitingChairs", "WaitingChairs", "TV", "Plants" } },
+	{ { "laundry" }, "tiles", { "WashingMachines", "WashingMachines" } },
+	{ { "canteen" }, "tiles", { "Trays", "Trays", "Plants" } },
 	{ { "reception", "nurses' station" }, nil, { "Counter", "WaitingChairs", "Plants" } },
 	{ { "day room", "quiet room", "staff room" }, nil, { "Sofa", "TV", "Plants" } },
-	{ { "science lab", "lab store" }, "steel", { "Beakers", "Beakers" } },
+	{ { "science lab" }, "steel", { "Beakers", "Beakers", "Monitors" } },
+	{ { "lab store" }, "steel", { "Crates", "Beakers", "PaperStacks" } },
 	{ { "plant lab" }, "green", { "Plants", "Plants", "Beakers" } },
 	{ { "radio" }, "steel", { "RadioDesk", "Monitors" } },
 	{ { "lift" }, "steel", { "LiftDoors", "WaitingChairs" } },
-	{ { "pharmacy", "medicine" }, "tiles", { "Counter" } },
-	{ { "records", "nurses' office" }, "grey", { "Monitors" } },
-	{ { "supply" }, "grey", { "Crates", "Crates" } },
-	{ { "main corridor", "lab entrance" }, nil, { "WaitingChairs", "IVStand" } },
+	{ { "pharmacy", "medicine" }, "tiles", { "Counter", "Beakers" } },
+	{ { "records", "nurses' office" }, "grey", { "FilingCabinets", "FilingCabinets", "Monitors" } },
+	{ { "supply" }, "grey", { "Crates", "Crates", "PaperStacks" } },
+	{ { "main corridor", "lab entrance" }, nil, { "WaitingChairs", "IVStand", "Plants" } },
 	-- party house
 	{ { "parlour" }, "red", { "Fireplace", "Armchair", "Armchair" } },
 	{ { "library" }, "green", { "Globe", "Armchair", "Fireplace" } },
-	{ { "study" }, "green", { "Globe" } },
-	{ { "music" }, "purple", { "Drums" } },
-	{ { "kitchen" }, "tiles", { "Stove" } },
-	{ { "dining" }, "red", { "Candelabra", "Candelabra" } },
-	{ { "game room" }, "teal", { "Arcade", "Arcade" } },
-	{ { "conservatory" }, "green", { "Plants", "Plants" } },
-	{ { "pantry" }, "wood", { "Sacks" } },
-	{ { "bath" }, "tiles", { "Bathroom" } },
-	{ { "clock" }, "wood", { "Clocks" } },
-	{ { "trunk" }, "wood", { "Trunks", "Trunks" } },
-	{ { "dusty", "box room" }, "wood", { "DustSheets", "Crates" } },
-	{ { "doll" }, "pastel", { "Dolls", "ToyBox" } },
-	{ { "nursery", "playroom", "kids", "children" }, "pastel", { "ToyBox", "Wardrobe" } },
-	{ { "bedroom", "guest" }, "blue", { "Wardrobe", "Armchair" } },
-	{ { "gallery" }, "wood", { "Easels" } },
-	{ { "linen" }, "tiles", { "WashingMachines" } },
-	{ { "stairwell", "stairs", "landing" }, "wood", { "CoatRack" } },
-	{ { "hall", "corridor" }, "wood", { "CoatRack", "Runner" } },
+	{ { "study" }, "green", { "Globe", "Armchair", "PaperStacks" } },
+	{ { "music" }, "purple", { "Drums", "Armchair" } },
+	{ { "kitchen" }, "tiles", { "Stove", "Trays" } },
+	{ { "dining" }, "red", { "Candelabra", "Candelabra", "Armchair" } },
+	{ { "game room" }, "teal", { "Arcade", "Arcade", "Sofa" } },
+	{ { "conservatory" }, "green", { "Plants", "Plants", "Plants" } },
+	{ { "pantry" }, "wood", { "Sacks", "Crates", "Sacks" } },
+	{ { "bath" }, "tiles", { "Bathroom", "Plants" } },
+	{ { "clock" }, "wood", { "Clocks", "Clocks" } },
+	{ { "trunk" }, "wood", { "Trunks", "Trunks", "DustSheets" } },
+	{ { "dusty", "box room" }, "wood", { "DustSheets", "Crates", "DustSheets" } },
+	{ { "doll" }, "pastel", { "Dolls", "ToyBox", "Dolls" } },
+	{ { "nursery", "playroom", "kids", "children" }, "pastel", { "ToyBox", "Wardrobe", "ToyBox" } },
+	{ { "bedroom", "guest" }, "blue", { "Wardrobe", "Armchair", "Globe" } },
+	{ { "gallery" }, "wood", { "Easels", "Easels", "Armchair" } },
+	{ { "linen" }, "tiles", { "WashingMachines", "PaperStacks" } },
+	{ { "stairwell", "stairs", "landing" }, "wood", { "CoatRack", "Plants" } },
+	{ { "hall", "corridor" }, "wood", { "CoatRack", "Runner", "Plants" } },
 }
 
 local function lookFor(name, theme)
@@ -800,6 +850,16 @@ function Rooms.dress(world)
 		local look, pieces = lookFor(f.name, map.theme or "party")
 		if look then
 			lineWalls(folder, map, f, look)
+			local fl = FLOORS[look]
+			if fl and f.kind ~= "tiles" and f.kind ~= "pinktiles" and f.kind ~= "whitetiles" then
+				local p = Instance.new("Part")
+				p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+				p.Name = "RoomFloor"
+				p.Size = Vector3.new((f.x1 - f.x0 + 1) * T, 0.06, (f.y1 - f.y0 + 1) * T)
+				p.Position = Vector3.new((f.x0 + f.x1 + 1) / 2 * T, 0.03, (f.y0 + f.y1 + 1) / 2 * T)
+				p.Material, p.Color = fl[1], fl[2]
+				p.Parent = folder
+			end
 		end
 		-- a free tile for each piece: against a wall if possible, else any free one
 		for _, name in ipairs(pieces) do

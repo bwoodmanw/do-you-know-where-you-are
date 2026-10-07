@@ -486,6 +486,42 @@ task.spawn(function()
 	end)
 end)
 
+-- ---------- running in the Lobby: no stamina here ----------
+do
+	local WALK, RUN = 16, 28
+	local running = false
+	local function apply()
+		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		if hum then
+			hum.WalkSpeed = running and RUN or WALK
+		end
+	end
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if not processed and (input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift) then
+			running = true
+			apply()
+		end
+	end)
+	UserInputService.InputEnded:Connect(function(input)
+		if input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift then
+			running = false
+			apply()
+		end
+	end)
+	player.CharacterAdded:Connect(function()
+		task.wait(0.2)
+		apply()
+	end)
+	if UserInputService.TouchEnabled then
+		local runBtn
+		runBtn = button(gui, "\u{1F3C3} Run", { Size = UDim2.fromOffset(110, 50), Position = UDim2.new(1, -130, 1, -200), ZIndex = 5 }, function()
+			running = not running
+			runBtn.BackgroundColor3 = running and PUMP or PLUM
+			apply()
+		end)
+	end
+end
+
 -- ---------- parties you can join (right) ----------
 -- below the points, sound and music buttons (top right)
 local joinBox = frame(gui, { Size = UDim2.fromOffset(330, 400), Position = UDim2.new(1, -354, 0, 168) })
@@ -659,7 +695,8 @@ local function paintParty(p)
 	local myVote = p.votes and p.votes[tostring(player.UserId)]
 	-- the chosen map on the party panel
 	local ci = Progress.mapIndex(p.chosen or "partyhouse")
-	mapBtn.Text = "\u{1F5FA} " .. (ci and Progress.MAPS[ci].name or "?") .. "\n" .. (amLeader and "Tap to choose a map together" or "The leader opens the map screen")
+	mapBtn.Text = amLeader and "\u{1F5FA} Tap to choose a map" or "\u{1F5FA} The leader chooses a map"
+	local _ = ci
 	-- the map screen, the same for everyone in the party
 	mapScreen.Visible = p.mapScreen == true
 	msDone.Visible = amLeader
