@@ -1,7 +1,8 @@
 # Escape Crew - session handoff
 
-Last updated: 7 Oct 2026, third session (10 levels per character, Lobby
-lights and swings, ladder screen layout, Party House picker fixes).
+Last updated: 7 Oct 2026, end of the third session (very long: 10 levels,
+Muscle and Tinker redesign, Gummy floors 2-3, Hospital floors 1-3, room
+dressing, Halloween, save safety, badges, Quick Play). Latest commit 0635102.
 
 ## What it is
 
@@ -128,65 +129,78 @@ art/sheets/ art/models/ art/model-input/   design art and Meshy files
 
 ## Verified
 
-- Live: Lobby -> Party House teleport; imported characters and host; boosts
-  and products; daily rewards; music; many fixes Brent confirmed by photo.
-- Every change: compiles, passes luau-analyze, both places build. MapGen run
-  1,200 times across all 9 plans with the Luau runner: no overlaps, every
-  object on the right tile, no balloon on a loft, every doorway-joined room
-  pair has a hide, hide sizes 1-3. The Python generator passes 2,000 fills
-  per plan.
+- Live (before this session): Lobby -> Party House teleport; imported
+  characters and host; boosts and products; daily rewards; music.
+- Every change: `luau-compile --null -g2` (Studio's debug level - plain
+  compile missed a real error once), `luau-analyze` (keep "Unknown global"
+  lines visible for our own names), both places build.
+- Floor plans: 19 plans (Party House 1-3, Gummy 1-3, Hospital 1-3, mirrors),
+  each passes 2,000 generator fills; MapGen run 300 times per plan in Luau
+  (no overlaps, nothing inside store rooms).
+- Save safety tested with a fake DataStore (hand-off and no-overwrite).
+- Brent confirmed in Studio (7 Oct): HUD back after the 200-locals fix,
+  description saved, window faces set by clicking, Halloween icon uploaded,
+  5 badges made. Most of the rounds below are NOT yet play-tested.
 
-## Built this round (6 Oct late) - NOT yet tested in Roblox
+## Built in the third session (6-7 Oct) - see TEST_PLAN.md rounds 4-11
 
-Checklist in `TEST_PLAN.md` ("This round").
-- Lobby: shared map screen (building cards -> floor cards with pictures,
-  live votes); character portraits on the Characters screen with arrows
-  under the 3D view; avatar circles beside every leaderboard name; a 2-seat
-  swing set (sit and it swings); a kickable soccer ball that comes home.
-- Game: portrait in the character picker; **active boosts row** above the
-  bag (Shield "ON", Candy and Frozen Pop count down); **Patch:** friends
-  within 14 studs get +50% stamina, once per 10 s each (her old stamina
-  refill removed; her Shield button unchanged); freeing a friend takes 3.5 s
-  (Patch half); **empty finds** throw out bats, tissue paper or confetti;
-  empty presents drop tissue paper; **hiding places** carry a monkey marker
-  and fit 1-3 (wardrobes 3); **party clutter** in every room away from the
-  walls (not solid): birthday cake (blow out the candles), jack-in-the-box
-  (pops, and the host hears it), pile of presents (shake: tissue paper),
-  chair with balloons.
+- Progress: 10 levels per character (XP 300 ... 16,000), smaller bonuses,
+  caps (`Progress.CAPS`), scrolling ladder; reset 800 points / Robux price
+  read live from the product (Brent set 79).
+- Muscle: blocked passage (one of L1/L2 each game) + Confetti Cannons (team
+  supply, any blocked door; renamed from Party Popper - the word filter
+  blocks "poppers"); Barricade button and "Move Barricade" prompt on 💪
+  crates (6 per floor + shoved junk). Tinker: picks every lock, keypad pick
+  once a game. Store rooms B1 (locked) / B2 (blocked) on every plan with a
+  present: 20-60 exact points to everyone + sometimes a free clue / Shield.
+- Floors: Gummy Candy Factory + Jelly Vault; Hospital Ground, Wards, Labs
+  (theme "hospital"). Stairs and a door up on every floor with a floor
+  above; after a win, step through the door or press "Next floor" to build
+  the next floor for the team.
+- Rooms.luau: every room (61 names) gets wall lining, floor, 2-4 set pieces
+  (LOOKS table), sounds (`Config.AMBIENT`, Pro Sound Effects), effects,
+  light colour, a doorway sign; light switches (dark rooms hide you, host
+  relights), TV/radio/drums/arcade lure the host, factory belts carry you.
+  Props models of the same name replace built pieces (FURNITURE.md).
+- Game: Play-to-start / I'm ready, leader-only difficulty and mood, team
+  items row (keys, Confetti Cannons), free bonus clues, Echo's noise holds
+  the host 5 s, prompts per character, host unsticks from walls, jelly pool
+  bounces, gummy-bear puddles, proper jack-in-the-box, Halloween bunting,
+  bats, spiders, ghosts, first-game coach (6 tips), colour pictures on the
+  code (❤️ 💧 ⭐ 🍀).
+- Lobby: game-sounds volume button, house level and on the ground, window
+  faces set by clicking (owner's Windows button, now hidden:
+  `Config.WINDOW_SETUP`), fence, trees, drive-in cars, Halloween dressing,
+  running (Shift), Quick Play, owner's 📊 Balance table (BalanceLog), menu
+  spacing, How to play rewritten.
+- Safety and engagement: save hold/lock (`Profile.luau`), badges
+  (`Config.BADGES`, 5 ids in), favourite prompt after a first escape.
+- Store page: description (`art/roblox-store/description.txt`, no emoji, no
+  filtered words), Halloween icon, badge art (`art/roblox-store/badges/`).
 
 ## Open items and decisions waiting on Brent
 
-0. **Seasonal icon:** `art/roblox-store/icon-halloween-512.png` (checked 7 Oct: our own
-   Brainy and Glow with the pumpkin host, no text or logos). From 1 Nov remind Brent
-   to upload the normal `icon-512.png` again (Creator Hub -> Icon).
-
-1. **Patch's face is still blotchy.** `Characters.soften` swaps each
-   SurfaceAppearance for a plain TextureID, but a running game usually cannot
-   read ColorMap, so it silently did nothing. It now prints "Face softening
-   skipped for Patch..." in F9 when that happens. The fix is done once by hand
-   in Studio. Brent could not find ColorMap in Properties (7 Oct), so he was
-   given a Command Bar line (TEST_PLAN.md, "Patch's face"; new Studio's
-   Command Bar runs with its Run button, not Enter) that does it and
-   prints each part's colour map. If it prints "softened 0", Patch has no
-   SurfaceAppearance and the blotches are in the texture itself: ask for the
-   Output photo. Then re-save Patch to Roblox so the Lobby copy matches.
-2. **10 levels per character** - built 7 Oct, untested (table in
-   ROADMAP.md). **Skill Reset price:** Claude agrees with 79 Robux; Brent
-   changes it in Creator Hub (the Lobby button reads the live price).
-3. **Muscle redesign** - built 7 Oct, untested (ROADMAP.md). Also the
-   game now waits for every player's Play press (solo used to start the
-   moment a character was chosen); vents: any number, 2.5 s per player.
-4. **Gummy floors 2-3** and **Hospital floor 1** built 7 Oct, untested
-   (`Config.STUDIO_MAP` is `hospital`). Plans: hosp_a, hosp_b.
-5b. **Host balance per difficulty** - not changed blind; proposal: log each
-   game's difficulty, floor and escaped yes/no, then tune to roughly 70%
-   escapes on Easy, 50% Normal, 35% Hard. Waiting on Brent.
-4b. **Tinker / Muscle balance** - built 7 Oct, untested (ROADMAP): store
-   rooms, Muscle's Barricade, Tinker's keypad pick.
-5. **Halloween polish, live by 29 Oct:** first-game tutorial, host balance per
-   difficulty, more dressed rooms.
-6. Still to confirm live: Lobby window peek lined up (F9 lines "Lobby peek:"),
-   friends invites, others seeing you run, party circles and headshots.
+0. **Seasonal icon:** `art/roblox-store/icon-halloween-512.png` is live. From
+   1 Nov remind Brent to upload the normal `icon-512.png` again (Creator Hub
+   -> Icon).
+1. **Badges:** 3 still to make (Hero of the Crew, Untouchable, Nightmare
+   Escaper; art in `art/roblox-store/badges/`), then their ids into
+   `Config.BADGES` (rescuer, untouched, nightmare).
+2. **Build next (Brent said yes, 7 Oct):** everything left in IMPROVEMENTS.md
+   except B8 analytics - B10 controller support, B6 friends bonus, C4
+   chocolate wading, B5 daily quests, B7 notifications, B9 character skins
+   (needs art), B11 rejoin after a drop, C4 laundry chute and vault wheel,
+   C7 windows with a view.
+3. **Play test** TEST_PLAN.md rounds 4-11 (most untested), then **publish
+   both places from Studio before 29 Oct** (Rojo connected -> File ->
+   Publish to Roblox; never a .rbxlx).
+4. **Patch's face:** Soften Patch plugin installed (Studio stopped ->
+   Plugins -> Escape Crew -> Soften Patch; a window shows the result). Brent
+   has not reported the result yet. Then re-save Patch to Roblox.
+5. **Host balance:** after a week live, read the 📊 Balance table and tune
+   toward 70 / 50 / 35 / 20% wins on Easy / Normal / Hard / Nightmare.
+6. Still to confirm live: friends invites, others seeing you run, Quick
+   Play, Next floor, badges awarded.
 
 ## Lessons (keep)
 
