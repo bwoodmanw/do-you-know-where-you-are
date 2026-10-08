@@ -203,6 +203,8 @@ Config.CHARACTER_ASSETS = {
 	BrambleAutumn = 90429061895312,
 	PatchHalloween = 80329522710291,
 	EchoStar = 78330257038104,
+	BrainySpace = 110376512028941,
+	GlowCandy = 99155956475141,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
@@ -415,7 +417,6 @@ Config.SKINS = {
 	{ id = "tinker_pumpkin", skill = "tinker", name = "Pumpkin Patch Tinker", model = "TinkerPumpkin", pass = 0 },
 	{ id = "shadow_ghost", skill = "shadow", name = "Ghostly Shadow", model = "ShadowGhost", pass = 0 },
 	{ id = "glow_candy", skill = "glow", name = "Candy Glow", model = "GlowCandy", pass = 0 },
-	{ id = "patch_nurse", skill = "patch", name = "Night Nurse Patch", model = "PatchNurse", pass = 0 },
 	{ id = "patch_halloween", skill = "patch", name = "Halloween Nurse Patch", model = "PatchHalloween", pass = 0 },
 	{ id = "brainy_space", skill = "brainy", name = "Space Cadet Brainy", model = "BrainySpace", pass = 0 },
 	{ id = "muscle_snow", skill = "muscle", name = "Snow Day Muscle", model = "MuscleSnow", pass = 0 },
