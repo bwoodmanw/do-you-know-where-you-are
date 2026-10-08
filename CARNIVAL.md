@@ -84,6 +84,11 @@ His power (Brent picked Jack-in-the-Box 8 Oct; built, `Config.HOST_SKILLS.jackbo
 Prompt (no reference picture; Meshy A-Pose as for the other hosts):
 > A tall, stooped anglerfish keeper for a kids' spooky game. A big round deep-sea anglerfish head with a wide cheeky grin showing a neat row of small, rounded, blunt teeth like little pebbles (not sharp, not pointed, no fangs), big round milky-blue glowing eyes, dark teal-blue skin with pale spots, a glowing round lure on a thick short stalk curving up from his forehead, the lure high above his head. He wears a short yellow fisherman's oilskin jacket that ends at the hips, zipped up, with the hood down, a dark blue knitted jumper underneath, a keeper's lanyard with a key card, slim dark trousers, dark wellington boots. Both legs fully visible from the hips down, nothing covering the legs. Long thin arms with webbed hands, a clear gap of air between each arm and the body, nothing hanging from the arms. Spooky but friendly, a little sly. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
 
+Model `art/models/host-anglerfish.glb` checked 8 Oct: face, blunt teeth,
+jacket and arms good; Meshy dropped the lure ball (a short stub is left), so
+the game adds a glowing lure above his head when the Aquarium is built.
+Model name in Studio: **HostAnglerfish**.
+
 His power: **Fake Treasure** - he leaves glowing decoy presents; open one
 and it flashes and calls him over. Glow's light shows a fake; Brainy can
 spot them.
