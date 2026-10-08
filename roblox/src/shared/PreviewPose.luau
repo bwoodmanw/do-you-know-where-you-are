@@ -55,5 +55,7 @@ return function(model)
 	anim.AnimationId = IDLE
 	local track = animator:LoadAnimation(anim)
 	track.Looped = true
-	track:Play(0)
+	-- 85% of the way down: the arms hang a little out from the body, which
+	-- keeps the shoulders from bunching (the arms look their full length)
+	track:Play(0, 0.85)
 end

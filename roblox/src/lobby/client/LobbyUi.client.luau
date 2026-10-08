@@ -387,7 +387,7 @@ button(menu, "\u{2709} Invite friends", { Size = UDim2.new(0.86, 0, 0, 40), Layo
 local shopBtn = button(menu, "\u{1F6D2} Shop", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 7 })
 local charsBtn = button(menu, "\u{1F9D1}\u{200D}\u{1F91D}\u{200D}\u{1F9D1} Characters", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 8 })
 local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 10 })
-local questsBtn = button(menu, "\u{1F4DC} Daily quests", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 9, BackgroundColor3 = Color3.fromRGB(110, 70, 150) })
+local questsBtn = button(menu, "\u{1F4DC} Quests", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 9, BackgroundColor3 = Color3.fromRGB(110, 70, 150) })
 -- controller: Up jumps into the menu (or your party's buttons)
 do
 	local quick
@@ -1446,7 +1446,7 @@ do
 		workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(size)
 		size()
 	end
-	label(panel, { Size = UDim2.new(1, 0, 0, 36), Position = UDim2.fromOffset(0, 8), Text = "\u{1F4DC} Daily quests", TextColor3 = PUMP, ZIndex = 11 })
+	label(panel, { Size = UDim2.new(1, 0, 0, 36), Position = UDim2.fromOffset(0, 8), Text = "\u{1F4DC} Daily quests", TextColor3 = PUMP, ZIndex = 11 }) -- the menu button says Quests
 	local resets = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = "", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 	label(panel, { Size = UDim2.new(1, 0, 0, 30), Position = UDim2.fromOffset(0, 296), Text = "\u{1F3C6} Weekly quests", TextColor3 = Color3.fromRGB(255, 210, 63), ZIndex = 11 })
 	local weekResets = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 328), Text = "", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
@@ -1506,7 +1506,7 @@ do
 		resets.Text = "Rewards are paid the moment you finish - no claiming. New in " .. math.floor(left / 3600) .. "h " .. math.floor(left % 3600 / 60) .. "m"
 		local wleft = (week + 1) * 7 * 86400 - 3 * 86400 - os.time()
 		weekResets.Text = "Bigger goals, more points and a boost each. New on Monday (in " .. math.floor(wleft / 86400) .. "d " .. math.floor(wleft % 86400 / 3600) .. "h)"
-		questsBtn.Text = "\u{1F4DC} Daily quests  " .. doneCount .. "/3"
+		questsBtn.Text = "\u{1F4DC} Quests  " .. doneCount .. "/3"
 	end
 	player:GetAttributeChangedSignal("ProfileJson"):Connect(function()
 		task.defer(paint)

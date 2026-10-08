@@ -515,6 +515,9 @@ local function checkEnd()
 			quest(plr, "escape")
 			if state.diff == "hard" or state.diff == "nightmare" then
 				quest(plr, "escapeHard")
+				if state.diff == "nightmare" then
+					quest(plr, "escapeNightmare")
+				end
 			end
 		end
 		local pd = Profile.get(plr)
