@@ -578,6 +578,138 @@ def plan_school3():
     return p
 
 
+# ---------------------------------------------------------------- the Carnival (building 5), floor 1: the Midway
+def plan_midway():
+    p = Plan('midway_a', 'Carnival - The Midway')
+    p.building, p.floor_no, p.theme = 'carnival', 1, 'carnival'
+    for x in (10, 20, 30):
+        p.rect(x, 0, x, H - 1)
+    for y in (9, 19):
+        p.rect(0, y, W - 1, y)
+    for y in range(1, H - 1):
+        p.grid[y][0] = '#'
+        p.grid[y][W - 1] = '#'
+    p.rect(20, 10, 20, 18, '.')     # the Carousel spans B and C
+    p.rect(20, 20, 20, 28, '.')     # and so does the Ticket Booth
+    for x, y in [(15, 19), (25, 19), (10, 26), (30, 25), (10, 12), (30, 13), (3, 19), (35, 19), (10, 4), (30, 4)]:
+        p.put(x, y, '.')
+    p.put(15, 9, 'L')    # L1: Carousel -> Fortune Teller's Tent
+    p.put(20, 5, 'L')    # L2: Fortune Teller's Tent -> Main Gate
+    p.put(25, 0, 'D')
+    p.put(0, 14, 'C')
+    for x, y in [(23, 6), (27, 6)]:
+        p.put(x, y, '#')             # the Main Gate's pillars
+    # the Hall of Mirrors: a little maze of mirror walls
+    p.rect(1, 22, 7, 22)
+    p.rect(3, 25, 9, 25)
+    for f in [(3, 3, 7, 3, 'stall'), (12, 2, 13, 3, 'table'), (17, 6, 18, 7, 'table'), (33, 2, 37, 2, 'shelf'),
+              (33, 7, 35, 7, 'shelf'), (2, 11, 3, 12, 'counter'), (6, 16, 8, 16, 'counter'), (19, 13, 21, 15, 'carousel'),
+              (33, 13, 36, 14, 'pond'), (32, 22, 33, 23, 'counter'), (36, 27, 37, 27, 'shelf'), (13, 22, 14, 23, 'counter'),
+              (26, 21, 27, 22, 'table')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 9, 8, 'boards', 'Ring-Toss Stall'), (11, 1, 19, 8, 'purple', "Fortune Teller's Tent"), (21, 1, 29, 8, 'boards', 'Main Gate'),
+                (31, 1, 38, 8, 'carpet', 'Prize Tent'), (1, 10, 9, 18, 'boards', 'Popcorn Stand'), (11, 10, 29, 18, 'wood', 'Carousel'),
+                (31, 10, 38, 18, 'boards', 'Duck Pond'), (1, 20, 9, 28, 'greylino', 'Hall of Mirrors'), (11, 20, 29, 28, 'boards', 'Ticket Booth'),
+                (31, 20, 38, 28, 'boards', 'Toffee Apple Stall')]
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
+               dict(id='L1', kind='lock', x=15, y=9, name="Fortune Teller's door"), dict(id='L2', kind='lock', x=20, y=5, name='Main Gate'),
+               dict(id='cage', kind='cage', x=12, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=29, y=22), dict(id='v1b', kind='vent', pair='v1', x=31, y=22),
+               dict(id='v2a', kind='vent', pair='v2', x=29, y=11), dict(id='v2b', kind='vent', pair='v2', x=31, y=11)]
+    p.start = [(17, 27), (18, 27), (19, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 14), (26, 21)
+    p.patrol = [(5, 14), (14, 11), (26, 16), (35, 16), (35, 25), (25, 24), (15, 25), (5, 27), (8, 20),
+                (15, 5, 'L1'), (5, 5, 'L1'), (25, 4, 'L2'), (35, 5, 'L2')]
+    return p
+
+
+# ---------------------------------------------------------------- the Carnival, floor 2: the Big Top
+def plan_bigtop():
+    p = Plan('bigtop_a', 'Carnival - The Big Top')
+    p.building, p.floor_no, p.theme = 'carnival', 2, 'carnival'
+    p.exit_style, p.exit_text = 'stairs', 'Up to the Funhouse'
+    for x in (10, 20, 30):
+        p.rect(x, 0, x, H - 1)
+    for y in (9, 19):
+        p.rect(0, y, W - 1, y)
+    for y in range(1, H - 1):
+        p.grid[y][0] = '#'
+        p.grid[y][W - 1] = '#'
+    p.rect(20, 10, 20, 18, '.')     # the Ring spans B and C, two storeys high
+    for x, y in [(10, 24), (20, 25), (30, 24), (15, 19), (25, 19), (10, 15), (30, 14), (35, 19), (5, 19), (10, 4), (30, 4)]:
+        p.put(x, y, '.')
+    p.put(5, 9, 'L')     # L1: Costume Wagon -> Ringmaster's Wagon
+    p.put(20, 4, 'L')    # L2: Juggler's Room -> Funhouse Stairs
+    p.put(25, 0, 'D')
+    p.put(0, 14, 'C')
+    for x, y in [(23, 3), (27, 3), (23, 6), (27, 6)]:
+        p.put(x, y, '#')
+    for f in [(2, 11, 3, 12, 'shelf'), (6, 16, 8, 16, 'shelf'), (3, 2, 6, 3, 'desk'), (13, 2, 15, 2, 'table'), (12, 6, 14, 6, 'table'),
+              (33, 3, 35, 4, 'car'), (14, 15, 17, 16, 'seats'), (22, 15, 25, 16, 'seats'), (2, 21, 3, 22, 'table'),
+              (22, 21, 25, 22, 'stage'), (32, 23, 36, 23, 'shelf'), (36, 11, 37, 12, 'table')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 9, 8, 'carpet', "Ringmaster's Wagon"), (11, 1, 19, 8, 'boards', "Juggler's Room"), (21, 1, 29, 8, 'boards', 'Funhouse Stairs'),
+                (31, 1, 38, 8, 'greylino', 'Clown Car Garage'), (1, 10, 9, 18, 'purple', 'Costume Wagon'), (11, 10, 29, 18, 'boards', 'The Ring'),
+                (31, 10, 38, 18, 'boards', 'Trapeze Nets'), (1, 20, 9, 28, 'boards', 'Cannon Deck'), (11, 20, 19, 28, 'wood', 'Backstage'),
+                (21, 20, 29, 28, 'wood', 'Band Stand'), (31, 20, 38, 28, 'greylino', "Strongman's Gym")]
+    p.tall = {'The Ring'}
+    p.loft = dict(x0=11, y0=10, x1=29, y1=12, h=7, stair_x=28, stair_y0=13, stair_y1=16)
+    p.pads = [(33, 13), (35, 16), (37, 14)]   # the trapeze safety nets bounce you up
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
+               dict(id='L1', kind='lock', x=5, y=9, name="Ringmaster's door"), dict(id='L2', kind='lock', x=20, y=4, name='Funhouse door'),
+               dict(id='cage', kind='cage', x=12, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=9, y=26), dict(id='v1b', kind='vent', pair='v1', x=11, y=26),
+               dict(id='v2a', kind='vent', pair='v2', x=31, y=17), dict(id='v2b', kind='vent', pair='v2', x=29, y=17)]
+    p.start = [(14, 27), (15, 27), (16, 27), (17, 27), (18, 27), (19, 27)]
+    p.spawn, p.cake = (1, 14), (36, 11)
+    p.patrol = [(5, 14), (20, 14), (34, 11), (35, 26), (25, 26), (15, 23), (5, 25),
+                (5, 5, 'L1'), (15, 4, 'L1'), (25, 5, 'L2'), (35, 6, 'L2')]
+    return p
+
+
+# ---------------------------------------------------------------- the Carnival, floor 3: the Funhouse
+def plan_funhouse():
+    p = Plan('funhouse_a', 'Carnival - The Funhouse')
+    p.building, p.floor_no, p.theme = 'carnival', 3, 'carnival'
+    p.exit_style, p.exit_text = 'stairs', 'Out onto the Big Wheel!'
+    for x in (8, 20, 31):
+        p.rect(x, 0, x, H - 1)
+    for y in (10, 19):
+        p.rect(0, y, W - 1, y)
+    for y in range(1, H - 1):
+        p.grid[y][0] = '#'
+        p.grid[y][W - 1] = '#'
+    p.rect(20, 11, 20, 18, '.')     # the Laughing Gallery spans the middle
+    p.rect(20, 20, 20, 28, '.')     # and so does the Rolling-Barrel Hall
+    for x, y in [(8, 14), (31, 15), (4, 19), (14, 19), (26, 19), (35, 19), (8, 24), (31, 25), (8, 5), (31, 4)]:
+        p.put(x, y, '.')
+    p.put(14, 10, 'L')   # L1: Laughing Gallery -> Spinning Room
+    p.put(20, 5, 'L')    # L2: Spinning Room -> Big Wheel
+    p.put(25, 0, 'D')
+    p.put(0, 14, 'C')
+    for x, y in [(23, 3), (27, 3), (23, 7), (27, 7)]:
+        p.put(x, y, '#')             # the Big Wheel's legs
+    for f in [(11, 14, 13, 14, 'table'), (26, 16, 28, 16, 'table'), (2, 12, 6, 12, 'shelf'), (2, 16, 4, 16, 'shelf'),
+              (4, 21, 6, 23, 'pit'), (2, 26, 6, 26, 'shelf'), (14, 22, 15, 23, 'table'), (25, 22, 26, 22, 'table'),
+              (34, 23, 36, 24, 'table'), (34, 12, 36, 13, 'table'), (13, 4, 15, 6, 'spinner'), (3, 3, 5, 4, 'table'),
+              (2, 8, 6, 8, 'shelf'), (34, 3, 36, 4, 'table'), (33, 7, 34, 7, 'desk')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 7, 9, 'boards', 'Tilted Room'), (9, 1, 19, 9, 'purple', 'Spinning Room'), (21, 1, 30, 9, 'boards', 'Big Wheel'),
+                (32, 1, 38, 9, 'greylino', 'Bumper Car Room'), (1, 11, 7, 18, 'boards', 'Slide Tower'), (9, 11, 30, 18, 'wood', 'Laughing Gallery'),
+                (32, 11, 38, 18, 'greylino', 'Clown Mirror Room'), (1, 20, 7, 28, 'carpet', 'Ball Pit'), (9, 20, 30, 28, 'boards', 'Rolling-Barrel Hall'),
+                (32, 20, 38, 28, 'carpet', 'Joke Shop')]
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
+               dict(id='L1', kind='lock', x=14, y=10, name='Spinning Room door'), dict(id='L2', kind='lock', x=20, y=5, name='Big Wheel gate'),
+               dict(id='cage', kind='cage', x=10, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=7, y=17), dict(id='v1b', kind='vent', pair='v1', x=9, y=17),
+               dict(id='v2a', kind='vent', pair='v2', x=30, y=22), dict(id='v2b', kind='vent', pair='v2', x=32, y=22)]
+    p.start = [(17, 27), (18, 27), (19, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 14), (14, 22)
+    p.patrol = [(4, 14), (16, 16), (25, 13), (35, 15), (35, 25), (25, 25), (12, 25), (4, 25),
+                (12, 6, 'L1'), (4, 6, 'L1'), (25, 5, 'L2'), (35, 5, 'L2')]
+    return p
+
+
 # ---------------------------------------------------------------- the secret Basement (floor 0)
 def plan_basement():
     """Under the Party House, unlocked by escaping the Attic. The Attic's
@@ -1024,13 +1156,18 @@ cellar = add_closets(plan_basement())
 school = add_closets(plan_school())
 school2 = add_closets(plan_school2())
 school3 = add_closets(plan_school3())
+midway = add_closets(plan_midway())
+bigtop = add_closets(plan_bigtop())
+funhouse = add_closets(plan_funhouse())
 for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms'),
           att, mirror(att, 'attic_b', 'The Party House - Attic'), cellar, mirror(cellar, 'cellar_b', 'The Party House - Secret Basement'), gum, mirror(gum, 'gum_b', 'Gummy Bounce House - Bounce Hall'),
           fac, mirror(fac, 'fac_b', 'Gummy Bounce House - Candy Factory'), vault, mirror(vault, 'vault_b', 'Gummy Bounce House - Jelly Vault'),
           hosp, mirror(hosp, 'hosp_b', 'Abandoned Hospital - Ground Floor'),
           ward, mirror(ward, 'ward_b', 'Abandoned Hospital - Wards'), lab, mirror(lab, 'lab_b', 'Abandoned Hospital - Labs'),
           school, mirror(school, 'school_b', 'Midnight School - Ground Floor'), school2, mirror(school2, 'class_b', 'Midnight School - Classrooms'),
-          school3, mirror(school3, 'tower_b', 'Midnight School - Clock Tower')):
+          school3, mirror(school3, 'tower_b', 'Midnight School - Clock Tower'),
+          midway, mirror(midway, 'midway_b', 'Carnival - The Midway'), bigtop, mirror(bigtop, 'bigtop_b', 'Carnival - The Big Top'),
+          funhouse, mirror(funhouse, 'funhouse_b', 'Carnival - The Funhouse')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (
@@ -1065,7 +1202,7 @@ out = ['--[[',
        '\tpassage), D the big exit door, C the host\'s door.',
        '\tReturns building -> floor number -> list of plans.',
        ']]', '', 'return {']
-for bld in ('partyhouse', 'gummy', 'hospital', 'school'):
+for bld in ('partyhouse', 'gummy', 'hospital', 'school', 'carnival'):
  out.append('\t%s = {' % bld)
  for fl in sorted({pfl for p, _, _, _, pfl in plans if p.building == bld}):
   out.append('\t[%d] = {' % fl)

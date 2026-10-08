@@ -111,7 +111,8 @@ art/models/               Meshy downloads (.glb)
 ```
 
 Docs: `SKINS.md` (skins: art, models, ids, fixes), `PASSES.md` (Game
-Passes, pricing, DevEx), `SCHOOL.md` (building 4), `BRAINY_LADDER.md`,
+Passes, pricing, DevEx), `SCHOOL.md` (building 4, the Caretaker host),
+`CARNIVAL.md` (building 5, the Clown Bear, the Aquarium's Anglerfish), `BRAINY_LADDER.md`,
 `NOTIFICATIONS.md`, `MESHY_GUIDE.md`, `FURNITURE.md`, `TEST_PLAN.md`
 (rounds 12-16 at the top are untested), `IMPROVEMENTS.md`, `ROADMAP.md`.
 
@@ -171,7 +172,13 @@ Passes, pricing, DevEx), `SCHOOL.md` (building 4), `BRAINY_LADDER.md`,
    Run, School, clue log, rejoin with two players live).
 8. **Host balance:** after a week live, read the 📊 Balance table and tune
    toward 70 / 50 / 35 / 20% wins on Easy / Normal / Hard / Nightmare.
-9. **Building 5** (3 floors, as building 4) - next build, Brent's go-ahead.
+9. **Building 5, the Creepy Carnival** - built 8 Oct (CARNIVAL.md, test
+   round 18): 4 card pictures + the Basement's to make; the Clown Bear's
+   power to pick (Jack-in-the-Box recommended) and his model
+   (HostClownBear). Badge ids still to come: Down in the Dark, Tower
+   Climber, Star of the Show (Making a Splash with the Aquarium).
+   **Building 6, the Aquarium** (Anglerfish Keeper host) after that.
+   The Caretaker (School host, Lock-up) is in: model 97512217825851.
 10. F9 showed asset 11490522280 refused (not in our code: something in the
     place, likely a Props model).
 

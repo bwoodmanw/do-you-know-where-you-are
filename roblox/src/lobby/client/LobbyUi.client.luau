@@ -641,9 +641,12 @@ local function card(parent, x, y, w, h, onClick)
 	b.Activated:Connect(onClick)
 	return { button = b, name = name, sub = sub, stroke = stroke }
 end
-local bw = #Progress.BUILDINGS >= 4 and 214 or 290 -- four buildings share the row
+-- the building cards share one row (900 wide): 3 at 290, more get narrower
+local nb = #Progress.BUILDINGS
+local bgap = nb <= 3 and 15 or 10
+local bw = nb <= 3 and 290 or math.floor((900 - (nb - 1) * bgap) / nb)
 for i, bld in ipairs(Progress.BUILDINGS) do
-	buildingCards[bld.id] = card(mapScreen, 20 + (i - 1) * (bw + (bw == 290 and 15 or 10)), 92, bw, 190, function()
+	buildingCards[bld.id] = card(mapScreen, 20 + (i - 1) * (bw + bgap), 92, bw, 190, function()
 		if amLeader then
 			opt("building", bld.id)
 		else
@@ -1416,7 +1419,7 @@ do
 			.. "\u{1F4A1} Clues show the next step but cost points earned that game.\n"
 			.. "\u{1F392} Boosts from the shop: tap them in the game.\n\n"
 			.. "\u{2B50} Play a character to level them up to 10 - choose upgrades in Characters.\n"
-			.. "\u{1F6AA} Escape a floor to unlock the next one - 4 buildings, 12 floors (and a secret one...)!\n\n"
+			.. "\u{1F6AA} Escape a floor to unlock the next one - 5 buildings, 15 floors (and a secret one...)!\n\n"
 			.. "\u{1F4DC} Daily quests: three a day, points as soon as you finish one.\n"
 			.. "\u{1F46B} Play with a Roblox friend for +10% points.\n"
 			.. "\u{1F36B} Chocolate is slow to wade through - use the bridge. \u{1F9FA} Slide down the laundry chute. \u{1F512} Turn the vault wheel in the Jelly Vault for treasure!\n\n"

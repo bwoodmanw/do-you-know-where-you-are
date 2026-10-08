@@ -2327,7 +2327,7 @@ function round.start()
 			end
 			setVisible(plr, false)
 			Effects.sound(chute.from, "throw", 1)
-			say("info", "Wheee! Down the laundry chute...", nil, plr)
+			say("info", chute.goText or "Wheee! Down the laundry chute...", nil, plr)
 			task.delay(Config.CHUTE.seconds, function()
 				if plr:GetAttribute("CrawlId") ~= crawlId or plr:GetAttribute("Caged") then
 					return -- caught on the way: the cage has them now
@@ -2341,7 +2341,7 @@ function round.start()
 				plr:SetAttribute("Crawling", false)
 				Effects.sound(chute.to, "bounce", 1)
 				Effects.burst(chute.to + Vector3.new(0, 2, 0), "pop")
-				say("info", "You landed in the laundry basket in the " .. chute.toRoom .. "!", nil, plr)
+				say("info", chute.landText or ("You landed in the laundry basket in the " .. chute.toRoom .. "!"), nil, plr)
 			end)
 		end)
 	end

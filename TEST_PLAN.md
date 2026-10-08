@@ -1,10 +1,10 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
-Studio Play builds `Config.STUDIO_MAP` (now `school`, the Midnight School's
-Ground Floor); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
+**Start with rounds 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
+Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
-`hospital_2`, `hospital_3`, `school_2`, `school_3`) or `Config.STUDIO_TOWER` for a
+`hospital_2`, `hospital_3`, `school`, `school_2`, `school_3`, `carnival_2`, `carnival_3`) or `Config.STUDIO_TOWER` for a
 Tower Run.
 
 Everything below was built today and has only been checked in code (it
@@ -16,6 +16,17 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 18 (8 Oct) - the Creepy Carnival (building 5, CARNIVAL.md) and badges
+
+Studio Play now builds the Carnival's Midway (`carnival`); ask for `carnival_2` / `carnival_3`.
+- [ ] Midway: Ticket Booth start (ticket window), dark red tent walls; the Carousel turns slowly with six painted horses and bulbs - hop on and it carries you round; you can hop off
+- [ ] Hall of Mirrors: a little maze of mirror walls (shiny), both doorways reachable; Popcorn Stand and Toffee Apple Stall carts, Duck Pond with bobbing ducks, Ring-Toss stall with an awning, Prize Tent prize walls
+- [ ] Fortune Teller's Tent behind the first lock (glowing crystal ball "Your future: RUN!"), Main Gate way out behind the second
+- [ ] Big Top (`carnival_2`): The Ring two storeys high with a balcony and red/blue circus seats; Trapeze Nets has 3 bounce pads; Cannon Deck: "Climb in!" on the human cannon -> "BOOM!" and you land in the safety net in a far room; Clown Car Garage, Costume Wagon racks, Juggler's Room, Band Stand drums, Strongman "1 TON"; "Up to the Funhouse"
+- [ ] Funhouse (`carnival_3`): Spinning Room floor turns (stand on it); Slide Tower "Slide down" -> a heap of balls in a far room; Ball Pit, wavy fun mirrors, Tilted Room crooked pictures, Bumper Cars, Joke Shop, rolling barrel scenery; "Out onto the Big Wheel!"
+- [ ] Lobby map screen: five building cards in one row (narrower), names readable; escaping School: Classrooms unlocks the Carnival (live)
+- [ ] Badges (live only): escaping the Secret Basement no longer gives the Party House badge; Tower Run to the top gives Tower Climber (once its id is in)
 
 ## Round 17 (8 Oct) - the Caretaker's Lock-up (SCHOOL.md)
 

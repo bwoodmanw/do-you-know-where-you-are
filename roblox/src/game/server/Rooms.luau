@@ -443,6 +443,119 @@ PIECES.LiftDoors = { size = Vector3.new(6, 9, 1), build = function(f, b)
 	label(add(f, b, { size = Vector3.new(1.6, 0.8, 0.1), at = Vector3.new(0, 8.2, T / 2 - 0.3), color = C(20, 20, 20) }), Enum.NormalId.Front, "\u{25B2} 3", C(255, 140, 40))
 end }
 
+-- ---- the Creepy Carnival
+PIECES.TicketWindow = { size = Vector3.new(6, 9, 3), build = function(f, b)
+	add(f, b, { size = Vector3.new(6, 7, 2.4), at = Vector3.new(0, 3.5, T / 2 - 1.3), color = C(200, 40, 60) })
+	add(f, b, { size = Vector3.new(3.4, 2.4, 0.1), at = Vector3.new(0, 4.6, T / 2 - 2.55), color = C(255, 230, 160), mat = GLASS, alpha = 0.5 })
+	add(f, b, { size = Vector3.new(6.6, 0.4, 3), at = Vector3.new(0, 7.2, T / 2 - 1.3), color = C(230, 190, 80), mat = Enum.Material.Foil })
+	label(add(f, b, { size = Vector3.new(5, 1.4, 0.1), at = Vector3.new(0, 8.2, T / 2 - 2.6), color = C(40, 20, 50) }), Enum.NormalId.Front, "\u{1F39F} TICKETS", C(255, 210, 63))
+	glow(add(f, b, { size = Vector3.new(0.4, 0.4, 0.4), at = Vector3.new(0, 6.6, T / 2 - 2.6), color = C(255, 220, 140), mat = NEON }), C(255, 210, 140), 8, 0.7)
+end }
+
+PIECES.PrizeWall = { size = Vector3.new(7, 8, 2), build = function(f, b)
+	add(f, b, { size = Vector3.new(7, 7.5, 0.4), at = Vector3.new(0, 3.75, T / 2 - 0.2), color = C(120, 40, 60), mat = Enum.Material.Fabric })
+	for row = 0, 2 do
+		add(f, b, { size = Vector3.new(6.6, 0.3, 1.4), at = Vector3.new(0, 1.2 + row * 2.3, T / 2 - 0.9), color = C(150, 100, 60), mat = WOOD })
+		for i = -2, 2 do
+			-- a plush prize: a round body and a round head in candy colours
+			local col = CANDY[(i + row * 2) % #CANDY + 1]
+			add(f, b, { size = Vector3.new(0.9, 0.9, 0.8), at = Vector3.new(i * 1.25, 1.85 + row * 2.3, T / 2 - 0.9), shape = Enum.PartType.Ball, color = col, mat = Enum.Material.Fabric })
+			add(f, b, { size = Vector3.new(0.7, 0.7, 0.7), at = Vector3.new(i * 1.25, 2.55 + row * 2.3, T / 2 - 0.9), shape = Enum.PartType.Ball, color = col, mat = Enum.Material.Fabric })
+		end
+	end
+	label(add(f, b, { size = Vector3.new(5, 1, 0.1), at = Vector3.new(0, 7.9, T / 2 - 0.45), color = C(40, 20, 50) }), Enum.NormalId.Front, "\u{2B50} PRIZES \u{2B50}", C(255, 210, 63))
+end }
+
+PIECES.CrystalBall = { size = Vector3.new(4, 5, 4), build = function(f, b)
+	add(f, b, { size = Vector3.new(3.4, 3, 3.4), at = Vector3.new(0, 1.5, 0.6), shape = Enum.PartType.Cylinder, rot = UP, color = C(80, 40, 110), mat = Enum.Material.Fabric })
+	local ball = add(f, b, { size = Vector3.new(1.8, 1.8, 1.8), at = Vector3.new(0, 3.9, 0.6), shape = Enum.PartType.Ball, color = C(190, 150, 255), mat = GLASS, alpha = 0.25 })
+	glow(ball, C(180, 120, 255), 12, 1.2)
+	TweenService:Create(ball, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Color = C(120, 220, 255) }):Play()
+	label(add(f, b, { size = Vector3.new(4, 2.4, 0.1), at = Vector3.new(0, 6.5, T / 2 - 0.1), color = C(40, 20, 60) }), Enum.NormalId.Front, "\u{1F52E} Your future: RUN!", C(220, 190, 255))
+end }
+
+PIECES.FunMirror = { size = Vector3.new(4, 9, 1), build = function(f, b)
+	add(f, b, { size = Vector3.new(4, 8.6, 0.3), at = Vector3.new(0, 4.6, T / 2 - 0.2), color = C(230, 190, 80), mat = Enum.Material.Foil })
+	-- a wavy mirror: three panes leaning different ways
+	for i = -1, 1 do
+		add(f, b, { size = Vector3.new(3.3, 2.5, 0.1), at = Vector3.new(0, 4.6 + i * 2.6, T / 2 - 0.42), rot = CFrame.Angles(math.rad(i * 9), math.rad(-i * 7), 0), color = C(205, 225, 240), mat = GLASS, shine = 0.6 })
+	end
+end }
+
+PIECES.CostumeRack = { size = Vector3.new(6, 7, 2), build = function(f, b)
+	add(f, b, { size = Vector3.new(6, 0.25, 0.25), at = Vector3.new(0, 6.2, T / 2 - 1), color = C(150, 150, 160), mat = METAL })
+	for _, x in ipairs({ -2.9, 2.9 }) do
+		add(f, b, { size = Vector3.new(0.25, 6.2, 0.25), at = Vector3.new(x, 3.1, T / 2 - 1), color = C(150, 150, 160), mat = METAL })
+	end
+	local cols = { C(220, 40, 60), C(255, 200, 40), C(80, 170, 230), C(150, 80, 200), C(70, 190, 110) }
+	for i = 1, 5 do
+		local x = -2.4 + (i - 1) * 1.2
+		add(f, b, { size = Vector3.new(1, 3.6, 0.6), at = Vector3.new(x, 4.2, T / 2 - 1), color = cols[i], mat = Enum.Material.Fabric })
+		add(f, b, { size = Vector3.new(1.1, 0.35, 0.7), at = Vector3.new(x, 5.7, T / 2 - 1), color = C(250, 240, 225), mat = Enum.Material.Fabric }) -- a frilly collar
+	end
+end }
+
+PIECES.Juggling = { size = Vector3.new(4, 5, 3), build = function(f, b)
+	add(f, b, { size = Vector3.new(3.6, 2.4, 2), at = Vector3.new(0, 1.2, T / 2 - 1.2), color = C(60, 90, 180), mat = WOOD })
+	for i = -1, 1 do
+		add(f, b, { size = Vector3.new(0.35, 1.6, 0.35), at = Vector3.new(i * 0.9, 3.2, T / 2 - 1.5), color = C(250, 245, 235) })
+		add(f, b, { size = Vector3.new(0.5, 0.5, 0.5), at = Vector3.new(i * 0.9, 3.9, T / 2 - 1.5), shape = Enum.PartType.Ball, color = CANDY[i + 2] })
+	end
+	for i = 1, 3 do
+		add(f, b, { size = Vector3.new(0.7, 0.7, 0.7), at = Vector3.new(-1.2 + i * 0.6, 2.75, T / 2 - 0.6), shape = Enum.PartType.Ball, color = CANDY[i + 3] })
+	end
+end }
+
+PIECES.Weights = { size = Vector3.new(6, 3, 2), build = function(f, b)
+	add(f, b, { size = Vector3.new(5.6, 0.3, 0.3), at = Vector3.new(0, 1.3, T / 2 - 1.2), rot = CFrame.Angles(0, 0, 0), color = C(150, 150, 160), mat = METAL })
+	for _, x in ipairs({ -2.4, 2.4 }) do
+		add(f, b, { size = Vector3.new(0.8, 2.6, 2.6), at = Vector3.new(x, 1.3, T / 2 - 1.2), shape = Enum.PartType.Cylinder, color = C(30, 30, 35) })
+	end
+	label(add(f, b, { size = Vector3.new(3, 1.2, 0.1), at = Vector3.new(0, 5.5, T / 2 - 0.1), color = C(40, 20, 50) }), Enum.NormalId.Front, "1 TON!", C(255, 210, 63))
+end }
+
+PIECES.BumperCars = { size = Vector3.new(7, 3, 4), build = function(f, b)
+	for i, x in ipairs({ -1.8, 1.8 }) do
+		add(f, b, { size = Vector3.new(1.4, 3.2, 3.2), at = Vector3.new(x, 0.8, 0), shape = Enum.PartType.Cylinder, rot = UP, color = C(30, 30, 35) })
+		add(f, b, { size = Vector3.new(1.2, 2.8, 2.8), at = Vector3.new(x, 1.8, 0), shape = Enum.PartType.Cylinder, rot = UP, color = i == 1 and C(220, 40, 60) or C(80, 170, 230) })
+		add(f, b, { size = Vector3.new(0.15, 6, 0.15), at = Vector3.new(x, 5, 0.6), color = C(150, 150, 160), mat = METAL })
+	end
+end }
+
+PIECES.Tilted = { size = Vector3.new(6, 9, 1), build = function(f, b)
+	-- crooked pictures and a shelf that slopes: everything here is a bit wonky
+	for i, x in ipairs({ -1.8, 1.8 }) do
+		local frame = add(f, b, { size = Vector3.new(2.4, 2, 0.2), at = Vector3.new(x, 7, T / 2 - 0.15), rot = CFrame.Angles(0, 0, math.rad(i == 1 and 18 or -24)), color = C(150, 100, 60), mat = WOOD })
+		label(frame, Enum.NormalId.Front, i == 1 and "\u{1F921}" or "\u{1F3AA}", C(255, 255, 255))
+	end
+	add(f, b, { size = Vector3.new(5, 0.3, 1.2), at = Vector3.new(0, 4, T / 2 - 0.6), rot = CFrame.Angles(0, 0, math.rad(-12)), color = C(150, 100, 60), mat = WOOD })
+	add(f, b, { size = Vector3.new(0.8, 0.8, 0.8), at = Vector3.new(1.6, 4.1, T / 2 - 0.6), shape = Enum.PartType.Ball, color = C(255, 210, 63) })
+end }
+
+PIECES.RollingBarrel = { size = Vector3.new(7, 7, 4), build = function(f, b)
+	-- a giant striped barrel on its side (the ride's spare), slowly rolling in place
+	local barrel = add(f, b, { size = Vector3.new(6.4, 6, 6), at = Vector3.new(0, 3.1, T / 2 - 3.2), shape = Enum.PartType.Cylinder, color = C(200, 40, 60), mat = WOOD })
+	for i = -1, 1 do
+		add(f, b, { size = Vector3.new(0.6, 6.15, 6.15), at = Vector3.new(i * 2.2, 3.1, T / 2 - 3.2), shape = Enum.PartType.Cylinder, color = C(250, 240, 225), mat = WOOD })
+	end
+	local _ = barrel
+	label(add(f, b, { size = Vector3.new(4, 1.2, 0.1), at = Vector3.new(0, 8, T / 2 - 0.1), color = C(40, 20, 50) }), Enum.NormalId.Front, "ROLL UP! ROLL UP!", C(255, 210, 63))
+end }
+
+PIECES.JokeShelf = { size = Vector3.new(6, 8, 2), build = function(f, b)
+	add(f, b, { size = Vector3.new(6, 7.5, 1.6), at = Vector3.new(0, 3.75, T / 2 - 0.8), color = C(255, 200, 40), mat = WOOD })
+	for row = 0, 2 do
+		for i = -2, 2 do
+			if (i + row) % 2 == 0 then
+				add(f, b, { size = Vector3.new(0.8, 0.8, 0.8), at = Vector3.new(i * 1.1, 1.5 + row * 2.3, T / 2 - 1.75), shape = Enum.PartType.Ball, color = C(230, 40, 50) }) -- clown noses
+			else
+				add(f, b, { size = Vector3.new(0.9, 0.9, 0.7), at = Vector3.new(i * 1.1, 1.5 + row * 2.3, T / 2 - 1.75), color = CANDY[(i + row + 5) % #CANDY + 1] }) -- joke boxes
+			end
+		end
+	end
+	label(add(f, b, { size = Vector3.new(4, 1, 0.1), at = Vector3.new(0, 8, T / 2 - 0.1), color = C(40, 20, 50) }), Enum.NormalId.Front, "HA HA HA!", C(255, 80, 120))
+end }
+
 -- ---- the Midnight School
 PIECES.Blackboard = { size = Vector3.new(8, 6, 1), build = function(f, b)
 	local board = add(f, b, { size = Vector3.new(7, 3.6, 0.2), at = Vector3.new(0, 5.6, T / 2 - 0.15), color = C(40, 70, 52) })
@@ -729,6 +842,7 @@ local WALLS = {
 	purple = { Enum.Material.Plaster, C(85, 60, 120) },
 	grey = { Enum.Material.Plaster, C(150, 155, 160) },
 	honey = { Enum.Material.SmoothPlastic, C(225, 165, 70) },
+	tent = { Enum.Material.Fabric, C(160, 40, 60) },
 }
 
 -- the floor that goes with each kind of wall (nil: keep the building's floor)
@@ -751,6 +865,25 @@ local FLOORS = {
 -- first match wins: words in the room's name -> its look (a 4th entry: only
 -- in that building)
 local LOOKS = {
+	-- the Creepy Carnival (only in the carnival)
+	{ { "ticket booth", "main gate" }, "tent", { "TicketWindow", "Plants", "Crates" }, "carnival" },
+	{ { "fortune teller" }, "purple", { "CrystalBall", "Candelabra", "Curtain" }, "carnival" },
+	{ { "prize tent", "ring-toss", "duck pond" }, "tent", { "PrizeWall", "PrizeWall", "ToyBox" }, "carnival" },
+	{ { "popcorn", "toffee" }, "honey", { "Crates", "Sacks", "Trays" }, "carnival" },
+	{ { "carousel" }, "purple", { "Plants", "Drums" }, "carnival" },
+	{ { "hall of mirrors", "clown mirror", "laughing gallery" }, "grey", { "FunMirror", "FunMirror", "FunMirror" }, "carnival" },
+	{ { "ringmaster" }, "red", { "FilingCabinets", "CoatRack", "Trunks" }, "carnival" },
+	{ { "juggler", "the ring" }, "tent", { "Juggling", "Juggling", "Drums" }, "carnival" },
+	{ { "costume wagon", "backstage" }, "pastel", { "CostumeRack", "CostumeRack", "Wardrobe" }, "carnival" },
+	{ { "band stand" }, "red", { "Drums", "Drums" }, "carnival" },
+	{ { "strongman" }, "brick", { "Weights", "Weights", "Crates" }, "carnival" },
+	{ { "clown car", "cannon deck", "trapeze" }, "grey", { "Crates", "Trunks" }, "carnival" },
+	{ { "tilted" }, "pastel", { "Tilted", "Tilted" }, "carnival" },
+	{ { "bumper car" }, "grey", { "BumperCars", "BumperCars" }, "carnival" },
+	{ { "rolling-barrel" }, "tent", { "RollingBarrel", "Crates" }, "carnival" },
+	{ { "joke shop" }, "red", { "JokeShelf", "JokeShelf" }, "carnival" },
+	{ { "ball pit", "slide tower" }, "pastel", { "ToyBox", "ToyBox" }, "carnival" },
+	{ { "spinning room", "big wheel", "funhouse stairs" }, "purple", { "Plants" }, "carnival" },
 	-- the Midnight School (only in the school)
 	{ { "classroom", "detention" }, "teal", { "Blackboard", "SchoolDesks", "SchoolDesks" }, "school" },
 	{ { "exam hall" }, "wood", { "SchoolDesks", "SchoolDesks", "Clocks" }, "school" },
@@ -1310,11 +1443,15 @@ end
 -- in the room furthest away on the same side of the locked doors (Main moves
 -- the player; the host can't follow).
 local function buildChute(folder, world, map, busy, open)
-	local from
+	local from, kind
 	for _, f in ipairs(map.floors) do
 		local n = string.lower(f.name)
 		if not from and (string.find(n, "laundry", 1, true) or string.find(n, "linen", 1, true)) then
-			from = f
+			from, kind = f, "laundry"
+		elseif not from and string.find(n, "cannon", 1, true) then
+			from, kind = f, "cannon"
+		elseif not from and string.find(n, "slide tower", 1, true) then
+			from, kind = f, "slide"
 		end
 	end
 	if not from then
@@ -1372,25 +1509,46 @@ local function buildChute(folder, world, map, busy, open)
 	local centre = at(a[1], a[2])
 	local wallDir = Vector3.new(aDir[1], 0, aDir[2])
 	local base = CFrame.lookAt(centre, centre - wallDir)
-	add(folder, base, { size = Vector3.new(3.6, 3.6, 0.3), at = Vector3.new(0, 3.2, T / 2 - 0.15), color = C(110, 115, 125), mat = METAL })
-	local hatch = add(folder, base, { name = "ChuteHatch", size = Vector3.new(3, 3, 0.2), at = Vector3.new(0, 3.2, T / 2 - 0.35), color = C(160, 165, 175), mat = METAL, shine = 0.1 })
-	add(folder, base, { size = Vector3.new(1.2, 0.3, 0.3), at = Vector3.new(0, 2.2, T / 2 - 0.5), color = C(60, 60, 65), mat = METAL })
-	label(add(folder, base, { size = Vector3.new(3.6, 0.9, 0.1), at = Vector3.new(0, 5.6, T / 2 - 0.1), color = C(40, 28, 46) }), Enum.NormalId.Front, "LAUNDRY CHUTE \u{2193}", C(255, 210, 63))
+	local hatch
+	if kind == "cannon" then
+		-- the human cannon: a big striped barrel pointing up at the tent roof
+		add(folder, base, { size = Vector3.new(3, 2, 4), at = Vector3.new(0, 1, T / 2 - 2.4), color = C(120, 80, 50), mat = WOOD })
+		for _, wx in ipairs({ -1.7, 1.7 }) do
+			add(folder, base, { size = Vector3.new(0.5, 3, 3), at = Vector3.new(wx, 1.5, T / 2 - 2.4), shape = Enum.PartType.Cylinder, color = C(200, 40, 60) })
+		end
+		hatch = add(folder, base, { name = "ChuteHatch", size = Vector3.new(6, 2.4, 2.4), at = Vector3.new(0, 4, T / 2 - 2.6), rot = CFrame.Angles(0, math.rad(90), math.rad(55)), shape = Enum.PartType.Cylinder, color = C(60, 70, 160), mat = METAL, shine = 0.1 })
+		for i = -1, 1 do
+			add(folder, base, { size = Vector3.new(0.4, 2.6, 2.6), at = Vector3.new(0, 4 + i * 1.4 * math.sin(math.rad(55)), T / 2 - 2.6 - i * 1.4 * math.cos(math.rad(55))), rot = CFrame.Angles(0, math.rad(90), math.rad(55)), shape = Enum.PartType.Cylinder, color = C(255, 210, 63), mat = Enum.Material.Foil })
+		end
+		label(add(folder, base, { size = Vector3.new(4.4, 0.9, 0.1), at = Vector3.new(0, 7.6, T / 2 - 0.1), color = C(40, 28, 46) }), Enum.NormalId.Front, "\u{1F4A5} HUMAN CANNON", C(255, 210, 63))
+	else
+		add(folder, base, { size = Vector3.new(3.6, 3.6, 0.3), at = Vector3.new(0, 3.2, T / 2 - 0.15), color = kind == "slide" and C(255, 200, 40) or C(110, 115, 125), mat = kind == "slide" and Enum.Material.SmoothPlastic or METAL })
+		hatch = add(folder, base, { name = "ChuteHatch", size = Vector3.new(3, 3, 0.2), at = Vector3.new(0, 3.2, T / 2 - 0.35), color = kind == "slide" and C(80, 170, 230) or C(160, 165, 175), mat = kind == "slide" and Enum.Material.SmoothPlastic or METAL, shine = 0.1 })
+		add(folder, base, { size = Vector3.new(1.2, 0.3, 0.3), at = Vector3.new(0, 2.2, T / 2 - 0.5), color = C(60, 60, 65), mat = METAL })
+		label(add(folder, base, { size = Vector3.new(3.6, 0.9, 0.1), at = Vector3.new(0, 5.6, T / 2 - 0.1), color = C(40, 28, 46) }), Enum.NormalId.Front, kind == "slide" and "TWISTY SLIDE \u{2193}" or "LAUNDRY CHUTE \u{2193}", C(255, 210, 63))
+	end
 	local pp = Instance.new("ProximityPrompt")
-	pp.ActionText = "Slide down"
-	pp.ObjectText = "Laundry chute (to the " .. to.name .. ")"
+	pp.ActionText = kind == "cannon" and "Climb in!" or "Slide down"
+	pp.ObjectText = (kind == "cannon" and "Human cannon" or kind == "slide" and "Twisty slide" or "Laundry chute") .. " (to the " .. to.name .. ")"
 	pp.HoldDuration = 0.4
 	pp.MaxActivationDistance = 8
 	pp.RequiresLineOfSight = false
 	pp.Parent = hatch
-	-- the landing: a big basket of towels
+	-- the landing: a big basket of towels (a safety net for the cannon, a heap of balls for the slide)
 	local land = at(b[1], b[2])
 	local basket = CFrame.new(land)
-	add(folder, basket, { size = Vector3.new(1.4, 4.2, 4.2), at = Vector3.new(0, 0.7, 0), rot = UP, shape = Enum.PartType.Cylinder, color = C(190, 160, 110), mat = Enum.Material.Fabric })
-	for i = 1, 4 do
-		add(folder, basket, { size = Vector3.new(1.6, 0.5, 1.2), at = Vector3.new(math.cos(i * 1.6) * 0.9, 1.5 + (i % 2) * 0.2, math.sin(i * 1.6) * 0.9), rot = CFrame.Angles(0, i, 0), color = ({ C(150, 200, 235), C(250, 250, 250), C(255, 190, 210), C(200, 240, 170) })[i], mat = Enum.Material.Fabric })
+	if kind == "cannon" then
+		add(folder, basket, { size = Vector3.new(0.6, 5.4, 5.4), at = Vector3.new(0, 1.4, 0), rot = UP, shape = Enum.PartType.Cylinder, color = C(200, 40, 60) })
+		add(folder, basket, { size = Vector3.new(0.2, 4.8, 4.8), at = Vector3.new(0, 1.6, 0), rot = UP, shape = Enum.PartType.Cylinder, color = C(250, 240, 225), mat = Enum.Material.Fabric })
+	else
+		add(folder, basket, { size = Vector3.new(1.4, 4.2, 4.2), at = Vector3.new(0, 0.7, 0), rot = UP, shape = Enum.PartType.Cylinder, color = kind == "slide" and C(80, 170, 230) or C(190, 160, 110), mat = kind == "slide" and Enum.Material.SmoothPlastic or Enum.Material.Fabric })
+		for i = 1, 4 do
+			add(folder, basket, { size = kind == "slide" and Vector3.new(1, 1, 1) or Vector3.new(1.6, 0.5, 1.2), shape = kind == "slide" and Enum.PartType.Ball or nil, at = Vector3.new(math.cos(i * 1.6) * 0.9, 1.5 + (i % 2) * 0.2, math.sin(i * 1.6) * 0.9), rot = CFrame.Angles(0, i, 0), color = ({ C(150, 200, 235), C(250, 250, 250), C(255, 190, 210), C(200, 240, 170) })[i], mat = kind == "slide" and Enum.Material.SmoothPlastic or Enum.Material.Fabric })
+		end
 	end
-	world.chute = { prompt = pp, from = hatch.Position, to = land, toRoom = to.name }
+	local goText = kind == "cannon" and "3... 2... 1... BOOM! You fly out of the cannon..." or kind == "slide" and "Wheee! Down the twisty slide..." or "Wheee! Down the laundry chute..."
+	local landText = kind == "cannon" and "You bounced into the safety net in the " .. to.name .. "!" or kind == "slide" and "You shot out into a heap of balls in the " .. to.name .. "!" or "You landed in the laundry basket in the " .. to.name .. "!"
+	world.chute = { prompt = pp, from = hatch.Position, to = land, toRoom = to.name, kind = kind, goText = goText, landText = landText }
 end
 
 -- ---------------------------------------------------------------- windows

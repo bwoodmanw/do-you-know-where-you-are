@@ -25,6 +25,10 @@ Progress.MAPS = {
 	{ id = "school", building = "school", floor = 1, name = "School: Ground Floor", icon = "\u{1F3EB}", ready = true },
 	{ id = "school_2", building = "school", floor = 2, name = "School: Classrooms", icon = "\u{1F4DA}", ready = true },
 	{ id = "school_3", building = "school", floor = 3, name = "School: Clock Tower", icon = "\u{1F570}", ready = true },
+	-- building 5 (8 Oct): unlocked by escaping the School's Classrooms
+	{ id = "carnival", building = "carnival", floor = 1, name = "Carnival: The Midway", icon = "\u{1F3A0}", ready = true },
+	{ id = "carnival_2", building = "carnival", floor = 2, name = "Carnival: The Big Top", icon = "\u{1F3AA}", ready = true },
+	{ id = "carnival_3", building = "carnival", floor = 3, name = "Carnival: The Funhouse", icon = "\u{1F921}", ready = true },
 }
 
 Progress.BUILDINGS = {
@@ -32,6 +36,7 @@ Progress.BUILDINGS = {
 	{ id = "gummy", name = "Gummy Bounce House" },
 	{ id = "hospital", name = "Abandoned Hospital" },
 	{ id = "school", name = "Midnight School" },
+	{ id = "carnival", name = "Creepy Carnival" },
 }
 
 -- what escaping this floor unlocks
