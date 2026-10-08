@@ -349,6 +349,8 @@ Config.MUSIC = {
 		{ id = 136562208725905, name = "I am the monster (Remastered)" },
 		{ id = 124336285623807, name = "Hollow Veil" },
 		{ id = 118983463747469, name = "Unknown Caller" },
+		{ id = 133823482307151, name = "Misprint" },
+		{ id = 73347892612875, name = "Make One" },
 	},
 }
 -- shown under the music button with the song's name
