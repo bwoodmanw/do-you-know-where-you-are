@@ -94,9 +94,13 @@ Config.BADGES = {
 	hospital = 3323093080758728, -- escaped the Hospital's top floor (Labs)
 	school = 1104557368847767, -- Top of the Class: escaped the Midnight School's top floor (Clock Tower)
 	allFloors = 1673377768038318, -- escaped all 9 floors
-	rescuer = 0, -- freed 10 friends from the cage
-	untouched = 0, -- escaped without being caught
-	nightmare = 0, -- escaped on Nightmare
+	carnival = 0, -- Star of the Show: escaped the Carnival's top floor (Funhouse)
+	aquarium = 0, -- Making a Splash: escaped the Aquarium's top floor (Rooftop Pools)
+	basement = 0, -- Down in the Dark: escaped the Party House's Secret Basement
+	tower = 0, -- Tower Climber: reached the top in a Tower Run
+	rescuer = 4200883843590712, -- Hero of the Crew: freed 10 friends from the cage
+	untouched = 1991556459225776, -- Untouchable: escaped without being caught
+	nightmare = 1282994468042939, -- Nightmare Escaper: escaped on Nightmare
 }
 
 Config.SKILLS = {
@@ -204,6 +208,7 @@ Config.CHARACTER_ASSETS = {
 	Host = 135742994182895,
 	HostGummy = 106903651525041,
 	HostRobot = 95188395596101,
+	HostCaretaker = 97512217825851, -- 8 Oct
 	-- skins (Config.SKINS: the model names)
 	TinkerPumpkin = 107525785066601,
 	ShadowGhost = 126072588049013,

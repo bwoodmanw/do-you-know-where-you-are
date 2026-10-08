@@ -579,8 +579,13 @@ local function checkEnd()
 			local out = plr:GetAttribute("Escaped") == true and not plr:GetAttribute("Waiting")
 			if out then
 				award(plr, "firstEscape")
-				if m and not nextFloor() then
+				if m and m.secret then
+					award(plr, "basement") -- the Secret Basement (not the building's top floor)
+				elseif m and not nextFloor() then
 					award(plr, m.building)
+				end
+				if towerRun and won then
+					award(plr, "tower") -- the top of a Tower Run
 				end
 				if not (state.everCaught and state.everCaught[plr.UserId]) then
 					award(plr, "untouched")
