@@ -1937,14 +1937,14 @@ function round.placeCandyCorn()
 								Profile.publish(plr)
 							end
 							Effects.burst(c.pos, "pop")
-							say("info", "\u{1F36C} Candy corn! +" .. e.points .. " (" .. math.min(n, e.goal) .. " / " .. e.goal .. ")", nil, plr)
+							say("info", "\u{1F383} Candy corn! +" .. e.points .. " (" .. math.min(n, e.goal) .. " / " .. e.goal .. ")", nil, plr)
 							if n == e.goal then
-								say("info", "\u{1F36C} " .. plr.DisplayName .. " found " .. e.goal .. " candy corns - Candy Corn Collector!")
+								say("info", "\u{1F383} " .. plr.DisplayName .. " found " .. e.goal .. " candy corns - Candy Corn Collector!")
 							end
-							local have = data and n - (data.stats.cornSpent or 0) or 0
+							local have = data and n + (data.stats.cornGift or 0) - (data.stats.cornSpent or 0) or 0
 							for _, skin in ipairs(Config.SKINS or {}) do
 								if skin.corn and have == skin.corn and not skin.hidden and not (data.skinsEarned and data.skinsEarned[skin.id]) then
-									say("info", "\u{1F36C} " .. skin.corn .. " candy corns to spend - get " .. skin.name .. " in the Lobby's Candy Shop!", nil, plr)
+									say("info", "\u{1F383} " .. skin.corn .. " candy corns to spend - get " .. skin.name .. " in the Lobby's Candy Shop!", nil, plr)
 								end
 							end
 							if n >= e.goal and (Config.BADGES.corn or 0) > 0 then

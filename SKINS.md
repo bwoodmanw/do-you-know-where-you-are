@@ -216,7 +216,7 @@ If a screen looks different from these steps, send me a photo of it.
 
 (Prompt **7b** for the remade Starlight Echo is in the prompt list above, after prompt 7.)
 
-## Mummy Muscle - the Halloween event skin (8 Oct)
+## Muscle Mummy - the Halloween event skin (8 Oct; shown as "Muscle Mummy")
 
 Not sold for Robux: bought in the Lobby's Candy Shop for 100 candy corns on
 hand (the corns are spent), kept for good (`Config.SKINS` muscle_mummy,

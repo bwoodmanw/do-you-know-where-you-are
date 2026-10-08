@@ -24,6 +24,7 @@ SKINS = [
     ('starlight-echo', 'pass-starlight-echo.png', (255, 215, 110), (25, 25, 80)),
     ('autumn-leaf-bramble', 'pass-autumn-leaf-bramble.png', (255, 190, 90), (110, 50, 15)),
     ('halloween-nurse-patch', 'pass-halloween-nurse-patch.png', (255, 175, 80), (60, 25, 60)),
+    ('Muscle Mummy', 'skin-muscle-mummy.png', (255, 170, 70), (60, 25, 70)),  # the Candy Shop skin (not a pass)
 ]
 
 

@@ -866,123 +866,174 @@ local function readProfile()
 end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 do
-	-- the Halloween Candy Corn Hunt: how many you have found, until it ends
+	-- the Halloween Candy Corn Hunt: a banner at the bottom that opens the
+	-- Candy Shop (laid out like the Boost Shop: boosts and the event skin for
+	-- candy corns). The candy-corn picture is the Candy Corn boost's own.
 	local e = Config.EVENT
 	if e and os.time() < (e.shopUntil or e.ends) then
-		local bannerGui = Instance.new("ScreenGui")
-		bannerGui.Name = "EventBanner"
-		bannerGui.ResetOnSpawn = false
-		bannerGui.Parent = player:WaitForChild("PlayerGui")
-		local banner = Instance.new("TextButton")
-		banner.AutoButtonColor = true
-		banner.AnchorPoint = Vector2.new(0.5, 1)
-		banner.Position = UDim2.new(0.5, 0, 1, -8)
-		banner.Size = UDim2.fromOffset(460, 34)
-		banner.BackgroundColor3 = Color3.fromRGB(40, 22, 62)
-		banner.BackgroundTransparency = 0.15
-		banner.TextColor3 = Color3.fromRGB(255, 180, 70)
-		banner.Font = Enum.Font.FredokaOne
-		banner.TextScaled = true
-		banner.Parent = bannerGui
-		local c = Instance.new("UICorner")
-		c.CornerRadius = UDim.new(0, 10)
-		c.Parent = banner
-		-- the Candy Shop: boosts for candy corns
-		local shop = Instance.new("Frame")
-		shop.AnchorPoint = Vector2.new(0.5, 1)
-		shop.Position = UDim2.new(0.5, 0, 1, -50)
-		shop.Size = UDim2.fromOffset(460, 300)
-		shop.BackgroundColor3 = Color3.fromRGB(40, 22, 62)
-		shop.Visible = false
-		shop.Parent = bannerGui
-		local sc = Instance.new("UICorner")
-		sc.CornerRadius = UDim.new(0, 14)
-		sc.Parent = shop
-		local title = Instance.new("TextLabel")
-		title.BackgroundTransparency = 1
-		title.Position = UDim2.fromOffset(12, 6)
-		title.Size = UDim2.new(1, -24, 0, 30)
-		title.Font = Enum.Font.FredokaOne
-		title.TextScaled = true
-		title.TextColor3 = Color3.fromRGB(255, 180, 70)
-		title.Parent = shop
-		local grid = Instance.new("Frame")
-		grid.BackgroundTransparency = 1
-		grid.Position = UDim2.fromOffset(10, 42)
-		grid.Size = UDim2.new(1, -20, 1, -50)
-		grid.Parent = shop
-		local layout = Instance.new("UIGridLayout")
-		layout.CellSize = UDim2.fromOffset(140, 56)
-		layout.CellPadding = UDim2.fromOffset(8, 8)
-		layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-		layout.Parent = grid
+		local CORN = Config.BOOST_IMAGES and Config.BOOST_IMAGES.candy or 0
+		local function cornPic(parent, size, pos, z)
+			if CORN > 0 then
+				local pic = Instance.new("ImageLabel")
+				pic.BackgroundTransparency = 1
+				pic.Image = "rbxassetid://" .. CORN
+				pic.Size = UDim2.fromOffset(size, size)
+				pic.Position = pos
+				pic.ZIndex = z
+				pic.Parent = parent
+				return pic
+			end
+			return nil
+		end
+		local banner = button(gui, "", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -8), Size = UDim2.fromOffset(500, 38), BackgroundColor3 = Color3.fromRGB(40, 22, 62), TextColor3 = Color3.fromRGB(255, 180, 70), ZIndex = 5 })
+		cornPic(banner, 30, UDim2.fromOffset(-2, -2), 6)
+		local cshop = frame(gui, { Size = UDim2.fromOffset(620, 620), Position = UDim2.new(0.5, -310, 0.5, -310), Visible = false, ZIndex = 10 })
+		corner(cshop, 18)
+		cornPic(cshop, 46, UDim2.fromOffset(16, 6), 11)
+		local title = label(cshop, { Size = UDim2.new(1, -90, 0, 40), Position = UDim2.fromOffset(70, 10), TextColor3 = PUMP, ZIndex = 11 })
+		label(cshop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 52), Text = "Spend candy corns from the games. The Candy Corn Collector badge counts every corn you find.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+		local rows, skinRows = {}, {}
+		local function row(i, picId, iconText, name, say)
+			local r = frame(cshop, { Size = UDim2.new(1, -24, 0, 64), Position = UDim2.fromOffset(12, 80 + (i - 1) * 70), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 11 })
+			corner(r, 12)
+			if (picId or 0) > 0 then
+				local pic = Instance.new("ImageLabel")
+				pic.BackgroundTransparency = 1
+				pic.Image = "rbxassetid://" .. picId
+				pic.Size = UDim2.fromOffset(52, 52)
+				pic.Position = UDim2.fromOffset(5, 6)
+				pic.ZIndex = 12
+				pic.Parent = r
+			else
+				label(r, { Size = UDim2.fromOffset(46, 46), Position = UDim2.fromOffset(8, 9), Text = iconText, ZIndex = 12 })
+			end
+			label(r, { Size = UDim2.fromOffset(250, 26), Position = UDim2.fromOffset(64, 6), Text = name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+			label(r, { Size = UDim2.fromOffset(300, 22), Position = UDim2.fromOffset(64, 34), Text = say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
+			local owned = label(r, { Size = UDim2.fromOffset(110, 20), Position = UDim2.fromOffset(372, 4), Text = "", ZIndex = 12 })
+			return r, owned
+		end
+		local function buyButton(r, price, onClick)
+			local b = button(r, "Buy " .. price .. "     ", { Size = UDim2.fromOffset(120, 40), Position = UDim2.fromOffset(470, 12), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, onClick)
+			cornPic(b, 28, UDim2.new(1, -34, 0.5, -14), 13)
+			return b
+		end
+		local i = 0
 		for _, id in ipairs(Progress.BOOST_ORDER) do
 			local price = e.shop and e.shop[id]
 			local boost = Progress.BOOSTS[id]
 			if price and boost then
-				local b = Instance.new("TextButton")
-				b.BackgroundColor3 = Color3.fromRGB(75, 58, 102)
-				b.TextColor3 = Color3.fromRGB(255, 244, 224)
-				b.Font = Enum.Font.FredokaOne
-				b.TextScaled = true
-				b.Text = boost.icon .. " " .. boost.name .. "\n\u{1F36C} " .. price
-				b.Parent = grid
-				local bc = Instance.new("UICorner")
-				bc.CornerRadius = UDim.new(0, 10)
-				bc.Parent = b
-				b.Activated:Connect(function()
+				i += 1
+				local r, owned = row(i, Config.BOOST_IMAGES and Config.BOOST_IMAGES[id], boost.icon, boost.name, boost.say)
+				buyButton(r, price, function()
 					remotes:WaitForChild("CornShop"):FireServer(id)
 				end)
+				rows[id] = owned
 			end
 		end
-		-- the event skin, in the shop once its model is in
-		local skinButtons = {}
 		for _, skin in ipairs(Config.SKINS or {}) do
 			if skin.corn and not skin.hidden then
-				local b = Instance.new("TextButton")
-				b.BackgroundColor3 = Color3.fromRGB(110, 70, 30)
-				b.TextColor3 = Color3.fromRGB(255, 244, 224)
-				b.Font = Enum.Font.FredokaOne
-				b.TextScaled = true
-				b.Parent = grid
-				local bc = Instance.new("UICorner")
-				bc.CornerRadius = UDim.new(0, 10)
-				bc.Parent = b
-				b.Activated:Connect(function()
+				i += 1
+				local r, owned = row(i, skin.icon, "\u{2728}", skin.name .. " skin", "A Halloween look for " .. string.upper(string.sub(skin.skill, 1, 1)) .. string.sub(skin.skill, 2) .. " - yours for good")
+				local b = buyButton(r, skin.corn, function()
 					remotes:WaitForChild("CornShop"):FireServer("skin:" .. skin.id)
 				end)
-				skinButtons[skin] = b
+				skinRows[skin] = { owned = owned, buy = b }
 			end
 		end
+		button(cshop, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -54), ZIndex = 11 }, function()
+			cshop.Visible = false
+		end)
 		banner.Activated:Connect(function()
-			shop.Visible = not shop.Visible
+			cshop.Visible = not cshop.Visible
 		end)
 		local function paint()
 			local ok, data = pcall(function()
 				return HttpService:JSONDecode(player:GetAttribute("ProfileJson") or "{}")
 			end)
-			local st = ok and data and data.stats or {}
+			data = ok and data or {}
+			local st = data.stats or {}
 			local n = st.corn or 0
-			local have = n - (st.cornSpent or 0)
-			local earned = ok and data and data.skinsEarned or {}
+			local have = n + (st.cornGift or 0) - (st.cornSpent or 0)
+			local earned = data.skinsEarned or {}
+			local inv = data.inv or {}
+			for id, owned in pairs(rows) do
+				owned.Text = "You have " .. (inv[id] or 0)
+			end
 			local skinGoal
-			for skin, b in pairs(skinButtons) do
-				b.Text = earned[skin.id] and ("\u{2705} " .. skin.name .. "\nyours!") or ("\u{2728} " .. skin.name .. "\n\u{1F36C} " .. skin.corn)
-				if not earned[skin.id] then
+			for skin, r in pairs(skinRows) do
+				local mine = earned[skin.id] == true
+				r.owned.Text = mine and "\u{2705} Yours!" or ""
+				r.buy.Visible = not mine
+				if not mine then
 					skinGoal = skin
 				end
 			end
+			title.Text = "Candy Shop  \u{00B7}  " .. have .. " candy corns to spend"
 			if os.time() >= e.ends then
-				banner.Text = "\u{1F36C} Candy Shop: " .. have .. " corns to spend (open until 8 Nov)"
+				banner.Text = "Candy Shop: " .. have .. " candy corns to spend (until 8 Nov)"
 			elseif skinGoal then
-				banner.Text = "\u{1F36C} Candy Corns: " .. have .. " to spend - " .. skinGoal.name .. " costs " .. skinGoal.corn .. " - Shop"
+				banner.Text = "Candy corns: " .. have .. " to spend  \u{00B7}  " .. skinGoal.name .. " " .. skinGoal.corn .. "  \u{00B7}  Shop"
 			else
-				banner.Text = "\u{1F36C} Candy Corn Hunt: " .. n .. " found (" .. have .. " to spend) - Shop"
+				banner.Text = "Candy corns: " .. n .. " found, " .. have .. " to spend  \u{00B7}  Shop"
 			end
-			title.Text = "\u{1F36C} Candy Shop - you have " .. have .. " candy corns"
 		end
 		paint()
 		player:GetAttributeChangedSignal("ProfileJson"):Connect(paint)
+	end
+
+	-- the owner's gift panel: candy corns or points for anyone in this Lobby
+	if game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId and e then
+		local giftBtn = button(gui, "\u{1F381} Gift", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 8, 1, -8), Size = UDim2.fromOffset(96, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
+		local panel = frame(gui, { Size = UDim2.fromOffset(560, 420), Position = UDim2.new(0.5, -280, 0.5, -210), Visible = false, ZIndex = 10 })
+		corner(panel, 18)
+		label(panel, { Size = UDim2.new(1, -20, 0, 36), Position = UDim2.fromOffset(10, 8), Text = "\u{1F381} Gifts (only you see this)", TextColor3 = PUMP, ZIndex = 11 })
+		label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = "For players in this Lobby server. Corns go to spend (not the badge).", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+		local giftList = Instance.new("ScrollingFrame")
+		giftList.BackgroundTransparency = 1
+		giftList.Position = UDim2.fromOffset(10, 70)
+		giftList.Size = UDim2.new(1, -20, 1, -130)
+		giftList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		giftList.CanvasSize = UDim2.new()
+		giftList.ScrollBarThickness = 6
+		giftList.ZIndex = 11
+		giftList.Parent = panel
+		local ll = Instance.new("UIListLayout")
+		ll.Padding = UDim.new(0, 6)
+		ll.Parent = giftList
+		local function fill()
+			for _, c in ipairs(giftList:GetChildren()) do
+				if c:IsA("GuiObject") then
+					c:Destroy()
+				end
+			end
+			for _, p in ipairs(Players:GetPlayers()) do
+				local r = frame(giftList, { Size = UDim2.new(1, -8, 0, 44), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 12 })
+				corner(r, 10)
+				label(r, { Size = UDim2.fromOffset(150, 36), Position = UDim2.fromOffset(8, 4), Text = p.DisplayName, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 13 })
+				local x = 166
+				for _, a in ipairs(e.giftCorn or {}) do
+					button(r, "+" .. a .. " corns", { Size = UDim2.fromOffset(88, 34), Position = UDim2.fromOffset(x, 5), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 13 }, function()
+						remotes:WaitForChild("OwnerGift"):FireServer(p.UserId, "corn", a)
+					end)
+					x += 92
+				end
+				for _, a in ipairs(e.giftPoints or {}) do
+					button(r, "+" .. a .. " pts", { Size = UDim2.fromOffset(88, 34), Position = UDim2.fromOffset(x, 5), BackgroundColor3 = Color3.fromRGB(0, 140, 100), ZIndex = 13 }, function()
+						remotes:WaitForChild("OwnerGift"):FireServer(p.UserId, "points", a)
+					end)
+					x += 92
+				end
+			end
+		end
+		button(panel, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -54), ZIndex = 11 }, function()
+			panel.Visible = false
+		end)
+		giftBtn.Activated:Connect(function()
+			panel.Visible = not panel.Visible
+			if panel.Visible then
+				fill()
+			end
+		end)
 	end
 end
 
@@ -1223,13 +1274,13 @@ local function paintSkins()
 	end)
 	for _, skin in ipairs(mine) do
 		local owned = skinOwned[skin.id] or (skin.corn and profile.skinsEarned and profile.skinsEarned[skin.id])
-		local found = profile.stats and ((profile.stats.corn or 0) - (profile.stats.cornSpent or 0)) or 0
-		local tag = owned and "" or skin.corn and (" (\u{1F36C} " .. skin.corn .. ")") or " (R$)"
+		local found = profile.stats and ((profile.stats.corn or 0) + (profile.stats.cornGift or 0) - (profile.stats.cornSpent or 0)) or 0
+		local tag = owned and "" or skin.corn and (" (" .. skin.corn .. " corns)") or " (R$)"
 		chip((wearing == skin.id and "\u{2705} " or "") .. skin.name .. tag, wearing == skin.id, function()
 			if owned then
 				remotes.EquipSkin:FireServer(selected, skin.id)
 			elseif skin.corn then
-				notice("\u{1F36C} " .. skin.name .. " costs " .. skin.corn .. " candy corns in the Candy Shop (the banner at the bottom). You have " .. found .. ".")
+				notice("\u{1F383} " .. skin.name .. " costs " .. skin.corn .. " candy corns in the Candy Shop (the banner at the bottom). You have " .. found .. ".")
 			else
 				MarketplaceService:PromptGamePassPurchase(player, skin.pass)
 			end

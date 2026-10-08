@@ -938,7 +938,7 @@ do
 		if not e or not data or typeof(id) ~= "string" or os.time() >= (e.shopUntil or 0) then
 			return
 		end
-		local have = (data.stats.corn or 0) - (data.stats.cornSpent or 0)
+		local have = (data.stats.corn or 0) + (data.stats.cornGift or 0) - (data.stats.cornSpent or 0)
 		-- the event skin: 100 corns on hand, spent, and it is yours for good
 		for _, skin in ipairs(Config.SKINS or {}) do
 			if skin.corn and not skin.hidden and id == "skin:" .. skin.id then
@@ -971,6 +971,39 @@ do
 		Profile.publish(plr)
 		Profile.save(plr)
 		Notice:FireClient(plr, boost.icon .. " " .. boost.name .. " for " .. price .. " candy corns!")
+	end)
+end
+
+-- the owner's gifts: candy corns (to spend - not towards the badge) or
+-- points, to a player in this Lobby server. Only the experience's owner.
+do
+	local OwnerGift = remote("OwnerGift") -- (userId, "corn" | "points", amount)
+	OwnerGift.OnServerEvent:Connect(function(plr, userId, kind, amount)
+		local e = Config.EVENT or {}
+		if not (game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId) then
+			return
+		end
+		local allowed = kind == "corn" and e.giftCorn or kind == "points" and e.giftPoints or {}
+		if not table.find(allowed, amount) then
+			return
+		end
+		local to = typeof(userId) == "number" and Players:GetPlayerByUserId(userId)
+		local data = to and Profile.get(to)
+		if not data then
+			return Notice:FireClient(plr, "That player isn't in this Lobby any more.")
+		end
+		if kind == "corn" then
+			data.stats.cornGift = (data.stats.cornGift or 0) + amount
+		else
+			data.points += amount
+		end
+		Profile.publish(to)
+		Profile.save(to)
+		local what = amount .. (kind == "corn" and " candy corns" or " points")
+		Notice:FireClient(plr, "\u{1F381} Gave " .. to.DisplayName .. " " .. what .. ".")
+		if to ~= plr then
+			Notice:FireClient(to, "\u{1F381} A gift from " .. plr.DisplayName .. ": " .. what .. "!")
+		end
 	end)
 end
 

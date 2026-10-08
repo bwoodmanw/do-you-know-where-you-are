@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 25 (8 Oct) - the Candy Shop rebuilt, gifts
+- [ ] The banner at the bottom has the candy-corn picture (no peppermint); tap it: a big Candy Shop like the Boost Shop - each boost's picture, what it does, "You have n", an orange "Buy 9" button with the candy-corn picture; a Muscle Mummy skin row (its picture once uploaded); Close
+- [ ] Muscle Mummy: "Yours!" after buying, and the Buy button goes
+- [ ] You (the owner) see "Gift" bottom-left: every player in the Lobby with +25 / +100 corns and +500 / +2000 points; the player gets "A gift from ..."; gifted corns add to "to spend" but not to the badge count
+- [ ] In a game, picking up a corn says "(pumpkin) Candy corn! +3 (n / 50)"
 
 ## Round 24 (8 Oct) - the Candy Shop and Mummy Muscle
 - [ ] Lobby: the banner at the bottom shows your candy corns to spend; tap it: the Candy Shop opens - 6 boosts (Second Wind 8, Candy Corn 9, Extra Clue 12, Head Start 15, Party Shield 18, Frozen Pop 23) and, once his model is in, Mummy Muscle 100

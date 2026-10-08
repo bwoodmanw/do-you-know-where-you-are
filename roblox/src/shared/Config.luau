@@ -182,7 +182,9 @@ Config.EVENT = { name = "Candy Corn Hunt", ends = 1793505600, perFloor = 6, poin
 	-- the Candy Shop in the Lobby: boosts (and the event skin) for candy
 	-- corns on hand (found minus spent). The badge counts every corn ever
 	-- found, spent or not. Open until shopUntil (a week after the hunt).
-	shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 }, shopUntil = 1794114000 }
+	shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 }, shopUntil = 1794114000,
+	-- the owner's gift buttons in the Lobby (corns go to spend, not to the badge)
+	giftCorn = { 25, 100 }, giftPoints = { 500, 2000 } }
 
 -- icons for things you pick up
 Config.ITEM_ICONS = { candy = "\u{1F36C}", shield = "\u{1F6E1}", balloon = "\u{1F388}" }
@@ -486,7 +488,7 @@ Config.SKINS = {
 	-- not sold for Robux: bought in the Candy Shop for `corn` candy corns on
 	-- hand (Halloween), kept for good. hidden = not shown until its model is
 	-- saved (CHARACTER_ASSETS.MuscleMummy)
-	{ id = "muscle_mummy", skill = "muscle", name = "Mummy Muscle", model = "MuscleMummy", corn = 100 },
+	{ id = "muscle_mummy", skill = "muscle", name = "Muscle Mummy", model = "MuscleMummy", corn = 100, icon = 0 }, -- icon: art/roblox-store/passes/skin-muscle-mummy.png, uploaded in the Lobby
 }
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true
