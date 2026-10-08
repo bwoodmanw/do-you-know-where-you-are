@@ -162,11 +162,37 @@ only when everyone presses Play.
 - **Building 4: the Midnight School** (Ground Floor, Classrooms, Clock Tower;
   `SCHOOL.md`).
 - **8 skins on sale** as Game Passes (`SKINS.md`, `PASSES.md`).
+- 8 Oct (later): School map cards and the Caretaker host (Lock-up);
+  **Building 5: the Creepy Carnival** (Midway, Big Top, Funhouse;
+  `CARNIVAL.md`) and the Clown Bear host (Jack-in-the-Box); badges Top of
+  the Class, Hero of the Crew, Untouchable, Nightmare Escaper, Tower
+  Climber; the Anglerfish Keeper's model and lure (hidden until building 6).
 
 ## Next
-1. Brent: publish both places before 29 Oct; play-test rounds 12-16.
-2. **Building 5** with 3 floors (Brent: "fourth and fifth building with 3
-   floors" - the fifth is next).
-3. School extras: map pictures, a school host, a "Top of the Class" badge.
+1. Brent: publish both places before 29 Oct; play-test rounds 12-20.
+2. **Building 6: the Aquarium** (Main Hall, Deep Sea, Rooftop Pools) with the
+   Anglerfish Keeper (Fake Treasure), map pictures, "Making a Splash".
+3. Badges Star of the Show and Down in the Dark (Brent, 9 Oct).
 4. Host balance per difficulty from the 📊 Balance table after a week live.
 5. Later: B8 analytics, subscriptions (parked).
+
+## Ideas from top Roblox adventure / horror games (8 Oct, Brent to pick)
+Already have: spectating when caught, game invites, Quick Play, daily and
+weekly quests, login rewards, badges, leaderboards, controller support,
+colour-blind code pictures, a tutorial coach, rejoin.
+1. **Private servers** (Creator Hub setting, no code: the Lobby already
+   reserves a server per party) - families and classes play together; a
+   little income.
+2. **Automatic translation** (Creator Hub -> Localization; some built-up
+   text in code may need small changes) - most Roblox players are not
+   English speakers.
+3. **Quick-chat wheel** - "Over here!", "Hide!", "Need Tinker!", "Key
+   found!" as bubbles over your head; works for kids whose chat is off.
+4. **Halloween event** until 1 Nov - a candy-corn hunt on every floor for
+   a limited reward (a badge or a free skin colour).
+5. **Collectibles book** - one hidden "lost plushie" per floor (16), a book
+   in the Lobby, a badge for all; exploring and replaying.
+6. **Community group bonus** - join the Escape Crew group for +10% points;
+   the group gets update posts (needs a Roblox group).
+7. Not recommended: a paid "escape the cage" revive (pay-to-win for kids;
+   friends already rescue you).

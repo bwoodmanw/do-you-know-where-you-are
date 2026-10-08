@@ -75,6 +75,10 @@ Config.HOSTS = {
 	robot = { model = "HostRobot", name = "the Robot", skill = "blackout", tint = Color3.fromRGB(150, 160, 170) },
 	caretaker = { model = "HostCaretaker", name = "the Caretaker", skill = "lockup", tint = Color3.fromRGB(120, 160, 120) },
 	clownbear = { model = "HostClownBear", name = "the Clown Bear", skill = "jackbox", tint = Color3.fromRGB(240, 150, 170) },
+	-- the Aquarium's host (building 6, not built yet): hidden = never picked at
+	-- random until then (Studio can still force him); lure = a glowing lure on
+	-- a stalk above his head (Meshy lost the model's own)
+	anglerfish = { model = "HostAnglerfish", name = "the Anglerfish Keeper", skill = "fakegift", tint = Color3.fromRGB(60, 110, 130), lure = true, hidden = true },
 }
 Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear" }
 -- the "escaped all floors" badge counts these buildings' floors (its badge says 9 floors)
@@ -179,7 +183,7 @@ Config.PARTY_HOLD = 180
 Config.STUDIO_MAP = "carnival" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
--- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear"); nil = random
+-- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); nil = random
 Config.STUDIO_HOST = nil
 -- characters' skin without the bumpy normal map (smoother faces); false to keep it
 Config.FLAT_CHARACTER_SKIN = true
@@ -216,6 +220,7 @@ Config.CHARACTER_ASSETS = {
 	HostRobot = 95188395596101,
 	HostCaretaker = 97512217825851, -- 8 Oct
 	HostClownBear = 139812870283621, -- 8 Oct
+	HostAnglerfish = 100510711229549, -- 8 Oct
 	-- skins (Config.SKINS: the model names)
 	TinkerPumpkin = 107525785066601,
 	ShadowGhost = 126072588049013,

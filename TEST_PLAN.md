@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 20 (8 Oct) - the Anglerfish Keeper's lure
+
+He is hidden (never picked at random) until the Aquarium is built. Ask Claude to set `Config.STUDIO_HOST = "anglerfish"`.
+- [ ] A glowing yellow ball on a short stalk above his forehead, softly pulsing, lighting the room round him; it stays on his head as he walks and runs
+- [ ] Photo: is the stalk lined up with the stub on his head? (tell Claude to move it up / forward / back)
 
 ## Round 19 (8 Oct) - the Clown Bear's Jack-in-the-Box (CARNIVAL.md)
 

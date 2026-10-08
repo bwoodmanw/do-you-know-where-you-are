@@ -2649,8 +2649,8 @@ function round.start()
 	local kind = own
 	if math.random() >= 0.5 then
 		local others = {}
-		for k in pairs(Config.HOSTS) do
-			if k ~= own then
+		for k, h in pairs(Config.HOSTS) do
+			if k ~= own and not h.hidden then
 				table.insert(others, k)
 			end
 		end

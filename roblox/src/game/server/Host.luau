@@ -154,6 +154,34 @@ function Host:spawn(diff)
 		end
 		self.model.Parent = workspace
 	end
+	-- the Anglerfish Keeper's glowing lure: a stalk curving up from his
+	-- forehead and a softly pulsing ball of light, welded to his head
+	if info.lure then
+		local head = self.model:FindFirstChild("Head") or self.root
+		local s = head.Size
+		local function bit(props)
+			local p = Instance.new("Part")
+			p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow, p.Massless = false, false, false, false, false, true
+			for k, v in pairs(props) do
+				p[k] = v
+			end
+			local w = Instance.new("WeldConstraint")
+			w.Part0, w.Part1 = head, p
+			w.Parent = p
+			p.Parent = self.model
+			return p
+		end
+		local size = math.max(0.8, s.X * 0.28)
+		local from = (head.CFrame * CFrame.new(0, s.Y * 0.42, -s.Z * 0.2)).Position
+		local to = (head.CFrame * CFrame.new(0, s.Y * 0.5 + size * 1.8, -s.Z * 0.55)).Position
+		bit({ Name = "LureStalk", Shape = Enum.PartType.Cylinder, Size = Vector3.new((to - from).Magnitude, size * 0.25, size * 0.25),
+			CFrame = CFrame.lookAt((from + to) / 2, to) * CFrame.Angles(0, math.rad(90), 0), Color = Color3.fromRGB(50, 90, 105), Material = Enum.Material.SmoothPlastic })
+		local ball = bit({ Name = "Lure", Shape = Enum.PartType.Ball, Size = Vector3.new(size, size, size), CFrame = CFrame.new(to), Color = Color3.fromRGB(255, 240, 170), Material = Enum.Material.Neon })
+		local l = Instance.new("PointLight")
+		l.Color, l.Range, l.Brightness, l.Shadows = Color3.fromRGB(255, 230, 160), 16, 1.4, false
+		l.Parent = ball
+		game:GetService("TweenService"):Create(l, TweenInfo.new(1.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Brightness = 0.6 }):Play()
+	end
 	-- the host walks through the Caretaker's padlocked gates (kids can't)
 	for _, d in ipairs(self.model:GetDescendants()) do
 		if d:IsA("BasePart") then
