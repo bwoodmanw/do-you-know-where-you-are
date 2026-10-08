@@ -1220,7 +1220,9 @@ repaintChars = function()
 		for i, side in ipairs({ "a", "b" }) do
 			local opt = options[i]
 			local chosen = picks[tostring(level)] == opt.id
-			local other = picks[tostring(level)] ~= nil and not chosen -- the one not taken: locked out
+			-- the one not taken is locked out (a pick no longer offered counts as none)
+			local pickedHere = picks[tostring(level)] ~= nil and (picks[tostring(level)] == options[1].id or picks[tostring(level)] == options[2].id)
+			local other = pickedHere and not chosen
 			row[side].Text = (chosen and "\u{2705} " or other and "\u{1F512} " or "") .. opt.name .. "\n" .. opt.say
 			row[side].BackgroundColor3 = chosen and Color3.fromRGB(47, 107, 58) or ((reached and not other) and PLUM or Color3.fromRGB(45, 40, 55))
 			row[side].TextTransparency = (reached and not other) and 0 or 0.5

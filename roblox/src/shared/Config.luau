@@ -188,17 +188,18 @@ Config.ROBUX_PRODUCTS = {
 Config.CHARACTER_ASSETS = {
 	Glow = 74307875851069,
 	Patch = 120375206872909,
-	Muscle = 116831403539618,
+	Muscle = 95343724720766, -- 7 Oct: clean shoes (was 116831403539618)
 	Tinker = 115806881502179,
 	Shadow = 85123632229176,
 	Brainy = 96432127418740,
-	Echo = 121427930738516,
+	Echo = 102616480883822, -- 7 Oct: remade face (was 121427930738516)
 	Bramble = 83770262810721,
 	Host = 135742994182895,
 	HostGummy = 106903651525041,
 	HostRobot = 95188395596101,
 	-- skins (Config.SKINS: the model names)
 	TinkerPumpkin = 107525785066601,
+	ShadowGhost = 126072588049013,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon

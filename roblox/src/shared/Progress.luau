@@ -164,26 +164,28 @@ local SPECIAL = {
 			{ id = "blur10", name = "Blur", say = "Run 15% faster", mods = { runMult = 1.15 } },
 		},
 	},
+	-- (8 Oct: each level teaches Brainy something new; a pick that is no longer
+	-- offered stops counting and that level can be chosen again - BRAINY_LADDER.md)
 	brainy = {
 		[3] = {
-			{ id = "hints", name = "Bonus Hint", say = "+1 clue for the team", mods = { clues = 1 } },
-			{ id = "sense", name = "Code Sense", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
+			{ id = "hints", name = "Bonus Hint", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "trick", name = "Trick Spotter", say = "Trick balloons look grey and droopy to your whole team", mods = { trickSight = true } },
 		},
 		[5] = {
-			{ id = "genius", name = "Clever", say = "+1 clue for the team", mods = { clues = 1 } },
 			{ id = "speedread", name = "Quick Reader", say = "Read and use things 20% faster", mods = { holdMult = 0.8 } },
+			{ id = "twostep", name = "Two-Step Clue", say = "Clues also light up the step after next", mods = { twoStep = true } },
 		},
 		[7] = {
-			{ id = "notebook", name = "Notebook", say = "+1 clue for the team", mods = { clues = 1 } },
-			{ id = "focus", name = "Focus", say = "Read and use things 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "notebook", name = "Notebook", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "keyfinder", name = "Key Finder", say = "Rooms hiding a key show a key on your team's map", mods = { keyMap = true } },
 		},
 		[9] = {
-			{ id = "bigbrain", name = "Big Brain", say = "+2 clues for the team", mods = { clues = 2 } },
 			{ id = "scan", name = "Speed Scan", say = "Read and use things 20% faster", mods = { holdMult = 0.8 } },
+			{ id = "longread", name = "Long Read", say = "Read the invitation from twice as far away", mods = { longRead = true } },
 		},
 		[10] = {
-			{ id = "genius10", name = "Genius", say = "+3 clues for the team", mods = { clues = 3 } },
-			{ id = "speedread10", name = "Speed Reader", say = "Read and use things twice as fast", mods = { holdMult = 0.5 } },
+			{ id = "genius10", name = "Genius", say = "+3 free clues for the team", mods = { clues = 3 } },
+			{ id = "mastermind", name = "Mastermind", say = "Your team's first clue is free and shows every step to the exit", mods = { mastermind = true } },
 		},
 	},
 	muscle = {

@@ -1428,13 +1428,20 @@ function round.hostCaught(_, plr)
 	checkEnd()
 end
 
-local function hintFor()
+-- the steps still to do, in order: a clue gives the first (Brainy's
+-- Two-Step Clue lights up the second too; Mastermind gives the whole route)
+local function clueSteps()
 	local o = world.objects
+	local list = {}
+	local function add(id, text)
+		table.insert(list, { id = id, text = text })
+	end
 	if anyCaged() then
-		return "cage", "Free your friend! Stand by the cage in the " .. roomOf("cage") .. "."
+		add("cage", "Free your friend! Stand by the cage in the " .. roomOf("cage") .. ".")
 	end
 	if state.doorOpen then
-		return "door", "The big door is open - everybody out!"
+		add("door", "The big door is open - everybody out!")
+		return list
 	end
 	local skills = {}
 	for _, p in ipairs(playersInRound()) do
@@ -1472,36 +1479,111 @@ local function hintFor()
 		return id, "The " .. name .. " is locked. Search drawers and boxes for the key!"
 	end
 	local known = state.known[1] and state.known[2] and state.known[3]
-	if known then
-		if not world.unlocked.L1 then
-			return lockHint("L1")
-		end
-		if not world.unlocked.L2 then
-			return lockHint("L2")
-		end
-		return "door", "You know the colours! Use the keypad by the big door in the " .. roomOf("door") .. "."
-	end
-	if skills.brainy and o.invite.prompt.Enabled and reachable("invite") then
-		return "invite", "Brainy can read the twisty invitation in the " .. roomOf("invite") .. "."
-	end
-	if skills.glow and o.uv.prompt.Enabled and reachable("uv") then
-		return "uv", "Glow can light up the painted wall in the " .. roomOf("uv") .. "."
-	end
-	if skills.bramble and o.plant.prompt.Enabled and reachable("plant") then
-		return "plant", "Bramble can ask the big plant in the " .. roomOf("plant") .. "."
-	end
-	for _, id in ipairs({ "b0", "b1", "b2" }) do
-		if o[id] and not o[id].popped and reachable(id) then
-			return id, "Pop balloon " .. o[id].def.n .. " in the " .. roomOf(id) .. " - it shows a colour of the door code. Careful: some balloons are tricks!"
+	if not known then
+		if skills.brainy and o.invite.prompt.Enabled and reachable("invite") then
+			add("invite", "Brainy can read the twisty invitation in the " .. roomOf("invite") .. ".")
+		elseif skills.glow and o.uv.prompt.Enabled and reachable("uv") then
+			add("uv", "Glow can light up the painted wall in the " .. roomOf("uv") .. ".")
+		elseif skills.bramble and o.plant.prompt.Enabled and reachable("plant") then
+			add("plant", "Bramble can ask the big plant in the " .. roomOf("plant") .. ".")
+		else
+			for _, id in ipairs({ "b0", "b1", "b2" }) do
+				if o[id] and not o[id].popped and reachable(id) then
+					add(id, "Pop balloon " .. o[id].def.n .. " in the " .. roomOf(id) .. " - it shows a colour of the door code. Careful: some balloons are tricks!")
+				end
+			end
 		end
 	end
 	if not world.unlocked.L1 then
-		return lockHint("L1")
+		add(lockHint("L1"))
 	end
 	if not world.unlocked.L2 then
-		return lockHint("L2")
+		add(lockHint("L2"))
 	end
-	return "door", "Try the keypad by the big door in the " .. roomOf("door") .. "."
+	add("door", known and ("You know the colours! Use the keypad by the big door in the " .. roomOf("door") .. ".") or ("Try the keypad by the big door in the " .. roomOf("door") .. "."))
+	return list, skills, lockHint
+end
+
+-- Brainy's Mastermind: every step to the exit at once
+local function routeText()
+	local o = world.objects
+	local steps, skills, lockHint = clueSteps()
+	local _ = steps
+	local parts = {}
+	local known = state.known[1] and state.known[2] and state.known[3]
+	if not known then
+		if skills.brainy and o.invite.prompt.Enabled then
+			table.insert(parts, "read the twisty invitation in the " .. roomOf("invite") .. " (Brainy)")
+		elseif skills.glow and o.uv.prompt.Enabled then
+			table.insert(parts, "light up the painted wall in the " .. roomOf("uv") .. " (Glow)")
+		elseif skills.bramble and o.plant.prompt.Enabled then
+			table.insert(parts, "ask the big plant in the " .. roomOf("plant") .. " (Bramble)")
+		else
+			local rooms, seen = {}, {}
+			for _, id in ipairs({ "b0", "b1", "b2" }) do
+				if o[id] and not o[id].popped and not seen[roomOf(id)] then
+					seen[roomOf(id)] = true
+					table.insert(rooms, roomOf(id))
+				end
+			end
+			table.insert(parts, "pop the real balloons in the " .. table.concat(rooms, ", "))
+		end
+	end
+	for _, l in ipairs({ "L1", "L2" }) do
+		if not world.unlocked[l] then
+			local _, t = lockHint(l)
+			table.insert(parts, t)
+		end
+	end
+	table.insert(parts, "type the code on the keypad in the " .. roomOf("door") .. " - then everybody out!")
+	for i, t in ipairs(parts) do
+		parts[i] = i .. ") " .. t
+	end
+	return table.concat(parts, "  ")
+end
+
+local function lightUp(id, colour)
+	local entry = world.objects[id]
+	local target = entry and (entry.keypad or entry.part or entry.exit)
+	if target then
+		local hl = Instance.new("Highlight")
+		hl.FillColor, hl.OutlineColor, hl.FillTransparency = colour, colour, 0.6
+		hl.Adornee = target
+		hl.Parent = target
+		task.delay(15, function()
+			hl:Destroy()
+		end)
+	end
+end
+
+-- one clue for the team (prefix: "Free clue: " or "")
+local function giveClue(prefix)
+	if state.mastermind then
+		-- Brainy's Mastermind: the team's first clue is free and is the whole route
+		state.mastermind = false
+		local steps = clueSteps()
+		if steps[1] then
+			lightUp(steps[1].id, Color3.fromRGB(123, 227, 107))
+		end
+		return say("clue", "\u{1F9E0} Mastermind route: " .. routeText())
+	end
+	local steps = clueSteps()
+	local first = steps[1]
+	if not first then
+		return
+	end
+	lightUp(first.id, Color3.fromRGB(123, 227, 107))
+	local text = prefix .. first.text
+	if state.twoStep then
+		for i = 2, #steps do
+			if steps[i].id ~= first.id then
+				lightUp(steps[i].id, Color3.fromRGB(255, 210, 63))
+				text ..= "  Then: " .. steps[i].text
+				break
+			end
+		end
+	end
+	say("clue", text)
 end
 
 -- ---------- after a round: play again or go back to the lobby ----------
@@ -1767,19 +1849,7 @@ AskClue.OnServerEvent:Connect(function(plr)
 		RoundState:SetAttribute("FreeClues", state.freeClues)
 		state.cluesLeft -= 1
 		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
-		local fid, ftext = hintFor()
-		local fentry = world.objects[fid]
-		local ftarget = fentry and (fentry.keypad or fentry.part or fentry.exit)
-		if ftarget then
-			local hl = Instance.new("Highlight")
-			hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(123, 227, 107), Color3.fromRGB(123, 227, 107), 0.6
-			hl.Adornee = ftarget
-			hl.Parent = ftarget
-			task.delay(15, function()
-				hl:Destroy()
-			end)
-		end
-		return say("clue", "\u{1F381} Free clue: " .. ftext)
+		return giveClue("\u{1F381} Free clue: ")
 	end
 	-- a clue costs points earned in this game: 10, then 20, then 30 (Brainy half)
 	local used = state.cluesUsed or 0
@@ -1796,21 +1866,7 @@ AskClue.OnServerEvent:Connect(function(plr)
 	RoundState:SetAttribute("ClueCost", Config.CLUE_COSTS[math.min(state.cluesUsed + 1, #Config.CLUE_COSTS)])
 	state.cluesLeft -= 1
 	RoundState:SetAttribute("CluesLeft", state.cluesLeft)
-	local id, text = hintFor()
-	local entry = world.objects[id]
-	local target = entry and (entry.keypad or entry.part or entry.exit)
-	if target then
-		local hl = Instance.new("Highlight")
-		hl.FillColor = Color3.fromRGB(123, 227, 107)
-		hl.OutlineColor = Color3.fromRGB(123, 227, 107)
-		hl.FillTransparency = 0.6
-		hl.Adornee = target
-		hl.Parent = target
-		task.delay(15, function()
-			hl:Destroy()
-		end)
-	end
-	say("clue", text)
+	giveClue("")
 end)
 
 local said = {}
@@ -2228,6 +2284,7 @@ function round.start()
 	RoundState:SetAttribute("HostKind", kind)
 	RoundState:SetAttribute("Blackout", "")
 	RoundState:SetAttribute("DarkRooms", "")
+	RoundState:SetAttribute("KeyRooms", "")
 	local grace = diff.grace + extraGrace
 	-- nothing starts until everyone has chosen a character (or PICK_WAIT runs out)
 	state.endsAt = math.huge
@@ -2267,9 +2324,15 @@ function round.start()
 		-- everyone has their character now: its ladder upgrades count from here
 		-- (free clues - never paid for with points - a code colour, stamina, a Shield)
 		local bonusClues, reveals = 0, 0
+		local team = {} -- Brainy's upgrades work for the whole team
 		for _, p in ipairs(Players:GetPlayers()) do
 			if p:GetAttribute("Skill") and not p:GetAttribute("Waiting") then
 				local mods = applyMods(p)
+				for _, k in ipairs({ "trickSight", "twoStep", "keyMap", "longRead", "mastermind" }) do
+					if mods[k] then
+						team[k] = true
+					end
+				end
 				p:SetAttribute("Energy", 100 + (mods.energyStart or 0))
 				p:SetAttribute("Shield", mods.shield == true or p:GetAttribute("ShieldBoost") == true)
 				bonusClues += mods.clues or 0
@@ -2278,6 +2341,52 @@ function round.start()
 				end
 			end
 			p:SetAttribute("ShieldBoost", nil)
+		end
+		state.twoStep = team.twoStep == true
+		if team.mastermind then
+			-- the first clue is free and gives the whole route
+			state.mastermind = true
+			bonusClues += 1
+		end
+		if team.trickSight then
+			-- Trick Spotter: the trick balloons look grey and droopy to everyone
+			for _, e in pairs(world.objects) do
+				if e.def.kind == "balloon" and e.def.decoy and not e.popped and e.part then
+					e.part.Color = Color3.fromRGB(140, 140, 150)
+					e.part.Transparency = 0.35
+					e.part.Size = Vector3.new(2, 2.3, 2)
+					e.part.Position -= Vector3.new(0, 1.4, 0)
+					if e.label then
+						e.label.TextTransparency = 0.6
+					end
+				end
+			end
+			say("info", "\u{1F9E0} Brainy spotted the trick balloons - they look grey and droopy. Pop the bright ones!")
+		end
+		if team.longRead and world.objects.invite and world.objects.invite.prompt then
+			-- Long Read: the invitation can be read from twice as far
+			world.objects.invite.prompt.MaxActivationDistance = 20
+		end
+		if team.keyMap then
+			-- Key Finder: the rooms hiding a key (or a Confetti Cannon) show a key on the map
+			local myWorld = world
+			task.spawn(function()
+				while world == myWorld and state.status == "playing" do
+					local rooms, seen = {}, {}
+					for sid, lock in pairs(world.keyIn) do
+						local e = world.objects[sid]
+						if e and not e.searched and not world.unlocked[lock] and not world.keys[lock] then
+							local r = roomOf(sid)
+							if not seen[r] then
+								seen[r] = true
+								table.insert(rooms, r)
+							end
+						end
+					end
+					RoundState:SetAttribute("KeyRooms", table.concat(rooms, ","))
+					task.wait(2)
+				end
+			end)
 		end
 		if bonusClues > 0 then
 			state.freeClues = (state.freeClues or 0) + bonusClues

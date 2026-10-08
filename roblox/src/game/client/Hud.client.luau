@@ -1145,6 +1145,8 @@ local function buildView()
 	for _, f in ipairs(HouseMap.floors) do
 		local r = mapRect(f.x0, f.y0, f.x1, f.y1, ROOM_COLOR)
 		label(r, { Size = UDim2.new(1, -4, 0, 12), Position = UDim2.fromOffset(2, 2), Text = f.name, TextColor3 = Color3.fromRGB(230, 215, 245), ZIndex = 3 })
+		-- Brainy's Key Finder: a key in rooms that hide one
+		label(r, { Name = "KeyMark", Size = UDim2.fromOffset(16, 16), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.6), Text = "\u{1F511}", ZIndex = 4, Visible = string.find("," .. (RoundState:GetAttribute("KeyRooms") or "") .. ",", "," .. f.name .. ",", 1, true) ~= nil })
 		roomTiles[f.name] = { r }
 	end
 	-- doorways: walkable tiles between rooms, shown once a room beside them is found
@@ -1195,6 +1197,15 @@ local function buildView()
 	end
 end
 buildView()
+RoundState:GetAttributeChangedSignal("KeyRooms"):Connect(function()
+	local list = "," .. (RoundState:GetAttribute("KeyRooms") or "") .. ","
+	for name, tiles in pairs(roomTiles) do
+		local mark = tiles[1] and tiles[1]:FindFirstChild("KeyMark")
+		if mark then
+			mark.Visible = string.find(list, "," .. name .. ",", 1, true) ~= nil
+		end
+	end
+end)
 -- a new game brings a new house
 RoundState:GetAttributeChangedSignal("MapJson"):Connect(function()
 	readMap()

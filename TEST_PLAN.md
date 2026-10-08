@@ -17,7 +17,16 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 - [ ] Characters with "one code colour" on their ladder (Tinker, Brainy, Glow 3; Bramble 5): one colour shows on the code bar when the clock starts, on every floor and in the first game too (it used to come from the character you played LAST game); only ONE colour a game however many players have it; none on Nightmare
 - [ ] Ladder "+1 clue" upgrades: when the clock starts "+N free clues from your upgrades"; the Clue button says "Clue FREE" and no points are taken until those are used
 - [ ] Lobby: the host's face (or shadow) keeps peeking in a window every 18 to 40 seconds for as long as the server runs; F9 Server never shows "Lobby peek failed" (if it does, photo please)
-- [ ] Skins in Studio: Lobby -> Characters -> Tinker -> Skins row -> Pumpkin Patch Tinker: the 3D view shows the pumpkin outfit
+- [ ] Skins in Studio: Lobby -> Characters -> Tinker -> Skins row -> Pumpkin Patch Tinker: the 3D view shows the pumpkin outfit (and Shadow -> Ghostly Shadow)
+- [ ] Muscle (new model id): plain trainers, in the Lobby Characters screen and in the game; Echo (new id): the remade face
+
+Brainy's new ladder (BRAINY_LADDER.md) - give a test Brainy the XP in Studio or play up to the level:
+- [ ] Characters -> Brainy: levels 3, 5, 7, 9, 10 show the new choices; a level where an old choice was taken (Code Sense, Clever, Focus, Big Brain, Speed Reader) can be chosen again
+- [ ] Trick Spotter (3): when the clock starts, the trick balloons go grey, see-through and droop; "Brainy spotted the trick balloons"
+- [ ] Two-Step Clue (5): a clue lights two things (green, then yellow) and says "Then: ..."
+- [ ] Key Finder (7): a key on the corner map in each room that hides a key or a Confetti Cannon (once you have been in the room); it goes once it is found
+- [ ] Long Read (9): the invitation's Read prompt appears from twice as far
+- [ ] Mastermind (10): "+1 free clue" at the start; the first clue says "Mastermind route: 1) ... 2) ... 3) ... 4) type the code on the keypad in the ..."; later clues are normal
 
 ## Round 12 (7 Oct, fourth session) - the rest of IMPROVEMENTS.md - test these first
 

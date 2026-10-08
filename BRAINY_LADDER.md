@@ -1,4 +1,9 @@
-# Brainy's skill ladder - draft for Brent to approve (7 Oct)
+# Brainy's skill ladder - approved and built (8 Oct)
+
+Brent approved this as written; built 8 Oct (TEST_PLAN.md round 13). Mastermind:
+the TEAM's first clue (whoever presses Clue first) is free and, instead of one
+step, lists every step still to do: how to learn the code, each locked or
+blocked door and how to get through it, then the keypad's room.
 
 **Today** Brainy's own levels (3, 5, 7, 9, 10) are almost all "+N clues" or
 "read faster", so he gets more of the same. Brainy's skill is already strong:

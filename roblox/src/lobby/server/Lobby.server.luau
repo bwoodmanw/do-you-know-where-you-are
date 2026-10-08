@@ -1035,7 +1035,13 @@ PickUpgrade.OnServerEvent:Connect(function(plr, skill, level, upgradeId)
 	end
 	-- a choice is for keeps: changing needs a reset of the whole ladder
 	local chosen = data.picks[skill] and data.picks[skill][tostring(level)]
-	if chosen then
+	local stillOffered = false
+	for _, opt in ipairs(options) do
+		if opt.id == chosen then
+			stillOffered = true
+		end
+	end
+	if chosen and stillOffered then
 		return Notice:FireClient(plr, chosen == upgradeId and "Already chosen!" or ("Locked in! Reset this character's upgrades for " .. Config.RESET_POINTS .. " points (or Robux) to choose again."))
 	end
 	for _, opt in ipairs(options) do
