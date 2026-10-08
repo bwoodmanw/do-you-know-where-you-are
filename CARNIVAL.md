@@ -29,10 +29,8 @@ walls, costume racks, juggling pins, a strongman's "1 TON" barbell.
 ## Pictures for the Lobby map screen (done 8 Oct)
 
 In `Config.MAP_IMAGES`: building-carnival 116987880187331, Midway
-139473943447483, Big Top 128885533879458, Funhouse 102152843956658. The
-Basement's (75305324855873) is uploaded but **not used**: the AI drew racks
-of wine bottles (an alcohol reference in a game for 8+). Remake it with
-"shelves of jam jars and pickles, no bottles" and send the new id.
+139473943447483, Big Top 128885533879458, Funhouse 102152843956658.  The
+Basement's: 103210033418692 (remade without the wine bottles the first had).
 
 Style line for every prompt (the other cards' look):
 > Stylised 3D diorama, a cut-away room seen from above at an angle, at night, warm lamps and Halloween string lights in orange and purple, little paper bats, a friendly-spooky mood for kids, no people, no text, no logos.
@@ -59,6 +57,7 @@ to give the Party House's Attic badge by mistake - fixed).
 
 Picture `art/model-input/host-clownbear/a-pose-front.png` - checked 8 Oct:
 no top hat, bow tie or microphone, no tummy symbol, not a known character.
+Saved model id 139812870283621 (`Config.CHARACTER_ASSETS.HostClownBear`).
 Model `art/models/host-clwonbear.glb` checked 8 Oct (face, arms clear; his
 back came out plain peach). Model name in Studio: **HostClownBear** (Party
 House ServerStorage -> Characters). He is the Carnival's own host; until

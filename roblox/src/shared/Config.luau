@@ -215,6 +215,7 @@ Config.CHARACTER_ASSETS = {
 	HostGummy = 106903651525041,
 	HostRobot = 95188395596101,
 	HostCaretaker = 97512217825851, -- 8 Oct
+	HostClownBear = 139812870283621, -- 8 Oct
 	-- skins (Config.SKINS: the model names)
 	TinkerPumpkin = 107525785066601,
 	ShadowGhost = 126072588049013,
@@ -262,8 +263,7 @@ Config.MAP_IMAGES = {
 	carnival = 139473943447483, -- The Midway
 	carnival_2 = 128885533879458, -- The Big Top
 	carnival_3 = 102152843956658, -- The Funhouse
-	-- partyhouse_b (the Secret Basement): 75305324855873 is uploaded but shows
-	-- wine bottles - not used until a picture without them (CARNIVAL.md)
+	partyhouse_b = 103210033418692, -- the Secret Basement (remade 8 Oct: no bottles)
 }
 -- character portraits (face with a skill badge) by skill id
 Config.PORTRAITS = {
