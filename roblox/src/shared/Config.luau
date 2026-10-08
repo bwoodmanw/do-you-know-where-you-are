@@ -399,13 +399,13 @@ Config.QUESTS = {
 Config.WEEKLY_QUESTS = {
 	{ id = "w_escape8", kind = "escape", goal = 8, points = 250, boost = "freeze", text = "Escape 8 floors" },
 	{ id = "w_nightmare5", kind = "escapeNightmare", goal = 5, points = 400, boost = "freeze", text = "Escape on Nightmare 5 times" },
-	{ id = "w_rescue5", kind = "rescue", goal = 5, points = 200, boost = "shield", text = "Free 5 friends from the cage" },
+	{ id = "w_rescue7", kind = "rescue", goal = 7, points = 260, boost = "shield", text = "Free 7 friends from the cage" },
 	{ id = "w_keys12", kind = "key", goal = 12, points = 180, boost = "clue", text = "Find 12 keys or Confetti Cannons" },
 	{ id = "w_balloons20", kind = "balloon", goal = 20, points = 180, boost = "candy", text = "Pop 20 real clue balloons" },
 	{ id = "w_games15", kind = "play", goal = 15, points = 200, boost = "energy", text = "Play 15 games" },
 	{ id = "w_skill30", kind = "skill", goal = 30, points = 180, boost = "candy", text = "Use your character's skill 30 times" },
 	{ id = "w_door9", kind = "door", goal = 9, points = 250, boost = "headstart", text = "Open the big exit door 9 times" },
-	{ id = "w_present5", kind = "present", goal = 5, points = 220, boost = "clue", text = "Open 5 bonus presents" },
+	{ id = "w_present7", kind = "present", goal = 7, points = 280, boost = "clue", text = "Open 7 bonus presents" },
 	{ id = "w_vents15", kind = "vent", goal = 15, points = 150, boost = "energy", text = "Crawl through 15 vents" },
 }
 -- "Your daily reward is ready" (Roblox experience notifications; players 13+

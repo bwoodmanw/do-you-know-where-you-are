@@ -98,6 +98,9 @@ Save it over `art/model-input/snow-day-muscle/a-pose-front.png` and tell me befo
 **7. Starlight Echo**
 > The same girl as the reference picture, same curly brown hair, freckles and brown eyes, her goggles on her head. Night-sky outfit: a deep navy bomber jacket covered in small gold stars, a purple hoodie under it, her big headphones now navy with a small glowing star on each ear cup, purple cargo trousers with gold stitching, navy and gold trainers, a small backpack shaped like a crescent moon. Cool and confident. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
 
+**7b. Starlight Echo, remade face** (attach `art/model-input/echo-remake/a-pose-front.png` - the remade Echo - as the reference, not the old one)
+> The same girl as the reference picture: same face, big brown eyes both wide open and the same size, freckles, curly brown hair in a messy bun, small goggles pushed far back on top of the bun, not covering her forehead. Night-sky outfit: a deep navy bomber jacket covered in small gold stars, a purple hoodie under it, big navy headphones round her neck with a small glowing star on each ear cup, purple cargo trousers with gold stitching, navy and gold trainers, a small backpack shaped like a crescent moon. Cool and confident. Stylised 3D animated-film look, full body, standing in a T-pose facing the camera, arms straight out to the sides, plain light grey background, soft even lighting, no text, no logos.
+
 **8. Autumn Leaf Bramble**
 > The same child as the reference picture, same messy brown hair, green eyes and freckles. Autumn outfit: a poncho made of orange, red and golden autumn leaves with a brown hood, a crown of oak leaves and acorns instead of the flower crown, a pouch of conkers and pine cones on a strap, brown cord shorts, mustard knitted socks, muddy brown boots, vine bracelets with small red berries. Gentle smile. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
 
@@ -199,8 +202,7 @@ If a screen looks different from these steps, send me a photo of it.
   me before building. (`art/models/starlight-echo-sharp.glb` is only a
   little better - not worth importing.)
 
-**7b. Starlight Echo, remade face** (attach `art/model-input/echo-remake/a-pose-front.png` - the remade Echo - as the reference, not the old one)
-> The same girl as the reference picture: same face, big brown eyes both wide open and the same size, freckles, curly brown hair in a messy bun, small goggles pushed far back on top of the bun, not covering her forehead. Night-sky outfit: a deep navy bomber jacket covered in small gold stars, a purple hoodie under it, big navy headphones round her neck with a small glowing star on each ear cup, purple cargo trousers with gold stitching, navy and gold trainers, a small backpack shaped like a crescent moon. Cool and confident. Stylised 3D animated-film look, full body, standing in a T-pose facing the camera, arms straight out to the sides, plain light grey background, soft even lighting, no text, no logos.
+(Prompt **7b** for the remade Starlight Echo is in the prompt list above, after prompt 7.)
 
 ## Remaking Echo herself (her face looks squashed, 7 Oct)
 

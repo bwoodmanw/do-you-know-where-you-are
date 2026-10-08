@@ -1483,7 +1483,7 @@ do
 		local list = (qs and qs.day == today and qs.list) or {}
 		local wk = profile.weekly
 		local wlist = (wk and wk.week == week and wk.list) or {}
-		local doneCount = 0
+		local doneCount, total = 0, 0
 		for i = 1, 6 do
 			local q = i <= 3 and list[i] or wlist[i - 3]
 			local d = q and defOf(q.id)
@@ -1493,7 +1493,8 @@ do
 				r.text.Text = (q.done and "\u{2705} " or "") .. d.text .. "  (" .. q.n .. "/" .. d.goal .. ")"
 				r.reward.Text = "+" .. d.points .. " \u{2B50}" .. (b and (" +" .. b.icon) or "")
 				r.fill.Size = UDim2.fromScale(math.clamp(q.n / d.goal, 0, 1), 1)
-				if q.done and i <= 3 then
+				total += 1
+				if q.done then
 					doneCount += 1
 				end
 			else
@@ -1506,7 +1507,8 @@ do
 		resets.Text = "Rewards are paid the moment you finish - no claiming. New in " .. math.floor(left / 3600) .. "h " .. math.floor(left % 3600 / 60) .. "m"
 		local wleft = (week + 1) * 7 * 86400 - 3 * 86400 - os.time()
 		weekResets.Text = "Bigger goals, more points and a boost each. New on Monday (in " .. math.floor(wleft / 86400) .. "d " .. math.floor(wleft % 86400 / 3600) .. "h)"
-		questsBtn.Text = "\u{1F4DC} Quests  " .. doneCount .. "/3"
+		-- daily and weekly together: how many are done of how many there are
+		questsBtn.Text = "\u{1F4DC} Quests  " .. doneCount .. " of " .. total
 	end
 	player:GetAttributeChangedSignal("ProfileJson"):Connect(function()
 		task.defer(paint)
