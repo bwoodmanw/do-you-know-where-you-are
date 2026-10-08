@@ -239,6 +239,10 @@ Config.MAP_IMAGES = {
 	hospital = 92023239477557,
 	hospital_2 = 93751751639136, -- Wards
 	hospital_3 = 70614819830022, -- Labs
+	["building-school"] = 108429364285668,
+	school = 86527371561332, -- Ground Floor
+	school_2 = 83786060551446, -- Classrooms
+	school_3 = 111098812594935, -- Clock Tower
 }
 -- character portraits (face with a skill badge) by skill id
 Config.PORTRAITS = {
