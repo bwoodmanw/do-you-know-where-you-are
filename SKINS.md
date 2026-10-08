@@ -18,7 +18,7 @@ previews show it too. Skins change looks only, never skills.
 | 3 | Candy Glow | Glow | `candy-glow/` | `candy-glow.glb` | `GlowCandy` | model saved: 99155956475141 (Game Pass to make) |
 | 4 | Night Nurse Patch | Patch | `night-nurse-patch/` | `night-nurse-patch.glb` | `PatchNurse` | dropped 8 Oct (Halloween Nurse Patch instead) |
 | 5 | Space Cadet Brainy | Brainy | `space-cadet-brainy/` | `space-cadet-brainy.glb` | `BrainySpace` | model saved: 110376512028941 (Game Pass to make) |
-| 6 | Snow Day Muscle | Muscle | `snow-day-muscle/` | `snow-day-muscle.glb` | `MuscleSnow` | red-and-white scarf picture checked 8 Oct: ready |
+| 6 | Snow Day Muscle | Muscle | `snow-day-muscle/` | `snow-day-muscle.glb` | `MuscleSnow` | model saved: 109339323825822 (Game Pass to make) |
 | 7 | Starlight Echo | Echo | `starlight-echo/` | `starlight-echo.glb` | `EchoStar` | model saved: 78330257038104 (Game Pass to make) |
 | 8 | Autumn Leaf Bramble | Bramble | `autumn-leaf-bramble/` | `autumn-leaf-bramble.glb` | `BrambleAutumn` | model saved: 90429061895312 (Game Pass to make) |
 | 9 | Halloween Nurse Patch | Patch | `halloween-nurse-patch/` | `halloween-nurse-patch.glb` | `PatchHalloween` | model saved: 80329522710291 (Game Pass to make) |

@@ -205,6 +205,7 @@ Config.CHARACTER_ASSETS = {
 	EchoStar = 78330257038104,
 	BrainySpace = 110376512028941,
 	GlowCandy = 99155956475141,
+	MuscleSnow = 109339323825822,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
