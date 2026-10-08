@@ -182,6 +182,18 @@ If a screen looks different from these steps, send me a photo of it.
 
 ## Fixes after Brent's photos (8 Oct)
 
+- **Which copy the game uses:** the Party House uses the model in its own
+  ServerStorage -> Characters first, and only loads the saved Roblox copy
+  when there is none; the Lobby always loads the saved copy. Space Cadet
+  Brainy was a stick figure in the Party House (fine in the Lobby): his
+  ServerStorage copy was broken. Moving it out fixed it (8 Oct). If a skin
+  looks wrong only in the Party House, move its ServerStorage copy out.
+- **Avatar Setup:** do not choose "Platform Avatar" (it can split a model
+  into a thin body and a clothing layer the 3D views cannot show); use the
+  same option as the characters that work.
+- A model named `tinker-pumpkin` in ServerStorage is ignored (the game looks
+  for `TinkerPumpkin` exactly) - harmless; rename or delete it.
+
 - **Arms in the character views:** the arms-down change (RestPose) is
   undone. These models' skin stretches across the arm and the body, so
   turning the arm alone shrank it. T-posed models (Echo, Ghostly Shadow)
