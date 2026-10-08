@@ -26,10 +26,13 @@ Look: dark red tent walls, warm bulbs, a purple tent roof; striped stalls,
 popcorn carts, a duck pond, a clown car, circus seats, a band stage, prize
 walls, costume racks, juggling pins, a strongman's "1 TON" barbell.
 
-## Pictures for the Lobby map screen (Brent)
+## Pictures for the Lobby map screen (done 8 Oct)
 
-16:9 (e.g. 1536 x 864), save to `art/roblox-store/maps/`, upload in the
-Lobby place (View -> Asset Manager -> Import) and send me the image ids.
+In `Config.MAP_IMAGES`: building-carnival 116987880187331, Midway
+139473943447483, Big Top 128885533879458, Funhouse 102152843956658. The
+Basement's (75305324855873) is uploaded but **not used**: the AI drew racks
+of wine bottles (an alcohol reference in a game for 8+). Remake it with
+"shelves of jam jars and pickles, no bottles" and send the new id.
 
 Style line for every prompt (the other cards' look):
 > Stylised 3D diorama, a cut-away room seen from above at an angle, at night, warm lamps and Halloween string lights in orange and purple, little paper bats, a friendly-spooky mood for kids, no people, no text, no logos.
@@ -44,9 +47,9 @@ Style line for every prompt (the other cards' look):
 
 | Picture (I make it from the card picture) | Name | Description | Config |
 |---|---|---|---|
-| `badge-basement.png` (from picture 5) | **Down in the Dark** | Escaped the Party House's Secret Basement. | `BADGES.basement` |
-| `badge-tower.png` (made, from the School's clock tower) | **Tower Climber** | Reached the top of a building in one Tower Run. | `BADGES.tower` |
-| `badge-carnival.png` (from picture 4) | **Star of the Show** | Escaped the Carnival's Funhouse. | `BADGES.carnival` |
+| `badge-basement.png` (made, cropped to the stairs: no bottles) | **Down in the Dark** | Escaped the Party House's Secret Basement. | `BADGES.basement` |
+| `badge-tower.png` (made) | **Tower Climber** | Reached the top of a building in one Tower Run. | `BADGES.tower` = 2702531171107423 |
+| `badge-carnival.png` (made, from the Funhouse card) | **Star of the Show** | Escaped the Carnival's Funhouse. | `BADGES.carnival` |
 | `badge-aquarium.png` (when the Aquarium is built) | **Making a Splash** | Escaped the Aquarium's Rooftop Pools. | `BADGES.aquarium` |
 
 The code already awards all four once their ids are in (the Basement used
@@ -56,19 +59,22 @@ to give the Party House's Attic badge by mistake - fixed).
 
 Picture `art/model-input/host-clownbear/a-pose-front.png` - checked 8 Oct:
 no top hat, bow tie or microphone, no tummy symbol, not a known character.
-Model name in Studio: **HostClownBear** (Party House ServerStorage ->
-Characters). Until his model and power are in, the Carnival's own host is
-the Pumpkin Host.
+Model `art/models/host-clwonbear.glb` checked 8 Oct (face, arms clear; his
+back came out plain peach). Model name in Studio: **HostClownBear** (Party
+House ServerStorage -> Characters). He is the Carnival's own host; until
+his model is imported he is the built host in pink.
 
-His power - Brent to pick (numbers can change):
-- **Jack-in-the-Box (recommended).** At the start of a floor where he is the
+His power (Brent picked Jack-in-the-Box 8 Oct; built, `Config.HOST_SKILLS.jackbox`):
+- **Jack-in-the-Box.** At the start of a floor where he is the
   host, 3 / 4 / 5 / 6 boxes (Easy / Normal / Hard / Nightmare) appear on the
   floor's checked spots, like presents (never by a doorway, the exit or the
   starting room). They stay all game. Walk within 6 studs of one (not
   sneaking, not hidden) and it springs open with a honk and a spotlight: he
-  knows where you are and comes running. It winds itself back up after 30 s.
-  Tinker can wind one down for good (hold 2 s). Shadow sneaks past.
-- **Balloon Traps.** While he patrols (not while chasing) he ties a bunch of
+  knows where you are and comes running (you glow pink for 3 s). It winds
+  itself back up after 30 s, in the same place. Tinker can wind any number
+  down for good (hold F / Y 2 s each); a wound-down box never comes back
+  that floor. Shadow sneaks past. On a Tower Run each floor gets new boxes.
+- (not built) **Balloon Traps.** While he patrols (not while chasing) he ties a bunch of
   balloons in a doorway he walks through, every 15 / 12 / 10 / 8 s; at most
   3 at once (the oldest floats away), each lasts 45 s. Run through one and
   it pops with a BANG and he heads there. Shadow sneaks through without

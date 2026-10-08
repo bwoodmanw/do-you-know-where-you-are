@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,16 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 19 (8 Oct) - the Clown Bear's Jack-in-the-Box (CARNIVAL.md)
+
+Ask Claude to set `Config.STUDIO_HOST = "clownbear"` (the built host in pink until HostClownBear is imported).
+- [ ] At the start (before he comes out): 4 purple-and-orange boxes with a crank on Normal (3 Easy, 5 Hard, 6 Nightmare), none in the starting room or in a doorway
+- [ ] Walk up to one: it springs (a clown head on a spring, a noise), "BOING! A jack-in-the-box gave ... away!", you glow pink for 3 s, and once he is out he comes to look
+- [ ] It closes again after about 30 s in the same place and can spring again
+- [ ] Shadow sneaking, or anyone hidden or in a vent, does not set it off
+- [ ] As Tinker: "Wind it down" (F / Y, hold 2 s) removes it for good; Tinker can do several; others see no prompt
+- [ ] On the Carnival he is the host about half the time ("Tonight's host: the Clown Bear")
 
 ## Round 18 (8 Oct) - the Creepy Carnival (building 5, CARNIVAL.md) and badges
 

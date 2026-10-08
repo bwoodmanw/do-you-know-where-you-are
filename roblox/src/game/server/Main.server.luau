@@ -1565,6 +1565,167 @@ do
 	end
 end
 
+-- the Clown Bear's jack-in-the-boxes: when a floor starts with him as the
+-- host, a few boxes on random free checked spots (never the starting room,
+-- by a doorway or on top of anything). Come near one (not sneaking or
+-- hidden) and it springs with a honk: you glow for a moment and he comes to
+-- look. It winds itself back up in the same place; Tinker winds one down
+-- for good.
+function round.placeJackBoxes()
+	local s = Config.HOST_SKILLS.jackbox
+	local myState, myWorld = state, world
+	local map = HouseMap
+	local startRoom
+	for _, f in ipairs(map.floors) do
+		local sx, sy = map.start[1][1], map.start[1][2]
+		if sx >= f.x0 and sx <= f.x1 and sy >= f.y0 and sy <= f.y1 then
+			startRoom = f.name
+		end
+	end
+	local taken = {}
+	local function near(x, y, r)
+		for _, t in ipairs(taken) do
+			if math.abs(t[1] - x) <= r and math.abs(t[2] - y) <= r then
+				return true
+			end
+		end
+		return false
+	end
+	for _, e in pairs(world.objects) do
+		if e.def and e.def.x then
+			table.insert(taken, { e.def.x, e.def.y })
+		end
+	end
+	table.insert(taken, map.cake)
+	table.insert(taken, map.spawn)
+	for _, p in ipairs(map.pads or {}) do
+		table.insert(taken, p)
+	end
+	local pool = {}
+	for _, sl in ipairs(map.floorSlots or {}) do
+		if sl[4] ~= startRoom and not nearDoorway(sl[1], sl[2]) and not near(sl[1], sl[2], 1) then
+			table.insert(pool, sl)
+		end
+	end
+	local want = s.count[state.diff] or 4
+	local boxes = {}
+	while #boxes < want and #pool > 0 do
+		local sl = table.remove(pool, math.random(1, #pool))
+		if not near(sl[1], sl[2], 1) then
+			local spaced = true
+			for _, b in ipairs(boxes) do
+				if math.abs(b.x - sl[1]) + math.abs(b.y - sl[2]) < 5 then
+					spaced = false
+				end
+			end
+			if spaced then
+				table.insert(boxes, { x = sl[1], y = sl[2] })
+				table.insert(taken, { sl[1], sl[2] })
+			end
+		end
+	end
+	local purple, orange = Color3.fromRGB(110, 60, 160), Color3.fromRGB(255, 140, 40)
+	for _, b in ipairs(boxes) do
+		local base = House.at(b.x, b.y, 0)
+		local m = Instance.new("Model")
+		m.Name = "JackInTheBox"
+		local function bit(size, pos, col, mat, shape)
+			local pt = Instance.new("Part")
+			pt.Anchored, pt.CanCollide, pt.CanTouch, pt.CastShadow = true, false, false, false
+			pt.Size, pt.Position, pt.Color = size, pos, col
+			pt.Material = mat or Enum.Material.SmoothPlastic
+			pt.Shape = shape or Enum.PartType.Block
+			pt.Parent = m
+			return pt
+		end
+		local box = bit(Vector3.new(2.6, 2.6, 2.6), base + Vector3.new(0, 1.3, 0), purple)
+		for i = -1, 1, 2 do
+			bit(Vector3.new(2.65, 0.5, 2.65), base + Vector3.new(0, 1.3 + i * 0.7, 0), orange)
+		end
+		bit(Vector3.new(0.3, 0.3, 1.2), base + Vector3.new(1.45, 1.4, 0), Color3.fromRGB(230, 190, 80), Enum.Material.Foil) -- the crank
+		bit(Vector3.new(0.3, 0.9, 0.3), base + Vector3.new(1.45, 1.75, 0.5), Color3.fromRGB(230, 190, 80), Enum.Material.Foil)
+		local lid = bit(Vector3.new(2.7, 0.3, 2.7), base + Vector3.new(0, 2.75, 0), orange)
+		local spring = bit(Vector3.new(0.2, 0.6, 0.6), base + Vector3.new(0, 2.2, 0), Color3.fromRGB(200, 200, 210), Enum.Material.Metal, Enum.PartType.Cylinder)
+		spring.CFrame = CFrame.new(spring.Position) * CFrame.Angles(0, 0, math.rad(90))
+		local head = bit(Vector3.new(1.8, 1.8, 1.8), base + Vector3.new(0, 1.6, 0), Color3.fromRGB(250, 240, 230), nil, Enum.PartType.Ball)
+		local nose = bit(Vector3.new(0.6, 0.6, 0.6), head.Position + Vector3.new(0, 0, -0.9), Color3.fromRGB(230, 40, 50), nil, Enum.PartType.Ball)
+		local hat = bit(Vector3.new(1, 1.2, 1), head.Position + Vector3.new(0, 1.1, 0), Color3.fromRGB(255, 140, 40), nil, Enum.PartType.Ball)
+		m.Parent = world.root
+		b.model, b.armed = m, true
+		local down = { head = head.Position, nose = nose.Position, hat = hat.Position, lid = lid.CFrame, spring = spring.CFrame }
+		local function pose(open)
+			local up = open and Vector3.new(0, 3, 0) or Vector3.zero
+			local ti = TweenInfo.new(open and 0.25 or 1.2, open and Enum.EasingStyle.Back or Enum.EasingStyle.Sine)
+			TweenService:Create(head, ti, { Position = down.head + up }):Play()
+			TweenService:Create(nose, ti, { Position = down.nose + up }):Play()
+			TweenService:Create(hat, ti, { Position = down.hat + up }):Play()
+			TweenService:Create(spring, ti, { Size = open and Vector3.new(3.2, 0.6, 0.6) or Vector3.new(0.2, 0.6, 0.6), CFrame = down.spring + up / 2 }):Play()
+			TweenService:Create(lid, ti, { CFrame = open and (down.lid * CFrame.new(-1.3, 0, 0) * CFrame.Angles(0, 0, math.rad(100)) * CFrame.new(1.3, 0, 0)) or down.lid }):Play()
+		end
+		b.pose = pose
+		local pp = Instance.new("ProximityPrompt")
+		pp.ActionText = "Wind it down"
+		pp.ObjectText = "Jack-in-the-box"
+		pp.HoldDuration = s.wind
+		pp.MaxActivationDistance = 9
+		pp.RequiresLineOfSight = false
+		pp.KeyboardKeyCode = Enum.KeyCode.F
+		pp.GamepadKeyCode = Enum.KeyCode.ButtonY
+		pp:SetAttribute("Only", "tinker")
+		pp.Parent = box
+		pp.Triggered:Connect(function(plr)
+			if state ~= myState or state.status ~= "playing" or plr:GetAttribute("Skill") ~= "tinker" or b.dead then
+				return
+			end
+			b.dead, b.armed = true, false
+			Effects.burst(box.Position, "pick")
+			say("pick", plr.DisplayName .. " wound a jack-in-the-box down for good!")
+			quest(plr, "skill")
+			m:Destroy()
+		end)
+	end
+	if #boxes == 0 then
+		return
+	end
+	-- watch for anyone coming near an armed box
+	task.spawn(function()
+		while state == myState and world == myWorld and state.status == "playing" do
+			task.wait(0.2)
+			local now = workspace:GetServerTimeNow()
+			for _, b in ipairs(boxes) do
+				if b.armed and not b.dead and b.model.Parent then
+					local c = House.at(b.x, b.y, 0)
+					for _, plr in ipairs(Players:GetPlayers()) do
+						local h = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+						if h and b.armed and (Vector3.new(h.Position.X - c.X, 0, h.Position.Z - c.Z)).Magnitude < s.near and math.abs(h.Position.Y - c.Y) < 8
+							and not plr:GetAttribute("Hidden") and not plr:GetAttribute("Crawling") and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
+							and (plr:GetAttribute("SneakUntil") or 0) <= now then
+							b.armed = false
+							b.pose(true)
+							Effects.burst(c + Vector3.new(0, 4, 0), "noise")
+							say("jackbox", "BOING! A jack-in-the-box gave " .. plr.DisplayName .. " away!", { userId = plr.UserId })
+							local hl = Instance.new("Highlight")
+							hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(255, 80, 120), Color3.fromRGB(255, 220, 80), 0.6
+							hl.Parent = plr.Character
+							game:GetService("Debris"):AddItem(hl, s.show)
+							if host and host.model then
+								host:alert(h.Position)
+							end
+							task.delay(s.rearm, function()
+								if not b.dead and b.model.Parent and state == myState then
+									b.pose(false)
+									task.wait(1.3)
+									b.armed = not b.dead
+								end
+							end)
+						end
+					end
+				end
+			end
+		end
+	end)
+end
+
 -- hit by a thrown pumpkin: knocked flat for a moment
 function round.hostHit(_, plr)
 	if plr:GetAttribute("Knocked") then
@@ -2503,6 +2664,9 @@ function round.start()
 	end
 	host.kind = kind
 	RoundState:SetAttribute("HostKind", kind)
+	if Config.HOSTS[kind] and Config.HOSTS[kind].skill == "jackbox" then
+		round.placeJackBoxes()
+	end
 	RoundState:SetAttribute("Blackout", "")
 	RoundState:SetAttribute("DarkRooms", "")
 	RoundState:SetAttribute("KeyRooms", "")

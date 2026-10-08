@@ -61,6 +61,11 @@ Config.HOST_SKILLS = {
 	-- the Caretaker: padlocks a doorway near a kid he can see, on the far side
 	-- of them (never a locked door, the exit or the host's door); Tinker picks it
 	lockup = { seconds = 6, near = 3, cooldown = { easy = 30, normal = 22, hard = 18, nightmare = 14 } },
+	-- the Clown Bear: jack-in-the-boxes on random checked spots when the floor
+	-- starts; one springs when a kid comes near (not sneaking or hidden) and
+	-- tells him where they are; it winds back up in the same place; Tinker
+	-- winds one down for good (hold)
+	jackbox = { count = { easy = 3, normal = 4, hard = 5, nightmare = 6 }, near = 6, rearm = 30, wind = 2, show = 3 },
 }
 -- the hosts: the model in ServerStorage/Characters and the skill. Each game
 -- picks one: half the time the building's own, otherwise one of the others.
@@ -69,8 +74,9 @@ Config.HOSTS = {
 	gummy = { model = "HostGummy", name = "Gummy Bear Man", skill = "gummy", tint = Color3.fromRGB(230, 40, 80) },
 	robot = { model = "HostRobot", name = "the Robot", skill = "blackout", tint = Color3.fromRGB(150, 160, 170) },
 	caretaker = { model = "HostCaretaker", name = "the Caretaker", skill = "lockup", tint = Color3.fromRGB(120, 160, 120) },
+	clownbear = { model = "HostClownBear", name = "the Clown Bear", skill = "jackbox", tint = Color3.fromRGB(240, 150, 170) },
 }
-Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "pumpkin" }
+Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear" }
 -- the "escaped all floors" badge counts these buildings' floors (its badge says 9 floors)
 Config.ALL_FLOORS_BUILDINGS = { partyhouse = true, gummy = true, hospital = true }
 Config.CLUES = 3
@@ -97,7 +103,7 @@ Config.BADGES = {
 	carnival = 0, -- Star of the Show: escaped the Carnival's top floor (Funhouse)
 	aquarium = 0, -- Making a Splash: escaped the Aquarium's top floor (Rooftop Pools)
 	basement = 0, -- Down in the Dark: escaped the Party House's Secret Basement
-	tower = 0, -- Tower Climber: reached the top in a Tower Run
+	tower = 2702531171107423, -- Tower Climber: reached the top in a Tower Run
 	rescuer = 4200883843590712, -- Hero of the Crew: freed 10 friends from the cage
 	untouched = 1991556459225776, -- Untouchable: escaped without being caught
 	nightmare = 1282994468042939, -- Nightmare Escaper: escaped on Nightmare
@@ -173,7 +179,7 @@ Config.PARTY_HOLD = 180
 Config.STUDIO_MAP = "carnival" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
--- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker"); nil = random
+-- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear"); nil = random
 Config.STUDIO_HOST = nil
 -- characters' skin without the bumpy normal map (smoother faces); false to keep it
 Config.FLAT_CHARACTER_SKIN = true
@@ -252,6 +258,12 @@ Config.MAP_IMAGES = {
 	school = 86527371561332, -- Ground Floor
 	school_2 = 83786060551446, -- Classrooms
 	school_3 = 111098812594935, -- Clock Tower
+	["building-carnival"] = 116987880187331,
+	carnival = 139473943447483, -- The Midway
+	carnival_2 = 128885533879458, -- The Big Top
+	carnival_3 = 102152843956658, -- The Funhouse
+	-- partyhouse_b (the Secret Basement): 75305324855873 is uploaded but shows
+	-- wine bottles - not used until a picture without them (CARNIVAL.md)
 }
 -- character portraits (face with a skill badge) by skill id
 Config.PORTRAITS = {

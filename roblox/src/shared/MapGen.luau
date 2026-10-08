@@ -47,6 +47,7 @@ function MapGen.make(plans, rng)
 		theme = plan.theme,
 		pads = plan.pads,
 		loft = plan.loft,
+		floorSlots = plan.floorSlots, -- every checked spot (the Clown Bear's boxes use the free ones)
 		objects = {},
 	}
 	local zoneOf = {}
