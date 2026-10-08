@@ -415,7 +415,7 @@ Config.NOTIFY = { messageId = "", secret = "notifications", hours = 22 }
 -- not shown). model = the model's name in Party House
 -- ServerStorage/Characters (or in CHARACTER_ASSETS once saved to Roblox).
 Config.SKINS = {
-	{ id = "tinker_pumpkin", skill = "tinker", name = "Pumpkin Patch Tinker", model = "TinkerPumpkin", pass = 0 },
+	{ id = "tinker_pumpkin", skill = "tinker", name = "Pumpkin Patch Tinker", model = "TinkerPumpkin", pass = 2019380267 },
 	{ id = "shadow_ghost", skill = "shadow", name = "Ghostly Shadow", model = "ShadowGhost", pass = 0 },
 	{ id = "glow_candy", skill = "glow", name = "Candy Glow", model = "GlowCandy", pass = 0 },
 	{ id = "patch_halloween", skill = "patch", name = "Halloween Nurse Patch", model = "PatchHalloween", pass = 0 },

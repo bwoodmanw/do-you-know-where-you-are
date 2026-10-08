@@ -14,6 +14,20 @@ checked): `art/roblox-store/passes/`. `_all.png` shows all eight together.
 | 7 | Autumn Leaf Bramble | `pass-autumn-leaf-bramble.png` | 99 | Bramble in autumn colours: a cape of red and golden leaves and an acorn crown. Looks only - Bramble's skills stay the same. Wear it from Characters in the Lobby. |
 | 8 | Halloween Nurse Patch | `pass-halloween-nurse-patch.png` | 99 | Patch on Halloween night: black scrubs, pumpkin trainers and a pumpkin bag. Looks only - Patch's skills stay the same. Wear it from Characters in the Lobby. |
 
+## Pass ids so far
+
+| Skin | Pass id |
+|---|---|
+| Pumpkin Patch Tinker | 2019380267 (checked: 99 Robux, for sale) |
+
+## Managed pricing: OFF (8 Oct)
+
+Creator Hub's **Managed pricing** lets Roblox test different prices on small
+groups of players and lower prices in poorer regions. We keep it **off** for
+now: friends in a party would see different prices for the same skin, and the
+Lobby's Skill Reset button shows the product's set price. Look again after a
+month of sales.
+
 ## Steps (for each pass)
 
 1. **create.roblox.com** -> **Creations** -> **Escape Crew**.
@@ -21,7 +35,7 @@ checked): `art/roblox-store/passes/`. `_all.png` shows all eight together.
 3. Upload the picture from the table, type the Name and Description
    exactly -> **Create Pass**.
 4. Click the new pass -> **Sales** (left) -> switch **Item for Sale** on ->
-   Price **99** -> **Save Changes**.
+   Price **99** -> leave **Managed pricing** OFF -> **Save Changes**.
 5. Back on the Passes list: **...** on the pass -> **Copy Asset ID**.
 6. Send me the 8 ids as "Name: id". I put each in `Config.SKINS` (`pass = id`),
    and the skins appear for sale in the live game after you publish.
