@@ -1695,11 +1695,22 @@ end
 local popFrame = frame(gui, { Size = UDim2.fromOffset(170, 170), Position = UDim2.new(0.5, -85, 0.55, -85), BackgroundTransparency = 1, Visible = false, ZIndex = 35 })
 local popIcon = label(popFrame, { Size = UDim2.fromScale(1, 0.75), Text = "", ZIndex = 36 })
 local popText = label(popFrame, { Size = UDim2.new(1.6, 0, 0.25, 0), Position = UDim2.fromScale(-0.3, 0.75), Text = "", ZIndex = 36 })
+local popPic = Instance.new("ImageLabel")
+popPic.BackgroundTransparency = 1
+popPic.Size = UDim2.fromScale(0.75, 0.75)
+popPic.Position = UDim2.fromScale(0.125, 0)
+popPic.ZIndex = 36
+popPic.Visible = false
+popPic.Parent = popFrame
 local popToken = 0
+-- icon: an emoji, or an image asset id (a picture instead)
 local function popUp(icon, text)
 	popToken += 1
 	local my = popToken
-	popIcon.Text, popText.Text = icon, text or ""
+	local isPic = typeof(icon) == "number"
+	popPic.Visible = isPic
+	popPic.Image = isPic and ("rbxassetid://" .. icon) or ""
+	popIcon.Text, popText.Text = isPic and "" or icon, text or ""
 	popFrame.Size = UDim2.fromOffset(60, 60)
 	popFrame.Position = UDim2.new(0.5, -30, 0.55, -30)
 	popFrame.Visible = true
@@ -1912,6 +1923,9 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 				cam.CFrame = cam.CFrame * CFrame.Angles(0, 0, (math.random() - 0.5) * 0.06)
 			end)
 		end
+	elseif kind == "corn" and data and data.userId == player.UserId then
+		local pic = Config.BOOST_IMAGES and Config.BOOST_IMAGES.candy or 0
+		popUp(pic > 0 and pic or "\u{1F383}", tostring(data.found or "") .. " candy corns")
 	elseif kind == "quest" and data and data.userId == player.UserId then
 		popUp("\u{1F4DC}", "Quest done! +" .. tostring(data.points or 0))
 	elseif (kind == "boost" or kind == "pop") and data and data.userId == player.UserId then

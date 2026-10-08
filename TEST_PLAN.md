@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 26 (8 Oct) - fixes after the first publish
+- [ ] Candy corns in a game look like candy corn: a rounded yellow base, an orange band, a white tip, bobbing and glowing
+- [ ] Picking one up: the candy-corn picture pops up with "n candy corns", and the message says "Candy corn found! n so far (+3 points)" (n goes up by 1, points by 3)
+- [ ] End of a level with 2+ players: one presses Back to lobby -> only they go; the others who press nothing stay and play again (or go up if someone chose Next floor)
+- [ ] Lobby: the Boost Shop's green buttons, the skin chips for sale and Reset upgrades show the Robux icon, not "R$" (photo - if the icon is missing, tell Claude)
 
 ## Round 25 (8 Oct) - the Candy Shop rebuilt, gifts
 - [ ] The banner at the bottom has the candy-corn picture (no peppermint); tap it: a big Candy Shop like the Boost Shop - each boost's picture, what it does, "You have n", an orange "Buy 9" button with the candy-corn picture; a Muscle Mummy skin row (its picture once uploaded); Close

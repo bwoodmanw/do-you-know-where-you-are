@@ -1893,24 +1893,34 @@ function round.placeCandyCorn()
 		local pos = House.at(c.x, c.y, 2.2)
 		local m = Instance.new("Model")
 		m.Name = "CandyCorn"
-		local cols = { Color3.fromRGB(255, 214, 50), Color3.fromRGB(255, 140, 30), Color3.fromRGB(255, 250, 240) }
+		-- a candy corn: a rounded yellow base, an orange middle, a white tip,
+		-- each band narrower than the one below; it bobs and glows
+		local YEL, ORA, WHI = Color3.fromRGB(255, 205, 40), Color3.fromRGB(255, 130, 25), Color3.fromRGB(255, 250, 240)
+		local bands = {
+			{ Enum.PartType.Ball, Vector3.new(2.1, 1, 2.1), -0.75, YEL },
+			{ Enum.PartType.Cylinder, Vector3.new(0.8, 2, 2), -0.4, YEL },
+			{ Enum.PartType.Cylinder, Vector3.new(0.75, 1.55, 1.55), 0.35, ORA },
+			{ Enum.PartType.Cylinder, Vector3.new(0.6, 1.05, 1.05), 1.0, WHI },
+			{ Enum.PartType.Ball, Vector3.new(0.75, 0.75, 0.75), 1.35, WHI },
+		}
 		local parts = {}
-		for i = 1, 3 do
+		for _, bd in ipairs(bands) do
 			local pt = Instance.new("Part")
 			pt.Anchored, pt.CanCollide, pt.CanTouch, pt.CanQuery, pt.CastShadow = true, false, false, false, false
-			pt.Size = Vector3.new(1.5 - i * 0.4, 0.55, 1.5 - i * 0.4)
-			pt.Position = pos + Vector3.new(0, (i - 2) * 0.55, 0)
-			pt.Color = cols[i]
+			pt.Shape = bd[1]
+			pt.Size = bd[2]
+			pt.CFrame = CFrame.new(pos + Vector3.new(0, bd[3], 0)) * (bd[1] == Enum.PartType.Cylinder and CFrame.Angles(0, 0, math.rad(90)) or CFrame.new())
+			pt.Color = bd[4]
 			pt.Material = Enum.Material.SmoothPlastic
 			pt.Parent = m
 			table.insert(parts, pt)
 		end
 		local l = Instance.new("PointLight")
-		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 160, 60), 7, 0.8
-		l.Parent = parts[2]
+		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 160, 60), 8, 0.9
+		l.Parent = parts[3]
 		m.Parent = world.root
 		for _, pt in ipairs(parts) do
-			TweenService:Create(pt, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = pt.Position + Vector3.new(0, 0.6, 0) }):Play()
+			TweenService:Create(pt, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = pt.CFrame + Vector3.new(0, 0.6, 0) }):Play()
 		end
 		c.model, c.pos = m, pos
 	end
@@ -1937,7 +1947,7 @@ function round.placeCandyCorn()
 								Profile.publish(plr)
 							end
 							Effects.burst(c.pos, "pop")
-							say("info", "\u{1F383} Candy corn! +" .. e.points .. " (" .. math.min(n, e.goal) .. " / " .. e.goal .. ")", nil, plr)
+							say("corn", "Candy corn found! " .. n .. " so far (+" .. e.points .. " points)", { userId = plr.UserId, found = n }, plr)
 							if n == e.goal then
 								say("info", "\u{1F383} " .. plr.DisplayName .. " found " .. e.goal .. " candy corns - Candy Corn Collector!")
 							end
@@ -2251,7 +2261,9 @@ function round.startVote()
 					same += 1
 				end
 			elseif votes[plr.UserId] ~= "lobby" then
-				table.insert(rest, plr)
+				-- didn't choose in time: stays and plays on with the others
+				-- (only the Back to lobby button sends anyone to the Lobby)
+				table.insert(again, plr)
 			end
 		end
 		-- most of those staying chose the floor above: go up (a tie goes up)

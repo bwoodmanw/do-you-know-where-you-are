@@ -1049,6 +1049,22 @@ do
 	end
 end
 
+-- Roblox's own Robux icon (instead of "R$"), in a space kept at a button's right edge
+local function robuxIcon(b, size)
+	local pad = b:FindFirstChildOfClass("UIPadding")
+	if pad then
+		pad.PaddingRight = UDim.new(0, size + 10)
+	end
+	local pic = Instance.new("ImageLabel")
+	pic.BackgroundTransparency = 1
+	pic.Image = "rbxasset://textures/ui/common/robux.png"
+	pic.Size = UDim2.fromOffset(size, size)
+	pic.Position = UDim2.new(1, 4, 0.5, -size / 2)
+	pic.ZIndex = b.ZIndex + 1
+	pic.Parent = b
+	return pic
+end
+
 -- ---------- the shop ----------
 local shop = frame(gui, { Size = UDim2.fromOffset(620, 610), Position = UDim2.new(0.5, -310, 0.5, -305), Visible = false, ZIndex = 10 })
 corner(shop, 18)
@@ -1082,9 +1098,12 @@ for i, id in ipairs(Progress.BOOST_ORDER) do
 	end)
 	local productId = Config.ROBUX_PRODUCTS[id] or 0
 	if productId > 0 then
-		button(row, "R$", { Size = UDim2.fromOffset(46, 40), Position = UDim2.fromOffset(414, 26), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 12 }, function()
+		local rb = button(row, "", { Size = UDim2.fromOffset(46, 40), Position = UDim2.fromOffset(414, 26), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 12 }, function()
 			MarketplaceService:PromptProductPurchase(player, productId)
 		end)
+		local pic = robuxIcon(rb, 26)
+		pic.Position = UDim2.new(0.5, -13, 0.5, -13) -- the icon alone, in the middle
+		rb:FindFirstChildOfClass("UIPadding").PaddingRight = UDim.new(0, 8)
 	end
 	local take = button(row, "", { Size = UDim2.fromOffset(92, 40), Position = UDim2.fromOffset(496, 12), ZIndex = 12 }, function()
 		local list, have = {}, false
@@ -1287,8 +1306,8 @@ local function paintSkins()
 	for _, skin in ipairs(mine) do
 		local owned = skinOwned[skin.id] or (skin.corn and profile.skinsEarned and profile.skinsEarned[skin.id])
 		local found = profile.stats and ((profile.stats.corn or 0) + (profile.stats.cornGift or 0) - (profile.stats.cornSpent or 0)) or 0
-		local tag = owned and "" or skin.corn and (" (" .. skin.corn .. " corns)") or " (R$)"
-		chip((wearing == skin.id and "\u{2705} " or "") .. skin.name .. tag, wearing == skin.id, function()
+		local tag = owned and "" or skin.corn and (" (" .. skin.corn .. " corns)") or ""
+		local c = chip((wearing == skin.id and "\u{2705} " or "") .. skin.name .. tag, wearing == skin.id, function()
 			if owned then
 				remotes.EquipSkin:FireServer(selected, skin.id)
 			elseif skin.corn then
@@ -1297,6 +1316,9 @@ local function paintSkins()
 				MarketplaceService:PromptGamePassPurchase(player, skin.pass)
 			end
 		end)
+		if not owned and not skin.corn then
+			robuxIcon(c, 22) -- for sale for Robux
+		end
 	end
 end
 local function refreshOwned()
@@ -1326,7 +1348,8 @@ task.spawn(function()
 		return MarketplaceService:GetProductInfo(Config.ROBUX_PRODUCTS.reset, Enum.InfoType.Product)
 	end)
 	if ok and info and info.PriceInRobux then
-		resetRobux.Text = "\u{1F504} Reset upgrades: R$ " .. info.PriceInRobux
+		resetRobux.Text = "\u{1F504} Reset upgrades: " .. info.PriceInRobux
+		robuxIcon(resetRobux, 22)
 	end
 end)
 button(chars, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, -80, 1, -46), ZIndex = 11 }, function()
