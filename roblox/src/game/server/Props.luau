@@ -25,7 +25,8 @@ local FACE = { s = 0, w = math.rad(90), n = math.rad(180), e = math.rad(-90) }
 
 local function strip(model)
 	for _, d in ipairs(model:GetDescendants()) do
-		if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") then
+		-- (sounds too: a prop's own audio may not be allowed in this game; rooms have their own)
+		if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") or d:IsA("Sound") then
 			d:Destroy()
 		end
 	end

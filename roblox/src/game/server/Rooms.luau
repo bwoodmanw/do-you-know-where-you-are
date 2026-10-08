@@ -1295,8 +1295,8 @@ local function imported(name, base, size, folder)
 		src:Clone().Parent = m
 	end
 	for _, d in ipairs(m:GetDescendants()) do
-		if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") then
-			d:Destroy()
+		if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") or d:IsA("Sound") then
+			d:Destroy() -- (a prop's own sound may not be allowed in this game)
 		elseif d:IsA("BasePart") then
 			d.Anchored, d.CanCollide = true, false
 		end

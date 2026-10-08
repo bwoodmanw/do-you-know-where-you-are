@@ -183,8 +183,9 @@ Passes, pricing, DevEx), `SCHOOL.md` (building 4, the Caretaker host),
    Corn Hunt** until 1 Nov (round 23): badge "Candy Corn Collector" to make
    (`art/roblox-store/badges/badge-corn.png`, id into `Config.BADGES.corn`).
    The Caretaker (School host, Lock-up) is in: model 97512217825851.
-10. F9 showed asset 11490522280 refused (not in our code: something in the
-    place, likely a Props model).
+10. F9 "asset 11490522280 refused": a Sound inside ServerStorage.Props.Generator
+    (MovingCylinder) - Brent deletes it (8 Oct); props' own sounds are now
+    stripped when copied into rooms.
 
 ## Lessons (keep)
 
