@@ -111,6 +111,7 @@ Config.BADGES = {
 	carnival = 0, -- Star of the Show: escaped the Carnival's top floor (Funhouse)
 	aquarium = 0, -- Making a Splash: escaped the Aquarium's top floor (Rooftop Pools)
 	basement = 0, -- Down in the Dark: escaped the Party House's Secret Basement
+	corn = 0, -- Candy Corn Collector: found Config.EVENT.goal candy corns (Halloween)
 	tower = 2702531171107423, -- Tower Climber: reached the top in a Tower Run
 	rescuer = 4200883843590712, -- Hero of the Crew: freed 10 friends from the cage
 	untouched = 1991556459225776, -- Untouchable: escaped without being caught
@@ -173,6 +174,11 @@ Config.PHRASES = {
 -- walls for PING_SECONDS
 Config.PING_PHRASES = { ["Over here!"] = true, ["I found something!"] = true, ["Key found!"] = true, ["Help me!"] = true, ["Need Tinker!"] = true, ["Need Brainy!"] = true }
 Config.PING_SECONDS = 6
+
+-- the Halloween Candy Corn Hunt: candy corns on every floor until `ends`
+-- (os.time: 1 Nov 2026, midnight US Eastern). Each is `points` for whoever
+-- picks it up; `goal` in all earns the badge (BADGES.corn).
+Config.EVENT = { name = "Candy Corn Hunt", ends = 1793505600, perFloor = 6, points = 3, goal = 50, near = 4 }
 
 -- icons for things you pick up
 Config.ITEM_ICONS = { candy = "\u{1F36C}", shield = "\u{1F6E1}", balloon = "\u{1F388}" }

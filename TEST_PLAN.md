@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,13 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 23 (8 Oct) - the Halloween Candy Corn Hunt (until 1 Nov)
+- [ ] Every floor: 6 glowing candy corns (yellow, orange, white) bobbing on the floor, spread out, some behind the locked doors
+- [ ] Walk into one: it pops, "+3 (n / 50)" for you only, your points go up
+- [ ] Lobby: a banner at the bottom "Candy Corn Hunt: n / 50 found - on every floor until 1 Nov" (photo: does it cover anything?)
+- [ ] At 50: "Candy Corn Collector!" for everyone, and (live, once its id is in) the badge
+- [ ] After 1 Nov the corns and the banner are gone by themselves
 
 ## Round 22 (8 Oct) - the Sunken Aquarium (building 6, AQUARIUM.md) and the Anglerfish Keeper
 

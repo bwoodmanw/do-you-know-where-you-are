@@ -865,6 +865,39 @@ local function readProfile()
 	end
 end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
+do
+	-- the Halloween Candy Corn Hunt: how many you have found, until it ends
+	local e = Config.EVENT
+	if e and os.time() < e.ends then
+		local bannerGui = Instance.new("ScreenGui")
+		bannerGui.Name = "EventBanner"
+		bannerGui.ResetOnSpawn = false
+		bannerGui.Parent = player:WaitForChild("PlayerGui")
+		local banner = Instance.new("TextLabel")
+		banner.AnchorPoint = Vector2.new(0.5, 1)
+		banner.Position = UDim2.new(0.5, 0, 1, -8)
+		banner.Size = UDim2.fromOffset(380, 30)
+		banner.BackgroundColor3 = Color3.fromRGB(40, 22, 62)
+		banner.BackgroundTransparency = 0.15
+		banner.TextColor3 = Color3.fromRGB(255, 180, 70)
+		banner.Font = Enum.Font.FredokaOne
+		banner.TextScaled = true
+		banner.Parent = bannerGui
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0, 10)
+		c.Parent = banner
+		local function paint()
+			local ok, data = pcall(function()
+				return HttpService:JSONDecode(player:GetAttribute("ProfileJson") or "{}")
+			end)
+			local n = ok and data and data.stats and data.stats.corn or 0
+			banner.Text = n >= e.goal and ("\u{1F36C} Candy Corn Collector! " .. n .. " found - hunt ends 1 Nov")
+				or ("\u{1F36C} Candy Corn Hunt: " .. n .. " / " .. e.goal .. " found - on every floor until 1 Nov")
+		end
+		paint()
+		player:GetAttributeChangedSignal("ProfileJson"):Connect(paint)
+	end
+end
 
 -- ---------- the shop ----------
 local shop = frame(gui, { Size = UDim2.fromOffset(620, 610), Position = UDim2.new(0.5, -310, 0.5, -305), Visible = false, ZIndex = 10 })

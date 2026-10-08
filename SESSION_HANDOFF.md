@@ -162,8 +162,8 @@ Passes, pricing, DevEx), `SCHOOL.md` (building 4, the Caretaker host),
 3. **Midnight School:** 4 map-card pictures (prompts in `SCHOOL.md`) and
    their ids; a "Top of the Class" badge (id into `Config.BADGES.school`);
    decide on a school host (ghostly caretaker - after Halloween).
-4. **Notifications:** the Creator Hub steps in `NOTIFICATIONS.md`, then the
-   message id into `Config.NOTIFY.messageId`.
+4. **Notifications:** message id in (8 Oct); NOTIFICATIONS.md steps 2-4
+   (API key, Secret, HTTP requests) must be done for it to send.
 5. **Badges:** Hero of the Crew, Untouchable, Nightmare Escaper still to make
    (art in `art/roblox-store/badges/`; ids into `Config.BADGES`).
 6. **Seasonal icon:** from 1 Nov upload the normal `icon-512.png` again
@@ -177,7 +177,10 @@ Passes, pricing, DevEx), `SCHOOL.md` (building 4, the Caretaker host),
    power to pick (Jack-in-the-Box recommended) and his model
    (HostClownBear). Badge ids still to come: Down in the Dark, Tower
    Climber, Star of the Show (Making a Splash with the Aquarium).
-   **Building 6, the Aquarium** (Anglerfish Keeper host) after that.
+   **Building 6, the Sunken Aquarium** built 8 Oct (AQUARIUM.md, round 22):
+   4 card pictures and the Making a Splash badge to make. **Halloween Candy
+   Corn Hunt** until 1 Nov (round 23): badge "Candy Corn Collector" to make
+   (`art/roblox-store/badges/badge-corn.png`, id into `Config.BADGES.corn`).
    The Caretaker (School host, Lock-up) is in: model 97512217825851.
 10. F9 showed asset 11490522280 refused (not in our code: something in the
     place, likely a Props model).

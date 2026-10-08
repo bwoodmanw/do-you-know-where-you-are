@@ -1621,6 +1621,8 @@ function round.placeJackBoxes()
 			if spaced then
 				table.insert(boxes, { x = sl[1], y = sl[2] })
 				table.insert(taken, { sl[1], sl[2] })
+				state.extraTaken = state.extraTaken or {}
+				table.insert(state.extraTaken, { sl[1], sl[2] })
 			end
 		end
 	end
@@ -1829,6 +1831,122 @@ function round.hostFakeGift(_, pos, hostModel)
 		end
 	end)
 	return true
+end
+
+-- the Halloween Candy Corn Hunt: a few candy corns on random free checked
+-- spots of every floor (behind the locks too) until Config.EVENT.ends.
+-- Walk into one to pick it up: points, and the count towards the badge.
+function round.placeCandyCorn()
+	local e = Config.EVENT
+	if not e or os.time() >= e.ends then
+		return
+	end
+	local myState, myWorld = state, world
+	local map = HouseMap
+	local taken = {}
+	for _, o in pairs(world.objects) do
+		if o.def and o.def.x then
+			table.insert(taken, { o.def.x, o.def.y })
+		end
+	end
+	for _, t in ipairs(state.extraTaken or {}) do
+		table.insert(taken, t)
+	end
+	table.insert(taken, map.cake)
+	for _, p in ipairs(map.pads or {}) do
+		table.insert(taken, p)
+	end
+	local function free(x, y)
+		for _, t in ipairs(taken) do
+			if math.abs(t[1] - x) <= 1 and math.abs(t[2] - y) <= 1 then
+				return false
+			end
+		end
+		return true
+	end
+	local pool = {}
+	for _, sl in ipairs(map.floorSlots or {}) do
+		if not nearDoorway(sl[1], sl[2]) and free(sl[1], sl[2]) then
+			table.insert(pool, sl)
+		end
+	end
+	local corns = {}
+	while #corns < e.perFloor and #pool > 0 do
+		local sl = table.remove(pool, math.random(1, #pool))
+		local spaced = free(sl[1], sl[2])
+		for _, c in ipairs(corns) do
+			if math.abs(c.x - sl[1]) + math.abs(c.y - sl[2]) < 6 then
+				spaced = false
+			end
+		end
+		if spaced then
+			table.insert(corns, { x = sl[1], y = sl[2] })
+			table.insert(taken, { sl[1], sl[2] })
+		end
+	end
+	for _, c in ipairs(corns) do
+		local pos = House.at(c.x, c.y, 2.2)
+		local m = Instance.new("Model")
+		m.Name = "CandyCorn"
+		local cols = { Color3.fromRGB(255, 214, 50), Color3.fromRGB(255, 140, 30), Color3.fromRGB(255, 250, 240) }
+		local parts = {}
+		for i = 1, 3 do
+			local pt = Instance.new("Part")
+			pt.Anchored, pt.CanCollide, pt.CanTouch, pt.CanQuery, pt.CastShadow = true, false, false, false, false
+			pt.Size = Vector3.new(1.5 - i * 0.4, 0.55, 1.5 - i * 0.4)
+			pt.Position = pos + Vector3.new(0, (i - 2) * 0.55, 0)
+			pt.Color = cols[i]
+			pt.Material = Enum.Material.SmoothPlastic
+			pt.Parent = m
+			table.insert(parts, pt)
+		end
+		local l = Instance.new("PointLight")
+		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 160, 60), 7, 0.8
+		l.Parent = parts[2]
+		m.Parent = world.root
+		for _, pt in ipairs(parts) do
+			TweenService:Create(pt, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = pt.Position + Vector3.new(0, 0.6, 0) }):Play()
+		end
+		c.model, c.pos = m, pos
+	end
+	if #corns == 0 then
+		return
+	end
+	task.spawn(function()
+		while state == myState and world == myWorld and state.status == "playing" do
+			task.wait(0.25)
+			for _, c in ipairs(corns) do
+				if c.model and c.model.Parent then
+					for _, plr in ipairs(Players:GetPlayers()) do
+						local h = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+						if c.model and h and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
+							and (h.Position - c.pos).Magnitude < e.near + 2 then
+							c.model:Destroy()
+							c.model = nil
+							addPoints(plr, e.points, true)
+							local data = Profile.get(plr)
+							local n = 0
+							if data then
+								data.stats.corn = (data.stats.corn or 0) + 1
+								n = data.stats.corn
+								Profile.publish(plr)
+							end
+							Effects.burst(c.pos, "pop")
+							say("info", "\u{1F36C} Candy corn! +" .. e.points .. " (" .. math.min(n, e.goal) .. " / " .. e.goal .. ")", nil, plr)
+							if n == e.goal then
+								say("info", "\u{1F36C} " .. plr.DisplayName .. " found " .. e.goal .. " candy corns - Candy Corn Collector!")
+							end
+							if n >= e.goal and (Config.BADGES.corn or 0) > 0 then
+								task.spawn(pcall, function()
+									game:GetService("BadgeService"):AwardBadge(plr.UserId, Config.BADGES.corn)
+								end)
+							end
+						end
+					end
+				end
+			end
+		end
+	end)
 end
 
 -- hit by a thrown pumpkin: knocked flat for a moment
@@ -2781,9 +2899,11 @@ function round.start()
 	end
 	host.kind = kind
 	RoundState:SetAttribute("HostKind", kind)
+	state.extraTaken = {}
 	if Config.HOSTS[kind] and Config.HOSTS[kind].skill == "jackbox" then
 		round.placeJackBoxes()
 	end
+	round.placeCandyCorn()
 	RoundState:SetAttribute("Blackout", "")
 	RoundState:SetAttribute("DarkRooms", "")
 	RoundState:SetAttribute("KeyRooms", "")

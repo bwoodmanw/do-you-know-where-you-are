@@ -168,11 +168,16 @@ only when everyone presses Play.
   the Class, Hero of the Crew, Untouchable, Nightmare Escaper, Tower
   Climber; the Anglerfish Keeper's model and lure (hidden until building 6).
 
+- 8 Oct (later still): quick chat upgrade (own bubbles, pins, T), the
+  daily-reward notification id; **Building 6: the Sunken Aquarium**
+  (`AQUARIUM.md`) with the Anglerfish Keeper (Fake Treasure); the
+  **Halloween Candy Corn Hunt** until 1 Nov.
+
 ## Next
-1. Brent: publish both places before 29 Oct; play-test rounds 12-20.
-2. **Building 6: the Aquarium** (Main Hall, Deep Sea, Rooftop Pools) with the
-   Anglerfish Keeper (Fake Treasure), map pictures, "Making a Splash".
-3. Badges Star of the Show and Down in the Dark (Brent, 9 Oct).
+1. Brent: publish both places before 29 Oct; play-test rounds 12-23.
+2. Creator Hub: private servers and automatic translation (steps in chat 8 Oct).
+3. Aquarium map pictures and "Making a Splash"; badges Star of the Show,
+   Down in the Dark, Candy Corn Collector (Brent, from 9 Oct).
 4. Host balance per difficulty from the 📊 Balance table after a week live.
 5. Later: B8 analytics, subscriptions (parked).
 
@@ -180,15 +185,15 @@ only when everyone presses Play.
 Already have: spectating when caught, game invites, Quick Play, daily and
 weekly quests, login rewards, badges, leaderboards, controller support,
 colour-blind code pictures, a tutorial coach, rejoin.
-1. **Private servers** (Creator Hub setting, no code: the Lobby already
+1. (Brent doing, 8 Oct) **Private servers** (Creator Hub setting, no code: the Lobby already
    reserves a server per party) - families and classes play together; a
    little income.
-2. **Automatic translation** (Creator Hub -> Localization; some built-up
+2. (Brent doing, 8 Oct) **Automatic translation** (Creator Hub -> Localization; some built-up
    text in code may need small changes) - most Roblox players are not
    English speakers.
-3. **Quick-chat wheel** - "Over here!", "Hide!", "Need Tinker!", "Key
+3. (built 8 Oct: it existed as Say; now own bubbles, pins, T) **Quick-chat wheel** - "Over here!", "Hide!", "Need Tinker!", "Key
    found!" as bubbles over your head; works for kids whose chat is off.
-4. **Halloween event** until 1 Nov - a candy-corn hunt on every floor for
+4. (built 8 Oct) **Halloween event** until 1 Nov - a candy-corn hunt on every floor for
    a limited reward (a badge or a free skin colour).
 5. **Collectibles book** - one hidden "lost plushie" per floor (16), a book
    in the Lobby, a badge for all; exploring and replaying.
