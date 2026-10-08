@@ -891,7 +891,7 @@ do
 		local shop = Instance.new("Frame")
 		shop.AnchorPoint = Vector2.new(0.5, 1)
 		shop.Position = UDim2.new(0.5, 0, 1, -50)
-		shop.Size = UDim2.fromOffset(460, 236)
+		shop.Size = UDim2.fromOffset(460, 300)
 		shop.BackgroundColor3 = Color3.fromRGB(40, 22, 62)
 		shop.Visible = false
 		shop.Parent = bannerGui
@@ -935,6 +935,25 @@ do
 				end)
 			end
 		end
+		-- the event skin, in the shop once its model is in
+		local skinButtons = {}
+		for _, skin in ipairs(Config.SKINS or {}) do
+			if skin.corn and not skin.hidden then
+				local b = Instance.new("TextButton")
+				b.BackgroundColor3 = Color3.fromRGB(110, 70, 30)
+				b.TextColor3 = Color3.fromRGB(255, 244, 224)
+				b.Font = Enum.Font.FredokaOne
+				b.TextScaled = true
+				b.Parent = grid
+				local bc = Instance.new("UICorner")
+				bc.CornerRadius = UDim.new(0, 10)
+				bc.Parent = b
+				b.Activated:Connect(function()
+					remotes:WaitForChild("CornShop"):FireServer("skin:" .. skin.id)
+				end)
+				skinButtons[skin] = b
+			end
+		end
 		banner.Activated:Connect(function()
 			shop.Visible = not shop.Visible
 		end)
@@ -945,16 +964,18 @@ do
 			local st = ok and data and data.stats or {}
 			local n = st.corn or 0
 			local have = n - (st.cornSpent or 0)
+			local earned = ok and data and data.skinsEarned or {}
 			local skinGoal
-			for _, skin in ipairs(Config.SKINS or {}) do
-				if skin.corn and not skin.hidden and n < skin.corn then
+			for skin, b in pairs(skinButtons) do
+				b.Text = earned[skin.id] and ("\u{2705} " .. skin.name .. "\nyours!") or ("\u{2728} " .. skin.name .. "\n\u{1F36C} " .. skin.corn)
+				if not earned[skin.id] then
 					skinGoal = skin
 				end
 			end
 			if os.time() >= e.ends then
 				banner.Text = "\u{1F36C} Candy Shop: " .. have .. " corns to spend (open until 8 Nov)"
 			elseif skinGoal then
-				banner.Text = "\u{1F36C} Candy Corn Hunt: " .. n .. " found - " .. skinGoal.corn .. " unlocks " .. skinGoal.name .. " - Shop"
+				banner.Text = "\u{1F36C} Candy Corns: " .. have .. " to spend - " .. skinGoal.name .. " costs " .. skinGoal.corn .. " - Shop"
 			else
 				banner.Text = "\u{1F36C} Candy Corn Hunt: " .. n .. " found (" .. have .. " to spend) - Shop"
 			end
@@ -1201,14 +1222,14 @@ local function paintSkins()
 		remotes.EquipSkin:FireServer(selected, "")
 	end)
 	for _, skin in ipairs(mine) do
-		local owned = skinOwned[skin.id]
-		local found = profile.stats and profile.stats.corn or 0
-		local tag = owned and "" or skin.corn and (" (\u{1F36C} " .. math.min(found, skin.corn) .. "/" .. skin.corn .. ")") or " (R$)"
+		local owned = skinOwned[skin.id] or (skin.corn and profile.skinsEarned and profile.skinsEarned[skin.id])
+		local found = profile.stats and ((profile.stats.corn or 0) - (profile.stats.cornSpent or 0)) or 0
+		local tag = owned and "" or skin.corn and (" (\u{1F36C} " .. skin.corn .. ")") or " (R$)"
 		chip((wearing == skin.id and "\u{2705} " or "") .. skin.name .. tag, wearing == skin.id, function()
 			if owned then
 				remotes.EquipSkin:FireServer(selected, skin.id)
 			elseif skin.corn then
-				notice("\u{1F36C} Find " .. skin.corn .. " candy corns in the games to unlock " .. skin.name .. " (you have " .. found .. ").")
+				notice("\u{1F36C} " .. skin.name .. " costs " .. skin.corn .. " candy corns in the Candy Shop (the banner at the bottom). You have " .. found .. ".")
 			else
 				MarketplaceService:PromptGamePassPurchase(player, skin.pass)
 			end
@@ -1224,6 +1245,10 @@ local function refreshOwned()
 	end
 	paintSkins()
 end
+-- a skin bought with candy corns shows as yours at once
+player:GetAttributeChangedSignal("ProfileJson"):Connect(function()
+	task.defer(paintSkins)
+end)
 MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(_, _, bought)
 	if bought then
 		task.delay(1, refreshOwned)

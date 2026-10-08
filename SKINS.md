@@ -218,9 +218,12 @@ If a screen looks different from these steps, send me a photo of it.
 
 ## Mummy Muscle - the Halloween event skin (8 Oct)
 
-Not sold: earned by finding 100 candy corns (`Config.SKINS` muscle_mummy,
-`corn = 100`), kept for good. Hidden until its model is saved. Picture
-folder `art/model-input/mummy-muscle/`, model name **MuscleMummy**.
+Not sold for Robux: bought in the Lobby's Candy Shop for 100 candy corns on
+hand (the corns are spent), kept for good (`Config.SKINS` muscle_mummy,
+`corn = 100`; owned = `profile.skinsEarned`). Hidden until its model is
+saved. Picture `art/model-input/Muscle Mummy/a-pose-front.png` (checked 8
+Oct: face clear, snug bandages, plain grey trainers, arms clear), model name
+**MuscleMummy**.
 Reference: `art/model-input/muscle/a-pose-front.png`.
 
 **10. Mummy Muscle**

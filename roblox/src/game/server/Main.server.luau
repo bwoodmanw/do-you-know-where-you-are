@@ -278,9 +278,9 @@ local function ownsSkin(plr, skin)
 		return true
 	end
 	if skin.corn then
-		-- an event skin: yours once you have found this many candy corns
+		-- an event skin: yours once bought with candy corns in the Candy Shop
 		local d = Profile.get(plr)
-		return d ~= nil and d.stats ~= nil and (d.stats.corn or 0) >= skin.corn
+		return d ~= nil and d.skinsEarned ~= nil and d.skinsEarned[skin.id] == true
 	end
 	if not skin.pass or skin.pass <= 0 then
 		return false
@@ -1941,9 +1941,10 @@ function round.placeCandyCorn()
 							if n == e.goal then
 								say("info", "\u{1F36C} " .. plr.DisplayName .. " found " .. e.goal .. " candy corns - Candy Corn Collector!")
 							end
+							local have = data and n - (data.stats.cornSpent or 0) or 0
 							for _, skin in ipairs(Config.SKINS or {}) do
-								if skin.corn and n == skin.corn and not skin.hidden then
-									say("info", "\u{1F36C} " .. plr.DisplayName .. " found " .. n .. " candy corns and unlocked " .. skin.name .. "!")
+								if skin.corn and have == skin.corn and not skin.hidden and not (data.skinsEarned and data.skinsEarned[skin.id]) then
+									say("info", "\u{1F36C} " .. skin.corn .. " candy corns to spend - get " .. skin.name .. " in the Lobby's Candy Shop!", nil, plr)
 								end
 							end
 							if n >= e.goal and (Config.BADGES.corn or 0) > 0 then

@@ -934,13 +934,35 @@ do
 	local CornShop = remote("CornShop") -- (boostId)
 	CornShop.OnServerEvent:Connect(function(plr, id)
 		local e = Config.EVENT
-		local price = e and e.shop and typeof(id) == "string" and e.shop[id]
-		local boost = price and Progress.BOOSTS[id]
 		local data = Profile.get(plr)
-		if not boost or not data or os.time() >= (e.shopUntil or 0) then
+		if not e or not data or typeof(id) ~= "string" or os.time() >= (e.shopUntil or 0) then
 			return
 		end
 		local have = (data.stats.corn or 0) - (data.stats.cornSpent or 0)
+		-- the event skin: 100 corns on hand, spent, and it is yours for good
+		for _, skin in ipairs(Config.SKINS or {}) do
+			if skin.corn and not skin.hidden and id == "skin:" .. skin.id then
+				data.skinsEarned = data.skinsEarned or {}
+				if data.skinsEarned[skin.id] then
+					return Notice:FireClient(plr, skin.name .. " is already yours - pick it in Characters.")
+				end
+				if have < skin.corn then
+					return Notice:FireClient(plr, "You need " .. skin.corn .. " candy corns for " .. skin.name .. " (you have " .. have .. ").")
+				end
+				data.stats.cornSpent = (data.stats.cornSpent or 0) + skin.corn
+				data.skinsEarned[skin.id] = true
+				data.skins = data.skins or {}
+				data.skins[skin.skill] = skin.id -- wear it straight away
+				Profile.publish(plr)
+				Profile.save(plr)
+				return Notice:FireClient(plr, "\u{2728} " .. skin.name .. " is yours! Wearing it next game.")
+			end
+		end
+		local price = e.shop and e.shop[id]
+		local boost = price and Progress.BOOSTS[id]
+		if not boost then
+			return
+		end
 		if have < price then
 			return Notice:FireClient(plr, "You need " .. price .. " candy corns for " .. boost.name .. " (you have " .. have .. ").")
 		end
@@ -1336,9 +1358,9 @@ local function ownsSkin(plr, skin)
 		return true
 	end
 	if skin.corn then
-		-- an event skin: yours once you have found this many candy corns
+		-- an event skin: yours once bought with candy corns in the Candy Shop
 		local d = Profile.get(plr)
-		return d ~= nil and d.stats ~= nil and (d.stats.corn or 0) >= skin.corn
+		return d ~= nil and d.skinsEarned ~= nil and d.skinsEarned[skin.id] == true
 	end
 	if not skin.pass or skin.pass <= 0 then
 		return false

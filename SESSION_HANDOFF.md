@@ -155,7 +155,7 @@ Passes, pricing, DevEx), `SCHOOL.md` (building 4, the Caretaker host),
    Party House window then the Lobby window) - **before 29 Oct**. Then check
    live: Space Cadet Brainy, skins on sale, the School unlocking.
 2. **Skins:** Brent closed the Starlight Echo and Halloween Nurse Patch
-   fixes (8 Oct). **Mummy Muscle** (event skin, 100 candy corns): picture ->
+   fixes (8 Oct). **Mummy Muscle** (event skin, bought for 100 candy corns on hand in the Candy Shop; picture checked): Meshy ->
    Meshy -> MuscleMummy -> id (SKINS.md prompt 10); then Claude sets
    `hidden = false`. Candy Shop in the Lobby until 8 Nov. Private servers
    (100 Robux) and automatic translation on (8 Oct).

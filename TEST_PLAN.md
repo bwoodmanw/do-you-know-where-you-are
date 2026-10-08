@@ -18,10 +18,10 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
 ## Round 24 (8 Oct) - the Candy Shop and Mummy Muscle
-- [ ] Lobby: the banner at the bottom now says "Candy Corn Hunt: n found (m to spend) - Shop"; tap it: the Candy Shop opens (6 boosts with a candy-corn price)
-- [ ] Buying with enough corns: the boost is added, "to spend" goes down, "found" does not; with too few: "You need ... (you have ...)"
-- [ ] A corn-bought boost has no points refund with the - button
-- [ ] Once Mummy Muscle's model is in (Claude switches it on): Characters -> Muscle shows "Mummy Muscle (n/100)"; at 100 found it can be worn (owner and Studio: always)
+- [ ] Lobby: the banner at the bottom shows your candy corns to spend; tap it: the Candy Shop opens - 6 boosts (Second Wind 8, Candy Corn 9, Extra Clue 12, Head Start 15, Party Shield 18, Frozen Pop 23) and, once his model is in, Mummy Muscle 100
+- [ ] Buying a boost: it is added and your corns to spend go down; with too few: "You need ... (you have ...)"; a corn-bought boost has no points refund with the - button
+- [ ] Mummy Muscle: with 100 on hand, buying him takes 100 corns, "is yours!", he is worn next game and shows "yours!" in the shop and in Characters -> Muscle; with fewer: "You need 100 ..."
+- [ ] The Candy Corn Collector badge still comes at 50 found, however many were spent
 
 ## Round 23 (8 Oct) - the Halloween Candy Corn Hunt (until 1 Nov)
 - [ ] Every floor: 6 glowing candy corns (yellow, orange, white) bobbing on the floor, spread out, some behind the locked doors
