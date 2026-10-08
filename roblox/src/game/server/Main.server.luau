@@ -1416,6 +1416,150 @@ function round.hostBlackout(_, pos)
 	end)
 end
 
+-- the Caretaker's Lock-up: a padlocked gate across a doorway near a kid he
+-- can see, on the far side of them, for a few seconds. The host walks
+-- through it (collision groups); Tinker picks it at once.
+do
+	local PhysicsService = game:GetService("PhysicsService")
+	for _, g in ipairs({ "Host", "LockUp" }) do
+		pcall(function()
+			PhysicsService:RegisterCollisionGroup(g)
+		end)
+	end
+	PhysicsService:CollisionGroupSetCollidable("Host", "LockUp", false)
+
+	-- a plain doorway: floor with wall either side, not by a locked door, the exit or the host's door
+	local function plainDoorway(x, y)
+		if cellAt(x, y) ~= "." then
+			return nil
+		end
+		local across
+		if cellAt(x - 1, y) == "#" and cellAt(x + 1, y) == "#" then
+			across = "x" -- walls left and right: you walk through it along z
+		elseif cellAt(x, y - 1) == "#" and cellAt(x, y + 1) == "#" then
+			across = "z"
+		else
+			return nil
+		end
+		for dx = -2, 2 do
+			for dy = -2, 2 do
+				local c = cellAt(x + dx, y + dy)
+				if c == "L" or c == "D" or c == "H" or c == "C" then
+					return nil
+				end
+			end
+		end
+		return across
+	end
+
+	function round.hostLockup(_, target, hostPos)
+		if state.status ~= "playing" or not world then
+			return false
+		end
+		local s = Config.HOST_SKILLS.lockup
+		local hrp = target and target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+		if not hrp then
+			return false
+		end
+		state.lockups = state.lockups or {}
+		local kx, ky = math.floor(hrp.Position.X / T), math.floor(hrp.Position.Z / T)
+		local kidFromHost = (Vector3.new(hrp.Position.X - hostPos.X, 0, hrp.Position.Z - hostPos.Z)).Magnitude
+		local best, bestD, bestAcross
+		for dx = -s.near, s.near do
+			for dy = -s.near, s.near do
+				local x, y = kx + dx, ky + dy
+				local across = (dx ~= 0 or dy ~= 0) and not state.lockups[x .. "," .. y] and plainDoorway(x, y)
+				if across then
+					local c = House.at(x, y, 0)
+					-- on the far side of the kid (ahead of them, away from the host)
+					local fromHost = (Vector3.new(c.X - hostPos.X, 0, c.Z - hostPos.Z)).Magnitude
+					local d = (Vector3.new(c.X - hrp.Position.X, 0, c.Z - hrp.Position.Z)).Magnitude
+					local clear = true
+					for _, p in ipairs(Players:GetPlayers()) do
+						local h = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+						if h and (Vector3.new(h.Position.X - c.X, 0, h.Position.Z - c.Z)).Magnitude < T * 0.9 then
+							clear = false -- never shut a gate on top of someone
+						end
+					end
+					if clear and fromHost > kidFromHost and (not bestD or d < bestD) then
+						best, bestD, bestAcross = Vector2.new(x, y), d, across
+					end
+				end
+			end
+		end
+		if not best then
+			return false
+		end
+		local key = best.X .. "," .. best.Y
+		state.lockups[key] = true
+		local base = House.at(best.X, best.Y, 0)
+		local gate = Instance.new("Model")
+		gate.Name = "LockUpGate"
+		local function bit(size, offset, col, mat, shape)
+			local b = Instance.new("Part")
+			b.Anchored, b.CanCollide, b.CanQuery, b.CanTouch, b.CastShadow = true, false, false, false, false
+			b.Shape = shape or Enum.PartType.Block
+			b.Size = bestAcross == "x" and size or Vector3.new(size.Z, size.Y, size.X)
+			b.Position = base + (bestAcross == "x" and offset or Vector3.new(offset.Z, offset.Y, offset.X))
+			b.Color = col
+			b.Material = mat or Enum.Material.Metal
+			b.Parent = gate
+			return b
+		end
+		-- the wall kids bump into (the host's group passes through; pathfinding ignores it)
+		local wall = bit(Vector3.new(T, Config.WALL_H, 0.6), Vector3.new(0, Config.WALL_H / 2, 0), Color3.new(), Enum.Material.SmoothPlastic)
+		wall.Transparency, wall.CanCollide, wall.CollisionGroup, wall.Name = 1, true, "LockUp", "Bars"
+		local mod = Instance.new("PathfindingModifier")
+		mod.PassThrough = true
+		mod.Parent = wall
+		-- old iron bars, two chains in a cross and a big brass padlock
+		local iron = Color3.fromRGB(60, 62, 66)
+		for i = -2, 2 do
+			bit(Vector3.new(0.35, 9, 0.35), Vector3.new(i * T / 5.5, 4.5, 0), iron)
+		end
+		bit(Vector3.new(T, 0.4, 0.4), Vector3.new(0, 8.6, 0), iron)
+		bit(Vector3.new(T, 0.4, 0.4), Vector3.new(0, 1.2, 0), iron)
+		for _, a in ipairs({ 35, -35 }) do
+			local ch = bit(Vector3.new(T * 1.05, 0.3, 0.3), Vector3.new(0, 4.6, -0.4), Color3.fromRGB(150, 150, 155))
+			ch.CFrame = CFrame.new(ch.Position) * (bestAcross == "x" and CFrame.Angles(0, 0, math.rad(a)) or CFrame.Angles(math.rad(a), 0, 0))
+		end
+		local lock = bit(Vector3.new(1.3, 1.3, 0.6), Vector3.new(0, 4.6, -0.75), Color3.fromRGB(205, 160, 60))
+		lock.CanQuery = true
+		bit(Vector3.new(0.9, 0.9, 0.2), Vector3.new(0, 5.6, -0.75), Color3.fromRGB(170, 170, 175))
+		gate.Parent = world.root
+		local pp = Instance.new("ProximityPrompt")
+		pp.ActionText = "Pick the lock"
+		pp.ObjectText = "Tinker"
+		pp.HoldDuration = 0
+		pp.MaxActivationDistance = 10
+		pp.RequiresLineOfSight = false
+		pp.KeyboardKeyCode = Enum.KeyCode.F
+		pp.GamepadKeyCode = Enum.KeyCode.ButtonY
+		pp:SetAttribute("Only", "tinker")
+		pp.Parent = lock
+		local mine = state.lockups
+		local function open()
+			mine[key] = nil
+			if gate.Parent then
+				gate:Destroy()
+			end
+		end
+		pp.Triggered:Connect(function(plr)
+			if state.status ~= "playing" or plr:GetAttribute("Skill") ~= "tinker" or not gate.Parent then
+				return
+			end
+			Effects.burst(lock.Position, "pick")
+			say("pick", plr.DisplayName .. " picked the Caretaker's padlock!")
+			quest(plr, "skill")
+			open()
+		end)
+		Effects.sound(lock.Position, "pick", 0.8)
+		say("lockup", "Jangle jangle... the Caretaker padlocked a doorway!", { userId = target.UserId })
+		task.delay(s.seconds, open)
+		return true
+	end
+end
+
 -- hit by a thrown pumpkin: knocked flat for a moment
 function round.hostHit(_, plr)
 	if plr:GetAttribute("Knocked") then

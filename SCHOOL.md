@@ -54,15 +54,20 @@ Prompt (no reference picture; Meshy settings as for the other hosts, A-Pose):
 Kept away from known characters on purpose: no cat, no long stringy hair,
 no patched brown coat (a famous film-school caretaker has all three).
 
-His power (Brent to pick): **Lock-up** (recommended) - he jangles his keys
-and locks the nearest doorway for 6 s (a padlock and chain appear; Tinker
-picks it at once), never the way out. Or **Wet Floor** - he mops a patch
-and kids slide across it, can't stop or turn for a moment.
+His power, **Lock-up** (Brent picked it 8 Oct; built): when he can see a
+kid, he padlocks a plain doorway within 3 tiles of them on the far side
+(away from him) - iron bars, crossed chains, a brass padlock - for 6 s.
+Never a locked door, the exit or the host's door, never on top of anyone.
+He walks through it himself (collision groups); Tinker picks it at once
+(F / Y). Cooldown 30 / 22 / 18 / 14 s by difficulty
+(`Config.HOST_SKILLS.lockup`). He is the School's own host
+(`Config.BUILDING_HOST.school = "caretaker"`) and visits the other
+buildings like the others do. Until his model is imported he is the
+built host in green.
 
 ## Decisions
 
-- **The school's own host** (Brent: yes, 8 Oct): the Caretaker above. Until
-  his model is imported the School uses the Pumpkin Host half the time.
+- **The school's own host** (Brent: yes, 8 Oct): the Caretaker above.
 - **"All floors" badge.** It still means the original 9 floors (its badge
   says 9); the School and the Basement are extra. A new badge "Top of the
   Class" for the School's Clock Tower: make it in Creator Hub (Badges) and

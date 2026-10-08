@@ -58,6 +58,9 @@ Config.HOST_SKILLS = {
 		cooldown = { easy = 14, normal = 10, hard = 8, nightmare = 6 } },
 	-- Robot: the room he is in goes dark (light still spills in from next door)
 	blackout = { seconds = 8, cooldown = { easy = 40, normal = 30, hard = 25, nightmare = 20 } },
+	-- the Caretaker: padlocks a doorway near a kid he can see, on the far side
+	-- of them (never a locked door, the exit or the host's door); Tinker picks it
+	lockup = { seconds = 6, near = 3, cooldown = { easy = 30, normal = 22, hard = 18, nightmare = 14 } },
 }
 -- the hosts: the model in ServerStorage/Characters and the skill. Each game
 -- picks one: half the time the building's own, otherwise one of the others.
@@ -65,8 +68,9 @@ Config.HOSTS = {
 	pumpkin = { model = "Host", name = "the Pumpkin Host", skill = "throw", tint = Color3.fromRGB(240, 120, 20) },
 	gummy = { model = "HostGummy", name = "Gummy Bear Man", skill = "gummy", tint = Color3.fromRGB(230, 40, 80) },
 	robot = { model = "HostRobot", name = "the Robot", skill = "blackout", tint = Color3.fromRGB(150, 160, 170) },
+	caretaker = { model = "HostCaretaker", name = "the Caretaker", skill = "lockup", tint = Color3.fromRGB(120, 160, 120) },
 }
-Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "pumpkin" }
+Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker" }
 -- the "escaped all floors" badge counts these buildings' floors (its badge says 9 floors)
 Config.ALL_FLOORS_BUILDINGS = { partyhouse = true, gummy = true, hospital = true }
 Config.CLUES = 3
@@ -88,7 +92,7 @@ Config.BADGES = {
 	partyhouse = 52874019824656, -- escaped the Party House's top floor (Attic)
 	gummy = 4415169378717199, -- escaped the Gummy Bounce House's top floor (Jelly Vault)
 	hospital = 3323093080758728, -- escaped the Hospital's top floor (Labs)
-	school = 0, -- escaped the Midnight School's top floor (Clock Tower)
+	school = 1104557368847767, -- Top of the Class: escaped the Midnight School's top floor (Clock Tower)
 	allFloors = 1673377768038318, -- escaped all 9 floors
 	rescuer = 0, -- freed 10 friends from the cage
 	untouched = 0, -- escaped without being caught
@@ -165,7 +169,7 @@ Config.PARTY_HOLD = 180
 Config.STUDIO_MAP = "school" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
--- testing in Studio: force a host ("pumpkin", "gummy", "robot"); nil = random
+-- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker"); nil = random
 Config.STUDIO_HOST = nil
 -- characters' skin without the bumpy normal map (smoother faces); false to keep it
 Config.FLAT_CHARACTER_SKIN = true

@@ -154,6 +154,12 @@ function Host:spawn(diff)
 		end
 		self.model.Parent = workspace
 	end
+	-- the host walks through the Caretaker's padlocked gates (kids can't)
+	for _, d in ipairs(self.model:GetDescendants()) do
+		if d:IsA("BasePart") then
+			d.CollisionGroup = "Host"
+		end
+	end
 	self.root:SetNetworkOwner(nil)
 	self.diff = diff -- a Config.DIFFICULTY entry
 	self.frenzy = false
@@ -340,6 +346,14 @@ function Host:step(dt)
 		if self.skill == "throw" and now >= (self.nextSkill or 0) and bestD >= s.min and bestD <= s.range then
 			self.nextSkill = now + (s.cooldown[string.lower(self.diff.name)] or 15)
 			self:throwAt(best)
+		end
+		-- the Caretaker padlocks a doorway on the far side of a kid he can see
+		if self.skill == "lockup" and now >= (self.nextSkill or 0) then
+			if self.round:hostLockup(best, self.root.Position) then
+				self.nextSkill = now + (Config.HOST_SKILLS.lockup.cooldown[string.lower(self.diff.name)] or 22)
+			else
+				self.nextSkill = now + 1
+			end
 		end
 	elseif self.mode == "hunt" and now - self.lastSeen > Config.HOST.lostAfter then
 		self.mode = "search"

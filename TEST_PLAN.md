@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `school`, the Midnight School's
 Ground Floor); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,17 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 17 (8 Oct) - the Caretaker's Lock-up (SCHOOL.md)
+
+Ask Claude to set `Config.STUDIO_HOST = "caretaker"` (he is the built host in
+green until his model is imported as ServerStorage/Characters/HostCaretaker).
+- [ ] Let him see you and run: a gate of iron bars with crossed chains and a brass padlock appears in a doorway ahead of you (not behind you), with "Jangle jangle... the Caretaker padlocked a doorway!"
+- [ ] You can't walk or jump through it; he walks straight through it
+- [ ] It goes after 6 seconds
+- [ ] As Tinker: "Pick the lock" (F / Y) opens it at once; other characters see no prompt
+- [ ] Never on a locked door, the exit or the host's door; never on top of a kid
+- [ ] On a School floor he is the host about half the time; the start message says "Tonight's host: the Caretaker"
 
 ## Round 16 (8 Oct) - Midnight School (building 4, SCHOOL.md)
 
