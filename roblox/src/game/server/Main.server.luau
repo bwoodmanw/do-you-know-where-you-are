@@ -2285,8 +2285,12 @@ function round.start()
 			RoundState:SetAttribute("FreeClues", state.freeClues)
 			RoundState:SetAttribute("CluesLeft", state.cluesLeft)
 		end
-		-- each character with "one code colour" shows a different colour (never all three)
-		for _ = 1, math.min(reveals, 2) do
+		-- "one code colour" upgrades: one colour a game, however many players have
+		-- one, and none on Nightmare (Config.CODE_COLOUR_ON_NIGHTMARE)
+		if state.diff == "nightmare" and not Config.CODE_COLOUR_ON_NIGHTMARE then
+			reveals = 0
+		end
+		for _ = 1, math.min(reveals, 1) do
 			local unknown = {}
 			for k = 1, 3 do
 				if not state.known[k] then

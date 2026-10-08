@@ -346,6 +346,9 @@ Config.SOUND_MAX = { hide = 1.6, unhide = 1.5, escape = 5, cage = 2.5, rescue = 
 -- play with a friend: +10% of the points from a game when a Roblox friend
 -- plays it with you
 Config.FRIEND_BONUS = 0.1
+-- ladder upgrades that show one colour of the code at the start: one colour a
+-- game however many players have one; on Nightmare too only if this is true
+Config.CODE_COLOUR_ON_NIGHTMARE = false
 -- the chocolate river: wading slows kids (and the host); the bridge does not
 Config.WADE = { kid = 0.5, host = 0.6 }
 -- the laundry chute: a one-way slide from the Laundry / Linen Room to a far

@@ -56,6 +56,57 @@ local function colourOf(sa)
 	return nil
 end
 
+-- "Fix Muscle Shoes": puts the texture with the shoe marks painted out
+-- (art/models/muscle-texture-clean.png, uploaded as a Decal) on every part of
+-- the selected model, or ServerStorage -> Characters -> Muscle
+local SHOES_DECAL = 103474459120477
+local shoes = toolbar:CreateButton("Fix Muscle Shoes", "Put the clean texture (no shoe marks) on Muscle (selected model, or Characters/Muscle)", "")
+shoes.ClickableWhenViewportHidden = true
+shoes.Click:Connect(function()
+	if RunService:IsRunning() then
+		show("The game is playing. Press Stop first, then click Fix Muscle Shoes again.")
+		return
+	end
+	local target = Selection:Get()[1]
+	if not (target and target:IsA("Model")) then
+		local folder = game:GetService("ServerStorage"):FindFirstChild("Characters")
+		target = folder and folder:FindFirstChild("Muscle")
+	end
+	if not target then
+		show("No Muscle found. Open the Party House place (ServerStorage > Characters > Muscle), or click the model in Explorer first.")
+		return
+	end
+	-- the Decal's own picture id (a Decal id is not a picture id)
+	local imageId
+	local ok, err = pcall(function()
+		local m = game:GetService("InsertService"):LoadAsset(SHOES_DECAL)
+		local d = m:FindFirstChildWhichIsA("Decal", true)
+		imageId = d and d.Texture
+		m:Destroy()
+	end)
+	if not imageId or imageId == "" then
+		show("Could not read the uploaded picture " .. SHOES_DECAL .. " (" .. tostring(err) .. "). Is it still being checked by Roblox? Try again in a few minutes.")
+		return
+	end
+	local recording = ChangeHistoryService:TryBeginRecording("Fix Muscle Shoes")
+	local n = 0
+	for _, d in ipairs(target:GetDescendants()) do
+		if d:IsA("SurfaceAppearance") then
+			d.Parent = nil -- it would cover the new texture
+		end
+	end
+	for _, d in ipairs(target:GetDescendants()) do
+		if d:IsA("MeshPart") then
+			d.TextureID = imageId
+			n += 1
+		end
+	end
+	if recording then
+		ChangeHistoryService:FinishRecording(recording, Enum.FinishRecordingOperation.Commit)
+	end
+	show(string.format("Done! The clean texture is on %d parts of %s.\n\nLook at his shoes: plain grey and white. Ctrl+Z undoes it.\nThen right-click %s > Save to Roblox > Overwrite.", n, target.Name, target.Name))
+end)
+
 button.Click:Connect(function()
 	if RunService:IsRunning() then
 		show("The game is playing. Press Stop (the red square at the top) first, then click Soften Patch again.\n\n(Changes made while playing are thrown away when you stop.)")

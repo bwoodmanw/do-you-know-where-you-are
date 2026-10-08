@@ -169,6 +169,12 @@ If a screen looks different from these steps, send me a photo of it.
 
 ## Remaking Echo herself (her face looks squashed, 7 Oct)
 
+**Done by Brent (7 Oct):** `art/model-input/echo-remake/a-pose-front.png`
+(checked: small goggles on her bun, both eyes open, no logos) and
+`art/models/echo-remake.glb`. I rendered it: the face is no longer squashed.
+I ran `tools/face_boost.py` on it: **`art/models/echo-remake-sharp.glb`** has a
+cleaner, sharper face and the same body - import that one (steps 3-4 below).
+
 In the render of `art/models/echo.glb` her big goggles fill the top half of
 the head, so the face is squeezed into the bottom third and one eye came out
 half closed. That is the 3D shape Meshy made from the picture, so the fix is

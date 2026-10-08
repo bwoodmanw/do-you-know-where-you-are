@@ -123,7 +123,7 @@ local SPECIAL = {
 	tinker = {
 		[3] = {
 			{ id = "fingers", name = "Quick Fingers", say = "Pick locked doors 15% faster", mods = { holdMult = 0.85 } },
-			{ id = "lucky", name = "Lucky Guess", say = "Your team starts knowing one colour of the code", mods = { revealOne = true } },
+			{ id = "lucky", name = "Lucky Guess", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[5] = {
 			{ id = "master", name = "Handy", say = "Everything you hold is 15% faster", mods = { holdMult = 0.85 } },
@@ -167,7 +167,7 @@ local SPECIAL = {
 	brainy = {
 		[3] = {
 			{ id = "hints", name = "Bonus Hint", say = "+1 clue for the team", mods = { clues = 1 } },
-			{ id = "sense", name = "Code Sense", say = "Your team starts knowing one colour of the code", mods = { revealOne = true } },
+			{ id = "sense", name = "Code Sense", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[5] = {
 			{ id = "genius", name = "Clever", say = "+1 clue for the team", mods = { clues = 1 } },
@@ -211,7 +211,7 @@ local SPECIAL = {
 	glow = {
 		[3] = {
 			{ id = "bright", name = "Brighter Bulb", say = "Your light reaches a bit further", mods = { glowRange = 28 } },
-			{ id = "secrets", name = "Secret Seeker", say = "Your team starts knowing one colour of the code", mods = { revealOne = true } },
+			{ id = "secrets", name = "Secret Seeker", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[5] = {
 			{ id = "sun", name = "Bright Beam", say = "Your light reaches further", mods = { glowRange = 32 } },
@@ -281,7 +281,7 @@ local SPECIAL = {
 		},
 		[5] = {
 			{ id = "camo", name = "Leafy", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
-			{ id = "bloom", name = "Bloom", say = "Your team starts knowing one colour of the code", mods = { revealOne = true } },
+			{ id = "bloom", name = "Bloom", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[7] = {
 			{ id = "listen", name = "Good Listener", say = "Ask the plant 20% faster", mods = { holdMult = 0.8 } },
