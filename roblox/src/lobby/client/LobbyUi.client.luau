@@ -885,8 +885,15 @@ do
 			end
 			return nil
 		end
-		local banner = button(gui, "", { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -8), Size = UDim2.fromOffset(500, 38), BackgroundColor3 = Color3.fromRGB(40, 22, 62), TextColor3 = Color3.fromRGB(255, 180, 70), ZIndex = 5 })
-		cornPic(banner, 30, UDim2.fromOffset(-2, -2), 6)
+		local bannerHolder = Instance.new("Frame")
+		bannerHolder.BackgroundTransparency = 1
+		bannerHolder.AnchorPoint = Vector2.new(0.5, 1)
+		bannerHolder.Position = UDim2.new(0.5, 0, 1, -8)
+		bannerHolder.Size = UDim2.fromOffset(540, 38)
+		bannerHolder.ZIndex = 5
+		bannerHolder.Parent = gui
+		cornPic(bannerHolder, 38, UDim2.fromOffset(0, 0), 6)
+		local banner = button(bannerHolder, "", { Position = UDim2.fromOffset(42, 0), Size = UDim2.new(1, -42, 1, 0), BackgroundColor3 = Color3.fromRGB(40, 22, 62), TextColor3 = Color3.fromRGB(255, 180, 70), ZIndex = 5 })
 		local cshop = frame(gui, { Size = UDim2.fromOffset(620, 620), Position = UDim2.new(0.5, -310, 0.5, -310), Visible = false, ZIndex = 10 })
 		corner(cshop, 18)
 		cornPic(cshop, 46, UDim2.fromOffset(16, 6), 11)
@@ -909,12 +916,17 @@ do
 			end
 			label(r, { Size = UDim2.fromOffset(250, 26), Position = UDim2.fromOffset(64, 6), Text = name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
 			label(r, { Size = UDim2.fromOffset(300, 22), Position = UDim2.fromOffset(64, 34), Text = say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
-			local owned = label(r, { Size = UDim2.fromOffset(110, 20), Position = UDim2.fromOffset(372, 4), Text = "", ZIndex = 12 })
+			local owned = label(r, { Size = UDim2.fromOffset(100, 20), Position = UDim2.fromOffset(372, 22), Text = "", ZIndex = 12 })
 			return r, owned
 		end
 		local function buyButton(r, price, onClick)
-			local b = button(r, "Buy " .. price .. "     ", { Size = UDim2.fromOffset(120, 40), Position = UDim2.fromOffset(470, 12), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, onClick)
-			cornPic(b, 28, UDim2.new(1, -34, 0.5, -14), 13)
+			local b = button(r, "Buy " .. price, { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(476, 12), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, onClick)
+			local pic = cornPic(r, 30, UDim2.fromOffset(562, 17), 12)
+			if pic then
+				b:GetPropertyChangedSignal("Visible"):Connect(function()
+					pic.Visible = b.Visible
+				end)
+			end
 			return b
 		end
 		local i = 0
