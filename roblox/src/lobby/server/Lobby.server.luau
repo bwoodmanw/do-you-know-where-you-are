@@ -1309,6 +1309,9 @@ local function ownsSkin(plr, skin)
 	if game:GetService("RunService"):IsStudio() and Config.SKINS_FREE_IN_STUDIO then
 		return true
 	end
+	if Config.SKINS_FREE_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId then
+		return true
+	end
 	if not skin.pass or skin.pass <= 0 then
 		return false
 	end

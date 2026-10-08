@@ -205,7 +205,7 @@ Config.CHARACTER_ASSETS = {
 	ShadowGhost = 126072588049013,
 	BrambleAutumn = 90429061895312,
 	PatchHalloween = 80329522710291,
-	EchoStar = 78330257038104,
+	EchoStar = 78905373095211, -- 8 Oct: remade face (was 78330257038104)
 	BrainySpace = 110376512028941,
 	GlowCandy = 99155956475141,
 	MuscleSnow = 109339323825822,
@@ -429,5 +429,8 @@ Config.SKINS = {
 }
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true
+-- the experience's owner can wear every skin in the live game too (owning a
+-- game does not count as owning its Game Passes)
+Config.SKINS_FREE_FOR_OWNER = true
 
 return Config
