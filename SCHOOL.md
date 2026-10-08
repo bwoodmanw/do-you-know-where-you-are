@@ -16,9 +16,11 @@ wooden tables on metal legs, chalkboards with something chalked on them,
 trophy cabinets, school pictures (apple, pencil, books, bell, owl). Studio
 Play builds it now (`Config.STUDIO_MAP = "school"`).
 
-## Pictures for the Lobby map screen (Brent)
+## Pictures for the Lobby map screen (done 8 Oct)
 
-The map cards show a plain colour until these exist. Make each at 16:9
+In `Config.MAP_IMAGES`: building-school 108429364285668, Ground Floor
+86527371561332, Classrooms 83786060551446, Clock Tower 111098812594935.
+The prompts below made them. Make each at 16:9
 (like the others, e.g. 1536 x 864), save to `art/roblox-store/maps/`, upload
 in Studio (Lobby place: View -> Asset Manager -> Import, or Creator Hub ->
 Development Items -> Decals) and send me the 4 image ids.
@@ -31,12 +33,36 @@ Style line for every prompt (the other cards' look):
 3. **floor-school-classrooms.png** - "A two-storey school library with a balcony and a spiral of bookshelves, next to a classroom with rows of small desks and a chalkboard, a science lab with beakers." + the style line.
 4. **floor-school-clocktower.png** - "Inside a school clock tower: the back of a giant clock face, big gears and a brass bell, an exam hall of desks below, a telescope by a round window." + the style line.
 
+## "Top of the Class" badge
+
+Picture: `art/roblox-store/badges/badge-school.png` (made with
+`python tools/make_badge.py art/roblox-store/maps/floor-school-clocktower.png
+art/roblox-store/badges/badge-school.png 235,120,55 520 0 941`: the Clock
+Tower card's bell, gears and exam hall in a brick-orange ring, like the
+other badges). Name: **Top of the Class**. Description: **Escaped the
+Midnight School's Clock Tower.** The id goes into `Config.BADGES.school`.
+
+## The school's host: the Caretaker
+
+A tall, thin night caretaker who never went home - friendly-spooky, not
+gory. Model name in Studio: **HostCaretaker** (Party House ServerStorage ->
+Characters). Picture: `art/model-input/host-caretaker/a-pose-front.png`.
+
+Prompt (no reference picture; Meshy settings as for the other hosts, A-Pose):
+> A tall, thin, ghostly school caretaker for a kids' spooky game. Pale mint-grey skin with a soft glow, big round glowing yellow eyes, a long nose, a big bushy white moustache, short tufty white hair, a small grey flat cap sitting high on the back of his head (not over his forehead). A short buttoned dusty-green work jacket that ends at the hips, rolled-up sleeves, dark green work trousers, chunky black boots, a wide brown belt with a big ring of old brass keys hanging at one hip and a feather duster tucked in it, a short mop strapped across his back with the mop head sticking up behind one shoulder. Long thin arms with a clear gap of air between each arm and the body, nothing hanging from the arms. Spooky but friendly, a little grumpy. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
+
+Kept away from known characters on purpose: no cat, no long stringy hair,
+no patched brown coat (a famous film-school caretaker has all three).
+
+His power (Brent to pick): **Lock-up** (recommended) - he jangles his keys
+and locks the nearest doorway for 6 s (a padlock and chain appear; Tinker
+picks it at once), never the way out. Or **Wet Floor** - he mops a patch
+and kids slide across it, can't stop or turn for a moment.
+
 ## Decisions
 
-- **The school's own host.** For now the School uses the Pumpkin Host half
-  the time (and the Gummy Bear Man or the Robot the other half). A school
-  host (say a ghostly caretaker with a mop and a jangle of keys) would need
-  a picture, a Meshy model and an import like the other hosts.
+- **The school's own host** (Brent: yes, 8 Oct): the Caretaker above. Until
+  his model is imported the School uses the Pumpkin Host half the time.
 - **"All floors" badge.** It still means the original 9 floors (its badge
   says 9); the School and the Basement are extra. A new badge "Top of the
   Class" for the School's Clock Tower: make it in Creator Hub (Badges) and
