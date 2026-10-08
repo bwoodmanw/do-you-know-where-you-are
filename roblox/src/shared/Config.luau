@@ -201,6 +201,8 @@ Config.CHARACTER_ASSETS = {
 	TinkerPumpkin = 107525785066601,
 	ShadowGhost = 126072588049013,
 	BrambleAutumn = 90429061895312,
+	PatchHalloween = 80329522710291,
+	EchoStar = 78330257038104,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon

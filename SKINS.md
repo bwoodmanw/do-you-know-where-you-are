@@ -18,10 +18,10 @@ previews show it too. Skins change looks only, never skills.
 | 3 | Candy Glow | Glow | `candy-glow/` | `candy-glow.glb` | `GlowCandy` | ready (checked 7 Oct) |
 | 4 | Night Nurse Patch | Patch | `night-nurse-patch/` | `night-nurse-patch.glb` | `PatchNurse` | ready (checked 7 Oct) |
 | 5 | Space Cadet Brainy | Brainy | `space-cadet-brainy/` | `space-cadet-brainy.glb` | `BrainySpace` | ready (checked 7 Oct) |
-| 6 | Snow Day Muscle | Muscle | `snow-day-muscle/` | `snow-day-muscle.glb` | `MuscleSnow` | remake the picture (red and white scarf, prompt 6b) |
-| 7 | Starlight Echo | Echo | `starlight-echo/` | `starlight-echo.glb` | `EchoStar` | ready (checked 7 Oct) |
+| 6 | Snow Day Muscle | Muscle | `snow-day-muscle/` | `snow-day-muscle.glb` | `MuscleSnow` | red-and-white scarf picture checked 8 Oct: ready |
+| 7 | Starlight Echo | Echo | `starlight-echo/` | `starlight-echo.glb` | `EchoStar` | model saved: 78330257038104 (Game Pass to make) |
 | 8 | Autumn Leaf Bramble | Bramble | `autumn-leaf-bramble/` | `autumn-leaf-bramble.glb` | `BrambleAutumn` | model saved: 90429061895312 (Game Pass to make) |
-| 9 | Halloween Nurse Patch | Patch | `halloween-nurse-patch/` | `halloween-nurse-patch.glb` | `PatchHalloween` | ready (checked 7 Oct) |
+| 9 | Halloween Nurse Patch | Patch | `halloween-nurse-patch/` | `halloween-nurse-patch.glb` | `PatchHalloween` | model saved: 80329522710291 (Game Pass to make) |
 
 The **Name in Studio** must be exact (capitals too): the game finds the model
 by that name. Suggested price 99 Robux each.
