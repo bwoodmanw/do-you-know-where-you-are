@@ -235,7 +235,7 @@ Config.CHARACTER_ASSETS = {
 	Tinker = 115806881502179,
 	Shadow = 85123632229176,
 	Brainy = 96432127418740,
-	Echo = 102616480883822, -- 7 Oct: remade face (was 121427930738516)
+	Echo = 139525446217656, -- 8 Oct: remade in A-pose (was 102616480883822, T-pose)
 	Bramble = 83770262810721,
 	Host = 135742994182895,
 	HostGummy = 106903651525041,
@@ -488,7 +488,7 @@ Config.SKINS = {
 	-- not sold for Robux: bought in the Candy Shop for `corn` candy corns on
 	-- hand (Halloween), kept for good. hidden = not shown until its model is
 	-- saved (CHARACTER_ASSETS.MuscleMummy)
-	{ id = "muscle_mummy", skill = "muscle", name = "Muscle Mummy", model = "MuscleMummy", corn = 100, icon = 0 }, -- icon: art/roblox-store/passes/skin-muscle-mummy.png, uploaded in the Lobby
+	{ id = "muscle_mummy", skill = "muscle", name = "Muscle Mummy", model = "MuscleMummy", corn = 100, icon = 74900057639675 }, -- icon: art/roblox-store/passes/skin-muscle-mummy.png (Lobby upload)
 }
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true

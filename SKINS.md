@@ -258,7 +258,7 @@ they go into `Config.CHARACTER_ASSETS` (the Lobby loads those).
 
 Results (8 Oct): Ghostly Shadow A-pose saved 104153912502548 (in Config);
 Mummy Muscle saved 121243831267156 (in Config, switched on). **Echo's
-A-pose model fails Avatar Setup**: "Failed to stitch the processed head to
+A-pose model failed Avatar Setup at first** (remeshed in Meshy it went through: saved 139525446217656, in Config).: "Failed to stitch the processed head to
 the processed body ... resolution ... along the neckline". Most likely her
 big headphones round the neck sit right on the line where Avatar Setup cuts
 head from body. Fixes in order: (1) Meshy -> the model -> Remesh,
