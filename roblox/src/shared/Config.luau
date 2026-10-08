@@ -416,13 +416,13 @@ Config.NOTIFY = { messageId = "", secret = "notifications", hours = 22 }
 -- ServerStorage/Characters (or in CHARACTER_ASSETS once saved to Roblox).
 Config.SKINS = {
 	{ id = "tinker_pumpkin", skill = "tinker", name = "Pumpkin Patch Tinker", model = "TinkerPumpkin", pass = 2019380267 },
-	{ id = "shadow_ghost", skill = "shadow", name = "Ghostly Shadow", model = "ShadowGhost", pass = 0 },
-	{ id = "glow_candy", skill = "glow", name = "Candy Glow", model = "GlowCandy", pass = 0 },
-	{ id = "patch_halloween", skill = "patch", name = "Halloween Nurse Patch", model = "PatchHalloween", pass = 0 },
-	{ id = "brainy_space", skill = "brainy", name = "Space Cadet Brainy", model = "BrainySpace", pass = 0 },
-	{ id = "muscle_snow", skill = "muscle", name = "Snow Day Muscle", model = "MuscleSnow", pass = 0 },
-	{ id = "echo_star", skill = "echo", name = "Starlight Echo", model = "EchoStar", pass = 0 },
-	{ id = "bramble_autumn", skill = "bramble", name = "Autumn Leaf Bramble", model = "BrambleAutumn", pass = 0 },
+	{ id = "shadow_ghost", skill = "shadow", name = "Ghostly Shadow", model = "ShadowGhost", pass = 2019074273 },
+	{ id = "glow_candy", skill = "glow", name = "Candy Glow", model = "GlowCandy", pass = 2019554271 },
+	{ id = "patch_halloween", skill = "patch", name = "Halloween Nurse Patch", model = "PatchHalloween", pass = 2019356268 },
+	{ id = "brainy_space", skill = "brainy", name = "Space Cadet Brainy", model = "BrainySpace", pass = 2019890265 },
+	{ id = "muscle_snow", skill = "muscle", name = "Snow Day Muscle", model = "MuscleSnow", pass = 2018270268 },
+	{ id = "echo_star", skill = "echo", name = "Starlight Echo", model = "EchoStar", pass = 2017922280 },
+	{ id = "bramble_autumn", skill = "bramble", name = "Autumn Leaf Bramble", model = "BrambleAutumn", pass = 2018084266 },
 }
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true

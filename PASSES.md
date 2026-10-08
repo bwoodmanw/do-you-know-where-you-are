@@ -14,11 +14,18 @@ checked): `art/roblox-store/passes/`. `_all.png` shows all eight together.
 | 7 | Autumn Leaf Bramble | `pass-autumn-leaf-bramble.png` | 99 | Bramble in autumn colours: a cape of red and golden leaves and an acorn crown. Looks only - Bramble's skills stay the same. Wear it from Characters in the Lobby. |
 | 8 | Halloween Nurse Patch | `pass-halloween-nurse-patch.png` | 99 | Patch on Halloween night: black scrubs, pumpkin trainers and a pumpkin bag. Looks only - Patch's skills stay the same. Wear it from Characters in the Lobby. |
 
-## Pass ids so far
+## Pass ids (all 8, checked on Roblox 8 Oct)
 
 | Skin | Pass id |
 |---|---|
 | Pumpkin Patch Tinker | 2019380267 (checked: 99 Robux, for sale) |
+| Ghostly Shadow | 2019074273 (checked: 99 Robux, for sale) |
+| Candy Glow | 2019554271 (checked: 99 Robux, for sale) |
+| Space Cadet Brainy | 2019890265 (checked: 99 Robux, for sale) |
+| Snow Day Muscle | 2018270268 (checked: 99 Robux, for sale) |
+| Starlight Echo | 2017922280 (checked: 99 Robux, for sale) |
+| Autumn Leaf Bramble | 2018084266 (checked: 99 Robux, for sale) |
+| Halloween Nurse Patch | 2019356268 (checked: 99 Robux, for sale) |
 
 ## Managed pricing: OFF (8 Oct)
 
