@@ -650,6 +650,7 @@ local function showChar()
 	if src then
 		shown = src:Clone()
 		shown.Parent = viewWorld
+		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown) -- a T-pose plays the idle (arms down)
 		noModel.Visible = false
 	else
 		noModel.Visible = true
