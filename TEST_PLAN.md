@@ -1,4 +1,11 @@
-# Escape Crew - test plan (6 Oct 2026)
+# Escape Crew - test plan (updated 8 Oct 2026)
+
+**Start with rounds 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+Studio Play builds `Config.STUDIO_MAP` (now `school`, the Midnight School's
+Ground Floor); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
+`partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
+`hospital_2`, `hospital_3`, `school_2`, `school_3`) or `Config.STUDIO_TOWER` for a
+Tower Run.
 
 Everything below was built today and has only been checked in code (it
 compiles, the analyser passes, the floor plans pass 2,000 random fills). Tick

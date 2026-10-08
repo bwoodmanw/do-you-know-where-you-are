@@ -19,6 +19,11 @@ parked. This folder is unrelated to Parallax or Playbox - ignore their rules.
 - **Patch scripts are atomic:** assert every anchor, write each file once at
   the end (`.tmp` then `os.replace`). Write them with the Write tool - a bash
   heredoc eats backslashes, so `\u{...}` escapes and `\n` arrive mangled.
+- **Floor plans:** edit `tools/make_housemap.py` (never HouseMap.luau) and
+  run it in the background - its 2,000-fill check per plan takes minutes;
+  then `.tools/luau.exe tools/check_rooms.luau`.
+- **Imported (skinned) characters:** never move their parts by hand to
+  re-pose them (it squashes them); play an animation instead.
 - **Rebuild the place files after code changes:**
   `.tools/rojo.exe build roblox/game.project.json -o EscapeCrew-PartyHouse.rbxlx`
   and the same for `lobby.project.json` -> `EscapeCrew-Lobby.rbxlx`.

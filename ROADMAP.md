@@ -146,9 +146,27 @@ only when everyone presses Play.
 - Fixes: Echo's noise holds the host 5 s (`Config.ECHO_LURE`); prompts per
   character; characters' hip height from their model (Echo's shaking run).
 
-## Next, waiting on Brent's yes
-1. Skill Reset Developer Product 49 -> 79 Robux (Brent changes it in Creator
-   Hub; the Lobby button now reads the price from Roblox).
-2. Host balance per difficulty - needs play data (see SESSION_HANDOFF).
-3. Hospital floors 2-3.
-4. Halloween polish for 29 Oct: tutorial, balance, dressed rooms.
+## Fourth session (7-8 Oct) - built, mostly untested (TEST_PLAN rounds 12-16)
+- Everything in IMPROVEMENTS.md except B8 analytics: controller support,
+  friends bonus, chocolate wading, rejoin after a drop, daily quests,
+  notifications (off until Creator Hub steps), laundry chute, vault door,
+  moonlit windows, character skins.
+- Play-test fixes: caught in a vent/chute lands in the cage; ladder bonuses
+  match the character played; Lobby window peeks never stop; leaderboard
+  counts daily rewards.
+- Code-colour upgrades: one colour a game, none on Nightmare.
+- Brainy's new ladder (`BRAINY_LADDER.md`); clue log (every clue this game).
+- Weekly quests (3 a week, points + a boost).
+- **The secret Basement** (Party House floor 0, unlocked by the Attic).
+- **Tower Run** (one game climbs a building's 3 floors).
+- **Building 4: the Midnight School** (Ground Floor, Classrooms, Clock Tower;
+  `SCHOOL.md`).
+- **8 skins on sale** as Game Passes (`SKINS.md`, `PASSES.md`).
+
+## Next
+1. Brent: publish both places before 29 Oct; play-test rounds 12-16.
+2. **Building 5** with 3 floors (Brent: "fourth and fifth building with 3
+   floors" - the fifth is next).
+3. School extras: map pictures, a school host, a "Top of the Class" badge.
+4. Host balance per difficulty from the 📊 Balance table after a week live.
+5. Later: B8 analytics, subscriptions (parked).

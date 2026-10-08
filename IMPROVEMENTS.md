@@ -89,7 +89,12 @@ art, models and Game Passes in `SKINS.md`).
 
 Still open: B8 analytics (Brent: not now), C6 real models (Brent, any time).
 
-## Suggested order for the next sessions
+## Status (8 Oct)
+
+Everything above is built except B8 analytics (parked by Brent) and C6 real
+models (Brent, any time). See ROADMAP.md "Next" for what comes after.
+
+## Suggested order for the next sessions (historical)
 
 1. Save safety (A1).
 2. Room signs, room sounds, particles, room lighting (C1, C2, C3, C5).
