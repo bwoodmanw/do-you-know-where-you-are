@@ -29,6 +29,10 @@ Progress.MAPS = {
 	{ id = "carnival", building = "carnival", floor = 1, name = "Carnival: The Midway", icon = "\u{1F3A0}", ready = true },
 	{ id = "carnival_2", building = "carnival", floor = 2, name = "Carnival: The Big Top", icon = "\u{1F3AA}", ready = true },
 	{ id = "carnival_3", building = "carnival", floor = 3, name = "Carnival: The Funhouse", icon = "\u{1F921}", ready = true },
+	-- building 6 (8 Oct): unlocked by escaping the Carnival's Big Top
+	{ id = "aquarium", building = "aquarium", floor = 1, name = "Aquarium: Main Hall", icon = "\u{1F41F}", ready = true },
+	{ id = "aquarium_2", building = "aquarium", floor = 2, name = "Aquarium: Deep Sea", icon = "\u{1F419}", ready = true },
+	{ id = "aquarium_3", building = "aquarium", floor = 3, name = "Aquarium: Rooftop Pools", icon = "\u{1F42C}", ready = true },
 }
 
 Progress.BUILDINGS = {
@@ -37,6 +41,7 @@ Progress.BUILDINGS = {
 	{ id = "hospital", name = "Abandoned Hospital" },
 	{ id = "school", name = "Midnight School" },
 	{ id = "carnival", name = "Creepy Carnival" },
+	{ id = "aquarium", name = "Sunken Aquarium" },
 }
 
 -- what escaping this floor unlocks

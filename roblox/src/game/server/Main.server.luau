@@ -1726,6 +1726,111 @@ function round.placeJackBoxes()
 	end)
 end
 
+-- the Anglerfish Keeper's fake presents: exactly like a real one; open it
+-- and it flashes, you glow and he comes to look. Brainy and Glow can pop a
+-- fake safely (their own prompt). A few at once, each for a minute.
+function round.hostFakeGift(_, pos, hostModel)
+	if state.status ~= "playing" or not world then
+		return false
+	end
+	local s = Config.HOST_SKILLS.fakegift
+	state.fakes = state.fakes or {}
+	for i = #state.fakes, 1, -1 do
+		if not state.fakes[i].Parent then
+			table.remove(state.fakes, i)
+		end
+	end
+	if #state.fakes >= s.max then
+		return false
+	end
+	local x, y = math.floor(pos.X / T), math.floor(pos.Z / T)
+	if nearDoorway(x, y) then
+		return false
+	end
+	for _, g in ipairs(state.fakes) do
+		if (Vector3.new(g:GetPivot().Position.X - pos.X, 0, g:GetPivot().Position.Z - pos.Z)).Magnitude < s.clear * T then
+			return false
+		end
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { hostModel }
+	local hit = workspace:Raycast(pos, Vector3.new(0, -40, 0), params)
+	local base = Vector3.new(pos.X, hit and hit.Position.Y or 0, pos.Z)
+	local m = Instance.new("Model")
+	m.Name = "FakePresent"
+	local function bit(props)
+		local p = Instance.new("Part")
+		p.Anchored, p.CanCollide, p.CanTouch, p.CastShadow = true, false, false, false
+		for k, v in pairs(props) do
+			p[k] = v
+		end
+		p.Parent = m
+		return p
+	end
+	local blue = math.random() < 0.5
+	local col = blue and Color3.fromRGB(61, 139, 255) or Color3.fromRGB(232, 80, 91)
+	local box = bit({ Name = "Present", Size = Vector3.new(2.2, 2, 2.2), Position = base + Vector3.new(0, 1, 0), Color = col })
+	bit({ Name = "Ribbon", Size = Vector3.new(2.3, 2.1, 0.4), Position = box.Position, Color = Color3.fromRGB(255, 210, 63) })
+	bit({ Name = "PresentLid", Size = Vector3.new(2.5, 0.5, 2.5), Position = base + Vector3.new(0, 2.2, 0), Color = col })
+	bit({ Name = "Bow", Shape = Enum.PartType.Ball, Size = Vector3.new(0.9, 0.9, 0.9), Position = base + Vector3.new(0, 2.6, 0), Color = Color3.fromRGB(255, 210, 63) })
+	m.PrimaryPart = box
+	m.Parent = world.root
+	table.insert(state.fakes, m)
+	local myState = state
+	local function prompt(action, object, only)
+		local pp = Instance.new("ProximityPrompt")
+		pp.ActionText, pp.ObjectText = action, object
+		pp.HoldDuration = 0
+		pp.MaxActivationDistance = 10
+		pp.RequiresLineOfSight = false
+		if only then
+			pp:SetAttribute("Only", only)
+			pp.KeyboardKeyCode = Enum.KeyCode.F
+			pp.GamepadKeyCode = Enum.KeyCode.ButtonY
+		end
+		pp.Parent = box
+		return pp
+	end
+	-- anyone: it looks just like a present
+	prompt("Open", "Present").Triggered:Connect(function(plr)
+		if state ~= myState or state.status ~= "playing" or not m.Parent then
+			return
+		end
+		m:Destroy()
+		local h = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+		Effects.burst(box.Position + Vector3.new(0, 2, 0), "noise")
+		say("fake", "It was a trick present! The Anglerfish Keeper knows where " .. plr.DisplayName .. " is!", { userId = plr.UserId })
+		if plr.Character then
+			local hl = Instance.new("Highlight")
+			hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(120, 220, 255), Color3.fromRGB(255, 240, 170), 0.6
+			hl.Parent = plr.Character
+			game:GetService("Debris"):AddItem(hl, s.show)
+		end
+		if h and host and host.model then
+			host:alert(h.Position)
+		end
+	end)
+	-- Brainy and Glow can tell a fake, and pop it safely
+	for _, who in ipairs({ "brainy", "glow" }) do
+		prompt("Pop it - it's a fake!", who == "brainy" and "Brainy can tell" or "Glow's light shows it", who).Triggered:Connect(function(plr)
+			if state ~= myState or state.status ~= "playing" or not m.Parent or plr:GetAttribute("Skill") ~= who then
+				return
+			end
+			m:Destroy()
+			Effects.burst(box.Position, "pop")
+			say("pick", plr.DisplayName .. " spotted a trick present and popped it!")
+			quest(plr, "skill")
+		end)
+	end
+	task.delay(s.last, function()
+		if m.Parent then
+			m:Destroy()
+		end
+	end)
+	return true
+end
+
 -- hit by a thrown pumpkin: knocked flat for a moment
 function round.hostHit(_, plr)
 	if plr:GetAttribute("Knocked") then
@@ -2418,6 +2523,16 @@ function round.start()
 			sw.ActionText = dark and "Lights on" or "Lights off"
 		end
 		paintDark()
+	end
+	-- the Aquarium's Deep Sea: the kelp forest, the anglerfish den and the
+	-- coral cave start dark (Glow's light, or the light switch, helps)
+	if HouseMap.theme == "aquarium" then
+		for _, f in ipairs(HouseMap.floors) do
+			local n = string.lower(f.name)
+			if string.find(n, "kelp", 1, true) or string.find(n, "anglerfish den", 1, true) or string.find(n, "coral cave", 1, true) then
+				world.setDark(f.name, true)
+			end
+		end
 	end
 	world.onSwitch = function(plr, room)
 		if state.status ~= "playing" or not room then

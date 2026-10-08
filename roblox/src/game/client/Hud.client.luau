@@ -1593,11 +1593,11 @@ RunService.RenderStepped:Connect(function(dt)
 		-- wading through the chocolate river is slow (the bridge is not)
 		wadeParams.FilterDescendantsInstances = { char }
 		local below = workspace:Raycast(hrp.Position, Vector3.new(0, -8, 0), wadeParams)
-		if below and below.Instance.Name == "ChocolateRiver" then
+		if below and (below.Instance.Name == "ChocolateRiver" or below.Instance.Name == "WadeWater") then
 			hum.WalkSpeed *= Config.WADE.kid
 			if not wadeTold then
 				wadeTold = true
-				toast("\u{1F36B} Wading through chocolate - slow going! Use the bridge.", 3)
+				toast(below.Instance.Name == "WadeWater" and "\u{1F4A7} Wading through water - slow going!" or "\u{1F36B} Wading through chocolate - slow going! Use the bridge.", 3)
 			end
 		end
 	end

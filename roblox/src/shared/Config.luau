@@ -66,6 +66,10 @@ Config.HOST_SKILLS = {
 	-- tells him where they are; it winds back up in the same place; Tinker
 	-- winds one down for good (hold)
 	jackbox = { count = { easy = 3, normal = 4, hard = 5, nightmare = 6 }, near = 6, rearm = 30, wind = 2, show = 3 },
+	-- the Anglerfish Keeper: while he patrols he leaves fake presents (at most
+	-- max, each lasts `last` s); open one and it tells him where you are.
+	-- Brainy and Glow can pop a fake safely.
+	fakegift = { max = 3, last = 60, show = 3, clear = 4, cooldown = { easy = 35, normal = 25, hard = 20, nightmare = 15 } },
 }
 -- the hosts: the model in ServerStorage/Characters and the skill. Each game
 -- picks one: half the time the building's own, otherwise one of the others.
@@ -75,12 +79,12 @@ Config.HOSTS = {
 	robot = { model = "HostRobot", name = "the Robot", skill = "blackout", tint = Color3.fromRGB(150, 160, 170) },
 	caretaker = { model = "HostCaretaker", name = "the Caretaker", skill = "lockup", tint = Color3.fromRGB(120, 160, 120) },
 	clownbear = { model = "HostClownBear", name = "the Clown Bear", skill = "jackbox", tint = Color3.fromRGB(240, 150, 170) },
-	-- the Aquarium's host (building 6, not built yet): hidden = never picked at
-	-- random until then (Studio can still force him); lure = a glowing lure on
-	-- a stalk above his head (Meshy lost the model's own)
-	anglerfish = { model = "HostAnglerfish", name = "the Anglerfish Keeper", skill = "fakegift", tint = Color3.fromRGB(60, 110, 130), lure = true, hidden = true },
+	-- the Aquarium's host (hidden = true would keep a host out of the random
+	-- picks); lure = a glowing lure on a stalk above his head (Meshy lost the
+	-- model's own)
+	anglerfish = { model = "HostAnglerfish", name = "the Anglerfish Keeper", skill = "fakegift", tint = Color3.fromRGB(60, 110, 130), lure = true },
 }
-Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear" }
+Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear", aquarium = "anglerfish" }
 -- the "escaped all floors" badge counts these buildings' floors (its badge says 9 floors)
 Config.ALL_FLOORS_BUILDINGS = { partyhouse = true, gummy = true, hospital = true }
 Config.CLUES = 3
@@ -186,7 +190,7 @@ Config.PICK_WAIT = 120
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "carnival" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3)
+Config.STUDIO_MAP = "aquarium" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3), aquarium(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); nil = random

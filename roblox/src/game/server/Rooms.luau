@@ -443,6 +443,62 @@ PIECES.LiftDoors = { size = Vector3.new(6, 9, 1), build = function(f, b)
 	label(add(f, b, { size = Vector3.new(1.6, 0.8, 0.1), at = Vector3.new(0, 8.2, T / 2 - 0.3), color = C(20, 20, 20) }), Enum.NormalId.Front, "\u{25B2} 3", C(255, 140, 40))
 end }
 
+-- ---- the Sunken Aquarium
+PIECES.FishTank = { size = Vector3.new(7, 7, 2), build = function(f, b)
+	add(f, b, { size = Vector3.new(7, 6, 1.6), at = Vector3.new(0, 4, T / 2 - 0.85), color = C(60, 150, 210), mat = GLASS, alpha = 0.45 })
+	add(f, b, { size = Vector3.new(7.3, 0.4, 1.8), at = Vector3.new(0, 0.9, T / 2 - 0.85), color = C(40, 40, 45), mat = METAL })
+	add(f, b, { size = Vector3.new(7.3, 0.4, 1.8), at = Vector3.new(0, 7.1, T / 2 - 0.85), color = C(40, 40, 45), mat = METAL })
+	add(f, b, { size = Vector3.new(6.8, 0.5, 1.4), at = Vector3.new(0, 1.35, T / 2 - 0.85), color = C(230, 205, 150), mat = Enum.Material.Sand })
+	local cols = { C(255, 140, 40), C(255, 220, 60), C(255, 90, 140), C(120, 230, 160) }
+	for i = 1, 4 do
+		local fish = add(f, b, { size = Vector3.new(0.9, 0.5, 0.25), at = Vector3.new(-2.6 + i * 1.1, 2.6 + (i % 3) * 1.2, T / 2 - 0.85), color = cols[i] })
+		TweenService:Create(fish, TweenInfo.new(2 + i * 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = fish.CFrame * CFrame.new(1.4, 0.3, 0) }):Play()
+	end
+	glow(add(f, b, { size = Vector3.new(0.3, 0.3, 0.3), at = Vector3.new(0, 6.6, T / 2 - 0.85), color = C(170, 220, 255), mat = NEON }), C(140, 200, 255), 10, 0.8)
+end }
+
+PIECES.JellyTank = { size = Vector3.new(4, 8, 2), build = function(f, b)
+	add(f, b, { size = Vector3.new(3.6, 7, 1.6), at = Vector3.new(0, 4, T / 2 - 0.85), color = C(30, 40, 90), mat = GLASS, alpha = 0.35 })
+	for i = 1, 3 do
+		local jelly = add(f, b, { size = Vector3.new(1, 0.7, 1), at = Vector3.new((i - 2) * 1, 2.4 + i * 1.4, T / 2 - 0.85), shape = Enum.PartType.Ball, color = ({ C(255, 140, 220), C(160, 140, 255), C(120, 230, 255) })[i], mat = NEON, alpha = 0.3 })
+		TweenService:Create(jelly, TweenInfo.new(2.6 + i * 0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = jelly.CFrame * CFrame.new(0, 1, 0) }):Play()
+		glow(jelly, C(200, 150, 255), 6, 0.5)
+	end
+end }
+
+PIECES.WaterPool = { size = Vector3.new(8, 1, 8), build = function(f, b)
+	-- a shallow pool: wading through it is slow (and for the host too)
+	local pool = add(f, b, { name = "WadeWater", size = Vector3.new(T, 0.2, T * 0.7), at = Vector3.new(0, 0.12, 0), color = C(60, 150, 210), mat = GLASS, alpha = 0.2, shine = 0.1 })
+	pool.CanQuery = true
+	for i = -1, 1, 2 do
+		add(f, b, { size = Vector3.new(T, 0.5, 0.4), at = Vector3.new(0, 0.25, i * (T * 0.35 + 0.2)), color = C(95, 100, 110), mat = Enum.Material.Slate })
+	end
+	add(f, b, { size = Vector3.new(0.9, 0.5, 0.25), at = Vector3.new(1.4, 0.3, 0.4), color = C(255, 140, 40) })
+end }
+
+PIECES.Porthole = { size = Vector3.new(4, 4, 1), build = function(f, b)
+	add(f, b, { size = Vector3.new(0.4, 3.6, 3.6), at = Vector3.new(0, 6, T / 2 - 0.2), rot = CFrame.Angles(0, math.rad(90), 0), shape = Enum.PartType.Cylinder, color = C(200, 160, 70), mat = METAL, shine = 0.2 })
+	local glass = add(f, b, { size = Vector3.new(0.2, 2.8, 2.8), at = Vector3.new(0, 6, T / 2 - 0.45), rot = CFrame.Angles(0, math.rad(90), 0), shape = Enum.PartType.Cylinder, color = C(30, 90, 150), mat = GLASS, alpha = 0.2 })
+	glow(glass, C(80, 160, 230), 8, 0.6)
+	label(add(f, b, { size = Vector3.new(2.6, 2.6, 0.05), at = Vector3.new(0, 6, T / 2 - 0.58), color = C(30, 90, 150), alpha = 1 }), Enum.NormalId.Front, "\u{1F420}", C(255, 255, 255))
+end }
+
+PIECES.DivingGear = { size = Vector3.new(4, 7, 2), build = function(f, b)
+	add(f, b, { size = Vector3.new(0.4, 5, 0.4), at = Vector3.new(0, 2.5, T / 2 - 1), color = C(90, 70, 50), mat = WOOD })
+	add(f, b, { size = Vector3.new(2.6, 2.6, 2.6), at = Vector3.new(0, 5.6, T / 2 - 1), shape = Enum.PartType.Ball, color = C(200, 150, 60), mat = METAL, shine = 0.25 })
+	add(f, b, { size = Vector3.new(0.2, 1.2, 1.2), at = Vector3.new(0, 5.6, T / 2 - 2.3), rot = CFrame.Angles(0, math.rad(90), 0), shape = Enum.PartType.Cylinder, color = C(150, 200, 230), mat = GLASS })
+	add(f, b, { size = Vector3.new(1.6, 3, 1), at = Vector3.new(1.8, 1.5, T / 2 - 0.8), color = C(240, 240, 235) }) -- an air tank
+end }
+
+PIECES.Penguins = { size = Vector3.new(6, 3, 3), build = function(f, b)
+	for i = -1, 1 do
+		local body = add(f, b, { size = Vector3.new(1.4, 2.2, 1.2), at = Vector3.new(i * 1.9, 1.1, 1), shape = Enum.PartType.Ball, color = C(30, 30, 35) })
+		add(f, b, { size = Vector3.new(1, 1.6, 0.4), at = Vector3.new(i * 1.9, 1, 0.45), shape = Enum.PartType.Ball, color = C(245, 245, 240) })
+		add(f, b, { size = Vector3.new(0.4, 0.25, 0.5), at = Vector3.new(i * 1.9, 1.9, 0.35), color = C(255, 170, 40) })
+		TweenService:Create(body, TweenInfo.new(0.9 + (i + 1) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = body.CFrame * CFrame.Angles(0, 0, math.rad(8)) }):Play()
+	end
+end }
+
 -- ---- the Creepy Carnival
 PIECES.TicketWindow = { size = Vector3.new(6, 9, 3), build = function(f, b)
 	add(f, b, { size = Vector3.new(6, 7, 2.4), at = Vector3.new(0, 3.5, T / 2 - 1.3), color = C(200, 40, 60) })
@@ -843,6 +899,9 @@ local WALLS = {
 	grey = { Enum.Material.Plaster, C(150, 155, 160) },
 	honey = { Enum.Material.SmoothPlastic, C(225, 165, 70) },
 	tent = { Enum.Material.Fabric, C(160, 40, 60) },
+	aqua = { Enum.Material.SmoothPlastic, C(40, 120, 140) },
+	deep = { Enum.Material.SmoothPlastic, C(20, 40, 72) },
+	ice = { Enum.Material.Ice, C(205, 230, 245) },
 }
 
 -- the floor that goes with each kind of wall (nil: keep the building's floor)
@@ -865,6 +924,20 @@ local FLOORS = {
 -- first match wins: words in the room's name -> its look (a 4th entry: only
 -- in that building)
 local LOOKS = {
+	-- the Sunken Aquarium (only in the aquarium)
+	{ { "entrance hall", "front doors", "great tank", "shark tunnel" }, "aqua", { "FishTank", "FishTank", "Porthole" }, "aquarium" },
+	{ { "seahorse", "jellyfish", "kelp", "anglerfish den", "coral cave" }, "deep", { "JellyTank", "JellyTank", "Porthole" }, "aquarium" },
+	{ { "keeper's office" }, "wood", { "FilingCabinets", "DivingGear", "Monitors" }, "aquarium" },
+	{ { "gift shop" }, "aqua", { "ToyBox", "Plants" }, "aquarium" },
+	{ { "cafe", "snack kiosk" }, "tiles", { "Trays", "Plants" }, "aquarium" },
+	{ { "touch pools", "otter pool", "rock pool", "sea lion" }, "aqua", { "WaterPool", "WaterPool", "Plants" }, "aquarium" },
+	{ { "submarine bay", "diving locker", "deep sea lift" }, "steel", { "DivingGear", "Porthole", "Crates" }, "aquarium" },
+	{ { "research lab" }, "tiles", { "Beakers", "Monitors", "FishTank" }, "aquarium" },
+	{ { "whale skeleton" }, "deep", { "Porthole", "FishTank" }, "aquarium" },
+	{ { "bubble vents", "pipe room", "pump" }, "steel", { "Pipes", "WaterTank" }, "aquarium" },
+	{ { "penguin" }, "ice", { "Penguins", "Penguins" }, "aquarium" },
+	{ { "feed store" }, "wood", { "Sacks", "Crates", "Sacks" }, "aquarium" },
+	{ { "lighthouse", "water slide", "splash slide" }, "aqua", { "Porthole", "Plants" }, "aquarium" },
 	-- the Creepy Carnival (only in the carnival)
 	{ { "ticket booth", "main gate" }, "tent", { "TicketWindow", "Plants", "Crates" }, "carnival" },
 	{ { "fortune teller" }, "purple", { "CrystalBall", "Candelabra", "Curtain" }, "carnival" },
@@ -1450,8 +1523,10 @@ local function buildChute(folder, world, map, busy, open)
 			from, kind = f, "laundry"
 		elseif not from and string.find(n, "cannon", 1, true) then
 			from, kind = f, "cannon"
-		elseif not from and string.find(n, "slide tower", 1, true) then
+		elseif not from and (string.find(n, "slide tower", 1, true) or string.find(n, "splash slide", 1, true)) then
 			from, kind = f, "slide"
+		elseif not from and string.find(n, "pipe room", 1, true) then
+			from, kind = f, "pipe"
 		end
 	end
 	if not from then
@@ -1525,11 +1600,11 @@ local function buildChute(folder, world, map, busy, open)
 		add(folder, base, { size = Vector3.new(3.6, 3.6, 0.3), at = Vector3.new(0, 3.2, T / 2 - 0.15), color = kind == "slide" and C(255, 200, 40) or C(110, 115, 125), mat = kind == "slide" and Enum.Material.SmoothPlastic or METAL })
 		hatch = add(folder, base, { name = "ChuteHatch", size = Vector3.new(3, 3, 0.2), at = Vector3.new(0, 3.2, T / 2 - 0.35), color = kind == "slide" and C(80, 170, 230) or C(160, 165, 175), mat = kind == "slide" and Enum.Material.SmoothPlastic or METAL, shine = 0.1 })
 		add(folder, base, { size = Vector3.new(1.2, 0.3, 0.3), at = Vector3.new(0, 2.2, T / 2 - 0.5), color = C(60, 60, 65), mat = METAL })
-		label(add(folder, base, { size = Vector3.new(3.6, 0.9, 0.1), at = Vector3.new(0, 5.6, T / 2 - 0.1), color = C(40, 28, 46) }), Enum.NormalId.Front, kind == "slide" and "TWISTY SLIDE \u{2193}" or "LAUNDRY CHUTE \u{2193}", C(255, 210, 63))
+		label(add(folder, base, { size = Vector3.new(3.6, 0.9, 0.1), at = Vector3.new(0, 5.6, T / 2 - 0.1), color = C(40, 28, 46) }), Enum.NormalId.Front, kind == "slide" and "TWISTY SLIDE \u{2193}" or kind == "pipe" and "WATER PIPE \u{2193}" or "LAUNDRY CHUTE \u{2193}", C(255, 210, 63))
 	end
 	local pp = Instance.new("ProximityPrompt")
 	pp.ActionText = kind == "cannon" and "Climb in!" or "Slide down"
-	pp.ObjectText = (kind == "cannon" and "Human cannon" or kind == "slide" and "Twisty slide" or "Laundry chute") .. " (to the " .. to.name .. ")"
+	pp.ObjectText = (kind == "cannon" and "Human cannon" or kind == "slide" and "Twisty slide" or kind == "pipe" and "Water pipe" or "Laundry chute") .. " (to the " .. to.name .. ")"
 	pp.HoldDuration = 0.4
 	pp.MaxActivationDistance = 8
 	pp.RequiresLineOfSight = false
@@ -1546,8 +1621,8 @@ local function buildChute(folder, world, map, busy, open)
 			add(folder, basket, { size = kind == "slide" and Vector3.new(1, 1, 1) or Vector3.new(1.6, 0.5, 1.2), shape = kind == "slide" and Enum.PartType.Ball or nil, at = Vector3.new(math.cos(i * 1.6) * 0.9, 1.5 + (i % 2) * 0.2, math.sin(i * 1.6) * 0.9), rot = CFrame.Angles(0, i, 0), color = ({ C(150, 200, 235), C(250, 250, 250), C(255, 190, 210), C(200, 240, 170) })[i], mat = kind == "slide" and Enum.Material.SmoothPlastic or Enum.Material.Fabric })
 		end
 	end
-	local goText = kind == "cannon" and "3... 2... 1... BOOM! You fly out of the cannon..." or kind == "slide" and "Wheee! Down the twisty slide..." or "Wheee! Down the laundry chute..."
-	local landText = kind == "cannon" and "You bounced into the safety net in the " .. to.name .. "!" or kind == "slide" and "You shot out into a heap of balls in the " .. to.name .. "!" or "You landed in the laundry basket in the " .. to.name .. "!"
+	local goText = kind == "cannon" and "3... 2... 1... BOOM! You fly out of the cannon..." or kind == "slide" and "Wheee! Down the twisty slide..." or kind == "pipe" and "Whoosh! Down the water pipe..." or "Wheee! Down the laundry chute..."
+	local landText = kind == "cannon" and "You bounced into the safety net in the " .. to.name .. "!" or kind == "slide" and "You shot out into a heap of balls in the " .. to.name .. "!" or kind == "pipe" and "SPLASH! You shot out into a pool in the " .. to.name .. "!" or "You landed in the laundry basket in the " .. to.name .. "!"
 	world.chute = { prompt = pp, from = hatch.Position, to = land, toRoom = to.name, kind = kind, goText = goText, landText = landText }
 end
 

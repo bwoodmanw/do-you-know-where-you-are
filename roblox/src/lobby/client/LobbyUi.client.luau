@@ -1419,7 +1419,7 @@ do
 			.. "\u{1F4A1} Clues show the next step but cost points earned that game.\n"
 			.. "\u{1F392} Boosts from the shop: tap them in the game.\n\n"
 			.. "\u{2B50} Play a character to level them up to 10 - choose upgrades in Characters.\n"
-			.. "\u{1F6AA} Escape a floor to unlock the next one - 5 buildings, 15 floors (and a secret one...)!\n\n"
+			.. "\u{1F6AA} Escape a floor to unlock the next one - 6 buildings, 18 floors (and a secret one...)!\n\n"
 			.. "\u{1F4DC} Daily quests: three a day, points as soon as you finish one.\n"
 			.. "\u{1F46B} Play with a Roblox friend for +10% points.\n"
 			.. "\u{1F36B} Chocolate is slow to wade through - use the bridge. \u{1F9FA} Slide down the laundry chute. \u{1F512} Turn the vault wheel in the Jelly Vault for treasure!\n\n"

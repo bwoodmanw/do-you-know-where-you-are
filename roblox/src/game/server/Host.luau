@@ -411,7 +411,7 @@ function Host:step(dt)
 		params.FilterType = Enum.RaycastFilterType.Exclude
 		params.FilterDescendantsInstances = { self.model }
 		local below = workspace:Raycast(self.root.Position, Vector3.new(0, -14, 0), params)
-		if below and below.Instance.Name == "ChocolateRiver" then
+		if below and (below.Instance.Name == "ChocolateRiver" or below.Instance.Name == "WadeWater") then
 			self.hum.WalkSpeed *= Config.WADE.host
 		end
 	end
@@ -466,6 +466,15 @@ function Host:step(dt)
 			self.nextSkill = now + (Config.HOST_SKILLS.gummy.cooldown[string.lower(self.diff.name)] or 10)
 		else
 			self.nextSkill = now + 1
+		end
+	end
+
+	-- the Anglerfish Keeper leaves fake presents as he patrols (the round decides where)
+	if self.skill == "fakegift" and self.mode ~= "hunt" and now >= (self.nextSkill or 0) then
+		if self.round:hostFakeGift(self.root.Position, self.model) then
+			self.nextSkill = now + (Config.HOST_SKILLS.fakegift.cooldown[string.lower(self.diff.name)] or 25)
+		else
+			self.nextSkill = now + 2
 		end
 	end
 

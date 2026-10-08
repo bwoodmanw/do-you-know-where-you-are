@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,15 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 22 (8 Oct) - the Sunken Aquarium (building 6, AQUARIUM.md) and the Anglerfish Keeper
+
+Studio Play now builds the Aquarium's Main Hall (`aquarium`); ask for `aquarium_2` / `aquarium_3`. For his power ask for `Config.STUDIO_HOST = "anglerfish"`.
+- [ ] Main Hall: Entrance Hall start; Great Tank Hall's round tank with a shark circling and fish; the Shark Tunnel's glass walls (see-through, fish) wind round; fish tanks, Touch Pools (wade slowly), Jellyfish tanks glow
+- [ ] Deep Sea: Kelp Forest, Anglerfish Den and Coral Cave start dark (the light switch turns them on); Whale Skeleton Hall two storeys with whale bones; Bubble Vents bounce you up; Pipe Room "Water pipe" -> "SPLASH!" in a far room; a yellow submarine; "Up to the Rooftop Pools"
+- [ ] Rooftop Pools: Sea Lion Stadium start; Pump Room whirlpool turns you; Penguin Ice (ice walls, wobbling penguins); Otter / Rock Pool wading; Splash Slide; "Down the water slide!"
+- [ ] The Anglerfish Keeper: while he patrols he leaves presents (up to 3); opening one: "It was a trick present!", you glow, he comes to look; as Brainy or Glow: "Pop it - it's a fake!" (F / Y) pops it safely; they vanish after a minute
+- [ ] Lobby: six building cards in a row; escaping Carnival: Big Top unlocks the Aquarium (live)
 
 ## Round 21 (8 Oct) - quick chat (needs two players for the pins: Studio Test -> Clients and Servers -> 2 players)
 - [ ] Say (T on a keyboard, Right on a controller): 16 phrases in 4 rows; the ones with a pin mark: Over here!, I found something!, Key found!, Help me!, Need Tinker!, Need Brainy!

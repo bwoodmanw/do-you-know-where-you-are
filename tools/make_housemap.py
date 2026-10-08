@@ -710,6 +710,58 @@ def plan_funhouse():
     return p
 
 
+# ---------------------------------------------------------------- the Sunken Aquarium (building 6)
+# Built on the Carnival's room grids (checked, store rooms fit) with its own
+# rooms, furniture and look; the Main Hall has its own glass Shark Tunnel.
+def aquarium(base, pid, name, floor_no, exit_text, rooms, locks, kinds):
+    p = base()
+    p.id, p.name = pid, name
+    p.building, p.floor_no, p.theme = 'aquarium', floor_no, 'aquarium'
+    if exit_text:
+        p.exit_text = exit_text
+    for n in [f[5] for f in p.floors]:
+        assert n in rooms, (pid, n)
+    p.floors = [(x0, y0, x1, y1, k, rooms[n]) for x0, y0, x1, y1, k, n in p.floors]
+    p.tall = {rooms[n] for n in p.tall}
+    p.furniture = [(x0, y0, x1, y1, kinds.get(k, k)) for x0, y0, x1, y1, k in p.furniture]
+    p.fixed = [dict(o, name=locks[o['id']]) if o['id'] in locks else o for o in p.fixed]
+    return p
+
+
+def plan_mainhall():
+    p = aquarium(plan_midway, 'mainhall_a', 'Sunken Aquarium - Main Hall', 1, '',
+                 {'Ring-Toss Stall': 'Seahorse Room', "Fortune Teller's Tent": "Keeper's Office", 'Main Gate': 'Front Doors',
+                  'Prize Tent': 'Gift Shop', 'Popcorn Stand': 'Cafe', 'Carousel': 'Great Tank Hall', 'Duck Pond': 'Touch Pools',
+                  'Hall of Mirrors': 'Shark Tunnel', 'Ticket Booth': 'Entrance Hall', 'Toffee Apple Stall': 'Jellyfish Room'},
+                 {'L1': "Keeper's door", 'L2': 'Front Doors'},
+                 {'stall': 'tank', 'carousel': 'bigtank', 'counter': 'counter'})
+    # the Shark Tunnel: a winding glass tunnel (its own walls, not the Hall of Mirrors')
+    p.rect(1, 20, 9, 28, '.')
+    p.rect(5, 20, 5, 26)
+    p.rect(7, 22, 7, 28)
+    return p
+
+
+def plan_deepsea():
+    return aquarium(plan_bigtop, 'deepsea_a', 'Sunken Aquarium - Deep Sea', 2, 'Up to the Rooftop Pools',
+                    {"Ringmaster's Wagon": 'Submarine Bay', "Juggler's Room": 'Research Lab', 'Funhouse Stairs': 'Pump Stairs',
+                     'Clown Car Garage': 'Diving Locker', 'Costume Wagon': 'Kelp Forest', 'The Ring': 'Whale Skeleton Hall',
+                     'Trapeze Nets': 'Bubble Vents', 'Cannon Deck': 'Pipe Room', 'Backstage': 'Deep Sea Lift',
+                     'Band Stand': 'Anglerfish Den', "Strongman's Gym": 'Coral Cave'},
+                    {'L1': 'Submarine Bay hatch', 'L2': 'Pump Stairs door'},
+                    {'car': 'sub', 'seats': 'bones', 'stage': 'coral'})
+
+
+def plan_rooftop():
+    return aquarium(plan_funhouse, 'rooftop_a', 'Sunken Aquarium - Rooftop Pools', 3, 'Down the water slide!',
+                    {'Tilted Room': 'Feed Store', 'Spinning Room': 'Pump Room', 'Big Wheel': 'Water Slide',
+                     'Bumper Car Room': 'Lighthouse Deck', 'Slide Tower': 'Splash Slide', 'Laughing Gallery': 'Penguin Ice',
+                     'Clown Mirror Room': 'Otter Pool', 'Ball Pit': 'Rock Pool', 'Rolling-Barrel Hall': 'Sea Lion Stadium',
+                     'Joke Shop': 'Snack Kiosk'},
+                    {'L1': 'Pump Room door', 'L2': 'Water Slide gate'},
+                    {'spinner': 'whirlpool', 'pit': 'rockpool'})
+
+
 # ---------------------------------------------------------------- the secret Basement (floor 0)
 def plan_basement():
     """Under the Party House, unlocked by escaping the Attic. The Attic's
@@ -1159,6 +1211,9 @@ school3 = add_closets(plan_school3())
 midway = add_closets(plan_midway())
 bigtop = add_closets(plan_bigtop())
 funhouse = add_closets(plan_funhouse())
+mainhall = add_closets(plan_mainhall())
+deepsea = add_closets(plan_deepsea())
+rooftop = add_closets(plan_rooftop())
 for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms'),
           att, mirror(att, 'attic_b', 'The Party House - Attic'), cellar, mirror(cellar, 'cellar_b', 'The Party House - Secret Basement'), gum, mirror(gum, 'gum_b', 'Gummy Bounce House - Bounce Hall'),
           fac, mirror(fac, 'fac_b', 'Gummy Bounce House - Candy Factory'), vault, mirror(vault, 'vault_b', 'Gummy Bounce House - Jelly Vault'),
@@ -1167,7 +1222,9 @@ for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirr
           school, mirror(school, 'school_b', 'Midnight School - Ground Floor'), school2, mirror(school2, 'class_b', 'Midnight School - Classrooms'),
           school3, mirror(school3, 'tower_b', 'Midnight School - Clock Tower'),
           midway, mirror(midway, 'midway_b', 'Carnival - The Midway'), bigtop, mirror(bigtop, 'bigtop_b', 'Carnival - The Big Top'),
-          funhouse, mirror(funhouse, 'funhouse_b', 'Carnival - The Funhouse')):
+          funhouse, mirror(funhouse, 'funhouse_b', 'Carnival - The Funhouse'),
+          mainhall, mirror(mainhall, 'mainhall_b', 'Sunken Aquarium - Main Hall'), deepsea, mirror(deepsea, 'deepsea_b', 'Sunken Aquarium - Deep Sea'),
+          rooftop, mirror(rooftop, 'rooftop_b', 'Sunken Aquarium - Rooftop Pools')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (
@@ -1202,7 +1259,7 @@ out = ['--[[',
        '\tpassage), D the big exit door, C the host\'s door.',
        '\tReturns building -> floor number -> list of plans.',
        ']]', '', 'return {']
-for bld in ('partyhouse', 'gummy', 'hospital', 'school', 'carnival'):
+for bld in ('partyhouse', 'gummy', 'hospital', 'school', 'carnival', 'aquarium'):
  out.append('\t%s = {' % bld)
  for fl in sorted({pfl for p, _, _, _, pfl in plans if p.building == bld}):
   out.append('\t[%d] = {' % fl)

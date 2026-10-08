@@ -24,6 +24,8 @@ local THEMES = {
 	school = { wall = Color3.fromRGB(86, 104, 84), light = Color3.fromRGB(255, 226, 175), ceiling = Color3.fromRGB(205, 198, 175) },
 	-- the Creepy Carnival: dark red tent walls, warm bulbs, a striped tent roof
 	carnival = { wall = Color3.fromRGB(122, 38, 56), light = Color3.fromRGB(255, 205, 140), ceiling = Color3.fromRGB(70, 30, 80) },
+	-- the Sunken Aquarium: deep teal walls, cool blue-white light, a dark ceiling
+	aquarium = { wall = Color3.fromRGB(28, 72, 96), light = Color3.fromRGB(165, 215, 255), ceiling = Color3.fromRGB(18, 38, 58) },
 }
 local HT = 24 -- ceiling height of tall rooms (the Gallery with its loft)
 
@@ -499,6 +501,130 @@ local function carnivalFurniture(root, kind, x, y, map)
 	return false
 end
 
+-- the Aquarium's furniture: fish tanks, a great round tank with a shark
+-- circling, a touch pool, kelp, a little submarine, a whale's bones, coral, a
+-- whirlpool you can stand on (it turns), rock pools
+local FISH = { Color3.fromRGB(255, 140, 40), Color3.fromRGB(255, 220, 60), Color3.fromRGB(80, 170, 255), Color3.fromRGB(255, 90, 140), Color3.fromRGB(120, 230, 160) }
+local WATER = Color3.fromRGB(60, 150, 210)
+local function fishIn(root, centre, spread, n, seed)
+	for i = 1, n do
+		local col = FISH[(seed + i) % #FISH + 1]
+		local p0 = centre + Vector3.new(math.cos(i * 2.3 + seed) * spread.X, math.sin(i * 1.7) * spread.Y, math.sin(i * 2.3 + seed) * spread.Z)
+		local fish = part(root, { Name = "Fish", Size = Vector3.new(0.9, 0.5, 0.25), Position = p0, Color = col, Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CastShadow = false })
+		part(root, { Name = "FishTail", Size = Vector3.new(0.3, 0.4, 0.1), Position = p0 - Vector3.new(0.55, 0, 0), Color = col, Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CastShadow = false }).Parent = fish
+		TweenService:Create(fish, TweenInfo.new(2.4 + (i % 3) * 0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = p0 + Vector3.new(spread.X * 0.8, 0.2, 0) }):Play()
+	end
+end
+local function aquariumFurniture(root, kind, x, y, map)
+	local f = furnitureAt(map, x, y)
+	local room = string.lower(roomNameAt(map, x, y))
+	if kind == "tank" or kind == "counter" then
+		-- a fish tank on a cabinet: blue water, sand, weed and fish
+		part(root, { Name = "TankCabinet", Size = Vector3.new(T, 2.6, T * 0.7), Position = at(x, y, 1.3), Material = Enum.Material.Wood, Color = Color3.fromRGB(60, 50, 45) })
+		part(root, { Name = "Tank", Size = Vector3.new(T - 0.2, 4.4, T * 0.7 - 0.2), Position = at(x, y, 4.85), Material = Enum.Material.Glass, Color = WATER, Transparency = 0.55 })
+		part(root, { Name = "TankSand", Size = Vector3.new(T - 0.4, 0.4, T * 0.7 - 0.4), Position = at(x, y, 2.85), Material = Enum.Material.Sand, Color = Color3.fromRGB(230, 205, 150), CanCollide = false })
+		part(root, { Name = "TankLight", Size = Vector3.new(T - 0.2, 0.3, T * 0.7 - 0.2), Position = at(x, y, 7.2), Material = Enum.Material.Neon, Color = Color3.fromRGB(170, 220, 255), CanCollide = false })
+		part(root, { Name = "Weed", Size = Vector3.new(0.3, 2.4, 0.3), Position = at(x, y, 4.2) + Vector3.new((x % 3 - 1) * 2, 0, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(60, 160, 80), CanCollide = false })
+		fishIn(root, at(x, y, 4.9), Vector3.new(1.6, 0.8, 0.8), 3, x + y)
+		return true
+	elseif kind == "table" then
+		part(root, { Name = "Table", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, T - 1, T - 1), CFrame = CFrame.new(at(x, y, 3.2)) * CFrame.Angles(0, 0, math.rad(90)), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(240, 240, 235) })
+		part(root, { Name = "TableLeg", Size = Vector3.new(0.6, 3, 0.6), Position = at(x, y, 1.5), Material = Enum.Material.Metal, Color = Color3.fromRGB(120, 125, 132) })
+		part(root, { Name = "TableBlock", Size = Vector3.new(T - 1.2, 3, T - 1.2), Position = at(x, y, 1.5), Transparency = 1 })
+		return true
+	elseif kind == "shelf" and string.find(room, "kelp", 1, true) then
+		-- tall waving kelp
+		for i = -1, 1 do
+			local k = part(root, { Name = "Kelp", Size = Vector3.new(0.6, 9 + (x + i) % 3, 0.3), Position = at(x, y, 4.8) + Vector3.new(i * 2.2, 0, (i % 2) * 1.2), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(60, 140 + i * 15, 70), CanCollide = false })
+			TweenService:Create(k, TweenInfo.new(2 + (x % 3) * 0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Orientation = Vector3.new(0, 0, 8) }):Play()
+		end
+		part(root, { Name = "KelpRock", Size = Vector3.new(T, 1.6, T * 0.6), Position = at(x, y, 0.8), Material = Enum.Material.Slate, Color = Color3.fromRGB(70, 75, 85) })
+		part(root, { Name = "KelpBlock", Size = Vector3.new(T, 8, T * 0.6), Position = at(x, y, 4), Transparency = 1 })
+		return true
+	elseif kind == "pond" or kind == "rockpool" then
+		-- a touch pool / rock pool: a low rocky rim, water, starfish
+		part(root, { Name = "PoolRim", Size = Vector3.new(T, 2.2, T), Position = at(x, y, 1.1), Material = Enum.Material.Slate, Color = Color3.fromRGB(95, 100, 110) })
+		part(root, { Name = "PoolWater", Size = Vector3.new(T - 1, 0.2, T - 1), Position = at(x, y, 2.25), Material = Enum.Material.Glass, Color = WATER, Transparency = 0.25, CanCollide = false })
+		part(root, { Name = "Starfish", Size = Vector3.new(1.4, 0.2, 1.4), CFrame = CFrame.new(at(x, y, 2.4) + Vector3.new((x % 3 - 1) * 1.5, 0, (y % 2) * 1.4 - 0.7)) * CFrame.Angles(0, math.rad(45), 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 120, 70), CanCollide = false })
+		return true
+	elseif kind == "bigtank" or kind == "whirlpool" then
+		if not f or x ~= f.x0 or y ~= f.y0 then
+			return true -- built once, from the corner tile
+		end
+		local centre = at(f.x0 + 1, f.y0 + 1, 0)
+		local r = (f.x1 - f.x0 + 1) * T / 2 - 0.4
+		local up = CFrame.Angles(0, 0, math.rad(90))
+		if kind == "bigtank" then
+			-- the great round tank: a glass drum of water, a sandy floor, a shark circling
+			part(root, { Name = "BigTankBase", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.2, r * 2 + 0.6, r * 2 + 0.6), CFrame = CFrame.new(centre + Vector3.new(0, 0.6, 0)) * up, Material = Enum.Material.Slate, Color = Color3.fromRGB(60, 70, 80) })
+			part(root, { Name = "BigTank", Shape = Enum.PartType.Cylinder, Size = Vector3.new(H - 1.4, r * 2, r * 2), CFrame = CFrame.new(centre + Vector3.new(0, 1.2 + (H - 1.4) / 2, 0)) * up, Material = Enum.Material.Glass, Color = WATER, Transparency = 0.6 })
+			local swim = {}
+			local function bit(props)
+				local b = part(root, props)
+				b.CanCollide, b.CanQuery, b.CastShadow = false, false, false
+				table.insert(swim, b)
+				return b
+			end
+			local sp = centre + Vector3.new(r * 0.6, 6.5, 0)
+			local body = bit({ Name = "Shark", Size = Vector3.new(1.6, 1.4, 5), Position = sp, Color = Color3.fromRGB(120, 135, 150), Material = Enum.Material.SmoothPlastic })
+			bit({ Name = "SharkFin", Size = Vector3.new(0.3, 1.4, 1.2), Position = sp + Vector3.new(0, 1.2, 0.3), Color = Color3.fromRGB(110, 125, 140), Material = Enum.Material.SmoothPlastic })
+			bit({ Name = "SharkTail", Size = Vector3.new(0.3, 1.8, 1), Position = sp + Vector3.new(0, 0.2, 2.9), Color = Color3.fromRGB(110, 125, 140), Material = Enum.Material.SmoothPlastic })
+			bit({ Name = "SharkBelly", Size = Vector3.new(1.4, 0.5, 4.4), Position = sp + Vector3.new(0, -0.6, -0.2), Color = Color3.fromRGB(235, 235, 230), Material = Enum.Material.SmoothPlastic })
+			for i = -1, 1, 2 do
+				bit({ Name = "SharkEye", Shape = Enum.PartType.Ball, Size = Vector3.new(0.3, 0.3, 0.3), Position = sp + Vector3.new(i * 0.75, 0.3, -2), Color = Color3.fromRGB(20, 20, 25), Material = Enum.Material.SmoothPlastic })
+			end
+			spin(swim, centre, 0.4, body)
+			fishIn(root, centre + Vector3.new(0, 4, 0), Vector3.new(r * 0.5, 2, r * 0.5), 6, x)
+			local l = Instance.new("PointLight")
+			l.Color, l.Range, l.Brightness = Color3.fromRGB(120, 200, 255), 24, 1
+			l.Parent = body
+		else
+			-- the Pump Room's whirlpool: a swirling disc of water that turns you round
+			local moving = {}
+			local function bit(props)
+				local b = part(root, props)
+				table.insert(moving, b)
+				return b
+			end
+			local platform = bit({ Name = "Whirlpool", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, r * 2, r * 2), CFrame = CFrame.new(centre + Vector3.new(0, 0.2, 0)) * up, Material = Enum.Material.Glass, Color = WATER, Transparency = 0.15 })
+			for i = 1, 8 do
+				local a = i / 8 * math.pi * 2
+				bit({ Name = "Swirl", Size = Vector3.new(r * 0.9, 0.05, 1), CFrame = CFrame.new(centre + Vector3.new(math.cos(a) * r * 0.45, 0.43, math.sin(a) * r * 0.45)) * CFrame.Angles(0, -a + 0.6, 0), Material = Enum.Material.Neon, Color = Color3.fromRGB(200, 240, 255), CanCollide = false })
+			end
+			spin(moving, centre, 0.9, platform)
+		end
+		return true
+	elseif kind == "sub" then
+		-- a little yellow submarine with a porthole
+		if not f or x ~= f.x0 or y ~= f.y0 then
+			part(root, { Name = "SubBlock", Size = Vector3.new(T, 5, T), Position = at(x, y, 2.5), Transparency = 1 })
+			return true
+		end
+		local c = (at(f.x0, f.y0, 0) + at(f.x1, f.y1, 0)) / 2
+		part(root, { Name = "Submarine", Shape = Enum.PartType.Cylinder, Size = Vector3.new(T * 2 - 1, 4.6, 4.6), CFrame = CFrame.new(c + Vector3.new(0, 2.6, 0)), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 205, 40), CanCollide = false })
+		part(root, { Name = "SubTower", Size = Vector3.new(3, 2.4, 2.4), Position = c + Vector3.new(0, 5.4, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 205, 40), CanCollide = false })
+		part(root, { Name = "Porthole", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.3, 1.8, 1.8), CFrame = CFrame.new(c + Vector3.new(-2, 2.8, -2.3)) * CFrame.Angles(0, math.rad(90), 0), Material = Enum.Material.Glass, Color = Color3.fromRGB(150, 210, 240), CanCollide = false })
+		part(root, { Name = "SubBlock", Size = Vector3.new(T, 5, T), Position = at(x, y, 2.5), Transparency = 1 })
+		return true
+	elseif kind == "bones" then
+		-- a whale's skeleton laid out on a plinth: a backbone and arching ribs
+		part(root, { Name = "Plinth", Size = Vector3.new(T, 1.2, T), Position = at(x, y, 0.6), Material = Enum.Material.Slate, Color = Color3.fromRGB(70, 75, 85) })
+		part(root, { Name = "Backbone", Size = Vector3.new(T, 1.2, 1.2), Position = at(x, y, 1.8), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(235, 228, 210) })
+		for i = -1, 1, 2 do
+			part(root, { Name = "Rib", Size = Vector3.new(0.5, 4, 0.5), CFrame = CFrame.new(at(x, y, 3.2) + Vector3.new(0, 0, i * 1.4)) * CFrame.Angles(math.rad(i * 30), 0, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(235, 228, 210), CanCollide = false })
+		end
+		return true
+	elseif kind == "coral" then
+		part(root, { Name = "Reef", Size = Vector3.new(T, 1.6, T), Position = at(x, y, 0.8), Material = Enum.Material.Slate, Color = Color3.fromRGB(80, 70, 90) })
+		local cols = { Color3.fromRGB(255, 110, 140), Color3.fromRGB(255, 170, 60), Color3.fromRGB(170, 110, 255), Color3.fromRGB(90, 220, 200) }
+		for i = 1, 4 do
+			part(root, { Name = "Coral", Shape = Enum.PartType.Ball, Size = Vector3.new(1.8, 2.4, 1.8), Position = at(x, y, 2.6) + Vector3.new(math.cos(i * 1.7) * 2, (i % 2) * 0.6, math.sin(i * 1.7) * 2), Material = Enum.Material.Neon, Color = cols[(x + i) % 4 + 1], CanCollide = false })
+		end
+		return true
+	end
+	return false
+end
+
 -- the hospital's furniture: medicine cabinets, a reception counter, steel
 -- tables and desks, beds with rails
 local function hospitalFurniture(root, kind, x, y)
@@ -588,14 +714,20 @@ function House.build(map)
 				end
 			elseif c == "#" or c == "C" then
 				local mirror = map.theme == "carnival" and string.find(roomNameAt(map, x, y), "Mirror", 1, true) ~= nil
+				-- the Aquarium's Shark Tunnel: walls of water behind glass
+				local tunnel = map.theme == "aquarium" and string.find(roomNameAt(map, x, y), "Tunnel", 1, true) ~= nil
 				part(root, {
-					Name = mirror and "MirrorWall" or "Wall",
+					Name = mirror and "MirrorWall" or tunnel and "TunnelGlass" or "Wall",
 					Size = Vector3.new(T, tallAt(map, x, y, true) and HT or H, T),
 					Position = at(x, y, (tallAt(map, x, y, true) and HT or H) / 2),
-					Material = mirror and Enum.Material.Glass or Enum.Material.Plaster,
-					Color = mirror and Color3.fromRGB(200, 222, 238) or wallColor,
-					Reflectance = mirror and 0.55 or 0,
+					Material = (mirror or tunnel) and Enum.Material.Glass or Enum.Material.Plaster,
+					Color = mirror and Color3.fromRGB(200, 222, 238) or tunnel and Color3.fromRGB(50, 130, 190) or wallColor,
+					Reflectance = mirror and 0.55 or tunnel and 0.1 or 0,
+					Transparency = tunnel and 0.35 or 0,
 				})
+				if tunnel then
+					fishIn(root, at(x, y, 7), Vector3.new(2.5, 3, 2.5), 2, x * 7 + y)
+				end
 				if c == "C" then
 					local side = cell(map, x + 1, y) == "." and 1 or -1
 					-- the host's dark doorway, with eyes
@@ -622,6 +754,8 @@ function House.build(map)
 					-- a school table or desk
 				elseif map.theme == "carnival" and carnivalFurniture(root, kind, x, y, map) then
 					-- a carnival stall, cart, pond, ride or seats
+				elseif map.theme == "aquarium" and aquariumFurniture(root, kind, x, y, map) then
+					-- a fish tank, pool, kelp, submarine, bones, coral or the great tank
 				elseif kind == "table" then
 					part(root, { Name = "Table", Size = Vector3.new(T, 0.6, T), Position = at(x, y, 3.4), Material = Enum.Material.Fabric, Color = Color3.fromRGB(242, 233, 247) })
 					part(root, { Name = "TableSkirt", Size = Vector3.new(T - 0.2, 3, T - 0.2), Position = at(x, y, 1.6), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 138, 31) })
@@ -709,7 +843,7 @@ function House.build(map)
 	House.buildObjects(world)
 	-- bounce pads: boing (the bounce itself happens on each player's screen)
 	for _, pad in ipairs(map.pads or {}) do
-		part(root, { Name = "BouncePad", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 6, 6), CFrame = CFrame.new(at(pad[1], pad[2], 0.2)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(255, 90, 170), Material = Enum.Material.Neon })
+		part(root, { Name = "BouncePad", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 6, 6), CFrame = CFrame.new(at(pad[1], pad[2], 0.2)) * CFrame.Angles(0, 0, math.rad(90)), Color = map.theme == "aquarium" and Color3.fromRGB(120, 210, 255) or Color3.fromRGB(255, 90, 170), Material = Enum.Material.Neon })
 	end
 	House.buildGarden(world)
 	House.decorate(world)
@@ -1173,6 +1307,8 @@ function House.buildGarden(world)
 			stepMat, stepCol = Enum.Material.Wood, Color3.fromRGB(140, 100, 60)
 		elseif map.theme == "carnival" then
 			stepMat, stepCol = Enum.Material.SmoothPlastic, Color3.fromRGB(200, 40, 60)
+		elseif map.theme == "aquarium" then
+			stepMat, stepCol = Enum.Material.SmoothPlastic, Color3.fromRGB(40, 120, 140)
 		end
 		for i = 1, 8 do
 			part(root, { Name = "StairUp", Size = Vector3.new(16, i * 1.5, 3), Position = Vector3.new(doorX * T + T / 2, i * 0.75, -16 - i * 3), Material = stepMat, Color = stepCol })
@@ -1336,6 +1472,7 @@ local HOSPITAL_PICTURES = { "\u{1FA7A}", "\u{1F48A}", "\u{1FA79}", "\u{1F9F8}", 
 local HALLOWEEN_DECOR = { Color3.fromRGB(255, 138, 31), Color3.fromRGB(110, 60, 160), Color3.fromRGB(30, 24, 34), Color3.fromRGB(150, 220, 60) }
 local CANDY_PICTURES = { "\u{1F36C}", "\u{1F36D}", "\u{1F9C1}", "\u{1F369}", "\u{1F36B}", "\u{1F370}", "\u{1F366}", "\u{1F388}" }
 local PICTURES = { "\u{1F383}", "\u{1F47B}", "\u{1F987}", "\u{1F578}", "\u{1F382}", "\u{1F388}", "\u{1F315}", "\u{1F36D}" }
+local AQUARIUM_PICTURES = { "\u{1F41F}", "\u{1F420}", "\u{1F419}", "\u{1F988}", "\u{1F422}", "\u{1F42C}", "\u{1F980}", "\u{1F433}" }
 local CARNIVAL_PICTURES = { "\u{1F3AA}", "\u{1F3A0}", "\u{1F3A1}", "\u{1F388}", "\u{1F37F}", "\u{1F39F}", "\u{1F939}", "\u{1F383}" }
 local SCHOOL_PICTURES = { "\u{1F34E}", "\u{270F}", "\u{1F4DA}", "\u{1F514}", "\u{1F392}", "\u{1F4D0}", "\u{1F989}", "\u{1F383}" }
 
@@ -1539,7 +1676,7 @@ function House.decorate(world)
 				world.wallUsed[x .. "," .. (f.y0 - 1)] = true -- no window over a picture
 				local pic = deco({ Name = "Picture", Size = Vector3.new(3.4, 2.8, 0.2), Position = at(x, f.y0 - 1, 7.5) + Vector3.new(0, 0, T / 2 + 0.15), Color = Color3.fromRGB(110, 80, 40), Material = Enum.Material.Wood })
 				local inner = deco({ Name = "Painting", Size = Vector3.new(2.8, 2.2, 0.05), Position = pic.Position + Vector3.new(0, 0, 0.12), Color = Color3.fromRGB(40, 30, 55) })
-				local pics = candy and CANDY_PICTURES or hosp and HOSPITAL_PICTURES or map.theme == "school" and SCHOOL_PICTURES or map.theme == "carnival" and CARNIVAL_PICTURES or PICTURES
+				local pics = candy and CANDY_PICTURES or hosp and HOSPITAL_PICTURES or map.theme == "school" and SCHOOL_PICTURES or map.theme == "carnival" and CARNIVAL_PICTURES or map.theme == "aquarium" and AQUARIUM_PICTURES or PICTURES
 				emoji(inner, Enum.NormalId.Back, pics[(x + r) % #pics + 1])
 			end
 		end

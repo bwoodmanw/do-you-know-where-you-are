@@ -117,7 +117,8 @@ local function chuteSpots(map, busy, open)
 	for _, f in ipairs(map.floors) do
 		local n = string.lower(f.name)
 		if not from and (string.find(n, "laundry", 1, true) or string.find(n, "linen", 1, true)
-			or string.find(n, "cannon", 1, true) or string.find(n, "slide tower", 1, true)) then
+			or string.find(n, "cannon", 1, true) or string.find(n, "slide tower", 1, true)
+			or string.find(n, "splash slide", 1, true) or string.find(n, "pipe room", 1, true)) then
 			from = f
 		end
 	end
