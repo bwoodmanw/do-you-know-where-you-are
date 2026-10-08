@@ -226,6 +226,33 @@ Reference: `art/model-input/muscle/a-pose-front.png`.
 **10. Mummy Muscle**
 > The same boy as the reference picture, same face, brown eyes and messy brown hair. Friendly mummy costume: cream-white cloth bandages wrapped snugly round his arms, legs and body like a fitted suit, tight to the body with no loose ends hanging from the arms; a narrow bandage band high on his forehead instead of his yellow headband, his whole face uncovered; a few faint orange and purple stitched patches on the bandages; his yellow wristbands over the bandages; plain grey high-top trainers with no logos, no stripes and no marks. A clear gap of air between each arm and the body. Big cheerful grin, strong and brave. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
 
+## Short arms on the T-posed models: remake in A-pose (8 Oct)
+
+Brent's Lobby photos: Ghostly Shadow and plain Echo show short arms; their
+A-posed partners (plain Shadow, Starlight Echo) look right. The model files
+are fine (arms full length: span 0.83 and 0.70 of their height, renders
+normal). They are the only two made in a **T-pose**: Roblox's animations
+expect arms down, so a T-posed rig ends up with its arms swung forward and
+squeezed - short-looking in the 3D view and odd in the walk. Fix: the same
+outfit made again in an **A-pose** (the other characters all work).
+
+1. First try (no new picture): Meshy, Image to 3D with the existing picture
+   (`art/model-input/ghostly-shadow/a-pose-front.png`,
+   `art/model-input/echo-remake/a-pose-front.png`), **Pose: A-Pose**. If the
+   result still has its arms straight out, make a new picture (2).
+2. New pictures (attach the old picture as the reference):
+
+**2c. Ghostly Shadow, A-pose**
+> The same child as the reference picture, same purple eyes, dark hair, grey face mask and the same outfit: a fitted pale lavender-white hoodie with the hood up, close-fitting long sleeves ending at the wrists with a short wavy glowing ghost-trim cuff, the hem stopping at the waist with a short wavy glowing ghost-trim edge, slim light grey cargo trousers, white trainers with lavender laces, fingerless grey gloves. Nothing hanging from the arms. Mysterious but friendly. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, arms angled down about 45 degrees with a clear gap of air between each arm and the body all the way down, plain light grey background, soft even lighting, no text, no logos.
+
+**Echo, A-pose**
+> The same girl as the reference picture, same face, curly brown hair in a messy bun with small goggles pushed far back on top, freckles, big brown eyes, and the same outfit: yellow bomber jacket over a purple hoodie, big headphones round her neck, purple cargo trousers, chunky purple and yellow trainers, a small backpack. Her face large and clear, both eyes wide open. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, arms angled down about 45 degrees with a clear gap of air between each arm and the body, plain light grey background, soft even lighting, no text, no logos.
+
+Then: Avatar Setup (not Platform Avatar), the same names (`ShadowGhost`,
+`Echo`) replacing the old ones in Party House ServerStorage -> Characters
+(rename the old ones `...Old` first), Save to Roblox, send the two ids -
+they go into `Config.CHARACTER_ASSETS` (the Lobby loads those).
+
 ## Remaking Echo herself (her face looks squashed, 7 Oct)
 
 **Done by Brent (7 Oct):** `art/model-input/echo-remake/a-pose-front.png`
