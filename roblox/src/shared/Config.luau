@@ -160,9 +160,15 @@ Config.SKILL_INFO = {
 }
 
 Config.PHRASES = {
-	"Over here!", "I found something!", "Hide!", "Run!", "Use your skill!", "Help me!",
-	"Nice one!", "The door is open!", "Pop the balloons!", "It is coming!", "Ha ha ha!", "I want cake!",
+	"Over here!", "I found something!", "Key found!", "Help me!",
+	"Need Tinker!", "Need Brainy!", "Hide!", "Run!",
+	"It is coming!", "The door is open!", "Use your skill!", "Pop the balloons!",
+	"Nice one!", "Thank you!", "Ha ha ha!", "I want cake!",
 }
+-- these also drop a pin where you stand, seen by the whole team through
+-- walls for PING_SECONDS
+Config.PING_PHRASES = { ["Over here!"] = true, ["I found something!"] = true, ["Key found!"] = true, ["Help me!"] = true, ["Need Tinker!"] = true, ["Need Brainy!"] = true }
+Config.PING_SECONDS = 6
 
 -- icons for things you pick up
 Config.ITEM_ICONS = { candy = "\u{1F36C}", shield = "\u{1F6E1}", balloon = "\u{1F388}" }
@@ -443,7 +449,7 @@ Config.WEEKLY_QUESTS = {
 -- Hub -> Engagement -> Notifications (0 = off). secret: the name of the
 -- Creator Hub secret that holds the Open Cloud API key. hours: how long
 -- after a daily reward is claimed the reminder is sent.
-Config.NOTIFY = { messageId = "", secret = "notifications", hours = 22 }
+Config.NOTIFY = { messageId = "148e62f6-efd3-e349-bd48-3614612744c7", secret = "notifications", hours = 22 }
 -- character skins for Robux (each one a Game Pass; 0 = not on sale yet, so
 -- not shown). model = the model's name in Party House
 -- ServerStorage/Characters (or in CHARACTER_ASSETS once saved to Roblox).

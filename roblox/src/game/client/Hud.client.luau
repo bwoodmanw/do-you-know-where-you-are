@@ -8,7 +8,6 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local TextChatService = game:GetService("TextChatService")
 local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage.Shared.Config)
@@ -414,7 +413,7 @@ local runBtn = button(acts, "\u{1F3C3} Run", { LayoutOrder = 1 }, function()
 	runToggle = not runToggle
 end)
 local skillBtn = button(acts, "\u{2B50} Skill", { LayoutOrder = 2, BackgroundColor3 = Color3.fromRGB(47, 107, 58) })
-local sayBtn = button(acts, "\u{1F4AC} Say", { LayoutOrder = 3 })
+local sayBtn = button(acts, (not TOUCH and UserInputService.KeyboardEnabled) and "\u{1F4AC} Say (T)" or "\u{1F4AC} Say", { LayoutOrder = 3 })
 local outBtn = button(acts, "\u{1F440} Come out", { LayoutOrder = 4, Visible = false }, function()
 	remotes.Unhide:FireServer()
 end)
@@ -496,15 +495,15 @@ local lookBtn = button(acts, "\u{1F5B1} Look (M)", { LayoutOrder = 7, Visible = 
 end)
 
 -- ---------- quick-chat phrases ----------
-local sayPanel = frame(gui, { Size = UDim2.fromOffset(420, 250), Position = UDim2.new(0.5, -210, 1, -390), Visible = false })
+local sayPanel = frame(gui, { Size = UDim2.fromOffset(530, 250), Position = UDim2.new(0.5, -265, 1, -390), Visible = false })
 corner(sayPanel, 14)
 local sayGrid = Instance.new("UIGridLayout")
-sayGrid.CellSize = UDim2.fromOffset(132, 54)
+sayGrid.CellSize = UDim2.fromOffset(124, 52)
 sayGrid.CellPadding = UDim2.fromOffset(6, 6)
 sayGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 sayGrid.Parent = sayPanel
 for i, p in ipairs(Config.PHRASES) do
-	button(sayPanel, p, { BackgroundColor3 = CREAM, TextColor3 = NIGHT }, function()
+	button(sayPanel, (Config.PING_PHRASES[p] and "\u{1F4CD} " or "") .. p, { BackgroundColor3 = CREAM, TextColor3 = NIGHT }, function()
 		remotes.Say:FireServer(i)
 		sayPanel.Visible = false
 	end)
@@ -516,14 +515,63 @@ Gamepad.panel(sayPanel)
 Gamepad.bind(Enum.KeyCode.DPadRight, function()
 	sayPanel.Visible = not sayPanel.Visible
 end)
-remotes.Bubble.OnClientEvent:Connect(function(who, idx)
-	local text = Config.PHRASES[idx]
-	if who and who.Character and text then
-		pcall(function()
-			TextChatService:DisplayBubble(who.Character, text)
-		end)
-	end
-end)
+do
+	-- T opens the phrases on a keyboard
+	UserInputService.InputBegan:Connect(function(input, used)
+		if not used and input.KeyCode == Enum.KeyCode.T then
+			sayPanel.Visible = not sayPanel.Visible
+		end
+	end)
+	-- the game's own speech bubble (shows even for players whose chat is off),
+	-- and a pin where they stood for the phrases that mark a place
+	local bubbles = {}
+	remotes.Bubble.OnClientEvent:Connect(function(who, idx, pos)
+		local text = Config.PHRASES[idx]
+		local head = who and who.Character and (who.Character:FindFirstChild("Head") or who.Character:FindFirstChild("HumanoidRootPart"))
+		if not text then
+			return
+		end
+		if head then
+			if bubbles[who] then
+				bubbles[who]:Destroy()
+			end
+			local bb = Instance.new("BillboardGui")
+			bb.Name = "SayBubble"
+			bb.Adornee = head
+			bb.Size = UDim2.fromOffset(190, 46)
+			bb.StudsOffset = Vector3.new(0, 3.2, 0)
+			bb.MaxDistance = 90
+			bb.Parent = gui
+			local f = frame(bb, { Size = UDim2.fromScale(1, 1), BackgroundColor3 = CREAM, BackgroundTransparency = 0.05 })
+			corner(f, 14)
+			label(f, { Size = UDim2.new(1, -12, 1, -8), Position = UDim2.fromOffset(6, 4), Text = text, TextColor3 = NIGHT })
+			bubbles[who] = bb
+			task.delay(4, function()
+				if bubbles[who] == bb then
+					bubbles[who] = nil
+				end
+				bb:Destroy()
+			end)
+		end
+		if typeof(pos) == "Vector3" and who ~= player then
+			local a = Instance.new("Attachment")
+			a.WorldPosition = pos + Vector3.new(0, 4, 0)
+			a.Parent = workspace.Terrain
+			local pin = Instance.new("BillboardGui")
+			pin.Name = "Ping"
+			pin.Adornee = a
+			pin.AlwaysOnTop = true
+			pin.Size = UDim2.fromOffset(150, 56)
+			pin.Parent = gui
+			label(pin, { Size = UDim2.new(1, 0, 0.55, 0), Text = "\u{1F4CD}", TextColor3 = PUMP })
+			label(pin, { Size = UDim2.new(1, 0, 0.45, 0), Position = UDim2.fromScale(0, 0.55), Text = who.DisplayName .. ": " .. text, TextStrokeTransparency = 0.3 })
+			task.delay(Config.PING_SECONDS or 6, function()
+				pin:Destroy()
+				a:Destroy()
+			end)
+		end
+	end)
+end
 
 -- ---------- character select: a 3D model you can turn, and its skill ----------
 local picker = frame(gui, { Size = UDim2.fromOffset(860, 576), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), ZIndex = 20 })

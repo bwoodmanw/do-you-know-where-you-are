@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,13 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 21 (8 Oct) - quick chat (needs two players for the pins: Studio Test -> Clients and Servers -> 2 players)
+- [ ] Say (T on a keyboard, Right on a controller): 16 phrases in 4 rows; the ones with a pin mark: Over here!, I found something!, Key found!, Help me!, Need Tinker!, Need Brainy!
+- [ ] A phrase shows as a cream bubble over your head for 4 s (seen by everyone, even with chat off)
+- [ ] A pin phrase: the other player sees a pin and "Name: Over here!" where you stood, through walls, for 6 s
+- [ ] More than 3 phrases in 10 s: "Too many messages - wait a moment."
+- [ ] Live (after publishing): a daily reward notification arrives the next day (13+ account, said yes) - needs NOTIFICATIONS.md steps 2-4 done
 
 ## Round 20 (8 Oct) - the Anglerfish Keeper's lure
 

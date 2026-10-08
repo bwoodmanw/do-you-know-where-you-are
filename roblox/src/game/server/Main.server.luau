@@ -2251,7 +2251,9 @@ Say.OnServerEvent:Connect(function(plr, idx)
 	end
 	table.insert(keep, now)
 	said[plr.UserId] = keep
-	Bubble:FireAllClients(plr, idx)
+	-- some phrases also pin where you stand (the team sees it through walls)
+	local h = Config.PING_PHRASES[Config.PHRASES[idx]] and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+	Bubble:FireAllClients(plr, idx, h and not plr:GetAttribute("Escaped") and h.Position or nil)
 end)
 
 Unhide.OnServerEvent:Connect(unhide)
