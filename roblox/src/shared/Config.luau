@@ -243,13 +243,14 @@ Config.CHARACTER_ASSETS = {
 	HostAnglerfish = 100510711229549, -- 8 Oct
 	-- skins (Config.SKINS: the model names)
 	TinkerPumpkin = 107525785066601,
-	ShadowGhost = 126072588049013,
+	ShadowGhost = 104153912502548, -- 8 Oct: remade in A-pose (was 126072588049013, T-pose)
 	BrambleAutumn = 90429061895312,
 	PatchHalloween = 80329522710291,
 	EchoStar = 78905373095211, -- 8 Oct: remade face (was 78330257038104)
 	BrainySpace = 110376512028941,
 	GlowCandy = 99155956475141,
 	MuscleSnow = 109339323825822,
+	MuscleMummy = 121243831267156, -- 8 Oct: the Halloween Candy Shop skin
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
@@ -485,7 +486,7 @@ Config.SKINS = {
 	-- not sold for Robux: bought in the Candy Shop for `corn` candy corns on
 	-- hand (Halloween), kept for good. hidden = not shown until its model is
 	-- saved (CHARACTER_ASSETS.MuscleMummy)
-	{ id = "muscle_mummy", skill = "muscle", name = "Mummy Muscle", model = "MuscleMummy", corn = 100, hidden = true },
+	{ id = "muscle_mummy", skill = "muscle", name = "Mummy Muscle", model = "MuscleMummy", corn = 100 },
 }
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true

@@ -256,6 +256,18 @@ Then: Avatar Setup (not Platform Avatar), the same names (`ShadowGhost`,
 (rename the old ones `...Old` first), Save to Roblox, send the two ids -
 they go into `Config.CHARACTER_ASSETS` (the Lobby loads those).
 
+Results (8 Oct): Ghostly Shadow A-pose saved 104153912502548 (in Config);
+Mummy Muscle saved 121243831267156 (in Config, switched on). **Echo's
+A-pose model fails Avatar Setup**: "Failed to stitch the processed head to
+the processed body ... resolution ... along the neckline". Most likely her
+big headphones round the neck sit right on the line where Avatar Setup cuts
+head from body. Fixes in order: (1) Meshy -> the model -> Remesh,
+Triangle, about 10,000, download, Avatar Setup again; (2) a new picture with
+the headphones off her neck (prompt below). Until then the old Echo stays.
+
+**Echo, A-pose, headphones off the neck**
+> The same girl as the reference picture, same face, curly brown hair in a messy bun with small goggles pushed far back on top, freckles, big brown eyes, and the same outfit: yellow bomber jacket over a purple hoodie, purple cargo trousers, chunky purple and yellow trainers, a small backpack, with her big purple headphones clipped onto the front of one backpack strap at chest height (nothing round her neck, the neck and collar clear). Her face large and clear, both eyes wide open. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, arms angled down about 45 degrees with a clear gap of air between each arm and the body, plain light grey background, soft even lighting, no text, no logos.
+
 ## Remaking Echo herself (her face looks squashed, 7 Oct)
 
 **Done by Brent (7 Oct):** `art/model-input/echo-remake/a-pose-front.png`
