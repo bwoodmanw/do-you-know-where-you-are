@@ -868,15 +868,16 @@ player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 do
 	-- the Halloween Candy Corn Hunt: how many you have found, until it ends
 	local e = Config.EVENT
-	if e and os.time() < e.ends then
+	if e and os.time() < (e.shopUntil or e.ends) then
 		local bannerGui = Instance.new("ScreenGui")
 		bannerGui.Name = "EventBanner"
 		bannerGui.ResetOnSpawn = false
 		bannerGui.Parent = player:WaitForChild("PlayerGui")
-		local banner = Instance.new("TextLabel")
+		local banner = Instance.new("TextButton")
+		banner.AutoButtonColor = true
 		banner.AnchorPoint = Vector2.new(0.5, 1)
 		banner.Position = UDim2.new(0.5, 0, 1, -8)
-		banner.Size = UDim2.fromOffset(380, 30)
+		banner.Size = UDim2.fromOffset(460, 34)
 		banner.BackgroundColor3 = Color3.fromRGB(40, 22, 62)
 		banner.BackgroundTransparency = 0.15
 		banner.TextColor3 = Color3.fromRGB(255, 180, 70)
@@ -886,13 +887,78 @@ do
 		local c = Instance.new("UICorner")
 		c.CornerRadius = UDim.new(0, 10)
 		c.Parent = banner
+		-- the Candy Shop: boosts for candy corns
+		local shop = Instance.new("Frame")
+		shop.AnchorPoint = Vector2.new(0.5, 1)
+		shop.Position = UDim2.new(0.5, 0, 1, -50)
+		shop.Size = UDim2.fromOffset(460, 236)
+		shop.BackgroundColor3 = Color3.fromRGB(40, 22, 62)
+		shop.Visible = false
+		shop.Parent = bannerGui
+		local sc = Instance.new("UICorner")
+		sc.CornerRadius = UDim.new(0, 14)
+		sc.Parent = shop
+		local title = Instance.new("TextLabel")
+		title.BackgroundTransparency = 1
+		title.Position = UDim2.fromOffset(12, 6)
+		title.Size = UDim2.new(1, -24, 0, 30)
+		title.Font = Enum.Font.FredokaOne
+		title.TextScaled = true
+		title.TextColor3 = Color3.fromRGB(255, 180, 70)
+		title.Parent = shop
+		local grid = Instance.new("Frame")
+		grid.BackgroundTransparency = 1
+		grid.Position = UDim2.fromOffset(10, 42)
+		grid.Size = UDim2.new(1, -20, 1, -50)
+		grid.Parent = shop
+		local layout = Instance.new("UIGridLayout")
+		layout.CellSize = UDim2.fromOffset(140, 56)
+		layout.CellPadding = UDim2.fromOffset(8, 8)
+		layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		layout.Parent = grid
+		for _, id in ipairs(Progress.BOOST_ORDER) do
+			local price = e.shop and e.shop[id]
+			local boost = Progress.BOOSTS[id]
+			if price and boost then
+				local b = Instance.new("TextButton")
+				b.BackgroundColor3 = Color3.fromRGB(75, 58, 102)
+				b.TextColor3 = Color3.fromRGB(255, 244, 224)
+				b.Font = Enum.Font.FredokaOne
+				b.TextScaled = true
+				b.Text = boost.icon .. " " .. boost.name .. "\n\u{1F36C} " .. price
+				b.Parent = grid
+				local bc = Instance.new("UICorner")
+				bc.CornerRadius = UDim.new(0, 10)
+				bc.Parent = b
+				b.Activated:Connect(function()
+					remotes:WaitForChild("CornShop"):FireServer(id)
+				end)
+			end
+		end
+		banner.Activated:Connect(function()
+			shop.Visible = not shop.Visible
+		end)
 		local function paint()
 			local ok, data = pcall(function()
 				return HttpService:JSONDecode(player:GetAttribute("ProfileJson") or "{}")
 			end)
-			local n = ok and data and data.stats and data.stats.corn or 0
-			banner.Text = n >= e.goal and ("\u{1F36C} Candy Corn Collector! " .. n .. " found - hunt ends 1 Nov")
-				or ("\u{1F36C} Candy Corn Hunt: " .. n .. " / " .. e.goal .. " found - on every floor until 1 Nov")
+			local st = ok and data and data.stats or {}
+			local n = st.corn or 0
+			local have = n - (st.cornSpent or 0)
+			local skinGoal
+			for _, skin in ipairs(Config.SKINS or {}) do
+				if skin.corn and not skin.hidden and n < skin.corn then
+					skinGoal = skin
+				end
+			end
+			if os.time() >= e.ends then
+				banner.Text = "\u{1F36C} Candy Shop: " .. have .. " corns to spend (open until 8 Nov)"
+			elseif skinGoal then
+				banner.Text = "\u{1F36C} Candy Corn Hunt: " .. n .. " found - " .. skinGoal.corn .. " unlocks " .. skinGoal.name .. " - Shop"
+			else
+				banner.Text = "\u{1F36C} Candy Corn Hunt: " .. n .. " found (" .. have .. " to spend) - Shop"
+			end
+			title.Text = "\u{1F36C} Candy Shop - you have " .. have .. " candy corns"
 		end
 		paint()
 		player:GetAttributeChangedSignal("ProfileJson"):Connect(paint)
@@ -1115,7 +1181,7 @@ local function paintSkins()
 	end
 	local mine = {}
 	for _, skin in ipairs(Config.SKINS or {}) do
-		if skin.skill == selected and ((skin.pass or 0) > 0 or skinOwned[skin.id]) then
+		if skin.skill == selected and not skin.hidden and ((skin.pass or 0) > 0 or skin.corn or skinOwned[skin.id]) then
 			table.insert(mine, skin)
 		end
 	end
@@ -1136,9 +1202,13 @@ local function paintSkins()
 	end)
 	for _, skin in ipairs(mine) do
 		local owned = skinOwned[skin.id]
-		chip((wearing == skin.id and "\u{2705} " or "") .. skin.name .. (owned and "" or " (R$)"), wearing == skin.id, function()
+		local found = profile.stats and profile.stats.corn or 0
+		local tag = owned and "" or skin.corn and (" (\u{1F36C} " .. math.min(found, skin.corn) .. "/" .. skin.corn .. ")") or " (R$)"
+		chip((wearing == skin.id and "\u{2705} " or "") .. skin.name .. tag, wearing == skin.id, function()
 			if owned then
 				remotes.EquipSkin:FireServer(selected, skin.id)
+			elseif skin.corn then
+				notice("\u{1F36C} Find " .. skin.corn .. " candy corns in the games to unlock " .. skin.name .. " (you have " .. found .. ").")
 			else
 				MarketplaceService:PromptGamePassPurchase(player, skin.pass)
 			end

@@ -216,6 +216,16 @@ If a screen looks different from these steps, send me a photo of it.
 
 (Prompt **7b** for the remade Starlight Echo is in the prompt list above, after prompt 7.)
 
+## Mummy Muscle - the Halloween event skin (8 Oct)
+
+Not sold: earned by finding 100 candy corns (`Config.SKINS` muscle_mummy,
+`corn = 100`), kept for good. Hidden until its model is saved. Picture
+folder `art/model-input/mummy-muscle/`, model name **MuscleMummy**.
+Reference: `art/model-input/muscle/a-pose-front.png`.
+
+**10. Mummy Muscle**
+> The same boy as the reference picture, same face, brown eyes and messy brown hair. Friendly mummy costume: cream-white cloth bandages wrapped snugly round his arms, legs and body like a fitted suit, tight to the body with no loose ends hanging from the arms; a narrow bandage band high on his forehead instead of his yellow headband, his whole face uncovered; a few faint orange and purple stitched patches on the bandages; his yellow wristbands over the bandages; plain grey high-top trainers with no logos, no stripes and no marks. A clear gap of air between each arm and the body. Big cheerful grin, strong and brave. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
+
 ## Remaking Echo herself (her face looks squashed, 7 Oct)
 
 **Done by Brent (7 Oct):** `art/model-input/echo-remake/a-pose-front.png`

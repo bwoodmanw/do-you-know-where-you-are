@@ -154,11 +154,11 @@ Passes, pricing, DevEx), `SCHOOL.md` (building 4, the Caretaker host),
 1. **Publish both places** (Rojo connected -> File -> Publish to Roblox, the
    Party House window then the Lobby window) - **before 29 Oct**. Then check
    live: Space Cadet Brainy, skins on sale, the School unlocking.
-2. **Skins still to fix:** Starlight Echo - new model done (id in); soften it
-   if her face is patchy (Plugins -> Escape Crew -> Soften Patch, then Save
-   to Roblox). Halloween Nurse Patch - re-import
-   `art/models/halloween-nurse-patch-sharp.glb` (her face smeared; steps in
-   `SKINS.md`). Delete `BrainySpaceOld` in Party House ServerStorage.
+2. **Skins:** Brent closed the Starlight Echo and Halloween Nurse Patch
+   fixes (8 Oct). **Mummy Muscle** (event skin, 100 candy corns): picture ->
+   Meshy -> MuscleMummy -> id (SKINS.md prompt 10); then Claude sets
+   `hidden = false`. Candy Shop in the Lobby until 8 Nov. Private servers
+   (100 Robux) and automatic translation on (8 Oct).
 3. **Midnight School:** 4 map-card pictures (prompts in `SCHOOL.md`) and
    their ids; a "Top of the Class" badge (id into `Config.BADGES.school`);
    decide on a school host (ghostly caretaker - after Halloween).

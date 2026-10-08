@@ -178,7 +178,11 @@ Config.PING_SECONDS = 6
 -- the Halloween Candy Corn Hunt: candy corns on every floor until `ends`
 -- (os.time: 1 Nov 2026, midnight US Eastern). Each is `points` for whoever
 -- picks it up; `goal` in all earns the badge (BADGES.corn).
-Config.EVENT = { name = "Candy Corn Hunt", ends = 1793505600, perFloor = 6, points = 3, goal = 50, near = 4 }
+Config.EVENT = { name = "Candy Corn Hunt", ends = 1793505600, perFloor = 6, points = 3, goal = 50, near = 4,
+	-- the Candy Shop in the Lobby: boosts for candy corns (found corns stay
+	-- counted for the badge and the skin; spending only lowers what you can
+	-- spend). Open until shopUntil (a week after the hunt).
+	shop = { candy = 6, energy = 5, clue = 8, headstart = 10, shield = 12, freeze = 15 }, shopUntil = 1794114000 }
 
 -- icons for things you pick up
 Config.ITEM_ICONS = { candy = "\u{1F36C}", shield = "\u{1F6E1}", balloon = "\u{1F388}" }
@@ -476,6 +480,9 @@ Config.SKINS = {
 	{ id = "muscle_snow", skill = "muscle", name = "Snow Day Muscle", model = "MuscleSnow", pass = 2018270268 },
 	{ id = "echo_star", skill = "echo", name = "Starlight Echo", model = "EchoStar", pass = 2017922280 },
 	{ id = "bramble_autumn", skill = "bramble", name = "Autumn Leaf Bramble", model = "BrambleAutumn", pass = 2018084266 },
+	-- not sold: earned with candy corns (Halloween), kept for good. hidden =
+	-- not shown until its model is saved (CHARACTER_ASSETS.MuscleMummy)
+	{ id = "muscle_mummy", skill = "muscle", name = "Mummy Muscle", model = "MuscleMummy", corn = 100, hidden = true },
 }
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true

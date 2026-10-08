@@ -29,7 +29,7 @@ local function fresh()
 		inv = {}, -- owned boosts: inv[boostId] = count
 		loadout = {}, -- boosts chosen for the next game (taken from inv)
 		unlocked = { partyhouse = true },
-		stats = { games = 0, escapes = 0, rescues = 0, earned = 0, corn = 0 }, -- earned: every point ever won, spent or not; corn: candy corns found (Halloween)
+		stats = { games = 0, escapes = 0, rescues = 0, earned = 0, corn = 0, cornSpent = 0 }, -- earned: every point ever won, spent or not; corn: candy corns found (Halloween)
 		best = {}, -- best["partyhouse_normal"] = seconds
 	}
 end

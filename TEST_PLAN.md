@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 24 (8 Oct) - the Candy Shop and Mummy Muscle
+- [ ] Lobby: the banner at the bottom now says "Candy Corn Hunt: n found (m to spend) - Shop"; tap it: the Candy Shop opens (6 boosts with a candy-corn price)
+- [ ] Buying with enough corns: the boost is added, "to spend" goes down, "found" does not; with too few: "You need ... (you have ...)"
+- [ ] A corn-bought boost has no points refund with the - button
+- [ ] Once Mummy Muscle's model is in (Claude switches it on): Characters -> Muscle shows "Mummy Muscle (n/100)"; at 100 found it can be worn (owner and Studio: always)
 
 ## Round 23 (8 Oct) - the Halloween Candy Corn Hunt (until 1 Nov)
 - [ ] Every floor: 6 glowing candy corns (yellow, orange, white) bobbing on the floor, spread out, some behind the locked doors

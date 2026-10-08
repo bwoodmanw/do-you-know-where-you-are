@@ -929,6 +929,29 @@ BuyBoost.OnServerEvent:Connect(function(plr, id)
 	Notice:FireClient(plr, boost.icon .. " You bought " .. boost.name .. "!")
 end)
 
+-- the Candy Shop (Halloween): boosts for candy corns found in the games
+do
+	local CornShop = remote("CornShop") -- (boostId)
+	CornShop.OnServerEvent:Connect(function(plr, id)
+		local e = Config.EVENT
+		local price = e and e.shop and typeof(id) == "string" and e.shop[id]
+		local boost = price and Progress.BOOSTS[id]
+		local data = Profile.get(plr)
+		if not boost or not data or os.time() >= (e.shopUntil or 0) then
+			return
+		end
+		local have = (data.stats.corn or 0) - (data.stats.cornSpent or 0)
+		if have < price then
+			return Notice:FireClient(plr, "You need " .. price .. " candy corns for " .. boost.name .. " (you have " .. have .. ").")
+		end
+		data.stats.cornSpent = (data.stats.cornSpent or 0) + price
+		data.inv[id] = (data.inv[id] or 0) + 1 -- not "paid": it doesn't sell back for points
+		Profile.publish(plr)
+		Profile.save(plr)
+		Notice:FireClient(plr, boost.icon .. " " .. boost.name .. " for " .. price .. " candy corns!")
+	end)
+end
+
 -- the - button: a boost bought with points goes back for its full price
 SellBoost.OnServerEvent:Connect(function(plr, id)
 	local boost = typeof(id) == "string" and Progress.BOOSTS[id]
@@ -1311,6 +1334,11 @@ local function ownsSkin(plr, skin)
 	end
 	if Config.SKINS_FREE_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId then
 		return true
+	end
+	if skin.corn then
+		-- an event skin: yours once you have found this many candy corns
+		local d = Profile.get(plr)
+		return d ~= nil and d.stats ~= nil and (d.stats.corn or 0) >= skin.corn
 	end
 	if not skin.pass or skin.pass <= 0 then
 		return false

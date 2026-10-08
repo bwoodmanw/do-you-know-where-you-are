@@ -277,6 +277,11 @@ local function ownsSkin(plr, skin)
 	if Config.SKINS_FREE_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId then
 		return true
 	end
+	if skin.corn then
+		-- an event skin: yours once you have found this many candy corns
+		local d = Profile.get(plr)
+		return d ~= nil and d.stats ~= nil and (d.stats.corn or 0) >= skin.corn
+	end
 	if not skin.pass or skin.pass <= 0 then
 		return false
 	end
@@ -1935,6 +1940,11 @@ function round.placeCandyCorn()
 							say("info", "\u{1F36C} Candy corn! +" .. e.points .. " (" .. math.min(n, e.goal) .. " / " .. e.goal .. ")", nil, plr)
 							if n == e.goal then
 								say("info", "\u{1F36C} " .. plr.DisplayName .. " found " .. e.goal .. " candy corns - Candy Corn Collector!")
+							end
+							for _, skin in ipairs(Config.SKINS or {}) do
+								if skin.corn and n == skin.corn and not skin.hidden then
+									say("info", "\u{1F36C} " .. plr.DisplayName .. " found " .. n .. " candy corns and unlocked " .. skin.name .. "!")
+								end
 							end
 							if n >= e.goal and (Config.BADGES.corn or 0) > 0 then
 								task.spawn(pcall, function()
