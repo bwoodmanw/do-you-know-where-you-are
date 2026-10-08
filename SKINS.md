@@ -20,7 +20,7 @@ previews show it too. Skins change looks only, never skills.
 | 5 | Space Cadet Brainy | Brainy | `space-cadet-brainy/` | `space-cadet-brainy.glb` | `BrainySpace` | ready (checked 7 Oct) |
 | 6 | Snow Day Muscle | Muscle | `snow-day-muscle/` | `snow-day-muscle.glb` | `MuscleSnow` | ready - see the scarf note |
 | 7 | Starlight Echo | Echo | `starlight-echo/` | `starlight-echo.glb` | `EchoStar` | ready (checked 7 Oct) |
-| 8 | Autumn Leaf Bramble | Bramble | `autumn-leaf-bramble/` | `autumn-leaf-bramble.glb` | `BrambleAutumn` | ready (checked 7 Oct) |
+| 8 | Autumn Leaf Bramble | Bramble | `autumn-leaf-bramble/` | `autumn-leaf-bramble.glb` | `BrambleAutumn` | model saved: 90429061895312 (Game Pass to make) |
 | 9 | Halloween Nurse Patch | Patch | `halloween-nurse-patch/` | `halloween-nurse-patch.glb` | `PatchHalloween` | ready (checked 7 Oct) |
 
 The **Name in Studio** must be exact (capitals too): the game finds the model
@@ -127,6 +127,11 @@ made by `tools/repaint_shoes.py`). To put it on him:
 
 ## Make each 3D model (as in MESHY_GUIDE.md)
 
+0. **Import with the 3D Importer, not the Asset Manager.** The Asset
+   Manager's Import only uploads a file; it has no rig or facing settings.
+   Use **File -> Import 3D** (also on the **Avatar** tab as **Import 3D**):
+   the 3D Importer window shows a preview and, on the right, **Rig General ->
+   Rig Type** and **File General -> World Forward / World Up**.
 1. **Meshy** -> Image to 3D -> the picture from its folder; the same settings as
    the characters (A-Pose, Triangle, 10,000, Symmetry on, Texture on; no
    Auto-Rig).

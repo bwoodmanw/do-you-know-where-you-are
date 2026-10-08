@@ -142,7 +142,7 @@ local function shelfStyle(theme, name)
 	end
 	if has("medicine", "pharmacy") then
 		return "medicine"
-	elseif has("pantry", "kitchen", "canteen", "taste") then
+	elseif has("pantry", "kitchen", "canteen", "taste", "cellar") then
 		return "food"
 	elseif has("bath", "linen", "laundry") then
 		return "towels"

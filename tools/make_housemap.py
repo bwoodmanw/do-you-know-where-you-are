@@ -443,6 +443,45 @@ def plan_attic():
     return p
 
 
+# ---------------------------------------------------------------- the secret Basement (floor 0)
+def plan_basement():
+    """Under the Party House, unlocked by escaping the Attic. The Attic's
+    3 x 3 layout (checked) with cellar rooms, pillars and its own furniture;
+    the way out is up the cellar steps."""
+    p = Plan('cellar_a', 'The Party House - Secret Basement')
+    p.floor_no = 0
+    p.exit_style, p.exit_text = 'stairs', 'Up the cellar steps and out!'
+    for x in (13, 26):
+        p.rect(x, 0, x, H - 1)
+    for y in (10, 20):
+        p.rect(0, y, W - 1, y)
+    for x, y in [(13, 24), (26, 25), (19, 20), (13, 14), (26, 12), (36, 20), (6, 20), (26, 4)]:
+        p.put(x, y, '.')
+    p.put(6, 10, 'L')    # L1: Coal Store -> Wine Cellar
+    p.put(13, 5, 'L')    # L2: Wine Cellar -> Cellar Stairs
+    p.put(19, 0, 'D')
+    p.put(0, 24, 'C')
+    for x, y in [(17, 13), (22, 13), (17, 17), (22, 17), (17, 3), (22, 3), (17, 7), (22, 7), (32, 15), (7, 26)]:
+        p.put(x, y, '#')             # brick pillars holding up the house
+    for f in [(2, 13, 4, 14, 'table'), (8, 17, 10, 17, 'shelf'), (2, 23, 9, 23, 'shelf'), (29, 13, 30, 14, 'table'),
+              (34, 17, 37, 17, 'shelf'), (16, 23, 18, 24, 'table'), (30, 23, 33, 24, 'table'), (3, 3, 10, 3, 'shelf'),
+              (3, 6, 9, 6, 'shelf'), (29, 7, 35, 7, 'shelf'), (30, 3, 32, 3, 'table')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 12, 9, 'boards', 'Wine Cellar'), (14, 1, 25, 9, 'boards', 'Cellar Stairs'), (27, 1, 38, 9, 'boards', 'Pumpkin Cellar'),
+                (1, 11, 12, 19, 'boards', 'Coal Store'), (14, 11, 25, 19, 'boards', 'Boiler Room'), (27, 11, 38, 19, 'wood', 'Workshop'),
+                (1, 21, 12, 28, 'tiles', 'Laundry'), (14, 21, 25, 28, 'boards', 'Cellar Entrance'), (27, 21, 38, 28, 'wood', 'Old Storage')]
+    p.fixed = [dict(id='door', kind='door', x=19, y=0),
+               dict(id='L1', kind='lock', x=6, y=10, name='Wine Cellar door'), dict(id='L2', kind='lock', x=13, y=5, name='Cellar Stairs door'),
+               dict(id='cage', kind='cage', x=15, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=3, y=19), dict(id='v1b', kind='vent', pair='v1', x=3, y=21),
+               dict(id='v2a', kind='vent', pair='v2', x=25, y=16), dict(id='v2b', kind='vent', pair='v2', x=27, y=16),
+               dict(id='v3a', kind='vent', pair='v3', x=31, y=19), dict(id='v3b', kind='vent', pair='v3', x=31, y=21)]
+    p.start = [(18, 27), (19, 27), (20, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 24), (17, 23)
+    p.patrol = [(6, 16), (19, 15), (32, 18), (34, 26), (19, 25), (5, 26), (6, 5, 'L1'), (10, 8, 'L1'), (19, 5, 'L2'), (33, 4, 'L2')]
+    return p
+
+
 # ---------------------------------------------------------------- floor 2: the Bedrooms
 def plan_bedrooms():
     p = Plan('bed_a', 'The Party House - Bedrooms')
@@ -846,8 +885,9 @@ vault = add_closets(plan_vault())
 hosp = add_closets(plan_hospital())
 ward = add_closets(plan_wards())
 lab = add_closets(plan_labs())
+cellar = add_closets(plan_basement())
 for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms'),
-          att, mirror(att, 'attic_b', 'The Party House - Attic'), gum, mirror(gum, 'gum_b', 'Gummy Bounce House - Bounce Hall'),
+          att, mirror(att, 'attic_b', 'The Party House - Attic'), cellar, mirror(cellar, 'cellar_b', 'The Party House - Secret Basement'), gum, mirror(gum, 'gum_b', 'Gummy Bounce House - Bounce Hall'),
           fac, mirror(fac, 'fac_b', 'Gummy Bounce House - Candy Factory'), vault, mirror(vault, 'vault_b', 'Gummy Bounce House - Jelly Vault'),
           hosp, mirror(hosp, 'hosp_b', 'Abandoned Hospital - Ground Floor'),
           ward, mirror(ward, 'ward_b', 'Abandoned Hospital - Wards'), lab, mirror(lab, 'lab_b', 'Abandoned Hospital - Labs')):

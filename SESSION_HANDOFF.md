@@ -223,6 +223,24 @@ art/sheets/ art/models/ art/model-input/   design art and Meshy files
 - Muscle's own picture (`art/model-input/muscle/a-pose-front.png`) has
   trainers with a swoosh-like mark: decision pending (see below).
 
+## Decisions and builds (8 Oct)
+
+- Code-colour upgrades: one colour a game whoever has them, none on Nightmare
+  (`Config.CODE_COLOUR_ON_NIGHTMARE = false`); Brainy no longer has one.
+- Brainy's ladder rebuilt (`BRAINY_LADDER.md`): Trick Spotter, Two-Step
+  Clue, Key Finder, Long Read, Mastermind (the team's first clue free, the
+  whole route; the clue log keeps it on screen).
+- Weekly quests (`Config.WEEKLY_QUESTS`, 3 a week from Monday UTC, points +
+  a boost); daily and weekly rewards are paid automatically, no claiming.
+- The secret Basement (`partyhouse_b`, floor 0, plans cellar_a / cellar_b,
+  unlocked by escaping the Attic, `secret = true`: not in the all-floors
+  badge, no Next floor). Then **Tower Run**, then a 4th and 5th building
+  with 3 floors each.
+- Model ids: Muscle 95343724720766 (clean shoes), Echo 102616480883822
+  (remade face), skins TinkerPumpkin, ShadowGhost, BrambleAutumn (see
+  `SKINS.md`). T-posed models stand arms-down in the character views
+  (`shared/RestPose.luau`).
+
 ## Open items and decisions waiting on Brent
 
 0. **Seasonal icon:** `art/roblox-store/icon-halloween-512.png` is live. From

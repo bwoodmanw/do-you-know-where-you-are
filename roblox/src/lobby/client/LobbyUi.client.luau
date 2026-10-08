@@ -650,7 +650,7 @@ for i, bld in ipairs(Progress.BUILDINGS) do
 		end
 	end)
 end
-for i = 1, 3 do
+for i = 1, 4 do
 	floorCards[i] = card(mapScreen, 20 + (i - 1) * 305, 300, 290, 220, function()
 		local id = floorCards[i].mapId
 		if id then
@@ -773,8 +773,12 @@ local function paintParty(p)
 			table.insert(floors, m)
 		end
 	end
-	for i = 1, 3 do
+	-- three floors fill the row; four (with the Basement) share it
+	local wide = #floors >= 4 and 214 or 290
+	for i = 1, 4 do
 		local c, m = floorCards[i], floors[i]
+		c.button.Size = UDim2.fromOffset(wide, 220)
+		c.button.Position = UDim2.fromOffset(20 + (i - 1) * (wide + 10 + (wide == 290 and 5 or 0)), 300)
 		c.button.Visible = m ~= nil
 		c.mapId = nil
 		if m then
@@ -1145,6 +1149,7 @@ local function showModel(sk)
 	local src = previews and previews:FindFirstChild(modelName)
 	if src then
 		shown = src:Clone()
+		pcall(require(ReplicatedStorage.Shared.RestPose), shown) -- a T-pose stands with its arms down
 		shown.Parent = viewWorld
 		shownFor = modelName
 		noModel.Visible = false
@@ -1419,13 +1424,25 @@ Gamepad.panel(help)
 -- ---------- daily quests ----------
 do
 	local Quests = Config.QUESTS
-	local panel = frame(gui, { Size = UDim2.fromOffset(520, 380), Position = UDim2.new(0.5, -260, 0.5, -190), Visible = false, ZIndex = 10 })
+	local panel = frame(gui, { Size = UDim2.fromOffset(520, 640), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Visible = false, ZIndex = 10 })
 	corner(panel, 18)
-	label(panel, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "\u{1F4DC} Daily quests", TextColor3 = PUMP, ZIndex = 11 })
-	local resets = label(panel, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+	do
+		local fit = Instance.new("UIScale")
+		fit.Parent = panel
+		local function size()
+			fit.Scale = math.min(1, (workspace.CurrentCamera.ViewportSize.Y - 20) / 640)
+		end
+		workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(size)
+		size()
+	end
+	label(panel, { Size = UDim2.new(1, 0, 0, 36), Position = UDim2.fromOffset(0, 8), Text = "\u{1F4DC} Daily quests", TextColor3 = PUMP, ZIndex = 11 })
+	local resets = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = "", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+	label(panel, { Size = UDim2.new(1, 0, 0, 30), Position = UDim2.fromOffset(0, 296), Text = "\u{1F3C6} Weekly quests", TextColor3 = Color3.fromRGB(255, 210, 63), ZIndex = 11 })
+	local weekResets = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 328), Text = "", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 	local rows = {}
-	for i = 1, 3 do
-		local r = frame(panel, { Size = UDim2.new(1, -40, 0, 70), Position = UDim2.fromOffset(20, 82 + (i - 1) * 80), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 11 })
+	for i = 1, 6 do
+		local y = i <= 3 and (72 + (i - 1) * 74) or (354 + (i - 4) * 74)
+		local r = frame(panel, { Size = UDim2.new(1, -40, 0, 66), Position = UDim2.fromOffset(20, y), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 11 })
 		corner(r, 12)
 		local text = label(r, { Size = UDim2.new(1, -130, 0, 30), Position = UDim2.fromOffset(12, 6), Text = "", TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
 		local reward = label(r, { Size = UDim2.fromOffset(110, 30), Position = UDim2.new(1, -120, 0, 6), Text = "", TextColor3 = Color3.fromRGB(255, 210, 63), ZIndex = 12 })
@@ -1439,9 +1456,11 @@ do
 		panel.Visible = false
 	end)
 	local function defOf(id)
-		for _, q in ipairs(Quests) do
-			if q.id == id then
-				return q
+		for _, pool in ipairs({ Quests, Config.WEEKLY_QUESTS or {} }) do
+			for _, q in ipairs(pool) do
+				if q.id == id then
+					return q
+				end
 			end
 		end
 		return nil
@@ -1449,17 +1468,21 @@ do
 	local function paint()
 		local qs = profile.quests
 		local today = math.floor(os.time() / 86400)
+		local week = math.floor((os.time() + 3 * 86400) / (7 * 86400))
 		local list = (qs and qs.day == today and qs.list) or {}
+		local wk = profile.weekly
+		local wlist = (wk and wk.week == week and wk.list) or {}
 		local doneCount = 0
-		for i = 1, 3 do
-			local q = list[i]
+		for i = 1, 6 do
+			local q = i <= 3 and list[i] or wlist[i - 3]
 			local d = q and defOf(q.id)
 			local r = rows[i]
 			if d then
+				local b = d.boost and Progress.BOOSTS[d.boost]
 				r.text.Text = (q.done and "\u{2705} " or "") .. d.text .. "  (" .. q.n .. "/" .. d.goal .. ")"
-				r.reward.Text = "+" .. d.points .. " \u{2B50}"
+				r.reward.Text = "+" .. d.points .. " \u{2B50}" .. (b and (" +" .. b.icon) or "")
 				r.fill.Size = UDim2.fromScale(math.clamp(q.n / d.goal, 0, 1), 1)
-				if q.done then
+				if q.done and i <= 3 then
 					doneCount += 1
 				end
 			else
@@ -1469,7 +1492,9 @@ do
 			end
 		end
 		local left = (today + 1) * 86400 - os.time()
-		resets.Text = "Finish them in a game - points are paid at once. New quests in " .. math.floor(left / 3600) .. "h " .. math.floor(left % 3600 / 60) .. "m"
+		resets.Text = "Rewards are paid the moment you finish - no claiming. New in " .. math.floor(left / 3600) .. "h " .. math.floor(left % 3600 / 60) .. "m"
+		local wleft = (week + 1) * 7 * 86400 - 3 * 86400 - os.time()
+		weekResets.Text = "Bigger goals, more points and a boost each. New on Monday (in " .. math.floor(wleft / 86400) .. "d " .. math.floor(wleft % 86400 / 3600) .. "h)"
 		questsBtn.Text = "\u{1F4DC} Daily quests  " .. doneCount .. "/3"
 	end
 	player:GetAttributeChangedSignal("ProfileJson"):Connect(function()

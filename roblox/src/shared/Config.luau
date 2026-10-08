@@ -159,7 +159,7 @@ Config.PICK_WAIT = 120
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "gummy_2" -- partyhouse(_2, _3), gummy(_2, _3), hospital(_2, _3)
+Config.STUDIO_MAP = "partyhouse_b" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot"); nil = random
@@ -200,6 +200,7 @@ Config.CHARACTER_ASSETS = {
 	-- skins (Config.SKINS: the model names)
 	TinkerPumpkin = 107525785066601,
 	ShadowGhost = 126072588049013,
+	BrambleAutumn = 90429061895312,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
@@ -377,6 +378,20 @@ Config.QUESTS = {
 	{ id = "vents3", kind = "vent", goal = 3, points = 30, text = "Crawl through 3 vents" },
 	{ id = "door", kind = "door", goal = 1, points = 40, text = "Open the big exit door" },
 	{ id = "present", kind = "present", goal = 1, points = 40, text = "Open a bonus present" },
+}
+-- weekly quests: 3 a week (from Monday), bigger goals, more points and a
+-- boost (into the player's bag) for each one finished
+Config.WEEKLY_QUESTS = {
+	{ id = "w_escape8", kind = "escape", goal = 8, points = 250, boost = "freeze", text = "Escape 8 floors" },
+	{ id = "w_hard3", kind = "escapeHard", goal = 3, points = 300, boost = "shield", text = "Escape 3 times on Hard or Nightmare" },
+	{ id = "w_rescue5", kind = "rescue", goal = 5, points = 200, boost = "shield", text = "Free 5 friends from the cage" },
+	{ id = "w_keys12", kind = "key", goal = 12, points = 180, boost = "clue", text = "Find 12 keys or Confetti Cannons" },
+	{ id = "w_balloons20", kind = "balloon", goal = 20, points = 180, boost = "candy", text = "Pop 20 real clue balloons" },
+	{ id = "w_games15", kind = "play", goal = 15, points = 200, boost = "energy", text = "Play 15 games" },
+	{ id = "w_skill30", kind = "skill", goal = 30, points = 180, boost = "candy", text = "Use your character's skill 30 times" },
+	{ id = "w_door6", kind = "door", goal = 6, points = 200, boost = "headstart", text = "Open the big exit door 6 times" },
+	{ id = "w_present5", kind = "present", goal = 5, points = 220, boost = "clue", text = "Open 5 bonus presents" },
+	{ id = "w_vents15", kind = "vent", goal = 15, points = 150, boost = "energy", text = "Crawl through 15 vents" },
 }
 -- "Your daily reward is ready" (Roblox experience notifications; players 13+
 -- who said yes). messageId: the notification string's asset id from Creator

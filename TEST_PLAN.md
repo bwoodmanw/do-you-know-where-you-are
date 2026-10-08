@@ -10,6 +10,16 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 14 (8 Oct) - Basement, weekly quests, clue log
+
+Studio Play now builds the **Secret Basement** (`partyhouse_b`).
+- [ ] Basement: Cellar Entrance (start, bottom middle), Boiler Room (boiler and pipes, red warning light), Coal Store, Workshop, Laundry (with the laundry chute), Old Storage, Wine Cellar (behind the first locked door), Cellar Stairs (the way out, behind the second, "Up the cellar steps and out!") and Pumpkin Cellar; brick pillars; drips and dust; no windows
+- [ ] Lobby map screen: the Party House shows four floor cards (Ground, Bedrooms, Attic, Secret Basement) side by side; the Basement is locked until the Attic is escaped (live), then opens
+- [ ] Escaping the Basement: no "Next floor" button; it does not count for the "all floors" badge
+- [ ] Lobby -> Daily quests: three daily rows and three weekly rows ("Weekly quests", each with points and a boost icon, "New on Monday (in Nd Nh)"); finishing one in a game says "Weekly quest done: ... and a Frozen Pop" and the boost is in the shop bag
+- [ ] Clue log: after the first clue a "📜 Clues (1)" button; it opens every clue this game, newest first; a Mastermind route opens it by itself, one step a line; it empties when a new game starts
+- [ ] Character screens (Lobby and the game's picker): Echo and Ghostly Shadow stand with their arms down; the A-posed characters look as before
+
 ## Round 13 (7 Oct, late) - fixes from Brent's play test
 
 - [ ] Caught while crawling through a vent or the laundry chute (the host only catches you there in a frenzy): you appear in the cage, everyone can see you, friends can free you

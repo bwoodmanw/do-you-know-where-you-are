@@ -121,8 +121,8 @@ local function nextFloor()
 	local mapId = RoundState:GetAttribute("Map") or "partyhouse"
 	local i = Progress.mapIndex(mapId)
 	local m = i and Progress.MAPS[i]
-	if not m then
-		return nil
+	if not m or m.floor < 1 then
+		return nil -- the secret Basement: up the cellar steps and out, no floor above
 	end
 	for _, n in ipairs(Progress.MAPS) do
 		if n.building == m.building and n.floor == m.floor + 1 and n.ready then
@@ -232,7 +232,9 @@ local function quest(plr, kind, n)
 		return
 	end
 	for _, d in ipairs(Quests.bump(data, plr.UserId, kind, n)) do
-		say("quest", "\u{1F4DC} Quest done: " .. d.text .. "! +" .. d.points .. " points", { userId = plr.UserId, points = d.points }, plr)
+		local b = d.boost and Progress.BOOSTS[d.boost]
+		say("quest", "\u{1F4DC} " .. (d.weekly and "Weekly quest" or "Quest") .. " done: " .. d.text .. "! +" .. d.points .. " points" .. (b and (" and a " .. b.icon .. " " .. b.name) or ""),
+			{ userId = plr.UserId, points = d.points }, plr)
 	end
 	Profile.publish(plr)
 end
@@ -542,7 +544,7 @@ local function checkEnd()
 				if pd and pd.cleared then
 					local all = true
 					for _, mm in ipairs(Progress.MAPS) do
-						if mm.ready and not pd.cleared[mm.id] then
+						if mm.ready and not mm.secret and not pd.cleared[mm.id] then
 							all = false
 						end
 					end

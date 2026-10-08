@@ -751,6 +751,14 @@ local LOOKS = {
 	{ { "supply" }, "grey", { "Crates", "Crates", "PaperStacks" } },
 	{ { "main corridor", "lab entrance" }, nil, { "WaitingChairs", "IVStand", "Plants" } },
 	-- party house
+	-- the secret Basement
+	{ { "wine cellar" }, "brick", { "Trunks", "Crates", "Sacks" } },
+	{ { "pumpkin cellar" }, "brick", { "Sacks", "Crates", "Sacks" } },
+	{ { "coal" }, "brick", { "Crates", "Sacks", "Pipes" } },
+	{ { "workshop" }, "wood", { "Crates", "PaperStacks", "Trunks" } },
+	{ { "cellar entrance" }, "brick", { "Crates", "CoatRack" } },
+	{ { "old storage" }, "wood", { "DustSheets", "Crates", "Trunks" } },
+	{ { "cellar stairs" }, "brick", { "Pipes", "Crates" } },
 	{ { "parlour" }, "red", { "Fireplace", "Armchair", "Armchair" } },
 	{ { "library" }, "green", { "Globe", "Armchair", "Fireplace" } },
 	{ { "study" }, "green", { "Globe", "Armchair", "PaperStacks" } },
@@ -782,12 +790,12 @@ local SOUNDS_BY_NAME = {
 	{ { "ward", "x-ray", "nurses", "records", "pharmacy", "medicine" }, "beep" },
 	{ { "corridor", "waiting", "reception", "lift", "lab", "canteen" }, "buzz", "hospital" },
 	{ { "chocolate", "jelly" }, "bubble" },
-	{ { "bath", "laundry", "linen", "sticky", "archive" }, "drip" },
+	{ { "bath", "laundry", "linen", "sticky", "archive", "cellar" }, "drip" },
 }
 -- effects: steam, dust, bubbles, sparkles, mist
 local EFFECTS_BY_NAME = {
 	{ { "boiler", "generator", "laundry" }, "steam" },
-	{ { "trunk", "dusty", "box room", "clock", "doll", "storage" }, "dust" },
+	{ { "trunk", "dusty", "box room", "clock", "doll", "storage", "coal", "workshop" }, "dust" },
 	{ { "chocolate" }, "bubbles" },
 	{ { "vault", "gold", "jelly bank" }, "sparkles" },
 	{ { "jelly pool", "wobble" }, "mist" },
@@ -1394,6 +1402,9 @@ local function paintView(sg, theme, seed)
 end
 
 local function buildWindows(folder, world, map, busy, pieceAt)
+	if string.find(string.lower(map.name or ""), "basement", 1, true) then
+		return -- under the ground: no windows
+	end
 	local objAt = {}
 	for _, o in ipairs(map.objects) do
 		objAt[o.x .. "," .. o.y] = true

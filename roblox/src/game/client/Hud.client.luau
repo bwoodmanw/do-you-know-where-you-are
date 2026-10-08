@@ -649,6 +649,7 @@ local function showChar()
 	spin = 0
 	if src then
 		shown = src:Clone()
+		pcall(require(ReplicatedStorage.Shared.RestPose), shown) -- a T-pose stands with its arms down
 		shown.Parent = viewWorld
 		noModel.Visible = false
 	else
@@ -1936,6 +1937,57 @@ do
 			end
 		end)
 	end
+end
+
+-- ---------- the clue log: every clue this game, to read again ----------
+do
+	local log = {}
+	local open = button(acts, "\u{1F4DC} Clues", { LayoutOrder = 9, Visible = false })
+	local panel = frame(gui, { Size = UDim2.fromOffset(440, 300), Position = UDim2.new(0.5, -220, 0, 150), Visible = false, ZIndex = 30 })
+	corner(panel, 14)
+	label(panel, { Size = UDim2.new(1, -60, 0, 30), Position = UDim2.fromOffset(14, 8), Text = "\u{1F4DC} Clues this game", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 31 })
+	button(panel, "X", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(36, 30), Position = UDim2.new(1, -46, 0, 8), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 31 }, function()
+		panel.Visible = false
+	end)
+	local scroll = Instance.new("ScrollingFrame")
+	scroll.Size = UDim2.new(1, -24, 1, -52)
+	scroll.Position = UDim2.fromOffset(12, 44)
+	scroll.BackgroundTransparency = 1
+	scroll.BorderSizePixel = 0
+	scroll.ScrollBarThickness = 8
+	scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	scroll.CanvasSize = UDim2.new()
+	scroll.ZIndex = 31
+	scroll.Parent = panel
+	local body = label(scroll, { Size = UDim2.new(1, -12, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, TextScaled = false, TextSize = 17, TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 32 })
+	local function paint()
+		local lines = {}
+		for i, t in ipairs(log) do
+			-- a Mastermind route: one step a line
+			t = string.gsub(t, "  (%d%))", "\n   %1")
+			lines[i] = (i == 1 and "\u{27A4} " or "\u{2022} ") .. t
+		end
+		body.Text = table.concat(lines, "\n\n")
+		open.Text = "\u{1F4DC} Clues (" .. #log .. ")"
+	end
+	open.Activated:Connect(function()
+		panel.Visible = not panel.Visible
+	end)
+	Gamepad.panel(panel)
+	remotes.Notify.OnClientEvent:Connect(function(kind, text)
+		if kind == "start" then
+			log = {}
+			open.Visible, panel.Visible = false, false
+		elseif kind == "clue" and typeof(text) == "string" then
+			table.insert(log, 1, text)
+			open.Visible = true
+			paint()
+			if string.find(text, "Mastermind route", 1, true) then
+				panel.Visible = true -- the whole route: too long to remember from a message
+			end
+		end
+	end)
 end
 
 -- ---------- mouse look: lock the mouse to the centre unless a menu is open ----------

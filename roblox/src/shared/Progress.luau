@@ -13,6 +13,8 @@ Progress.MAPS = {
 	{ id = "partyhouse", building = "partyhouse", floor = 1, name = "Party House: Ground", icon = "\u{1F383}", ready = true },
 	{ id = "partyhouse_2", building = "partyhouse", floor = 2, name = "Party House: Bedrooms", icon = "\u{1F6CF}", ready = true },
 	{ id = "partyhouse_3", building = "partyhouse", floor = 3, name = "Party House: Attic", icon = "\u{1F578}", ready = true },
+	-- the secret Basement: under the house (floor 0), unlocked by escaping the Attic
+	{ id = "partyhouse_b", building = "partyhouse", floor = 0, name = "Party House: Secret Basement", icon = "\u{1F56F}", ready = true, secret = true, unlockAfter = "partyhouse_3" },
 	{ id = "gummy", building = "gummy", floor = 1, name = "Gummy: Bounce Hall", icon = "\u{1F36C}", ready = true },
 	{ id = "gummy_2", building = "gummy", floor = 2, name = "Gummy: Candy Factory", icon = "\u{1F36D}", ready = true },
 	{ id = "gummy_3", building = "gummy", floor = 3, name = "Gummy: Jelly Vault", icon = "\u{1F36F}", ready = true },
@@ -36,7 +38,7 @@ function Progress.unlocksAfter(id)
 		return out
 	end
 	for _, n in ipairs(Progress.MAPS) do
-		if n.building == m.building and n.floor == m.floor + 1 then
+		if (n.building == m.building and n.floor == m.floor + 1 and m.floor >= 1) or n.unlockAfter == id then
 			table.insert(out, n)
 		end
 	end
