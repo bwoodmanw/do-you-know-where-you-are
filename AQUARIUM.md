@@ -34,10 +34,10 @@ exactly like a real present. Open it and it was a trick: you glow for 3 s
 and he comes to look. **Brainy and Glow** see "Pop it - it's a fake!" (F / Y)
 and pop it safely.
 
-## Pictures for the Lobby map screen (Brent)
+## Pictures for the Lobby map screen (done 8 Oct)
 
-16:9 (e.g. 1536 x 864), save to `art/roblox-store/maps/`, upload in the
-Lobby place (View -> Asset Manager -> Import) and send me the image ids.
+In `Config.MAP_IMAGES`: building-aquarium 112735362765924, Main Hall
+91974787928356, Deep Sea 75069384210834, Rooftop Pools 111966719661004.
 
 Style line for every prompt:
 > Stylised 3D diorama, a cut-away room seen from above at an angle, at night, warm lamps and Halloween string lights in orange and purple, little paper bats, a friendly-spooky mood for kids, no people, no text, no logos.
@@ -50,4 +50,4 @@ Style line for every prompt:
 ## Badge
 
 **Making a Splash** - "Escaped the Aquarium's Rooftop Pools." (`Config.BADGES.aquarium`).
-I make the picture from the Rooftop card picture once it exists.
+Picture: `art/roblox-store/badges/badge-aquarium.png` (made from the Rooftop card).

@@ -284,6 +284,10 @@ Config.MAP_IMAGES = {
 	carnival = 139473943447483, -- The Midway
 	carnival_2 = 128885533879458, -- The Big Top
 	carnival_3 = 102152843956658, -- The Funhouse
+	["building-aquarium"] = 112735362765924,
+	aquarium = 91974787928356, -- Main Hall
+	aquarium_2 = 75069384210834, -- Deep Sea
+	aquarium_3 = 111966719661004, -- Rooftop Pools
 	partyhouse_b = 103210033418692, -- the Secret Basement (remade 8 Oct: no bottles)
 }
 -- character portraits (face with a skill badge) by skill id
