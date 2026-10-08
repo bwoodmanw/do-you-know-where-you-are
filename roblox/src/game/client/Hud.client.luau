@@ -1606,6 +1606,9 @@ RunService.RenderStepped:Connect(function(dt)
 		TweenService:Create(LightingService, TweenInfo.new(0.4), nowDark and darkLight or normalLight):Play()
 	end
 	local where = HouseMap.name or "The Party House"
+	if RoundState:GetAttribute("Tower") then
+		where = "\u{1F5FC} " .. (RoundState:GetAttribute("TowerFloor") or 1) .. "/3 \u{00B7} " .. where
+	end
 	roomName.Text = r and (where .. " \u{00B7} " .. r) or where
 	local host = workspace:FindFirstChild("PartyHost")
 	if host ~= breathFor then
@@ -1803,6 +1806,9 @@ remotes.Results.OnClientEvent:Connect(function(r)
 		end
 	end
 	resTitle.Text = r.won and "\u{1F389} You escaped the Party House!" or "\u{1F512} Everyone was caught..."
+	if r.tower then
+		resTitle.Text = r.won and "\u{1F5FC} Tower Run: you reached the top! (+25%)" or ("\u{1F5FC} Tower Run: caught on floor " .. r.tower)
+	end
 	resInfo.Text = r.difficulty .. "  \u{00B7}  " .. string.format("%d:%02d", math.floor(r.seconds / 60), r.seconds % 60) .. (r.timeBonus > 0 and ("  \u{00B7}  time bonus +" .. r.timeBonus) or "")
 	local lines = {}
 	for _, row in ipairs(r.players) do

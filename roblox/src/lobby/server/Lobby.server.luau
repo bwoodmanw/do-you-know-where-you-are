@@ -487,6 +487,7 @@ local function snapshot(party)
 		mapScreen = party.mapScreen == true,
 		building = party.building or "partyhouse",
 		chosen = chosenMap(party),
+		tower = party.tower == true,
 		unlocked = (Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked,
 	}
 end
@@ -698,6 +699,15 @@ local function start(party)
 	end
 	party.starting = true
 	local mapId = chosenMap(party)
+	if party.tower then
+		-- a Tower Run starts at the bottom of the chosen building
+		local i = Progress.mapIndex(mapId)
+		for _, m in ipairs(Progress.MAPS) do
+			if i and m.building == Progress.MAPS[i].building and m.floor == 1 then
+				mapId = m.id
+			end
+		end
+	end
 	local mapName = Progress.MAPS[Progress.mapIndex(mapId)].name
 	for _, m in ipairs(party.members) do
 		Notice:FireClient(m, "Off to " .. mapName .. "...")
@@ -720,7 +730,7 @@ local function start(party)
 		local code = TeleportService:ReserveServer(placeId)
 		local options = Instance.new("TeleportOptions")
 		options.ReservedServerAccessCode = code
-		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook, map = mapId, leader = party.leader.UserId, code = code })
+		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook, map = mapId, leader = party.leader.UserId, code = code, tower = party.tower == true })
 		TeleportService:TeleportAsync(placeId, party.members, options)
 	end)
 	if not ok then
@@ -809,6 +819,19 @@ SetOption.OnServerEvent:Connect(function(plr, key, value)
 	elseif key == "mapScreen" and typeof(value) == "boolean" then
 		-- the leader opens the map screen for the whole party (and closes it)
 		party.mapScreen = value
+	elseif key == "tower" and typeof(value) == "boolean" then
+		-- Tower Run: every floor of the building in one game, once the leader has reached the top
+		local top
+		for _, m in ipairs(Progress.MAPS) do
+			if m.building == (party.building or "partyhouse") and m.floor >= 1 and (not top or m.floor > top.floor) then
+				top = m
+			end
+		end
+		local unlocked = (Profile.get(plr) or { unlocked = {} }).unlocked
+		if value and top and not unlocked[top.id] then
+			return Notice:FireClient(plr, "Tower Run opens once you have reached " .. top.name .. ".")
+		end
+		party.tower = value
 	elseif key == "building" and typeof(value) == "string" then
 		for _, b in ipairs(Progress.BUILDINGS) do
 			if b.id == value then

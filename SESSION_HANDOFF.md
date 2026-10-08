@@ -236,6 +236,13 @@ art/sheets/ art/models/ art/model-input/   design art and Meshy files
   unlocked by escaping the Attic, `secret = true`: not in the all-floors
   badge, no Next floor). Then **Tower Run**, then a 4th and 5th building
   with 3 floors each.
+- Tower Run built (8 Oct): the leader switches it on in the map screen
+  (once they have reached the building's top floor); one game climbs floors
+  1-3 with one clock (`Config.TOWER`: 2.5 x, +25% at the top, 8 s grace on
+  later floors), the same host, points carried; Play again restarts at the
+  bottom. Studio: `Config.STUDIO_TOWER`.
+- Console: Brent ticked Console (Playable Devices) on 8 Oct.
+- Snow Day Muscle's scarf: remake as red and white (prompt 6b in SKINS.md).
 - Model ids: Muscle 95343724720766 (clean shoes), Echo 102616480883822
   (remade face), skins TinkerPumpkin, ShadowGhost, BrambleAutumn (see
   `SKINS.md`). T-posed models stand arms-down in the character views

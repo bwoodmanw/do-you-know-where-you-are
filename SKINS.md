@@ -18,7 +18,7 @@ previews show it too. Skins change looks only, never skills.
 | 3 | Candy Glow | Glow | `candy-glow/` | `candy-glow.glb` | `GlowCandy` | ready (checked 7 Oct) |
 | 4 | Night Nurse Patch | Patch | `night-nurse-patch/` | `night-nurse-patch.glb` | `PatchNurse` | ready (checked 7 Oct) |
 | 5 | Space Cadet Brainy | Brainy | `space-cadet-brainy/` | `space-cadet-brainy.glb` | `BrainySpace` | ready (checked 7 Oct) |
-| 6 | Snow Day Muscle | Muscle | `snow-day-muscle/` | `snow-day-muscle.glb` | `MuscleSnow` | ready - see the scarf note |
+| 6 | Snow Day Muscle | Muscle | `snow-day-muscle/` | `snow-day-muscle.glb` | `MuscleSnow` | remake the picture (red and white scarf, prompt 6b) |
 | 7 | Starlight Echo | Echo | `starlight-echo/` | `starlight-echo.glb` | `EchoStar` | ready (checked 7 Oct) |
 | 8 | Autumn Leaf Bramble | Bramble | `autumn-leaf-bramble/` | `autumn-leaf-bramble.glb` | `BrambleAutumn` | model saved: 90429061895312 (Game Pass to make) |
 | 9 | Halloween Nurse Patch | Patch | `halloween-nurse-patch/` | `halloween-nurse-patch.glb` | `PatchHalloween` | ready (checked 7 Oct) |
@@ -89,6 +89,11 @@ ends with the line the originals used. Save each result as
 
 **6. Snow Day Muscle**
 > The same boy as the reference picture, same spiky brown hair, brown eyes and strong arms. Winter outfit: a puffy red winter jacket left open over a cream knitted jumper with a white snowflake pattern, a yellow knitted bobble hat with ear flaps, yellow mittens, dark grey snow trousers, chunky brown snow boots, a long striped red and yellow scarf. Big happy grin. Plain clothes and boots with no logos or brand marks. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
+
+**6b. Snow Day Muscle, red and white scarf** (use this one: a red-and-gold striped scarf looks like a famous wizard-school scarf)
+> The same boy as the reference picture (attach `art/model-input/snow-day-muscle/a-pose-front.png` too, so everything else stays the same), same spiky brown hair, brown eyes and strong arms. Winter outfit: a puffy red winter jacket left open over a cream knitted jumper with a white snowflake pattern, a yellow knitted bobble hat with ear flaps, yellow mittens, dark grey snow trousers, chunky brown snow boots with fur tops, and a long scarf striped red and white like a candy cane, with white snowflakes knitted into it. Big happy grin. Plain clothes and boots with no logos or brand marks. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.
+
+Save it over `art/model-input/snow-day-muscle/a-pose-front.png` and tell me before building the model.
 
 **7. Starlight Echo**
 > The same girl as the reference picture, same curly brown hair, freckles and brown eyes, her goggles on her head. Night-sky outfit: a deep navy bomber jacket covered in small gold stars, a purple hoodie under it, her big headphones now navy with a small glowing star on each ear cup, purple cargo trousers with gold stitching, navy and gold trainers, a small backpack shaped like a crescent moon. Cool and confident. Stylised 3D animated-film look, full body, standing in an A-pose facing the camera, plain light grey background, soft even lighting, no text, no logos.

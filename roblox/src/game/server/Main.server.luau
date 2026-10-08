@@ -213,6 +213,8 @@ end
 
 -- ---------- the round ----------
 local round = {}
+-- Tower Run: what carries from one floor to the next (set between floors)
+local towerCarry = nil
 local world, host
 local hostTimer = nil
 
@@ -442,11 +444,38 @@ local function checkEnd()
 	if won then
 		state.status = "won"
 		local winBonus = math.floor(20 * diff.bonus)
-		local timeBonus = state.frenzy and 0 or math.max(0, math.floor((state.endsAt - now) / 6))
+		local climbing = RoundState:GetAttribute("Tower") and nextFloor() ~= nil
+		local timeBonus = (state.frenzy or climbing) and 0 or math.max(0, math.floor((state.endsAt - now) / 6))
 		for _, plr in ipairs(list) do
 			addPoints(plr, plr:GetAttribute("Escaped") and (winBonus + timeBonus) or math.floor(winBonus / 2))
 		end
 		state.timeBonus = timeBonus
+		-- Tower Run: a floor cleared and one above: up the stairs together
+		if climbing then
+			RoundState:SetAttribute("Status", state.status)
+			local mapNow = RoundState:GetAttribute("Map") or "partyhouse"
+			local up = nextFloor()
+			for _, plr in ipairs(list) do
+				local pd = Profile.get(plr)
+				if pd and plr:GetAttribute("Escaped") then
+					quest(plr, "escape")
+					pd.cleared = pd.cleared or {}
+					pd.cleared[mapNow] = true
+					for _, nextMap in ipairs(Progress.unlocksAfter(mapNow)) do
+						pd.unlocked[nextMap.id] = true
+					end
+					Profile.publish(plr)
+				end
+			end
+			towerCarry = { earned = state.earned, endsAt = state.endsAt, startedAt = state.towerStarted or state.startedAt,
+				hostKind = host and host.kind, floor = (state.towerFloor or 1) + 1, everCaught = state.everCaught }
+			say("escape", "\u{1F5FC} Floor cleared! Up to the " .. (string.match(up.name, ":%s*(.+)$") or up.name) .. " - keep going, the clock is still running!")
+			task.delay(4, function()
+				RoundState:SetAttribute("Map", up.id)
+				round.start()
+			end)
+			return
+		end
 	else
 		state.status = "lost"
 	end
@@ -454,6 +483,18 @@ local function checkEnd()
 	local rows = {}
 	local mapId = RoundState:GetAttribute("Map") or "partyhouse"
 	local seconds = math.floor(now - state.startedAt)
+	local towerRun = RoundState:GetAttribute("Tower") == true
+	if towerRun then
+		seconds = math.floor(now - (state.towerStarted or state.startedAt))
+		if won then
+			for _, plr in ipairs(list) do
+				local got = state.earned[plr.UserId] or 0
+				if got > 0 then
+					addPoints(plr, math.max(1, math.floor(got * Config.TOWER.bonus + 0.5)), true)
+				end
+			end
+		end
+	end
 	-- playing with a friend: +10% of this game's points
 	local friendBonus = {}
 	for _, plr in ipairs(list) do
@@ -489,7 +530,7 @@ local function checkEnd()
 				pd.stats.escapes += 1
 				row.firstEscape = pd.stats.escapes == 1
 				local key = mapId .. "_" .. state.diff
-				if not pd.best[key] or seconds < pd.best[key] then
+				if not towerRun and (not pd.best[key] or seconds < pd.best[key]) then
 					pd.best[key] = seconds
 				end
 			end
@@ -508,7 +549,7 @@ local function checkEnd()
 				end
 			end
 			Profile.publish(plr)
-			Profile.record(plr, mapId, state.diff, out and seconds or nil)
+			Profile.record(plr, mapId, state.diff, (out and not towerRun) and seconds or nil)
 			task.spawn(Profile.save, plr)
 		end
 		table.insert(rows, row)
@@ -565,7 +606,8 @@ local function checkEnd()
 		timeBonus = state.timeBonus or 0,
 		nextIn = Config.VOTE_SECONDS,
 		vote = true,
-		nextFloor = won and (nextFloor() or {}).name or nil,
+		nextFloor = (won and not towerRun) and (nextFloor() or {}).name or nil,
+		tower = towerRun and (state.towerFloor or 1) or nil,
 		players = rows,
 	})
 	round.startVote()
@@ -1664,6 +1706,10 @@ function round.startVote()
 		end
 		-- most of those staying chose the floor above: go up (a tie goes up)
 		local nf = nextFloor()
+		if RoundState:GetAttribute("Tower") then
+			RoundState:SetAttribute("Map", RoundState:GetAttribute("TowerStart") or RoundState:GetAttribute("Map"))
+			nf = nil
+		end
 		if nf and up > 0 and up >= same then
 			RoundState:SetAttribute("Map", nf.id)
 		end
@@ -2203,14 +2249,29 @@ function round.start()
 	local now = workspace:GetServerTimeNow()
 	state = { status = "playing", code = code, known = {}, entry = {}, doorOpen = false, everCaught = {}, cluesLeft = diff.clues,
 		diff = diffKey, earned = {}, startedAt = now, endsAt = now + diff.timer, frenzy = false }
+	-- Tower Run: the next floor of the climb keeps the points, the clock and the host
+	local carry = towerCarry
+	towerCarry = nil
+	if RoundState:GetAttribute("Tower") then
+		state.towerFloor = carry and carry.floor or 1
+		RoundState:SetAttribute("TowerFloor", state.towerFloor)
+		if carry then
+			state.earned = carry.earned
+			state.everCaught = carry.everCaught or {}
+		end
+	end
 	-- clear the last game's clock and host first, so screens see a fresh
 	-- game (not one already under way) and open the character picker
 	RoundState:SetAttribute("EndsAt", nil)
 	RoundState:SetAttribute("HostOut", false)
 	RoundState:SetAttribute("Status", "playing")
 	RoundState:SetAttribute("ClueCost", Config.CLUE_COSTS[1])
+	if carry then
+		-- climbing on: the clock keeps running, so nobody picks a character again
+		RoundState:SetAttribute("EndsAt", carry.endsAt)
+	end
 	for _, p in ipairs(Players:GetPlayers()) do
-		p:SetAttribute("GameEarned", 0)
+		p:SetAttribute("GameEarned", state.earned[p.UserId] or 0)
 	end
 	RoundState:SetAttribute("DoorOpen", false)
 	RoundState:SetAttribute("CluesLeft", diff.clues)
@@ -2282,19 +2343,24 @@ function round.start()
 	if RunService:IsStudio() and Config.STUDIO_HOST and Config.HOSTS[Config.STUDIO_HOST] then
 		kind = Config.STUDIO_HOST
 	end
+	if carry and carry.hostKind then
+		kind = carry.hostKind -- the same host follows you up
+	end
 	host.kind = kind
 	RoundState:SetAttribute("HostKind", kind)
 	RoundState:SetAttribute("Blackout", "")
 	RoundState:SetAttribute("DarkRooms", "")
 	RoundState:SetAttribute("KeyRooms", "")
-	local grace = diff.grace + extraGrace
+	local grace = carry and Config.TOWER.grace or (diff.grace + extraGrace)
 	-- nothing starts until everyone has chosen a character (or PICK_WAIT runs out)
 	state.endsAt = math.huge
-	RoundState:SetAttribute("EndsAt", nil)
-	for _, p in ipairs(Players:GetPlayers()) do
-		p:SetAttribute("Ready", nil)
+	if not carry then
+		RoundState:SetAttribute("EndsAt", nil)
 	end
-	local deadline = workspace:GetServerTimeNow() + Config.PICK_WAIT
+	for _, p in ipairs(Players:GetPlayers()) do
+		p:SetAttribute("Ready", carry and p:GetAttribute("Skill") and true or nil)
+	end
+	local deadline = workspace:GetServerTimeNow() + (carry and 0 or Config.PICK_WAIT)
 	RoundState:SetAttribute("PickDeadline", deadline)
 	hostTimer = task.spawn(function()
 		while state.status == "playing" do
@@ -2421,8 +2487,17 @@ function round.start()
 		local t0 = workspace:GetServerTimeNow()
 		state.startedAt = t0
 		state.endsAt = t0 + diff.timer
+		if carry then
+			-- climbing on: the same clock
+			state.endsAt = carry.endsAt
+			state.towerStarted = carry.startedAt
+		elseif RoundState:GetAttribute("Tower") then
+			-- a Tower Run: one clock for the whole climb
+			state.endsAt = t0 + diff.timer * Config.TOWER.timeMult
+			state.towerStarted = t0
+		end
 		RoundState:SetAttribute("EndsAt", state.endsAt)
-		say("start", "Find the way out of " .. (HouseMap.name or "the Party House") .. ". Don't get caught!", { grace = grace })
+		say("start", (RoundState:GetAttribute("Tower") and ("\u{1F5FC} Tower Run, floor " .. (state.towerFloor or 1) .. ": ") or "") .. "Find the way out of " .. (HouseMap.name or "the Party House") .. ". Don't get caught!", { grace = grace })
 		task.wait(grace)
 		hostTimer = nil
 		if state.status == "playing" then
@@ -2536,6 +2611,24 @@ Players.PlayerAdded:Connect(function(plr)
 		end
 		if typeof(data.leader) == "number" and not RoundState:GetAttribute("Leader") then
 			RoundState:SetAttribute("Leader", data.leader)
+		end
+		if data.tower == true and not data.rejoin then
+			RoundState:SetAttribute("Tower", true)
+			RoundState:SetAttribute("TowerStart", RoundState:GetAttribute("Map"))
+		end
+	end
+	if RunService:IsStudio() and not RoundState:GetAttribute("Map") then
+		RoundState:SetAttribute("Map", Config.STUDIO_MAP)
+		if Config.STUDIO_TOWER then
+			-- a Tower Run from floor 1 of that building
+			local i = Progress.mapIndex(Config.STUDIO_MAP)
+			for _, m in ipairs(Progress.MAPS) do
+				if i and m.building == Progress.MAPS[i].building and m.floor == 1 then
+					RoundState:SetAttribute("Map", m.id)
+				end
+			end
+			RoundState:SetAttribute("Tower", true)
+			RoundState:SetAttribute("TowerStart", RoundState:GetAttribute("Map"))
 		end
 	end
 	if type(data) == "table" and typeof(data.code) == "string" then

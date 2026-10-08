@@ -10,6 +10,18 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 15 (8 Oct) - Tower Run
+
+To try it in Studio, ask Claude to set `Config.STUDIO_TOWER = true` (Studio
+then starts a Tower Run from floor 1 of STUDIO_MAP's building).
+- [ ] Lobby map screen (leader): "🗼 Tower Run: off" beside Done; tapping it turns it ON (blue) once the leader has reached the building's top floor, otherwise "Tower Run opens once you have reached ..."; the party panel's map button adds "· 🗼 Tower Run"
+- [ ] Start: the game begins on floor 1 of that building whatever floor was voted; the top bar shows "🗼 1/3 · ..."; the timer is 2.5 times a normal floor's
+- [ ] Clearing floor 1 (or 2): "🗼 Floor cleared! Up to the ... - keep going, the clock is still running!", 4 s later the next floor is built; nobody picks a character again; the same host comes out after 8 s; points this game carry on; the timer keeps counting down
+- [ ] Caught on floor 2 or 3: results "Tower Run: caught on floor N"
+- [ ] Reaching the top: results "Tower Run: you reached the top! (+25%)", everyone's points this game +25%; no "Next floor" button
+- [ ] Play again after a Tower Run: starts again from floor 1
+- [ ] Studio Play builds STUDIO_MAP even when it has no teleport data (it used to fall back to the Ground floor)
+
 ## Round 14 (8 Oct) - Basement, weekly quests, clue log
 
 Studio Play now builds the **Secret Basement** (`partyhouse_b`).

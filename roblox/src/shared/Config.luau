@@ -351,6 +351,13 @@ Config.FRIEND_BONUS = 0.1
 -- ladder upgrades that show one colour of the code at the start: one colour a
 -- game however many players have one; on Nightmare too only if this is true
 Config.CODE_COLOUR_ON_NIGHTMARE = false
+-- Tower Run: one game climbs every floor of a building. timeMult: the climb's
+-- one timer is this many times a floor's; bonus: extra points (a share of
+-- everything earned) for reaching the top; grace: seconds before the host
+-- comes out on the floors after the first
+Config.TOWER = { timeMult = 2.5, bonus = 0.25, grace = 8 }
+-- Studio Play as a Tower Run (from floor 1 of STUDIO_MAP's building)
+Config.STUDIO_TOWER = false
 -- the chocolate river: wading slows kids (and the host); the bridge does not
 Config.WADE = { kid = 0.5, host = 0.6 }
 -- the laundry chute: a one-way slide from the Laundry / Linen Room to a far

@@ -664,7 +664,15 @@ end, function() end)
 local msDone = button(mapScreen, "\u{2705} Done", { Size = UDim2.fromOffset(200, 48), Position = UDim2.new(1, -220, 1, -62), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 42 }, function()
 	opt("mapScreen", false)
 end)
-local msWait = label(mapScreen, { Size = UDim2.new(1, -260, 0, 40), Position = UDim2.new(0, 20, 1, -58), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
+local msWait = label(mapScreen, { Size = UDim2.new(1, -500, 0, 40), Position = UDim2.new(0, 20, 1, -58), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
+-- Tower Run: every floor of the building in one game (the leader switches it on)
+local towerBtn = button(mapScreen, "", { Size = UDim2.fromOffset(220, 48), Position = UDim2.new(1, -460, 1, -62), BackgroundColor3 = PLUM, ZIndex = 42 }, function()
+	if current and amLeader then
+		opt("tower", not current.tower)
+	elseif current then
+		notice("The leader can switch Tower Run on: all the floors in one game.")
+	end
+end)
 local optBox = frame(partyBox, { Size = UDim2.new(1, -40, 0, 170), Position = UDim2.fromOffset(20, 300), BackgroundTransparency = 1 })
 label(optBox, { Size = UDim2.new(0.32, 0, 0, 30), Position = UDim2.fromOffset(0, 0), Text = "Players", TextXAlignment = Enum.TextXAlignment.Left })
 button(optBox, "-", { Size = UDim2.fromOffset(40, 32), Position = UDim2.fromOffset(150, 0) }, function()
@@ -745,11 +753,13 @@ local function paintParty(p)
 	local myVote = p.votes and p.votes[tostring(player.UserId)]
 	-- the chosen map on the party panel
 	local ci = Progress.mapIndex(p.chosen or "partyhouse")
-	mapBtn.Text = amLeader and "\u{1F5FA} Tap to choose a map" or "\u{1F5FA} The leader chooses a map"
+	mapBtn.Text = (amLeader and "\u{1F5FA} Tap to choose a map" or "\u{1F5FA} The leader chooses a map") .. (p.tower and "  \u{00B7} \u{1F5FC} Tower Run" or "")
 	local _ = ci
 	-- the map screen, the same for everyone in the party
 	mapScreen.Visible = p.mapScreen == true
 	msDone.Visible = amLeader
+	towerBtn.Text = p.tower and "\u{1F5FC} Tower Run: ON" or "\u{1F5FC} Tower Run: off"
+	towerBtn.BackgroundColor3 = p.tower and Color3.fromRGB(70, 140, 220) or PLUM
 	msWait.Text = amLeader and "Tap Done when everyone has voted." or ("Waiting for " .. p.leader .. " to tap Done...")
 	for _, bld in ipairs(Progress.BUILDINGS) do
 		local c = buildingCards[bld.id]
