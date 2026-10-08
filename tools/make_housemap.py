@@ -443,6 +443,141 @@ def plan_attic():
     return p
 
 
+# ---------------------------------------------------------------- Midnight School (building 4)
+# Three floors on layouts already proven in the other buildings, with school
+# rooms and furniture: the Ground Floor on the hospital's long corridor, the
+# Classrooms on the Bedrooms' tall room (the Library with its balcony), the
+# Clock Tower on the Candy Factory's wide middle halls.
+def plan_school():
+    p = Plan('school_a', 'Midnight School - Ground Floor')
+    p.building, p.floor_no, p.theme = 'school', 1, 'school'
+    for x in (10, 20, 30):
+        p.rect(x, 0, x, 9)
+        p.rect(x, 14, x, H - 1)
+    for y in (9, 14):
+        p.rect(0, y, W - 1, y)      # the Long Hallway runs between them
+    p.rect(0, 22, 9, 22)
+    p.rect(30, 22, W - 1, 22)
+    for y in range(1, H - 1):
+        p.grid[y][0] = '#'
+        p.grid[y][W - 1] = '#'
+    p.rect(20, 15, 20, 28, '.')     # the Assembly Hall spans the middle
+    for x, y in [(5, 14), (15, 14), (25, 14), (35, 14), (5, 22), (10, 25), (30, 18), (35, 22), (10, 4), (30, 4)]:
+        p.put(x, y, '.')
+    p.put(15, 9, 'L')    # L1: Long Hallway -> Head's Office
+    p.put(20, 5, 'L')    # L2: Head's Office -> Front Lobby
+    p.put(25, 0, 'D')
+    p.put(0, 11, 'C')
+    for x, y in [(23, 6), (27, 6)]:
+        p.put(x, y, '#')             # columns by the front doors
+    for f in [(3, 19, 6, 19, 'table'), (2, 24, 3, 25, 'table'), (6, 27, 8, 27, 'shelf'), (13, 17, 18, 17, 'table'),
+              (22, 24, 24, 25, 'table'), (26, 17, 27, 17, 'desk'), (33, 16, 34, 17, 'piano'), (36, 20, 37, 20, 'desk'),
+              (32, 25, 34, 26, 'table'), (33, 28, 37, 28, 'shelf'), (24, 10, 25, 10, 'table'), (8, 13, 9, 13, 'table'),
+              (2, 3, 8, 3, 'shelf'), (2, 6, 8, 6, 'shelf'), (12, 2, 18, 2, 'shelf'), (12, 7, 14, 7, 'desk'),
+              (22, 3, 23, 4, 'table'), (33, 3, 35, 4, 'table'), (37, 7, 38, 7, 'desk')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 9, 8, 'boards', 'Lost Property'), (11, 1, 19, 8, 'carpet', "Head's Office"), (21, 1, 29, 8, 'wood', 'Front Lobby'),
+                (31, 1, 38, 8, 'green', 'Staff Room'), (1, 10, 38, 13, 'greylino', 'Long Hallway'), (1, 15, 9, 21, 'tiles', 'Cafeteria'),
+                (1, 23, 9, 28, 'tiles', 'Kitchen'), (11, 15, 29, 28, 'wood', 'Assembly Hall'), (31, 15, 38, 21, 'purple', 'Music Room'),
+                (31, 23, 38, 28, 'boards', 'Art Room')]
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
+               dict(id='L1', kind='lock', x=15, y=9, name="Head's Office door"), dict(id='L2', kind='lock', x=20, y=5, name='Front Lobby door'),
+               dict(id='cage', kind='cage', x=12, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=9, y=20), dict(id='v1b', kind='vent', pair='v1', x=11, y=20),
+               dict(id='v2a', kind='vent', pair='v2', x=29, y=16), dict(id='v2b', kind='vent', pair='v2', x=31, y=16),
+               dict(id='v3a', kind='vent', pair='v3', x=37, y=21), dict(id='v3b', kind='vent', pair='v3', x=37, y=23)]
+    p.start = [(17, 27), (18, 27), (19, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 11), (23, 24)
+    p.patrol = [(5, 12), (20, 11), (34, 12), (5, 18), (5, 25), (16, 22), (28, 26), (34, 19), (35, 25),
+                (15, 5, 'L1'), (5, 5, 'L1'), (25, 4, 'L2'), (35, 5, 'L2')]
+    return p
+
+
+def plan_school2():
+    p = Plan('class_a', 'Midnight School - Classrooms')
+    p.building, p.floor_no, p.theme = 'school', 2, 'school'
+    p.exit_style, p.exit_text = 'stairs', 'Up to the Clock Tower'
+    for x in (10, 20, 30):
+        p.rect(x, 0, x, H - 1)
+    for y in (9, 19):
+        p.rect(0, y, W - 1, y)
+    for y in range(1, H - 1):
+        p.grid[y][0] = '#'
+        p.grid[y][W - 1] = '#'
+    p.rect(20, 10, 20, 18, '.')     # the Library spans B and C, two storeys high
+    for x, y in [(10, 24), (20, 25), (30, 24), (15, 19), (25, 19), (10, 15), (30, 14), (35, 19), (5, 19), (10, 4), (30, 4)]:
+        p.put(x, y, '.')
+    p.put(5, 9, 'L')     # L1: Classroom 2B -> Science Lab
+    p.put(20, 4, 'L')    # L2: Computer Room -> Upper Stairs
+    p.put(25, 0, 'D')
+    p.put(0, 14, 'C')
+    for x, y in [(23, 3), (27, 3), (23, 6), (27, 6)]:
+        p.put(x, y, '#')
+    p.rect(27, 21, 27, 23)          # washroom stalls
+    for f in [(2, 11, 3, 12, 'desk'), (6, 11, 7, 12, 'desk'), (3, 2, 6, 4, 'table'), (13, 2, 15, 2, 'desk'), (12, 6, 17, 6, 'desk'),
+              (33, 3, 34, 4, 'table'), (14, 15, 17, 16, 'table'), (33, 11, 35, 12, 'desk'), (2, 21, 3, 22, 'table'),
+              (22, 21, 25, 22, 'table'), (32, 23, 36, 23, 'shelf')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 9, 8, 'tiles', 'Science Lab'), (11, 1, 19, 8, 'greylino', 'Computer Room'), (21, 1, 29, 8, 'boards', 'Upper Stairs'),
+                (31, 1, 38, 8, 'carpet', 'Trophy Room'), (1, 10, 9, 18, 'wood', 'Classroom 2B'), (11, 10, 29, 18, 'green', 'Library'),
+                (31, 10, 38, 18, 'wood', 'Classroom 2C'), (1, 20, 9, 28, 'boards', 'Art Room'), (11, 20, 19, 28, 'boards', 'Landing'),
+                (21, 20, 29, 28, 'tiles', 'Washrooms'), (31, 20, 38, 28, 'boards', "Caretaker's Room")]
+    p.tall = {'Library'}
+    p.loft = dict(x0=11, y0=10, x1=29, y1=12, h=7, stair_x=28, stair_y0=13, stair_y1=16)
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
+               dict(id='L1', kind='lock', x=5, y=9, name='Science Lab door'), dict(id='L2', kind='lock', x=20, y=4, name='Upper Stairs door'),
+               dict(id='cage', kind='cage', x=12, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=9, y=26), dict(id='v1b', kind='vent', pair='v1', x=11, y=26),
+               dict(id='v2a', kind='vent', pair='v2', x=31, y=17), dict(id='v2b', kind='vent', pair='v2', x=29, y=17)]
+    p.start = [(14, 27), (15, 27), (16, 27), (17, 27), (18, 27), (19, 27)]
+    p.spawn, p.cake = (1, 14), (15, 15)
+    p.patrol = [(5, 15), (20, 15), (35, 15), (35, 26), (25, 25), (15, 24), (5, 25),
+                (5, 5, 'L1'), (15, 4, 'L1'), (25, 5, 'L2'), (35, 6, 'L2')]
+    return p
+
+
+def plan_school3():
+    p = Plan('tower_a', 'Midnight School - Clock Tower')
+    p.building, p.floor_no, p.theme = 'school', 3, 'school'
+    p.exit_style, p.exit_text = 'stairs', 'Out onto the tower roof!'
+    for x in (8, 20, 31):
+        p.rect(x, 0, x, H - 1)
+    for y in (10, 19):
+        p.rect(0, y, W - 1, y)
+    for y in range(1, H - 1):
+        p.grid[y][0] = '#'
+        p.grid[y][W - 1] = '#'
+    p.rect(20, 11, 20, 18, '.')     # the Top Corridor spans the middle
+    p.rect(20, 20, 20, 28, '.')     # and so does the Exam Hall
+    for x, y in [(8, 14), (31, 15), (4, 19), (14, 19), (26, 19), (35, 19), (8, 24), (31, 25), (8, 5), (31, 4)]:
+        p.put(x, y, '.')
+    p.put(14, 10, 'L')   # L1: Top Corridor -> Old Classroom
+    p.put(20, 5, 'L')    # L2: Old Classroom -> Clock Tower
+    p.put(25, 0, 'D')
+    p.put(0, 14, 'C')
+    for x, y in [(23, 3), (27, 3), (23, 7), (27, 7)]:
+        p.put(x, y, '#')             # the tower's great beams
+    for f in [(11, 14, 18, 14, 'desk'), (22, 16, 28, 16, 'desk'), (2, 12, 6, 12, 'shelf'), (2, 16, 4, 16, 'shelf'),
+              (2, 22, 6, 22, 'shelf'), (2, 26, 6, 26, 'shelf'), (14, 22, 16, 23, 'table'), (24, 22, 26, 23, 'table'),
+              (34, 23, 36, 24, 'table'), (34, 12, 36, 13, 'table'), (11, 3, 17, 3, 'desk'), (11, 7, 17, 7, 'desk'),
+              (3, 3, 5, 4, 'table'), (2, 8, 6, 8, 'shelf'), (34, 3, 36, 4, 'table'), (33, 7, 34, 7, 'desk')]:
+        p.furnish(*f)
+    p.floors = [(1, 1, 7, 9, 'boards', 'Bell Room'), (9, 1, 19, 9, 'wood', 'Old Classroom'), (21, 1, 30, 9, 'boards', 'Clock Tower'),
+                (32, 1, 38, 9, 'purple', 'Observatory'), (1, 11, 7, 18, 'boards', 'Storage Loft'), (9, 11, 30, 18, 'greylino', 'Top Corridor'),
+                (32, 11, 38, 18, 'boards', 'Boiler Room'), (1, 20, 7, 28, 'greylino', 'Locker Room'), (9, 20, 30, 28, 'wood', 'Exam Hall'),
+                (32, 20, 38, 28, 'carpet', 'Detention Room')]
+    p.fixed = [dict(id='door', kind='door', x=25, y=0),
+               dict(id='L1', kind='lock', x=14, y=10, name='Old Classroom door'), dict(id='L2', kind='lock', x=20, y=5, name='Clock Tower door'),
+               dict(id='cage', kind='cage', x=10, y=27),
+               dict(id='v1a', kind='vent', pair='v1', x=7, y=17), dict(id='v1b', kind='vent', pair='v1', x=9, y=17),
+               dict(id='v2a', kind='vent', pair='v2', x=30, y=22), dict(id='v2b', kind='vent', pair='v2', x=32, y=22)]
+    p.start = [(17, 27), (18, 27), (19, 27), (21, 27), (22, 27), (23, 27)]
+    p.spawn, p.cake = (1, 14), (15, 22)
+    p.patrol = [(4, 14), (15, 16), (25, 13), (35, 15), (35, 25), (25, 25), (12, 24), (4, 24),
+                (14, 5, 'L1'), (4, 6, 'L1'), (25, 5, 'L2'), (35, 5, 'L2')]
+    return p
+
+
 # ---------------------------------------------------------------- the secret Basement (floor 0)
 def plan_basement():
     """Under the Party House, unlocked by escaping the Attic. The Attic's
@@ -886,11 +1021,16 @@ hosp = add_closets(plan_hospital())
 ward = add_closets(plan_wards())
 lab = add_closets(plan_labs())
 cellar = add_closets(plan_basement())
+school = add_closets(plan_school())
+school2 = add_closets(plan_school2())
+school3 = add_closets(plan_school3())
 for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirror(bed, 'bed_b', 'The Party House - Bedrooms'),
           att, mirror(att, 'attic_b', 'The Party House - Attic'), cellar, mirror(cellar, 'cellar_b', 'The Party House - Secret Basement'), gum, mirror(gum, 'gum_b', 'Gummy Bounce House - Bounce Hall'),
           fac, mirror(fac, 'fac_b', 'Gummy Bounce House - Candy Factory'), vault, mirror(vault, 'vault_b', 'Gummy Bounce House - Jelly Vault'),
           hosp, mirror(hosp, 'hosp_b', 'Abandoned Hospital - Ground Floor'),
-          ward, mirror(ward, 'ward_b', 'Abandoned Hospital - Wards'), lab, mirror(lab, 'lab_b', 'Abandoned Hospital - Labs')):
+          ward, mirror(ward, 'ward_b', 'Abandoned Hospital - Wards'), lab, mirror(lab, 'lab_b', 'Abandoned Hospital - Labs'),
+          school, mirror(school, 'school_b', 'Midnight School - Ground Floor'), school2, mirror(school2, 'class_b', 'Midnight School - Classrooms'),
+          school3, mirror(school3, 'tower_b', 'Midnight School - Clock Tower')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (
@@ -925,7 +1065,7 @@ out = ['--[[',
        '\tpassage), D the big exit door, C the host\'s door.',
        '\tReturns building -> floor number -> list of plans.',
        ']]', '', 'return {']
-for bld in ('partyhouse', 'gummy', 'hospital'):
+for bld in ('partyhouse', 'gummy', 'hospital', 'school'):
  out.append('\t%s = {' % bld)
  for fl in sorted({pfl for p, _, _, _, pfl in plans if p.building == bld}):
   out.append('\t[%d] = {' % fl)

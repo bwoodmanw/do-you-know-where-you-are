@@ -649,7 +649,6 @@ local function showChar()
 	spin = 0
 	if src then
 		shown = src:Clone()
-		pcall(require(ReplicatedStorage.Shared.RestPose), shown) -- a T-pose stands with its arms down
 		shown.Parent = viewWorld
 		noModel.Visible = false
 	else

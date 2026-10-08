@@ -177,6 +177,31 @@ made by `tools/repaint_shoes.py`). To put it on him:
 
 If a screen looks different from these steps, send me a photo of it.
 
+## Fixes after Brent's photos (8 Oct)
+
+- **Arms in the character views:** the arms-down change (RestPose) is
+  undone. These models' skin stretches across the arm and the body, so
+  turning the arm alone shrank it. T-posed models (Echo, Ghostly Shadow)
+  stand in their T-pose again.
+- **Halloween Nurse Patch's smeared face:** her model file's face is clean
+  (both eyes, the plaster, freckles), so the smear came from the import or
+  the Soften step. `art/models/halloween-nurse-patch-sharp.glb` is the same
+  model with a sharper face. In Studio (Party House): rename the old
+  `PatchHalloween` in ServerStorage -> Characters to `PatchHalloweenOld`,
+  **File -> Import 3D** the sharp file, Avatar Setup -> Body, name it
+  `PatchHalloween`, Play and look **before** any Soften Patch (only soften
+  if the face looks blotchy). Right-click -> Save to Roblox -> **Overwrite**
+  `PatchHalloween` (keeps id 80329522710291). Then delete the old one.
+- **Starlight Echo's messy face:** she was made from the old Echo picture,
+  so the big goggles squash her face and one eye is half closed (the same
+  problem the old Echo had). Make a new picture with prompt **7b** below,
+  save it over `art/model-input/starlight-echo/a-pose-front.png`, and tell
+  me before building. (`art/models/starlight-echo-sharp.glb` is only a
+  little better - not worth importing.)
+
+**7b. Starlight Echo, remade face** (attach `art/model-input/echo-remake/a-pose-front.png` - the remade Echo - as the reference, not the old one)
+> The same girl as the reference picture: same face, big brown eyes both wide open and the same size, freckles, curly brown hair in a messy bun, small goggles pushed far back on top of the bun, not covering her forehead. Night-sky outfit: a deep navy bomber jacket covered in small gold stars, a purple hoodie under it, big navy headphones round her neck with a small glowing star on each ear cup, purple cargo trousers with gold stitching, navy and gold trainers, a small backpack shaped like a crescent moon. Cool and confident. Stylised 3D animated-film look, full body, standing in a T-pose facing the camera, arms straight out to the sides, plain light grey background, soft even lighting, no text, no logos.
+
 ## Remaking Echo herself (her face looks squashed, 7 Oct)
 
 **Done by Brent (7 Oct):** `art/model-input/echo-remake/a-pose-front.png`

@@ -66,7 +66,9 @@ Config.HOSTS = {
 	gummy = { model = "HostGummy", name = "Gummy Bear Man", skill = "gummy", tint = Color3.fromRGB(230, 40, 80) },
 	robot = { model = "HostRobot", name = "the Robot", skill = "blackout", tint = Color3.fromRGB(150, 160, 170) },
 }
-Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot" }
+Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "pumpkin" }
+-- the "escaped all floors" badge counts these buildings' floors (its badge says 9 floors)
+Config.ALL_FLOORS_BUILDINGS = { partyhouse = true, gummy = true, hospital = true }
 Config.CLUES = 3
 
 Config.COLORS = { "red", "blue", "yellow", "green" }
@@ -86,6 +88,7 @@ Config.BADGES = {
 	partyhouse = 52874019824656, -- escaped the Party House's top floor (Attic)
 	gummy = 4415169378717199, -- escaped the Gummy Bounce House's top floor (Jelly Vault)
 	hospital = 3323093080758728, -- escaped the Hospital's top floor (Labs)
+	school = 0, -- escaped the Midnight School's top floor (Clock Tower)
 	allFloors = 1673377768038318, -- escaped all 9 floors
 	rescuer = 0, -- freed 10 friends from the cage
 	untouched = 0, -- escaped without being caught
@@ -159,7 +162,7 @@ Config.PICK_WAIT = 120
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "partyhouse_b" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3)
+Config.STUDIO_MAP = "school" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot"); nil = random

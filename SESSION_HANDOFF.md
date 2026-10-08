@@ -242,11 +242,17 @@ art/sheets/ art/models/ art/model-input/   design art and Meshy files
   later floors), the same host, points carried; Play again restarts at the
   bottom. Studio: `Config.STUDIO_TOWER`.
 - Console: Brent ticked Console (Playable Devices) on 8 Oct.
+- All 8 skin Game Passes made (ids in Config.SKINS, `PASSES.md`); managed
+  pricing off. Pass pictures: `tools/make_pass_icons.py`.
+- Building 4, the Midnight School (`SCHOOL.md`): 3 floors, theme "school",
+  unlocked by Hospital: Wards. Needs: 4 map pictures, maybe its own host,
+  a "Top of the Class" badge. The all-floors badge stays the original 9
+  (`Config.ALL_FLOORS_BUILDINGS`).
 - Snow Day Muscle's scarf: remake as red and white (prompt 6b in SKINS.md).
 - Model ids: Muscle 95343724720766 (clean shoes), Echo 102616480883822
   (remade face), skins TinkerPumpkin, ShadowGhost, BrambleAutumn (see
-  `SKINS.md`). T-posed models stand arms-down in the character views
-  (`shared/RestPose.luau`).
+  `SKINS.md`). T-posed models stand in their T-pose in the character views
+  (an arms-down change shrank the arms of these skinned models: removed).
 
 ## Open items and decisions waiting on Brent
 

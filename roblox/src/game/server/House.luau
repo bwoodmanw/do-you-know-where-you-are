@@ -19,6 +19,8 @@ local THEMES = {
 	party = { wall = Color3.fromRGB(70, 46, 96), light = Color3.fromRGB(255, 196, 120), ceiling = Color3.fromRGB(30, 20, 40) },
 	gummy = { wall = Color3.fromRGB(255, 150, 200), light = Color3.fromRGB(255, 200, 225), ceiling = Color3.fromRGB(255, 205, 225) },
 	hospital = { wall = Color3.fromRGB(150, 172, 160), light = Color3.fromRGB(215, 235, 255), ceiling = Color3.fromRGB(70, 76, 80) },
+	-- the Midnight School: old green walls, warm lamps, a cream ceiling
+	school = { wall = Color3.fromRGB(86, 104, 84), light = Color3.fromRGB(255, 226, 175), ceiling = Color3.fromRGB(205, 198, 175) },
 }
 local HT = 24 -- ceiling height of tall rooms (the Gallery with its loft)
 
@@ -173,7 +175,7 @@ local function styledShelf(root, map, x, y)
 		end
 		return true
 	end
-	part(root, { Name = "Shelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = map.theme == "party" and Enum.Material.Wood or Enum.Material.SmoothPlastic, Color = bodyCol })
+	part(root, { Name = "Shelf", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = (map.theme == "party" or map.theme == "school") and Enum.Material.Wood or Enum.Material.SmoothPlastic, Color = bodyCol })
 	local front = T * 0.3 + 0.4
 	for row = 0, 2 do
 		for j = 0, 2 do
@@ -311,6 +313,31 @@ local function candyFurniture(root, kind, x, y, room, map)
 	end
 end
 
+-- the school's tables and desks: wooden tops on metal legs, little desks
+-- with a chair each (everything else is the Party House's own furniture)
+local function schoolFurniture(root, kind, x, y)
+	local wood, steel = Color3.fromRGB(176, 128, 78), Color3.fromRGB(120, 125, 132)
+	if kind == "desk" then
+		for _, dx in ipairs({ -1.9, 1.9 }) do
+			part(root, { Name = "SchoolDesk", Size = Vector3.new(3.2, 0.3, 2.4), Position = at(x, y, 2.9) + Vector3.new(dx, 0, -0.6), Material = Enum.Material.Wood, Color = wood })
+			part(root, { Name = "DeskFrame", Size = Vector3.new(3, 2.7, 0.2), Position = at(x, y, 1.4) + Vector3.new(dx, 0, -1.6), Material = Enum.Material.Metal, Color = steel })
+			part(root, { Name = "SchoolChair", Size = Vector3.new(1.8, 0.25, 1.6), Position = at(x, y, 1.7) + Vector3.new(dx, 0, 1.5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(70, 110, 170), CanCollide = false })
+			part(root, { Name = "ChairBack", Size = Vector3.new(1.8, 1.6, 0.2), Position = at(x, y, 2.6) + Vector3.new(dx, 0, 2.3), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(70, 110, 170), CanCollide = false })
+		end
+		-- a solid block where the desks stand, so nobody walks through them
+		part(root, { Name = "DeskBlock", Size = Vector3.new(T, 2.9, T * 0.55), Position = at(x, y, 1.45) + Vector3.new(0, 0, -0.6), Transparency = 1 })
+		return true
+	elseif kind == "table" then
+		part(root, { Name = "Table", Size = Vector3.new(T, 0.5, T), Position = at(x, y, 3.3), Material = Enum.Material.Wood, Color = wood })
+		for _, o in ipairs({ { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } }) do
+			part(root, { Name = "TableLeg", Size = Vector3.new(0.4, 3.05, 0.4), Position = at(x, y, 1.53) + Vector3.new(o[1] * (T / 2 - 0.5), 0, o[2] * (T / 2 - 0.5)), Material = Enum.Material.Metal, Color = steel })
+		end
+		part(root, { Name = "TableBlock", Size = Vector3.new(T - 0.6, 3, T - 0.6), Position = at(x, y, 1.5), Transparency = 1 })
+		return true
+	end
+	return false
+end
+
 -- the hospital's furniture: medicine cabinets, a reception counter, steel
 -- tables and desks, beds with rails
 local function hospitalFurniture(root, kind, x, y)
@@ -428,6 +455,8 @@ function House.build(map)
 					candyFurniture(root, kind, x, y, roomNameAt(map, x, y), map)
 				elseif map.theme == "hospital" and kind ~= "planter" and kind ~= "pit" then
 					hospitalFurniture(root, kind, x, y)
+				elseif map.theme == "school" and schoolFurniture(root, kind, x, y) then
+					-- a school table or desk
 				elseif kind == "table" then
 					part(root, { Name = "Table", Size = Vector3.new(T, 0.6, T), Position = at(x, y, 3.4), Material = Enum.Material.Fabric, Color = Color3.fromRGB(242, 233, 247) })
 					part(root, { Name = "TableSkirt", Size = Vector3.new(T - 0.2, 3, T - 0.2), Position = at(x, y, 1.6), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 138, 31) })
@@ -975,6 +1004,8 @@ function House.buildGarden(world)
 			stepMat, stepCol = Enum.Material.SmoothPlastic, Color3.fromRGB(255, 160, 200)
 		elseif map.theme == "hospital" then
 			stepMat, stepCol = Enum.Material.Concrete, Color3.fromRGB(150, 155, 160)
+		elseif map.theme == "school" then
+			stepMat, stepCol = Enum.Material.Wood, Color3.fromRGB(140, 100, 60)
 		end
 		for i = 1, 8 do
 			part(root, { Name = "StairUp", Size = Vector3.new(16, i * 1.5, 3), Position = Vector3.new(doorX * T + T / 2, i * 0.75, -16 - i * 3), Material = stepMat, Color = stepCol })
@@ -1138,6 +1169,7 @@ local HOSPITAL_PICTURES = { "\u{1FA7A}", "\u{1F48A}", "\u{1FA79}", "\u{1F9F8}", 
 local HALLOWEEN_DECOR = { Color3.fromRGB(255, 138, 31), Color3.fromRGB(110, 60, 160), Color3.fromRGB(30, 24, 34), Color3.fromRGB(150, 220, 60) }
 local CANDY_PICTURES = { "\u{1F36C}", "\u{1F36D}", "\u{1F9C1}", "\u{1F369}", "\u{1F36B}", "\u{1F370}", "\u{1F366}", "\u{1F388}" }
 local PICTURES = { "\u{1F383}", "\u{1F47B}", "\u{1F987}", "\u{1F578}", "\u{1F382}", "\u{1F388}", "\u{1F315}", "\u{1F36D}" }
+local SCHOOL_PICTURES = { "\u{1F34E}", "\u{270F}", "\u{1F4DA}", "\u{1F514}", "\u{1F392}", "\u{1F4D0}", "\u{1F989}", "\u{1F383}" }
 
 function House.decorate(world)
 	local root, map = world.root, world.map
@@ -1339,7 +1371,7 @@ function House.decorate(world)
 				world.wallUsed[x .. "," .. (f.y0 - 1)] = true -- no window over a picture
 				local pic = deco({ Name = "Picture", Size = Vector3.new(3.4, 2.8, 0.2), Position = at(x, f.y0 - 1, 7.5) + Vector3.new(0, 0, T / 2 + 0.15), Color = Color3.fromRGB(110, 80, 40), Material = Enum.Material.Wood })
 				local inner = deco({ Name = "Painting", Size = Vector3.new(2.8, 2.2, 0.05), Position = pic.Position + Vector3.new(0, 0, 0.12), Color = Color3.fromRGB(40, 30, 55) })
-				local pics = candy and CANDY_PICTURES or hosp and HOSPITAL_PICTURES or PICTURES
+				local pics = candy and CANDY_PICTURES or hosp and HOSPITAL_PICTURES or map.theme == "school" and SCHOOL_PICTURES or PICTURES
 				emoji(inner, Enum.NormalId.Back, pics[(x + r) % #pics + 1])
 			end
 		end

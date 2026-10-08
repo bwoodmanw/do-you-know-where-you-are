@@ -1390,6 +1390,8 @@ local function dailyReward(plr, data)
 	local premium = plr.MembershipType == Enum.MembershipType.Premium
 	local pts = r.points * (premium and Config.PREMIUM_DAILY_MULT or 1)
 	data.points += pts
+	-- the daily reward counts towards "points earned" (the leaderboard)
+	data.stats.earned = (data.stats.earned or 0) + pts
 	if r.boost then
 		data.inv[r.boost] = (data.inv[r.boost] or 0) + 1
 	end
@@ -1405,6 +1407,8 @@ Players.PlayerAdded:Connect(function(plr)
 	if data then
 		Quests.ensure(data, plr.UserId)
 		Profile.publish(plr)
+		-- the boards follow what was earned in the Lobby too (daily rewards, quests)
+		Profile.record(plr, "", "", nil)
 	end
 	task.spawn(offerRejoin, plr)
 	task.wait(1)

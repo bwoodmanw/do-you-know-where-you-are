@@ -49,6 +49,9 @@ local function fill(p)
 			p.stats[k] = v
 		end
 	end
+	-- daily rewards were not counted as earned before 8 Oct: what you hold
+	-- was earned at some point, so "earned" is never less than it
+	p.stats.earned = math.max(p.stats.earned or 0, p.points or 0)
 	return p
 end
 

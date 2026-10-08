@@ -585,7 +585,7 @@ local function checkEnd()
 				if pd and pd.cleared then
 					local all = true
 					for _, mm in ipairs(Progress.MAPS) do
-						if mm.ready and not mm.secret and not pd.cleared[mm.id] then
+						if mm.ready and not mm.secret and Config.ALL_FLOORS_BUILDINGS[mm.building] and not pd.cleared[mm.id] then
 							all = false
 						end
 					end

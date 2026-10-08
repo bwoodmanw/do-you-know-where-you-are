@@ -21,12 +21,17 @@ Progress.MAPS = {
 	{ id = "hospital", building = "hospital", floor = 1, name = "Hospital: Ground Floor", icon = "\u{1F3E5}", ready = true },
 	{ id = "hospital_2", building = "hospital", floor = 2, name = "Hospital: Wards", icon = "\u{1F6CF}", ready = true },
 	{ id = "hospital_3", building = "hospital", floor = 3, name = "Hospital: Labs", icon = "\u{1F9EA}", ready = true },
+	-- building 4 (8 Oct): unlocked by escaping the Hospital's Wards
+	{ id = "school", building = "school", floor = 1, name = "School: Ground Floor", icon = "\u{1F3EB}", ready = true },
+	{ id = "school_2", building = "school", floor = 2, name = "School: Classrooms", icon = "\u{1F4DA}", ready = true },
+	{ id = "school_3", building = "school", floor = 3, name = "School: Clock Tower", icon = "\u{1F570}", ready = true },
 }
 
 Progress.BUILDINGS = {
 	{ id = "partyhouse", name = "The Party House" },
 	{ id = "gummy", name = "Gummy Bounce House" },
 	{ id = "hospital", name = "Abandoned Hospital" },
+	{ id = "school", name = "Midnight School" },
 }
 
 -- what escaping this floor unlocks

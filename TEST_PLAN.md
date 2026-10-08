@@ -10,6 +10,16 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 16 (8 Oct) - Midnight School (building 4, SCHOOL.md)
+
+Studio Play now builds the School's Ground Floor (`school`); ask for `school_2` / `school_3`.
+- [ ] Ground Floor: Assembly Hall start (rows of chairs, trophy cabinet), the Long Hallway across the middle (lockers), Head's Office behind the first lock (filing cabinets, globe, chalkboard), Front Lobby way out behind the second; Cafeteria, Kitchen, Music Room (drums), Art Room (easels), Lost Property, Staff Room
+- [ ] Green walls, cream ceilings, warm lamps; wooden tables on metal legs and pairs of little desks with blue chairs (none can be walked through); school pictures on the walls
+- [ ] Classrooms (`school_2`): the two-storey Library with a balcony and ramp; classrooms with a chalkboard (something chalked on it) and rows of desks; Science Lab behind the first lock; Upper Stairs and "Up to the Clock Tower"
+- [ ] Clock Tower (`school_3`): Exam Hall start, Bell Room (ring the big bell - the host comes), Observatory telescope, Old Classroom behind the first lock, Clock Tower way out "Out onto the tower roof!"
+- [ ] Lobby map screen: four building cards in a row (the School's is plain until its picture exists); escaping Hospital: Wards unlocks the School (live)
+- [ ] Tower Run works in the School
+
 ## Round 15 (8 Oct) - Tower Run
 
 To try it in Studio, ask Claude to set `Config.STUDIO_TOWER = true` (Studio
@@ -30,7 +40,7 @@ Studio Play now builds the **Secret Basement** (`partyhouse_b`).
 - [ ] Escaping the Basement: no "Next floor" button; it does not count for the "all floors" badge
 - [ ] Lobby -> Daily quests: three daily rows and three weekly rows ("Weekly quests", each with points and a boost icon, "New on Monday (in Nd Nh)"); finishing one in a game says "Weekly quest done: ... and a Frozen Pop" and the boost is in the shop bag
 - [ ] Clue log: after the first clue a "📜 Clues (1)" button; it opens every clue this game, newest first; a Mastermind route opens it by itself, one step a line; it empties when a new game starts
-- [ ] Character screens (Lobby and the game's picker): Echo and Ghostly Shadow stand with their arms down; the A-posed characters look as before
+- [ ] (8 Oct: the arms-down change was undone - it shrank the arms; T-posed models stand in their T-pose)
 
 ## Round 13 (7 Oct, late) - fixes from Brent's play test
 

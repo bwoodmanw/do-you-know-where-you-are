@@ -443,6 +443,58 @@ PIECES.LiftDoors = { size = Vector3.new(6, 9, 1), build = function(f, b)
 	label(add(f, b, { size = Vector3.new(1.6, 0.8, 0.1), at = Vector3.new(0, 8.2, T / 2 - 0.3), color = C(20, 20, 20) }), Enum.NormalId.Front, "\u{25B2} 3", C(255, 140, 40))
 end }
 
+-- ---- the Midnight School
+PIECES.Blackboard = { size = Vector3.new(8, 6, 1), build = function(f, b)
+	local board = add(f, b, { size = Vector3.new(7, 3.6, 0.2), at = Vector3.new(0, 5.6, T / 2 - 0.15), color = C(40, 70, 52) })
+	add(f, b, { size = Vector3.new(7.4, 4, 0.15), at = Vector3.new(0, 5.6, T / 2 - 0.08), color = C(120, 85, 50), mat = WOOD })
+	add(f, b, { size = Vector3.new(7, 0.25, 0.5), at = Vector3.new(0, 3.7, T / 2 - 0.4), color = C(120, 85, 50), mat = WOOD })
+	add(f, b, { size = Vector3.new(0.5, 0.15, 0.15), at = Vector3.new(-2, 3.9, T / 2 - 0.4), color = C(250, 250, 245) })
+	local lines = { "A  B  C", "2 + 2 = ?", "\u{1F383} BOO!", "Homework:\nESCAPE", "7 x 3 = 21" }
+	label(board, Enum.NormalId.Front, lines[math.random(1, #lines)], C(235, 240, 230))
+end }
+
+PIECES.SchoolDesks = { size = Vector3.new(8, 4, 6), build = function(f, b)
+	for _, dx in ipairs({ -2, 2 }) do
+		for _, dz in ipairs({ -1.6, 1.6 }) do
+			add(f, b, { size = Vector3.new(2.4, 0.25, 1.6), at = Vector3.new(dx, 2.5, dz), color = C(176, 128, 78), mat = WOOD })
+			add(f, b, { size = Vector3.new(2.2, 2.4, 0.15), at = Vector3.new(dx, 1.2, dz - 0.7), color = C(120, 125, 132), mat = METAL })
+			add(f, b, { size = Vector3.new(1.4, 0.2, 1.2), at = Vector3.new(dx, 1.5, dz + 1.1), color = C(70, 110, 170) })
+		end
+	end
+	add(f, b, { size = Vector3.new(0.8, 1.1, 0.2), at = Vector3.new(-2, 2.75, -1.6), color = C(250, 245, 230) }) -- a test paper
+end }
+
+PIECES.Trophies = { size = Vector3.new(5, 7, 2), build = function(f, b)
+	add(f, b, { size = Vector3.new(5, 6.5, 1.6), at = Vector3.new(0, 3.25, T / 2 - 0.9), color = C(120, 85, 50), mat = WOOD })
+	add(f, b, { size = Vector3.new(4.6, 6, 0.1), at = Vector3.new(0, 3.3, T / 2 - 1.72), color = C(200, 225, 240), mat = GLASS, alpha = 0.6 })
+	for row = 0, 2 do
+		for i = -1, 1 do
+			local cup = add(f, b, { size = Vector3.new(0.6, 0.9, 0.6), at = Vector3.new(i * 1.3, 1.4 + row * 1.9, T / 2 - 1.1), shape = Enum.PartType.Cylinder, rot = UP, color = row == 0 and C(205, 127, 50) or row == 1 and C(200, 200, 210) or C(255, 205, 60), mat = Enum.Material.Foil, shine = 0.3 })
+			local _ = cup
+		end
+	end
+	glow(add(f, b, { size = Vector3.new(0.3, 0.3, 0.3), at = Vector3.new(0, 6.3, T / 2 - 1), color = C(255, 240, 200), mat = NEON }), C(255, 230, 170), 6, 0.6)
+end }
+
+PIECES.Telescope = { size = Vector3.new(4, 6, 4), build = function(f, b)
+	for k = 0, 2 do
+		local a = k / 3 * math.pi * 2
+		add(f, b, { size = Vector3.new(0.2, 3.4, 0.2), at = Vector3.new(math.cos(a) * 0.8, 1.6, 1 + math.sin(a) * 0.8), rot = CFrame.Angles(math.sin(a) * 0.25, 0, -math.cos(a) * 0.25), color = C(90, 70, 50), mat = WOOD })
+	end
+	add(f, b, { size = Vector3.new(4.2, 0.7, 0.7), at = Vector3.new(0, 4, 1), rot = CFrame.Angles(0, math.rad(90), math.rad(35)), shape = Enum.PartType.Cylinder, color = C(200, 160, 70), mat = METAL, shine = 0.2 })
+	local map = add(f, b, { size = Vector3.new(4, 3, 0.1), at = Vector3.new(0, 6, T / 2 - 0.1), color = C(20, 25, 60) })
+	label(map, Enum.NormalId.Front, "\u{2B50} \u{1F319} \u{2728}", C(255, 240, 180))
+end }
+
+PIECES.BigBell = { size = Vector3.new(5, 8, 5), build = function(f, b)
+	add(f, b, { size = Vector3.new(0.5, 7, 0.5), at = Vector3.new(-2.2, 3.5, 1), color = C(90, 70, 50), mat = WOOD })
+	add(f, b, { size = Vector3.new(0.5, 7, 0.5), at = Vector3.new(2.2, 3.5, 1), color = C(90, 70, 50), mat = WOOD })
+	add(f, b, { size = Vector3.new(5, 0.5, 0.5), at = Vector3.new(0, 7, 1), color = C(90, 70, 50), mat = WOOD })
+	local bell = add(f, b, { size = Vector3.new(3, 3.2, 3), at = Vector3.new(0, 5, 1), shape = Enum.PartType.Ball, color = C(205, 160, 60), mat = METAL, shine = 0.25 })
+	add(f, b, { size = Vector3.new(3.6, 0.4, 3.6), at = Vector3.new(0, 3.6, 1), rot = UP, shape = Enum.PartType.Cylinder, color = C(205, 160, 60), mat = METAL })
+	noisy(bell, "Big bell", Config.SOUNDS.bell, 3)
+end }
+
 -- ---- party house
 PIECES.Fireplace = { size = Vector3.new(6, 7, 2), build = function(f, b)
 	add(f, b, { size = Vector3.new(6, 6, 1.6), at = Vector3.new(0, 3, T / 2 - 0.8), color = C(130, 120, 115), mat = Enum.Material.Slate })
@@ -699,6 +751,22 @@ local FLOORS = {
 -- first match wins: words in the room's name -> its look (a 4th entry: only
 -- in that building)
 local LOOKS = {
+	-- the Midnight School (only in the school)
+	{ { "classroom", "detention" }, "teal", { "Blackboard", "SchoolDesks", "SchoolDesks" }, "school" },
+	{ { "exam hall" }, "wood", { "SchoolDesks", "SchoolDesks", "Clocks" }, "school" },
+	{ { "assembly hall" }, "wood", { "Trophies", "WaitingChairs", "WaitingChairs" }, "school" },
+	{ { "hallway", "top corridor" }, "green", { "Lockers", "Lockers", "Trophies" }, "school" },
+	{ { "front lobby", "trophy room" }, "wood", { "Trophies", "Trophies", "Plants" }, "school" },
+	{ { "head's office" }, "red", { "FilingCabinets", "Globe", "Blackboard" }, "school" },
+	{ { "lost property" }, "grey", { "CoatRack", "Crates", "PaperStacks" }, "school" },
+	{ { "cafeteria" }, "tiles", { "Trays", "Trays", "Plants" }, "school" },
+	{ { "computer room" }, "grey", { "Monitors", "Monitors", "SchoolDesks" }, "school" },
+	{ { "art room" }, "pastel", { "Easels", "Easels", "ToyBox" }, "school" },
+	{ { "washroom" }, "tiles", { "Bathroom", "Bathroom" }, "school" },
+	{ { "caretaker" }, "brick", { "Crates", "Pipes", "CoatRack" }, "school" },
+	{ { "bell room" }, "brick", { "BigBell", "Pipes" }, "school" },
+	{ { "observatory" }, "purple", { "Telescope", "Globe" }, "school" },
+	{ { "storage loft" }, "wood", { "DustSheets", "Crates", "Trunks" }, "school" },
 	{ { "stairwell", "stairs" }, "grey", { "LiftDoors", "Plants" }, "hospital" },
 	{ { "children's ward" }, "pastel", { "ToyBox", "IVStand", "Curtain", "ToyBox" } },
 	{ { "vault entrance" }, "steel", { "Monitors", "GoldGumdrops", "VaultDoor" } },
@@ -795,7 +863,7 @@ local SOUNDS_BY_NAME = {
 -- effects: steam, dust, bubbles, sparkles, mist
 local EFFECTS_BY_NAME = {
 	{ { "boiler", "generator", "laundry" }, "steam" },
-	{ { "trunk", "dusty", "box room", "clock", "doll", "storage", "coal", "workshop" }, "dust" },
+	{ { "trunk", "dusty", "box room", "clock", "doll", "storage", "coal", "workshop", "lost property", "caretaker" }, "dust" },
 	{ { "chocolate" }, "bubbles" },
 	{ { "vault", "gold", "jelly bank" }, "sparkles" },
 	{ { "jelly pool", "wobble" }, "mist" },
@@ -1453,9 +1521,9 @@ local function buildWindows(folder, world, map, busy, pieceAt)
 									{ Vector3.new(0.4, 5.2, 0.3), Vector3.new(-2.4, 8, -0.4) }, { Vector3.new(0.4, 5.2, 0.3), Vector3.new(2.4, 8, -0.4) },
 									{ Vector3.new(0.2, 4.4, 0.2), Vector3.new(0, 8, -0.42) }, { Vector3.new(4.4, 0.2, 0.2), Vector3.new(0, 8, -0.42) },
 								}) do
-									add(folder, base, { size = bar[1], at = bar[2], color = wood, mat = theme == "party" and WOOD or Enum.Material.SmoothPlastic })
+									add(folder, base, { size = bar[1], at = bar[2], color = wood, mat = (theme == "party" or theme == "school") and WOOD or Enum.Material.SmoothPlastic })
 								end
-								add(folder, base, { size = Vector3.new(5.6, 0.3, 0.9), at = Vector3.new(0, 5.35, -0.5), color = wood, mat = theme == "party" and WOOD or Enum.Material.SmoothPlastic })
+								add(folder, base, { size = Vector3.new(5.6, 0.3, 0.9), at = Vector3.new(0, 5.35, -0.5), color = wood, mat = (theme == "party" or theme == "school") and WOOD or Enum.Material.SmoothPlastic })
 								if not lit then
 									lit = true
 									local beam = Instance.new("SpotLight")
