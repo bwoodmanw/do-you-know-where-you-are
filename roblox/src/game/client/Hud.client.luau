@@ -517,6 +517,40 @@ local lookBtn = button(acts, "\u{1F5B1} Look (M)", { LayoutOrder = 7, Visible = 
 	mouseLook = not mouseLook
 end)
 
+do
+	-- emotes (G / the right stick): wave, point, cheer, laugh, dances
+	local emoteBtn = button(acts, (not TOUCH and UserInputService.KeyboardEnabled) and "\u{1F604} Emote (G)" or "\u{1F604} Emote", { LayoutOrder = 9 })
+	require(ReplicatedStorage.Shared.Emotes).mount(gui, emoteBtn, UDim2.new(0.5, -218, 1, -400))
+end
+do
+	-- a rumble (controller, and phones that allow it): caught, spotted, a
+	-- pumpkin hit, a Ground Pound nearby, FRENZY
+	local Haptics = require(ReplicatedStorage.Shared.Haptics)
+	player:GetAttributeChangedSignal("Caged"):Connect(function()
+		if player:GetAttribute("Caged") then
+			Haptics.buzz(1, 0.6)
+		end
+	end)
+	RoundState:GetAttributeChangedSignal("Frenzy"):Connect(function()
+		if RoundState:GetAttribute("Frenzy") then
+			Haptics.buzz(0.7, 0.9)
+		end
+	end)
+	remotes.Boost.OnClientEvent:Connect(function(kind, amount)
+		if kind == "shake" then
+			Haptics.buzz(0.8 * (tonumber(amount) or 1), 0.35)
+		end
+	end)
+	remotes.Notify.OnClientEvent:Connect(function(kind, _, data)
+		local mine = type(data) == "table" and data.userId == player.UserId
+		if mine and kind == "spotted" then
+			Haptics.buzz(0.4, 0.25)
+		elseif mine and kind == "bonk" then
+			Haptics.buzz(0.9, 0.4)
+		end
+	end)
+end
+
 -- ---------- quick-chat phrases ----------
 local sayPanel = frame(gui, { Size = UDim2.fromOffset(530, 250), Position = UDim2.new(0.5, -265, 1, -390), Visible = false })
 corner(sayPanel, 14)

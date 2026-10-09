@@ -868,6 +868,11 @@ local function readProfile()
 end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 do
+	-- emotes in the Lobby too (G / the right stick), under the points
+	local emoteBtn = button(gui, (UserInputService.KeyboardEnabled and not UserInputService.TouchEnabled) and "\u{1F604} Emote (G)" or "\u{1F604} Emote", { Size = UDim2.fromOffset(140, 40), Position = UDim2.new(1, -160, 0, 106), ZIndex = 5 })
+	require(ReplicatedStorage.Shared.Emotes).mount(gui, emoteBtn, UDim2.new(0.5, -218, 1, -260))
+end
+do
 	-- the Plushie Book: a page for every floor's lost plushie - found ones
 	-- show their animal and name, missing ones say which floor hides them
 	local book = frame(gui, { Size = UDim2.fromOffset(820, 540), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Visible = false, ZIndex = 20 })

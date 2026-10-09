@@ -17,6 +17,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 39 (9 Oct) - emotes and rumble
+- [ ] Game: "😄 Emote (G)" with the action buttons; Lobby: "😄 Emote (G)" top right under your points. G, the button, or the right-stick click opens 8 choices: Wave, Point, Cheer, Laugh, Dance 1-3, Stop
+- [ ] Each plays on your character (the imported ones too) and the other player sees it (2-player test); walking or jumping stops a dance; Stop stops it
+- [ ] Controller: a rumble when you are caught (strong), spotted (light), hit by a pumpkin, near a Ground Pound, and at FRENZY
+- [ ] Phone: a short buzz at the same moments if your phone allows it (tell Claude if nothing happens - Roblox doesn't vibrate every phone)
+
 ## Round 38 (9 Oct) - the Plushie Book (collectibles)
 - [ ] Every floor: one small fabric plushie sits on the floor somewhere outside the starting room (a faint sparkle); a different animal per floor (Config.PLUSHIES)
 - [ ] Walk up to it: a pop of sparkles, its animal over your head, "+25", and for everyone "<you> found Sprinkles the Party Bunny! (1 / 19 ...)"; a second visit says "already in your Plushie Book"; a friend can still find it after you
