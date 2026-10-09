@@ -200,7 +200,7 @@ only when everyone presses Play.
 2. Host balance per difficulty from the 📊 Balance table after a week live.
 3. Thanksgiving event (after Halloween ends 1 Nov), then Christmas: a
    secret seasonal floor and / or a community-wide goal (Brent's picks).
-4. Ideas: collectibles book, community group bonus, translation fixes.
+4. Built 9 Oct: collectibles book (Plushie Book), emotes, rumble, escape photo, invite reward, Halloween event page art. Still: community group bonus (needs a Roblox group), translation fixes.
 5. Later: B8 analytics, subscriptions (parked).
 
 ## Ideas from top Roblox adventure / horror games (8 Oct, Brent to pick)

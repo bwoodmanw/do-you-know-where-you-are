@@ -11,7 +11,7 @@ bar, the last four badge ids) need one more publish of both places.
 effects step 1, the levels line, animation packs (`Config.ANIM`), American
 room names and real gummy bears (26bd316) - TEST_PLAN rounds 36-37, all
 untested. Party House needs a publish for these; the Lobby only for the
-8 Oct items. Open: which character Brent was at the Bramble plant.
+8 Oct items. Then (Brent published to c19d86d): Echo's idle fix (50efcb3), the Plushie Book (4ae092b, badge id still 0), emotes + rumble (521bfcd), the escape photo (d8d6f6e), the invite reward (f67e89e), the Halloween Roblox Event picture + EVENTS.md (916fb86) - TEST_PLAN rounds 38-41. Open: which character Brent was at the Bramble plant; the plushie badge id; the Halloween event page.
 
 ## What it is
 
