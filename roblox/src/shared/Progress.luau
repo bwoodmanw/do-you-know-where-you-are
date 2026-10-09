@@ -367,7 +367,7 @@ local SPECIAL = {
 			{ id = "dazzle10", name = "Dazzle", say = "Flare makes the host stop and blink for 2 s if he is in your light", mods = { p10 = "dazzle" } },
 		},
 		[11] = {
-			{ id = "flare11", name = "Long Flare", say = "Flare lasts 10 s", mods = { flareTime = 10 } },
+			{ id = "flare11", name = "Long Flare", say = "Flare lasts 10 s and lifts friends 20 studs away", mods = { flareTime = 10, flareRange = 20 } },
 			{ id = "bulb11", name = "Bigger Bulb", say = "Your light reaches further", mods = { glowRange = 34 } },
 		},
 		[13] = {
@@ -375,20 +375,20 @@ local SPECIAL = {
 			{ id = "dim13", name = "Soft Glow", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
 		},
 		[15] = {
-			{ id = "flare15", name = "Longer Flare", say = "Flare lasts 12 s", mods = { flareTime = 12 } },
+			{ id = "flare15", name = "Longer Flare", say = "Flare lasts 12 s, gives 8% stamina, reaches 24 studs", mods = { flareTime = 12, flareRange = 24, flareStamina = 8 } },
 			{ id = "secret15", name = "Secret Seeker", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[17] = {
 			{ id = "quick17", name = "Bright Spark", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "bulb17", name = "Lantern", say = "Your light reaches much further", mods = { glowRange = 40 } },
+			{ id = "bulb17", name = "Warm Glow", say = "Flare gives friends 10% stamina back", mods = { flareStamina = 10 } },
 		},
 		[19] = {
-			{ id = "flare19", name = "Blazing Flare", say = "Flare lasts 14 s", mods = { flareTime = 14 } },
+			{ id = "flare19", name = "Blazing Flare", say = "Flare lasts 14 s and reaches friends 28 studs away", mods = { flareTime = 14, flareRange = 28 } },
 			{ id = "dim19", name = "Twilight", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
 		},
 		[20] = {
 			{ id = "sun20", name = "Little Sun", say = "Your light fills a whole room, all the time", mods = { glowRange = 50 } },
-			{ id = "beacon20", name = "Beacon", say = "Flare shows every teammate to everyone, through walls", mods = { p20 = "beacon" } },
+			{ id = "beacon20", name = "Beacon", say = "Flare shows every teammate through walls and reaches friends 32 studs away", mods = { p20 = "beacon", flareRange = 32 } },
 		},
 	},
 	patch = {
@@ -459,7 +459,7 @@ local SPECIAL = {
 			{ id = "echomap10", name = "Echo Map", say = "After a noise you see the host through walls for 5 s", mods = { p10 = "echomap" } },
 		},
 		[11] = {
-			{ id = "burst11", name = "Bigger Burst", say = "Burst: 8% faster for 4 s, reaching friends 20 studs away", mods = { burstMult = 1.08, burstTime = 4, burstRange = 20 } },
+			{ id = "burst11", name = "Bigger Burst", say = "Your burst: 8% faster for 4 s", mods = { burstMult = 1.08, burstTime = 4 } },
 			{ id = "throw11", name = "Long Arm", say = "Throw a noise further", mods = { echoRange = 120 } },
 		},
 		[13] = {
@@ -467,20 +467,20 @@ local SPECIAL = {
 			{ id = "ears13", name = "Sharp Ears", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
 		},
 		[15] = {
-			{ id = "burst15", name = "Strong Burst", say = "Burst: 10% faster for 5 s and 8% stamina back, 24 studs", mods = { burstMult = 1.1, burstTime = 5, burstRange = 24, burstStamina = 8 } },
+			{ id = "burst15", name = "Strong Burst", say = "Your burst: 10% faster for 5 s", mods = { burstMult = 1.1, burstTime = 5 } },
 			{ id = "throw15", name = "Far Shout", say = "Throw a noise even further", mods = { echoRange = 130 } },
 		},
 		[17] = {
 			{ id = "quick17", name = "Fast Echo", say = "Noise recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "lungs17", name = "Encore", say = "Burst gives 10% stamina back", mods = { burstStamina = 10 } },
+			{ id = "lungs17", name = "Singer's Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
 		},
 		[19] = {
-			{ id = "burst19", name = "Rush", say = "Burst: 12% faster for 5 s, reaching friends 28 studs away", mods = { burstMult = 1.12, burstTime = 5, burstRange = 28 } },
+			{ id = "burst19", name = "Rush", say = "Your burst: 12% faster for 5 s", mods = { burstMult = 1.12, burstTime = 5 } },
 			{ id = "quick19", name = "Rapid Echo", say = "Noise recharges 20% faster", mods = { cooldownMult = 0.8 } },
 		},
 		[20] = {
 			{ id = "soundwave20", name = "Sound Wave", say = "A noise landing near the host stuns him 1 s", mods = { p20 = "soundwave" } },
-			{ id = "superburst20", name = "Super Burst", say = "Burst: 15% faster for 6 s and 10% stamina, 32 studs", mods = { burstMult = 1.15, burstTime = 6, burstRange = 32, burstStamina = 10 } },
+			{ id = "superburst20", name = "Super Burst", say = "Your burst: 15% faster for 6 s", mods = { burstMult = 1.15, burstTime = 6 } },
 		},
 	},
 	bramble = {
@@ -561,7 +561,7 @@ function Progress.mods(skill, picks, xp)
 							m[k] += v
 						elseif k == "glowRange" or k == "healAmount" or k == "echoRange" or k == "sneakTime" or k == "barricadeHold"
 						or k == "burstMult" or k == "burstTime" or k == "flareTime" or k == "vineTime" or k == "cloneTime"
-						or k == "burstRange" or k == "burstStamina" then
+						or k == "flareRange" or k == "flareStamina" then
 							m[k] = math.max(m[k] or 0, v)
 						else
 							m[k] = v

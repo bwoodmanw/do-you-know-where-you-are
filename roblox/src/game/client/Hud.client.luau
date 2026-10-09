@@ -741,7 +741,7 @@ local function showChar()
 		end
 		return nil
 	end
-	local where = { brainy = { "invite", "Find the twisty invitation in the %s and press E. Press Think! (R) when you're stuck." }, glow = { "uv", "Press E at the painted wall in the %s. Press Flare (R) to light up far around you." }, bramble = { "plant", "Find the big plant in the %s and press E. Stand in a doorway and press Vines (R)." } }
+	local where = { brainy = { "invite", "Find the twisty invitation in the %s and press E. Press Think! (R) when you're stuck." }, glow = { "uv", "Press E at the painted wall in the %s. Press Flare (R) to light up far around you and give friends near you a lift." }, bramble = { "plant", "Find the big plant in the %s and press E. Stand in a doorway and press Vines (R)." } }
 	local w = where[sk.id]
 	local room = w and roomOf(w[1])
 	if room then

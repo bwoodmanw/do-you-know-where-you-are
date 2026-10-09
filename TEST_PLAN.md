@@ -17,9 +17,11 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
-## Round 31 (8 Oct) - Echo's team burst, the Shark Tunnel, your own name tag
-- [ ] Echo throws a noise: she and any friend within 16 studs during the next 3 s run 5% faster for 3 s and get +6% stamina (once each); friends see "Echo's burst!"
-- [ ] Echo's ladder 11-20: the burst grows (range 20-32 studs, stamina 8-10%, faster, longer)
+## Round 31 (8 Oct) - Glow's Flare lifts the team, vines, the Shark Tunnel, your own name tag
+- [ ] Glow presses Flare: for the 8 s it lasts, she and any friend who comes within 16 studs get +6% stamina and run 5% faster for 3 s (once each); friends see "Glow's Flare!"
+- [ ] Glow's ladder 11-20: the lift grows (20-32 studs, 8-10% stamina, longer Flare)
+- [ ] Echo: after a noise only Echo runs 5% faster for 3 s (as before)
+- [ ] Bramble's vines slow the host a little more than before
 - [ ] Aquarium Main Hall, Shark Tunnel: the glass walls show water with sand, weed, big bright fish and a blue glow (not empty)
 - [ ] Your own skill tag ("Shadow" etc.) no longer floats over your head for you (others still see it)
 

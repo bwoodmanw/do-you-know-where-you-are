@@ -131,10 +131,8 @@ Config.SKILLS = {
 
 Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30 }
 -- skills version 2 (SKILLS_V2.md): every character has a button
--- Echo's burst after a noise: she and every friend who comes within `range`
--- studs during it run `mult` faster for `seconds` and get `stamina`% back (once each)
-Config.ECHO_BURST = { mult = 1.05, seconds = 3, range = 16, stamina = 6 }
-Config.VINES = { seconds = 6, slow = 0.35, reach = 2 } -- Bramble: the host wades through them (kids don't)
+Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise
+Config.VINES = { seconds = 6, slow = 0.28, reach = 2 } -- Bramble: the host wades through them (kids don't)
 Config.CLONE = { seconds = 4, run = 28 } -- Shadow's clone: how long the host chases it, how far it runs
 Config.MOUSE = { seconds = 5, run = 30 } -- Tinker's wind-up mouse
 Config.POUND = { range = 10, stun = 2 } -- Muscle's Ground Pound
@@ -142,8 +140,10 @@ Config.NIGHT_LIGHT = { seconds = 60, range = 30 } -- Glow's lamp
 -- guard rails: a skill stun is at most `max` s (1 s on Nightmare) and the
 -- host can't be stunned by a skill again for `gap` s after one ends
 Config.SKILL_STUN = { max = 2, nightmare = 1, gap = 8 }
--- Glow's Flare: her light reaches `mult` times as far (at most 60 studs) for `seconds`
-Config.GLOW_FLARE = { seconds = 8, mult = 2.2 }
+-- Glow's Flare: her light reaches `mult` times as far (at most 60 studs) for
+-- `seconds`. While it lasts, Glow and every friend who comes within `range`
+-- studs get `stamina`% stamina back and run `speed` faster for `speedTime` s (once each)
+Config.GLOW_FLARE = { seconds = 8, mult = 2.2, range = 16, stamina = 6, speed = 1.05, speedTime = 3 }
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
@@ -172,9 +172,9 @@ Config.SKILL_INFO = {
 	shadow = { about = "Sneaks: for a few seconds the host can't see or grab Shadow. Shadow is also harder to spot than anyone.", how = "Press the Sneak button. It recharges." },
 	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as many points. Think!: lights up the next thing to do, for free.", how = "Find the twisty invitation (behind the first locked door) and press E. Press Think! (R) when you're stuck." },
 	muscle = { about = "Shoves away junk heaped in blocked doorways (and the Junk Closet's bonus present), quietly. Barricade: slides a \u{1F4AA} crate into a doorway - friends squeeze through, the host has to smash it.", how = "Hold E at blocked doorways. Press Barricade next to a \u{1F4AA} crate." },
-	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code. Flare: her light reaches more than twice as far for 8 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
+	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code. Flare: for 8 seconds her light reaches more than twice as far, and she and friends who come near her get a little stamina back and run 5% faster for 3 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
 	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). Her Shield button gives a friend a Party Shield. She frees every caged friend at once, faster than anyone.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
-	echo = { about = "Hears the host coming from further away, and throws a noise that sends the host to look somewhere else. After each noise, Echo and friends near her run 5% faster for 3 seconds and get a little stamina back.", how = "Press Noise, then tap where to throw it." },
+	echo = { about = "Hears the host coming from further away, and throws a noise that sends the host to look somewhere else. After each noise Echo runs 5% faster for 3 seconds.", how = "Press Noise, then tap where to throw it." },
 	bramble = { about = "Talks to plants: the big plant whispers the door code to Bramble. Vines: grows vines across a doorway - the host wades through them slowly, kids walk straight through.", how = "Find the big plant (in a room open from the start) and press E. Stand in a doorway and press Vines (R)." },
 }
 

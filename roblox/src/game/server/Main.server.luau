@@ -213,8 +213,8 @@ local function applyMods(plr)
 	plr:SetAttribute("Power20", m.p20 or "")
 	plr:SetAttribute("BurstMult", m.burstMult or Config.ECHO_BURST.mult)
 	plr:SetAttribute("BurstTime", m.burstTime or Config.ECHO_BURST.seconds)
-	plr:SetAttribute("BurstRange", m.burstRange or Config.ECHO_BURST.range)
-	plr:SetAttribute("BurstStamina", m.burstStamina or Config.ECHO_BURST.stamina)
+	plr:SetAttribute("FlareRange", m.flareRange or Config.GLOW_FLARE.range)
+	plr:SetAttribute("FlareStamina", m.flareStamina or Config.GLOW_FLARE.stamina)
 	plr:SetAttribute("FlareTime", m.flareTime or Config.GLOW_FLARE.seconds)
 	plr:SetAttribute("VineTime", m.vineTime or Config.VINES.seconds)
 	plr:SetAttribute("CloneTime", m.cloneTime or Config.CLONE.seconds)
@@ -2553,6 +2553,37 @@ do
 				say("info", "\u{1F917} Group Hug! " .. n .. (n == 1 and " friend" or " friends") .. " got all their stamina back.")
 			end
 		elseif skill == "glow" then
+			do
+				local f = Config.GLOW_FLARE
+				local seconds = plr:GetAttribute("FlareTime") or f.seconds
+				local range = plr:GetAttribute("FlareRange") or f.range
+				local stam = plr:GetAttribute("FlareStamina") or f.stamina
+				local got = {}
+				local myState = state
+				task.spawn(function()
+					local stopAt = os.clock() + seconds
+					while os.clock() < stopAt and state == myState and state.status == "playing" do
+						local gh = hrpOf(plr)
+						if not gh then
+							break
+						end
+						for _, p in ipairs(Players:GetPlayers()) do
+							local h = hrpOf(p)
+							if h and not got[p] and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - gh.Position).Magnitude <= range then
+								got[p] = true
+								p:SetAttribute("TeamBurstMult", f.speed)
+								p:SetAttribute("TeamBurstUntil", workspace:GetServerTimeNow() + f.speedTime)
+								Boost:FireClient(p, "plus", stam)
+								Effects.at(p, "light")
+								if p ~= plr then
+									say("info", "\u{2728} Glow's Flare! +" .. stam .. "% stamina and 5% faster for " .. f.speedTime .. " s.", nil, p)
+								end
+							end
+						end
+						task.wait(0.25)
+					end
+				end)
+			end
 			local light = plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("GlowBulb")
 			light = light and light:FindFirstChildOfClass("PointLight")
 			local range = light and light.Range or 40
@@ -2593,38 +2624,9 @@ do
 				end
 			end
 		elseif skill == "echo" then
-			-- the burst: Echo, and every friend who comes near her while it lasts,
-			-- runs faster for a moment and gets a little stamina back (once each)
-			local b = Config.ECHO_BURST
-			local mult = plr:GetAttribute("BurstMult") or b.mult
-			local seconds = plr:GetAttribute("BurstTime") or b.seconds
-			local range = plr:GetAttribute("BurstRange") or b.range
-			local stam = plr:GetAttribute("BurstStamina") or b.stamina
-			local got = {}
-			local myState = state
-			task.spawn(function()
-				local stopAt = os.clock() + seconds
-				while os.clock() < stopAt and state == myState and state.status == "playing" do
-					local eh = hrpOf(plr)
-					if not eh then
-						break
-					end
-					for _, p in ipairs(Players:GetPlayers()) do
-						local h = hrpOf(p)
-						if h and not got[p] and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - eh.Position).Magnitude <= range then
-							got[p] = true
-							p:SetAttribute("TeamBurstMult", mult)
-							p:SetAttribute("TeamBurstUntil", workspace:GetServerTimeNow() + seconds)
-							Boost:FireClient(p, "plus", stam)
-							Effects.at(p, "noise")
-							if p ~= plr then
-								say("info", "\u{1F3A7} Echo's burst! Faster for " .. seconds .. " s and +" .. stam .. "% stamina.", nil, p)
-							end
-						end
-					end
-					task.wait(0.25)
-				end
-			end)
+			-- the burst: Echo herself runs faster for a moment
+			plr:SetAttribute("TeamBurstMult", plr:GetAttribute("BurstMult") or Config.ECHO_BURST.mult)
+			plr:SetAttribute("TeamBurstUntil", workspace:GetServerTimeNow() + (plr:GetAttribute("BurstTime") or Config.ECHO_BURST.seconds))
 			if p10 == "echomap" then
 				say("hostmap", "\u{1F3A7} You can hear exactly where the host is!", { seconds = 5 }, plr)
 			end
