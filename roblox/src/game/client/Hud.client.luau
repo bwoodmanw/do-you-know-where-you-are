@@ -419,13 +419,13 @@ local outBtn = button(acts, "\u{1F440} Come out", { LayoutOrder = 4, Visible = f
 end)
 local pickBtn = button(acts, "\u{1F504} Change", { LayoutOrder = 5 })
 clueBtn = button(acts, "\u{1F4A1} Clue (3)", { LayoutOrder = 6 }, askClue)
-local candyBtn = button(acts, "\u{1F36C} Candy", { LayoutOrder = 8, Visible = false }, function()
+local candyBtn = button(acts, "Candy Corn", { LayoutOrder = 8, Visible = false }, function()
 	remotes.UseCandy:FireServer()
 end)
 local function paintCandy()
 	local n = player:GetAttribute("CandyCharges") or 0
 	candyBtn.Visible = n > 0
-	candyBtn.Text = "\u{1F36C} Candy (" .. n .. ")"
+	candyBtn.Text = "Candy Corn (" .. n .. ")"
 end
 player:GetAttributeChangedSignal("CandyCharges"):Connect(paintCandy)
 paintCandy()

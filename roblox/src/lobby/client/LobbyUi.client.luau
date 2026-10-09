@@ -1519,11 +1519,22 @@ local function showDaily()
 		corner(cell, 12)
 		label(cell, { Size = UDim2.new(1, 0, 0, 24), Position = UDim2.fromOffset(0, 6), Text = "Day " .. i, TextColor3 = today and NIGHT or CREAM, ZIndex = 22 })
 		local b = r.boost and Progress.BOOSTS[r.boost]
-		label(cell, { Size = UDim2.new(1, -8, 0, 40), Position = UDim2.fromOffset(4, 32), Text = (done and "\u{2705}\n" or "") .. r.points .. " \u{2B50}" .. (b and ("\n+" .. b.icon) or ""), TextColor3 = today and NIGHT or CREAM, ZIndex = 22 })
+		local bpic = b and Config.BOOST_IMAGES and Config.BOOST_IMAGES[r.boost] or 0
+		label(cell, { Size = UDim2.new(1, -8, 0, 40), Position = UDim2.fromOffset(4, 32), Text = (done and "\u{2705}\n" or "") .. r.points .. " \u{2B50}" .. ((b and bpic == 0) and ("\n+" .. b.icon) or ""), TextColor3 = today and NIGHT or CREAM, ZIndex = 22 })
+		if b and bpic > 0 then
+			label(cell, { Size = UDim2.fromOffset(20, 26), Position = UDim2.fromOffset(12, 76), Text = "+", TextColor3 = today and NIGHT or CREAM, ZIndex = 22 })
+			local pic = Instance.new("ImageLabel")
+			pic.BackgroundTransparency = 1
+			pic.Image = "rbxassetid://" .. bpic
+			pic.Size = UDim2.fromOffset(30, 30)
+			pic.Position = UDim2.fromOffset(32, 74)
+			pic.ZIndex = 22
+			pic.Parent = cell
+		end
 	end
 	local b = info.boost and Progress.BOOSTS[info.boost]
 	label(box, { Size = UDim2.new(1, -40, 0, 30), Position = UDim2.fromOffset(20, 182),
-		Text = "+" .. info.points .. " \u{2B50}" .. (b and (" and a " .. b.icon .. " " .. b.name) or "") .. (info.premium and "  (Premium: double points!)" or ""), ZIndex = 21 })
+		Text = "+" .. info.points .. " \u{2B50}" .. (b and (" and a " .. b.name .. " boost") or "") .. (info.premium and "  (Premium: double points!)" or ""), ZIndex = 21 })
 	label(box, { Size = UDim2.new(1, -40, 0, 22), Position = UDim2.fromOffset(20, 214), Text = "Come back tomorrow for day " .. (info.day % #Config.DAILY + 1) .. ". Miss a day and it starts again at day 1.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 21 })
 	if not info.premium then
 		button(box, "\u{2B50} Roblox Premium: double daily points", { Size = UDim2.fromOffset(330, 38), Position = UDim2.fromOffset(20, 276), BackgroundColor3 = Color3.fromRGB(0, 120, 200), ZIndex = 21 }, function()
@@ -1708,7 +1719,7 @@ do
 			if d then
 				local b = d.boost and Progress.BOOSTS[d.boost]
 				r.text.Text = (q.done and "\u{2705} " or "") .. d.text .. "  (" .. q.n .. "/" .. d.goal .. ")"
-				r.reward.Text = "+" .. d.points .. " \u{2B50}" .. (b and (" +" .. b.icon) or "")
+				r.reward.Text = "+" .. d.points .. " \u{2B50}" .. (b and (" + " .. b.name) or "")
 				r.fill.Size = UDim2.fromScale(math.clamp(q.n / d.goal, 0, 1), 1)
 				total += 1
 				if q.done then
