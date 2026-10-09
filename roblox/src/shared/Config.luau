@@ -150,7 +150,7 @@ Config.BADGES = {
 	rescuer = 4200883843590712, -- Hero of the Crew: freed 10 friends from the cage
 	untouched = 1991556459225776, -- Untouchable: escaped without being caught
 	nightmare = 1282994468042939, -- Nightmare Escaper: escaped on Nightmare
-	plushies = 0, -- Plushie Collector: found every lost plushie (make it in Creator Hub, put its id here)
+	plushies = 4046817833899589, -- Plushie Collector: found every lost plushie
 }
 
 -- the collectibles book: one lost plushie hidden on every floor (by map id).

@@ -122,6 +122,8 @@ function Profile.load(plr)
 	data = fill(data)
 	plr:SetAttribute("MusicVolume", (data.settings and data.settings.music) or 0.5)
 	plr:SetAttribute("SfxVolume", (data.settings and data.settings.sfx) or 1)
+	plr:SetAttribute("PhotoMode", (data.settings and data.settings.photo) or "daily")
+	plr:SetAttribute("PhotoDay", (data.settings and data.settings.photoDay) or 0)
 	cache[plr.UserId] = data
 	Profile.publish(plr)
 	return data
@@ -213,6 +215,23 @@ function Profile.setSfx(plr, v)
 	data.settings = data.settings or {}
 	data.settings.sfx = v
 	plr:SetAttribute("SfxVolume", v)
+end
+
+-- the escape photo: "every" escape, "daily" (the first escape each day) or
+-- "off"; "took" marks today's photo as taken
+function Profile.setPhoto(plr, v)
+	local data = cache[plr.UserId]
+	if not data then
+		return
+	end
+	data.settings = data.settings or {}
+	if v == "took" then
+		data.settings.photoDay = math.floor(os.time() / 86400)
+		plr:SetAttribute("PhotoDay", data.settings.photoDay)
+	elseif v == "every" or v == "daily" or v == "off" then
+		data.settings.photo = v
+		plr:SetAttribute("PhotoMode", v)
+	end
 end
 
 function Profile.addPoints(plr, n)

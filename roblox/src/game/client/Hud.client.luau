@@ -2105,12 +2105,28 @@ do
 		close()
 	end)
 	button(card, "\u{2716} No thanks", { Size = UDim2.fromOffset(88, 40), Position = UDim2.fromOffset(202, 202), ZIndex = 41 }, close)
+	-- the setting: every escape, the first escape each day, or off
+	local MODES = { every = "Every escape", daily = "Once a day", off = "Off" }
+	local NEXT = { every = "daily", daily = "off", off = "every" }
+	card.Size = UDim2.fromOffset(300, 290)
+	local modeBtn = button(card, "", { Size = UDim2.fromOffset(280, 32), Position = UDim2.fromOffset(10, 250), BackgroundColor3 = Color3.fromRGB(75, 58, 102), ZIndex = 41 }, function()
+		remotes.SetPhoto:FireServer(NEXT[player:GetAttribute("PhotoMode") or "daily"])
+	end)
+	local function paintMode()
+		modeBtn.Text = "\u{1F4F8} Photos: " .. (MODES[player:GetAttribute("PhotoMode") or "daily"] or "Once a day") .. " (tap to change)"
+	end
+	player:GetAttributeChangedSignal("PhotoMode"):Connect(paintMode)
+	paintMode()
 	Gamepad.panel(card)
 	local busy = false
 	local function takePhoto()
 		local char = player.Character
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
 		if busy or not okCS or not CaptureService or not hrp then
+			return
+		end
+		local mode = player:GetAttribute("PhotoMode") or "daily"
+		if mode == "off" or (mode == "daily" and (player:GetAttribute("PhotoDay") or 0) == math.floor(workspace:GetServerTimeNow() / 86400)) then
 			return
 		end
 		busy = true
@@ -2139,6 +2155,7 @@ do
 		cam.CameraType = Enum.CameraType.Custom
 		busy = false
 		if shot then
+			remotes.SetPhoto:FireServer("took")
 			pic.Image = shot
 			card.Visible = true
 			task.delay(25, function()

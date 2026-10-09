@@ -108,6 +108,9 @@ local SetSfx = remote("SetSfx") -- (game-sound volume 0..1)
 SetSfx.OnServerEvent:Connect(function(plr, v)
 	require(ReplicatedStorage.Shared.Profile).setSfx(plr, v)
 end)
+remote("SetPhoto").OnServerEvent:Connect(function(plr, v) -- the escape photo setting
+	require(ReplicatedStorage.Shared.Profile).setPhoto(plr, v)
+end)
 require(ReplicatedStorage.Shared.Sfx).group()
 
 local RoundState = Instance.new("Configuration")

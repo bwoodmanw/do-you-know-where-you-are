@@ -10,6 +10,7 @@ text (like the store description), American English.
 Picture: `art/roblox-store/events/event-halloween.png` (1920 x 1080).
 
 - **Title:** Candy Corn Hunt
+- **Subtitle:** Find candy corns on every floor
 - **Description:**
   Halloween has come to every floor of Escape Crew! Six glowing candy corns
   are hidden on every floor of every building. Grab them while you escape,

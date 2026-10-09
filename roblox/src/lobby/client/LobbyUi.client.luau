@@ -874,6 +874,17 @@ do
 	-- emotes in the Lobby too (G / the right stick), under the points
 	local emoteBtn = button(gui, (UserInputService.KeyboardEnabled and not UserInputService.TouchEnabled) and "\u{1F604} Emote (G)" or "\u{1F604} Emote", { Size = UDim2.fromOffset(140, 40), Position = UDim2.new(1, -160, 0, 106), ZIndex = 5 })
 	require(ReplicatedStorage.Shared.Emotes).mount(gui, emoteBtn, UDim2.new(0.5, -218, 1, -260))
+	-- the escape photo setting (the only way back on once it is Off)
+	local MODES = { every = "Every escape", daily = "Once a day", off = "Off" }
+	local NEXT = { every = "daily", daily = "off", off = "every" }
+	local photoBtn = button(gui, "", { Size = UDim2.fromOffset(200, 40), Position = UDim2.new(1, -370, 0, 106), ZIndex = 5 }, function()
+		remotes:WaitForChild("SetPhoto"):FireServer(NEXT[player:GetAttribute("PhotoMode") or "daily"])
+	end)
+	local function paintPhoto()
+		photoBtn.Text = "\u{1F4F8} Escape photo: " .. (MODES[player:GetAttribute("PhotoMode") or "daily"] or "Once a day")
+	end
+	player:GetAttributeChangedSignal("PhotoMode"):Connect(paintPhoto)
+	paintPhoto()
 end
 do
 	-- the Plushie Book: a page for every floor's lost plushie - found ones
