@@ -369,9 +369,8 @@ end)
 -- (the look Brent picked 9 Oct: art/ui-mockups/lobby-v2.png). The left has
 -- the play tiles, the right a bar of smaller ones. A tile shows its picture
 -- from Config.UI_ICONS once uploaded, its emoji until then.
-local menu = frame(gui, { Size = UDim2.fromOffset(310, 590), Position = UDim2.fromOffset(20, 134), BackgroundTransparency = 1 })
+local menu = frame(gui, { Size = UDim2.fromOffset(310, 590), Position = UDim2.fromOffset(20, 136), BackgroundTransparency = 1 })
 local rightBar = frame(gui, { Size = UDim2.fromOffset(104, 520), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 196), BackgroundTransparency = 1 })
-label(menu, { Size = UDim2.fromOffset(310, 40), Position = UDim2.fromOffset(0, -46), Text = "ESCAPE CREW", TextColor3 = PUMP })
 do
 	-- small screens: the tiles shrink to fit
 	local fitL, fitR = Instance.new("UIScale"), Instance.new("UIScale")
@@ -379,7 +378,7 @@ do
 	local function refit()
 		local cam = workspace.CurrentCamera
 		local vy = cam and cam.ViewportSize.Y or 900
-		fitL.Scale = math.clamp((vy - 134 - 70) / 590, 0.45, 1)
+		fitL.Scale = math.clamp((vy - 70 - 16) / (590 + 66), 0.4, 1) -- the points chip sits above the tiles
 		fitR.Scale = math.clamp((vy - 196 - 60) / 520, 0.45, 1)
 	end
 	refit()
@@ -905,7 +904,8 @@ end)
 
 -- ---------- my profile (points, bag, characters) ----------
 local profile = { points = 0, inv = {}, loadout = {}, xp = {}, picks = {}, unlocked = {} }
-local pointsLabel = label(gui, { Size = UDim2.fromOffset(200, 50), Position = UDim2.fromOffset(20, 64), Text = "\u{2B50} 0", BackgroundColor3 = NIGHT, BackgroundTransparency = 0.1 })
+-- points: a chip on top of the tile column (it shrinks with the tiles on small screens)
+local pointsLabel = label(menu, { Size = UDim2.fromOffset(200, 50), Position = UDim2.fromOffset(0, -62), Text = "\u{2B50} 0", BackgroundColor3 = NIGHT, BackgroundTransparency = 0.1 })
 do
 	corner(pointsLabel, 25)
 	local ring = Instance.new("UIStroke")
@@ -1191,7 +1191,7 @@ do
 
 	-- the owner's gift panel: candy corns or points for anyone in this Lobby
 	if game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId and e then
-		local giftBtn = button(gui, "\u{1F381} Gift", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 8, 1, -8), Size = UDim2.fromOffset(96, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
+		local giftBtn = button(gui, "\u{1F381} Gift", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 652, 1, -14), Size = UDim2.fromOffset(96, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
 		local panel = frame(gui, { Size = UDim2.fromOffset(560, 420), Position = UDim2.new(0.5, -280, 0.5, -210), Visible = false, ZIndex = 10 })
 		corner(panel, 18)
 		label(panel, { Size = UDim2.new(1, -20, 0, 36), Position = UDim2.fromOffset(10, 8), Text = "\u{1F381} Gifts (only you see this)", TextColor3 = PUMP, ZIndex = 11 })
