@@ -17,6 +17,18 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 52 (10 Oct) - the clean menu look (art/ui-mockups/menus-v2.png, hud-v2.png)
+Lobby:
+- [ ] Every pop-up (Invite, Shop, Characters, Quests, Plushies, Help, Candy Shop, map screen): dark glass with a cream border; words in a clean bold font, orange titles in the rounded font; nothing huge - text stays a normal size
+- [ ] No cream buttons left (they are plum with a thin cream edge); the main action green
+- [ ] Only one pop-up open at a time: opening Emote closes Invite, and so on
+- [ ] The emote picker opens beside the right bar, its tiles plum with a cream edge (emoji until the icons are in)
+- [ ] The points chip sits above Quick Play and never covers anything (phone too); Gift (owner only) is beside Balance at the bottom
+In the game:
+- [ ] Action buttons are taller tiles: picture (or emoji for now) above one word; the skill tile follows your character; the boosts row and items row sit above them, nothing overlapping (computer and phone photos)
+- [ ] Top bar, stamina panel, map, Say panel, character picker, keypad, results: dark glass with a cream edge
+- [ ] Once the 22 new icon ids are in: Run, Say, Clue, Change, Look, Emote and the skill tile show pictures, and the emote picker too
+
 ## Round 51 (10 Oct) - stretched shapes now really stretched (Roblox squashed every egg shape into a round ball)
 - [ ] The great tank shark is one long fish: body, snout, fins, crescent tail all joined (photo)
 - [ ] Fish bodies are oval, plushies have proper heads and bodies, gummy bears (Bear Gallery, Gummy puddles) are real bear shapes, penguins, duck, jellyfish, starfish arms, coral, candy corns, rocking horse, the clown car / sub, the Lobby pumpkins - all as drawn, nothing floating apart

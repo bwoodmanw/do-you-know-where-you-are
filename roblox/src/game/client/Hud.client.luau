@@ -74,9 +74,15 @@ local function label(parent, props)
 	l.Parent = parent
 	return l
 end
+-- the clean look (art/ui-mockups/hud-v2.png): Builder Sans, text that stays
+-- a normal size, no light buttons, a thin cream edge
+local BODY_FONT = Enum.Font.GothamBold
+pcall(function()
+	BODY_FONT = Enum.Font.BuilderSansBold
+end)
 local function button(parent, text, props, onClick)
 	local b = Instance.new("TextButton")
-	b.Font = Enum.Font.FredokaOne
+	b.Font = BODY_FONT
 	b.Text = text
 	b.TextScaled = true
 	b.TextColor3 = CREAM
@@ -84,6 +90,17 @@ local function button(parent, text, props, onClick)
 	b.AutoButtonColor = true
 	for k, v in pairs(props) do
 		b[k] = v
+	end
+	if b.BackgroundColor3 == CREAM then
+		b.BackgroundColor3, b.TextColor3 = Color3.fromRGB(75, 58, 102), CREAM
+	end
+	do
+		local cap = Instance.new("UITextSizeConstraint")
+		cap.MaxTextSize = 24
+		cap.Parent = b
+		local edge = Instance.new("UIStroke")
+		edge.Color, edge.Thickness, edge.ApplyStrokeMode, edge.Transparency = CREAM, 2, Enum.ApplyStrokeMode.Border, 0.35
+		edge.Parent = b
 	end
 	corner(b, 12)
 	local pad = Instance.new("UIPadding")
@@ -98,6 +115,49 @@ local function button(parent, text, props, onClick)
 end
 
 -- ---------- messages ----------
+-- a tile's picture (Config.UI_ICONS) above its word; until a picture is
+-- uploaded the button keeps its emoji and words. getId returns the image id.
+local function tileIcon(b, getId)
+	local pic = Instance.new("ImageLabel")
+	pic.Name = "Icon"
+	pic.BackgroundTransparency = 1
+	pic.ScaleType = Enum.ScaleType.Fit
+	pic.Size = UDim2.new(1, 0, 1, -22)
+	pic.ZIndex = b.ZIndex + 1
+	pic.Parent = b
+	local stripping = false
+	local function paint()
+		local id = getId() or 0
+		pic.Visible = id > 0
+		pic.Image = id > 0 and ("rbxassetid://" .. id) or ""
+		b.TextYAlignment = id > 0 and Enum.TextYAlignment.Bottom or Enum.TextYAlignment.Center
+		local cap = b:FindFirstChildOfClass("UITextSizeConstraint")
+		if cap then
+			cap.MaxTextSize = id > 0 and 18 or 24
+		end
+		if id > 0 and not stripping then
+			-- the picture replaces the emoji at the start of the words
+			local t = b.Text
+			local cut = 1
+			for pos, code in utf8.codes(t) do
+				if code > 0x2000 or code == 0x20 then
+					cut = pos + #utf8.char(code)
+				else
+					break
+				end
+			end
+			if cut > 1 then
+				stripping = true
+				b.Text = string.sub(t, cut)
+				stripping = false
+			end
+		end
+	end
+	b:GetPropertyChangedSignal("Text"):Connect(paint)
+	paint()
+	return paint
+end
+
 local toastFrame = frame(gui, { Size = UDim2.new(0.5, 0, 0, 56), Position = UDim2.new(0.25, 0, 0.2, 0), Visible = false })
 corner(toastFrame, 14)
 local toastStroke = Instance.new("UIStroke")
@@ -358,7 +418,7 @@ roomName = label(bars, { Size = UDim2.new(1, -16, 0, 32), Position = UDim2.fromO
 do
 -- the team's items, as icons above the active boosts: a key for each locked
 -- door still shut, and the Confetti Cannons (they stay through a cage)
-local itemRow = frame(gui, { Size = UDim2.fromOffset(290, 58), Position = TOUCH and UDim2.new(1, -300, 1, -472) or UDim2.new(1, -300, 1, -332), BackgroundTransparency = 1 })
+local itemRow = frame(gui, { Size = UDim2.fromOffset(290, 58), Position = TOUCH and UDim2.new(1, -300, 1, -534) or UDim2.new(1, -300, 1, -394), BackgroundTransparency = 1 })
 local itemList = Instance.new("UIListLayout")
 itemList.FillDirection = Enum.FillDirection.Horizontal
 itemList.HorizontalAlignment = Enum.HorizontalAlignment.Right
@@ -420,9 +480,9 @@ local staminaBar = bar(10, Color3.fromRGB(123, 227, 107), "Stamina")
 local gameEarned = label(bars, { Size = UDim2.new(1, -16, 0, 18), Position = UDim2.fromOffset(8, 30), Text = "\u{2B50} 0 points this game", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 210, 63) })
 
 -- ---------- action buttons ----------
-local acts = frame(gui, { Size = UDim2.fromOffset(290, 150), Position = TOUCH and UDim2.new(1, -300, 1, -300) or UDim2.new(1, -300, 1, -160), BackgroundTransparency = 1 })
+local acts = frame(gui, { Size = UDim2.fromOffset(290, 212), Position = TOUCH and UDim2.new(1, -300, 1, -362) or UDim2.new(1, -300, 1, -222), BackgroundTransparency = 1 })
 local grid = Instance.new("UIGridLayout")
-grid.CellSize = UDim2.fromOffset(92, 44)
+grid.CellSize = UDim2.fromOffset(92, 64)
 grid.CellPadding = UDim2.fromOffset(6, 6)
 grid.HorizontalAlignment = Enum.HorizontalAlignment.Right
 grid.VerticalAlignment = Enum.VerticalAlignment.Bottom
@@ -449,6 +509,25 @@ local function paintCandy()
 end
 player:GetAttributeChangedSignal("CandyCharges"):Connect(paintCandy)
 paintCandy()
+do
+	local function icon(key)
+		return function()
+			return Config.UI_ICONS and Config.UI_ICONS[key] or 0
+		end
+	end
+	tileIcon(runBtn, icon("run"))
+	tileIcon(sayBtn, icon("say"))
+	tileIcon(pickBtn, icon("change"))
+	tileIcon(clueBtn, icon("clue"))
+	tileIcon(candyBtn, function()
+		return Config.BOOST_IMAGES and Config.BOOST_IMAGES.candy or 0
+	end)
+	-- the skill tile shows the character you are playing
+	local repaint = tileIcon(skillBtn, function()
+		return Config.UI_ICONS and Config.UI_ICONS["skill-" .. tostring(player:GetAttribute("Skill"))] or 0
+	end)
+	player:GetAttributeChangedSignal("Skill"):Connect(repaint)
+end
 -- controller: which button does what (tags show only with a controller)
 do
 	Gamepad.hint(runBtn, "L3")
@@ -528,10 +607,16 @@ local mouseLook = false
 local lookBtn = button(acts, "\u{1F5B1} Look (M)", { LayoutOrder = 7, Visible = not TOUCH and UserInputService.KeyboardEnabled }, function()
 	mouseLook = not mouseLook
 end)
+tileIcon(lookBtn, function()
+	return Config.UI_ICONS and Config.UI_ICONS.look or 0
+end)
 
 do
 	-- emotes (G / the right stick): wave, point, cheer, laugh, dances
 	local emoteBtn = button(acts, (not TOUCH and UserInputService.KeyboardEnabled) and "\u{1F604} Emote (G)" or "\u{1F604} Emote", { LayoutOrder = 9 })
+	tileIcon(emoteBtn, function()
+		return Config.UI_ICONS and Config.UI_ICONS.emote or 0
+	end)
 	require(ReplicatedStorage.Shared.Emotes).mount(gui, emoteBtn, UDim2.new(0.5, -218, 1, -400))
 end
 do
@@ -1303,8 +1388,13 @@ do
 		end)
 	end
 end
-local mapBox = frame(gui, { Size = UDim2.fromOffset(MAP_W + 8, MAP_H + 32), Position = mapAt, BackgroundTransparency = 0.25 })
+local mapBox = frame(gui, { Size = UDim2.fromOffset(MAP_W + 8, MAP_H + 32), Position = mapAt, BackgroundTransparency = 0.25, BackgroundColor3 = Color3.fromRGB(22, 13, 34) })
 corner(mapBox, 10)
+do
+	local edge = Instance.new("UIStroke") -- dark glass with a cream edge, like every panel
+	edge.Color, edge.Thickness, edge.ApplyStrokeMode = CREAM, 2, Enum.ApplyStrokeMode.Border
+	edge.Parent = mapBox
+end
 local mapArea = frame(mapBox, { Size = UDim2.fromOffset(MAP_W, MAP_H), Position = UDim2.fromOffset(4, 28), BackgroundColor3 = Color3.fromRGB(10, 6, 16), BackgroundTransparency = 0, ClipsDescendants = true })
 local mapTitle = label(mapBox, { Size = UDim2.new(1, -44, 0, 20), Position = UDim2.fromOffset(8, 4), Text = "\u{1F5FA} Map" .. (TOUCH and "" or " (N)"), TextXAlignment = Enum.TextXAlignment.Left })
 local mapOpenBtn = button(gui, "\u{1F5FA} Map" .. (TOUCH and "" or " (N)"), { Size = UDim2.fromOffset(110, 36), Position = mapAt, Visible = false })
@@ -1678,7 +1768,7 @@ end)
 
 -- ---------- boosts working right now: icon and how long is left ----------
 end
-local activeRow = frame(gui, { Size = UDim2.fromOffset(290, 46), Position = TOUCH and UDim2.new(1, -300, 1, -412) or UDim2.new(1, -300, 1, -272), BackgroundTransparency = 1 })
+local activeRow = frame(gui, { Size = UDim2.fromOffset(290, 46), Position = TOUCH and UDim2.new(1, -300, 1, -474) or UDim2.new(1, -300, 1, -334), BackgroundTransparency = 1 })
 local activeList = Instance.new("UIListLayout")
 activeList.FillDirection = Enum.FillDirection.Horizontal
 activeList.HorizontalAlignment = Enum.HorizontalAlignment.Right
@@ -1713,7 +1803,7 @@ do
 	local pct = label(speedSlot, { Name = "Pct", Size = UDim2.new(1, 0, 0, 14), Position = UDim2.fromOffset(0, -2), Text = "", TextColor3 = Color3.fromRGB(255, 230, 120), TextStrokeTransparency = 0.2, ZIndex = 3 })
 	-- a line floats up over the boost row whenever a skill or boost gives you
 	-- something: "+6% stamina", "+5% speed for 3 s"
-	local floatAt = TOUCH and UDim2.new(1, -310, 1, -452) or UDim2.new(1, -310, 1, -312)
+	local floatAt = TOUCH and UDim2.new(1, -310, 1, -514) or UDim2.new(1, -310, 1, -374)
 	local floating = 0
 	local function float(text, color)
 		floating += 1
@@ -2225,6 +2315,20 @@ end)
 
 -- ---------- end of round: results ----------
 local results = frame(gui, { Size = UDim2.fromOffset(460, 440), Position = UDim2.new(0.5, -230, 0.5, -220), Visible = false, ZIndex = 40 })
+do
+	-- every panel the same: dark glass with a cream edge (hud-v2.png)
+	for _, f in ipairs({ top, bars, sayPanel, picker, keypad, results, toastFrame }) do -- (the map box does its own)
+		f.BackgroundColor3 = Color3.fromRGB(22, 13, 34)
+		if not f:FindFirstChildOfClass("UIStroke") then
+			local edge = Instance.new("UIStroke")
+			edge.Color, edge.Thickness, edge.ApplyStrokeMode = CREAM, 2, Enum.ApplyStrokeMode.Border
+			edge.Parent = f
+		end
+		if not f:FindFirstChildOfClass("UICorner") then
+			corner(f, 16)
+		end
+	end
+end
 corner(results, 18)
 do
 local resTitle = label(results, { Size = UDim2.new(1, -20, 0, 44), Position = UDim2.fromOffset(10, 12), TextColor3 = PUMP, ZIndex = 41 })
