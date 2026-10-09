@@ -137,16 +137,25 @@ function Effects.surprise(position, kind)
 	if kind == "bats" then
 		Effects.sound(position, "sneak", 0.6)
 		for _ = 1, 6 do
-			local bat = Instance.new("Part")
-			bat.Name = "Bat"
-			bat.Size = Vector3.new(1.4, 0.15, 0.7)
-			bat.Color = Color3.fromRGB(25, 15, 30)
-			bat.Anchored, bat.CanCollide, bat.CanQuery, bat.CanTouch = true, false, false, false
-			bat.CFrame = CFrame.new(position + Vector3.new(math.random() - 0.5, 1.5, math.random() - 0.5))
-			bat.Parent = workspace
-			local goal = position + Vector3.new(math.random(-10, 10), math.random(8, 13), math.random(-10, 10))
-			TweenService:Create(bat, TweenInfo.new(1.6, Enum.EasingStyle.Sine), { CFrame = CFrame.new(goal) * CFrame.Angles(math.random() * 2, math.random() * 6, math.random() * 2), Transparency = 1 }):Play()
-			Debris:AddItem(bat, 1.8)
+			-- a little bat: a round body and two wings swept up, flying off as one
+			local from = CFrame.new(position + Vector3.new(math.random() - 0.5, 1.5, math.random() - 0.5)) * CFrame.Angles(0, math.random() * 6, 0)
+			local goal = CFrame.new(position + Vector3.new(math.random(-10, 10), math.random(8, 13), math.random(-10, 10))) * CFrame.Angles(math.random() - 0.5, math.random() * 6, math.random() - 0.5)
+			for k, piece in ipairs({
+				{ Vector3.new(0.45, 0.45, 0.55), CFrame.new(), Enum.PartType.Ball },
+				{ Vector3.new(0.9, 0.06, 0.6), CFrame.new(-0.6, 0.12, 0) * CFrame.Angles(0, 0, math.rad(25)), Enum.PartType.Block },
+				{ Vector3.new(0.9, 0.06, 0.6), CFrame.new(0.6, 0.12, 0) * CFrame.Angles(0, 0, math.rad(-25)), Enum.PartType.Block },
+			}) do
+				local p = Instance.new("Part")
+				p.Name = k == 1 and "Bat" or "BatWing"
+				p.Shape = piece[3]
+				p.Size = piece[1]
+				p.Color = Color3.fromRGB(25, 15, 30)
+				p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch = true, false, false, false
+				p.CFrame = from * piece[2]
+				p.Parent = workspace
+				TweenService:Create(p, TweenInfo.new(1.6, Enum.EasingStyle.Sine), { CFrame = goal * piece[2], Transparency = 1 }):Play()
+				Debris:AddItem(p, 1.8)
+			end
 		end
 	elseif kind == "tissue" then
 		Effects.sound(position, "hide", 0.5)

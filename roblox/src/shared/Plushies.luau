@@ -27,7 +27,7 @@ end
 
 -- a plushie for Config.PLUSHIES entry `def`, sitting on the floor at `base`
 -- (a CFrame on the floor, facing -Z)
-function Plushies.build(def, base, noGlow)
+function Plushies.build(def, base, noGlow, quiet)
 	local m = Instance.new("Model")
 	m.Name = "Plushie"
 	local col = def.color
@@ -108,6 +108,9 @@ function Plushies.build(def, base, noGlow)
 			add(m, base, V(0.5, 0.15, 0.6), V(-0.35, 0.07, -0.5), ORANGE) -- feet
 			add(m, base, V(0.5, 0.15, 0.6), V(0.35, 0.07, -0.5), ORANGE)
 		end
+	end
+	if quiet then
+		return m -- a decoration teddy: no sparkle, no glow
 	end
 	-- a faint sparkle so a sharp eye can spot it
 	local att = Instance.new("Attachment")

@@ -315,7 +315,11 @@ end
 part({ Name = "GatePostL", Size = Vector3.new(2, 8, 2), Position = Vector3.new(-9, 4, -60), Material = Enum.Material.Brick, Color = Color3.fromRGB(70, 50, 50) })
 part({ Name = "GatePostR", Size = Vector3.new(2, 8, 2), Position = Vector3.new(9, 4, -60), Material = Enum.Material.Brick, Color = Color3.fromRGB(70, 50, 50) })
 for i, c in ipairs({ Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63) }) do
-	part({ Name = "Balloon", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2.4, 2.4), Position = Vector3.new(-9 + (i - 2) * 1.6, 11 + i * 0.5, -60), Material = Enum.Material.SmoothPlastic, Color = c, CanCollide = false })
+	local bp = Vector3.new(-9 + (i - 2) * 1.6, 11 + i * 0.5, -60)
+	part({ Name = "Balloon", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2.4, 2.4), Position = bp, Material = Enum.Material.SmoothPlastic, Color = c, CanCollide = false })
+	-- tied to the top of the gate post
+	local knot, bottom = Vector3.new(-9, 8, -60), bp - Vector3.new(0, 1.2, 0)
+	part({ Name = "BalloonString", Size = Vector3.new(0.08, 0.08, (bottom - knot).Magnitude), CFrame = CFrame.lookAt((bottom + knot) / 2, bottom), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(235, 235, 235), CanCollide = false })
 end
 for z = 30, -50, -20 do
 	for _, x in ipairs({ -11, 11 }) do

@@ -205,8 +205,17 @@ local function styledShelf(root, map, x, y)
 					part(root, { Name = "ToyBlock", Size = Vector3.new(1.3, 1.3, 1.3), Position = p - Vector3.new(0, 0.1, 0), Color = Color3.fromRGB(232, 80, 91), CanCollide = false })
 					part(root, { Name = "ToyBlock", Size = Vector3.new(1, 1, 1), Position = p + Vector3.new(0, 1.05, 0), Color = Color3.fromRGB(70, 209, 96), CanCollide = false })
 				else
-					part(root, { Name = "Teddy", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.5, 1.2), Position = p - Vector3.new(0, 0.2, 0), Color = Color3.fromRGB(160, 110, 70), Material = Enum.Material.Fabric, CanCollide = false })
-					part(root, { Name = "TeddyHead", Shape = Enum.PartType.Ball, Size = Vector3.new(1, 1, 1), Position = p + Vector3.new(0, 0.9, 0), Color = Color3.fromRGB(160, 110, 70), Material = Enum.Material.Fabric, CanCollide = false })
+					-- a teddy bear (the Plushie Book's bear, no sparkle), sitting on the shelf
+					local ok, ted = pcall(function()
+						return require(game:GetService("ReplicatedStorage").Shared.Plushies).build({ animal = "bear", color = Color3.fromRGB(160, 110, 70) }, CFrame.new(p), true, true)
+					end)
+					if ok and ted then
+						local _, ts = ted:GetBoundingBox()
+						ted:ScaleTo(2.4 / ts.Y)
+						local bcf, bsize = ted:GetBoundingBox()
+						ted:PivotTo(ted:GetPivot() + (p - Vector3.new(0, 0.9, 0) + Vector3.new(0, bsize.Y / 2, 0) - bcf.Position))
+						ted.Parent = root
+					end
 				end
 			elseif style == "files" then
 				for t = 0, 3 do
@@ -328,6 +337,11 @@ local function schoolFurniture(root, kind, x, y)
 			part(root, { Name = "DeskFrame", Size = Vector3.new(3, 2.7, 0.2), Position = at(x, y, 1.4) + Vector3.new(dx, 0, -1.6), Material = Enum.Material.Metal, Color = steel })
 			part(root, { Name = "SchoolChair", Size = Vector3.new(1.8, 0.25, 1.6), Position = at(x, y, 1.7) + Vector3.new(dx, 0, 1.5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(70, 110, 170), CanCollide = false })
 			part(root, { Name = "ChairBack", Size = Vector3.new(1.8, 1.6, 0.2), Position = at(x, y, 2.6) + Vector3.new(dx, 0, 2.3), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(70, 110, 170), CanCollide = false })
+			for _, lx in ipairs({ -0.75, 0.75 }) do
+				for _, lz in ipairs({ 0.85, 2.15 }) do
+					part(root, { Name = "ChairLeg", Size = Vector3.new(0.15, 1.6, 0.15), Position = at(x, y, 0.8) + Vector3.new(dx + lx, 0, lz), Material = Enum.Material.Metal, Color = steel, CanCollide = false })
+				end
+			end
 		end
 		-- a solid block where the desks stand, so nobody walks through them
 		part(root, { Name = "DeskBlock", Size = Vector3.new(T, 2.9, T * 0.55), Position = at(x, y, 1.45) + Vector3.new(0, 0, -0.6), Transparency = 1 })
@@ -441,6 +455,22 @@ local function carnivalFurniture(root, kind, x, y, map)
 		part(root, { Name = "StallCounter", Size = Vector3.new(T, 3.6, T * 0.5), Position = at(x, y, 1.8), Material = Enum.Material.SmoothPlastic, Color = CARNIVAL_STRIPES[x % 2 + 1] })
 		part(root, { Name = "StallTop", Size = Vector3.new(T, 0.3, T * 0.6), Position = at(x, y, 3.75), Material = Enum.Material.Wood, Color = Color3.fromRGB(150, 100, 60) })
 		part(root, { Name = "Awning", Size = Vector3.new(T, 0.3, T * 0.7), CFrame = CFrame.new(at(x, y, 8.5)) * CFrame.Angles(math.rad(-15), 0, 0), Material = Enum.Material.Fabric, Color = CARNIVAL_STRIPES[(x + 1) % 2 + 1], CanCollide = false })
+		for _, px in ipairs({ -(T / 2 - 0.3), T / 2 - 0.3 }) do
+			part(root, { Name = "StallPost", Size = Vector3.new(0.35, 4.9, 0.35), Position = at(x, y, 6.2) + Vector3.new(px, 0, 0), Material = Enum.Material.Wood, Color = Color3.fromRGB(150, 100, 60), CanCollide = false })
+		end
+		-- two prize teddies at the ends of the counter
+		for k, px in ipairs({ -2.9, 2.9 }) do
+			local ok, ted = pcall(function()
+				return require(game:GetService("ReplicatedStorage").Shared.Plushies).build({ animal = k == 1 and "bear" or "bunny", color = CARNIVAL_STRIPES[(x + k) % 2 + 1] }, CFrame.new(at(x, y, 3.9) + Vector3.new(px, 0, 0)), true, true)
+			end)
+			if ok and ted then
+				local _, ts = ted:GetBoundingBox()
+				ted:ScaleTo(1.6 / ts.Y)
+				local bcf, bsize = ted:GetBoundingBox()
+				ted:PivotTo(ted:GetPivot() + (at(x, y, 3.9) + Vector3.new(px, bsize.Y / 2, 0) - bcf.Position))
+				ted.Parent = root
+			end
+		end
 		for i = -1, 1 do
 			part(root, { Name = "Bottle", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.2, 0.6, 0.6), CFrame = CFrame.new(at(x, y, 4.5) + Vector3.new(i * 1.8, 0, 0)) * CFrame.Angles(0, 0, math.rad(90)), Material = Enum.Material.Glass, Color = Color3.fromRGB(90, 170, 120), Transparency = 0.2, CanCollide = false })
 		end
@@ -494,6 +524,21 @@ local function carnivalFurniture(root, kind, x, y, map)
 			end
 		end
 		part(root, { Name = "Horn", Shape = Enum.PartType.Ball, Size = Vector3.new(1, 1, 1), Position = c + Vector3.new(T - 1.5, 4.4, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(230, 50, 60), CanCollide = false })
+		part(root, { Name = "Windscreen", Size = Vector3.new(0.2, 2, T * 1.05), CFrame = CFrame.new(c + Vector3.new(2.6, 5.1, 0)) * CFrame.Angles(0, 0, math.rad(20)), Material = Enum.Material.Glass, Color = Color3.fromRGB(170, 215, 240), Transparency = 0.35, CanCollide = false })
+		for _, s in ipairs({ -1, 1 }) do
+			part(root, { Name = "Headlight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.9, 0.9, 0.9), Position = c + Vector3.new(T - 1, 3.1, s * 3.4), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 245, 200), CanCollide = false })
+			part(root, { Name = "Bumper", Size = Vector3.new(0.5, 0.6, T * 1.3), Position = c + Vector3.new(s * (T - 0.7), 1.6, 0), Material = Enum.Material.Metal, Color = Color3.fromRGB(200, 200, 210), CanCollide = false })
+			for k = -1, 1 do
+				part(root, { Name = "PolkaDot", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.1, 1, 1), CFrame = CFrame.new(c + Vector3.new(k * 3, 2.7 + (k % 2) * 0.6, s * (T * 0.65 + 0.03))) * CFrame.Angles(0, math.rad(90), 0), Material = Enum.Material.SmoothPlastic, Color = ({ Color3.fromRGB(230, 50, 60), Color3.fromRGB(80, 170, 230), Color3.fromRGB(120, 210, 90) })[k + 2], CanCollide = false })
+			end
+		end
+		-- a big daisy on a stalk, nodding on the roof
+		part(root, { Name = "FlowerStalk", Size = Vector3.new(0.2, 1.6, 0.2), Position = c + Vector3.new(-3, 7.2, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(70, 160, 70), CanCollide = false })
+		part(root, { Name = "FlowerMiddle", Shape = Enum.PartType.Ball, Size = Vector3.new(0.7, 0.7, 0.7), Position = c + Vector3.new(-3, 8.1, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 210, 50), CanCollide = false })
+		for k = 0, 5 do
+			local a = k * math.pi / 3
+			part(root, { Name = "Petal", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.25, 0.6), Position = c + Vector3.new(-3, 8.1, 0) + Vector3.new(0, math.cos(a) * 0.55, math.sin(a) * 0.55), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 255, 255), CanCollide = false })
+		end
 		part(root, { Name = "CarBlock", Size = Vector3.new(T, 4, T), Position = at(x, y, 2), Transparency = 1 })
 		return true
 	elseif kind == "seats" then
@@ -644,9 +689,30 @@ local function aquariumFurniture(root, kind, x, y, map)
 			return true
 		end
 		local c = (at(f.x0, f.y0, 0) + at(f.x1, f.y1, 0)) / 2
-		part(root, { Name = "Submarine", Shape = Enum.PartType.Cylinder, Size = Vector3.new(T * 2 - 1, 4.6, 4.6), CFrame = CFrame.new(c + Vector3.new(0, 2.6, 0)), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 205, 40), CanCollide = false })
-		part(root, { Name = "SubTower", Size = Vector3.new(3, 2.4, 2.4), Position = c + Vector3.new(0, 5.4, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 205, 40), CanCollide = false })
-		part(root, { Name = "Porthole", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.3, 1.8, 1.8), CFrame = CFrame.new(c + Vector3.new(-2, 2.8, -2.3)) * CFrame.Angles(0, math.rad(90), 0), Material = Enum.Material.Glass, Color = Color3.fromRGB(150, 210, 240), CanCollide = false })
+		local SUB = Color3.fromRGB(255, 205, 40)
+		local function sp(props)
+			props.Material = props.Material or Enum.Material.SmoothPlastic
+			props.Color = props.Color or SUB
+			props.CanCollide = false
+			return part(root, props)
+		end
+		sp({ Name = "Submarine", Shape = Enum.PartType.Cylinder, Size = Vector3.new(11, 4.6, 4.6), CFrame = CFrame.new(c + Vector3.new(0, 2.9, 0)) })
+		for _, s in ipairs({ -1, 1 }) do
+			sp({ Name = "SubEnd", Shape = Enum.PartType.Ball, Size = Vector3.new(4.6, 4.6, 4.6), Position = c + Vector3.new(s * 5.5, 2.9, 0) })
+			sp({ Name = "Cradle", Size = Vector3.new(1.2, 0.9, 3.4), Position = c + Vector3.new(s * 3, 0.45, 0), Color = Color3.fromRGB(70, 75, 85), Material = Enum.Material.Metal })
+			for k = -1, 1 do
+				sp({ Name = "Porthole", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.3, 1.4, 1.4), CFrame = CFrame.new(c + Vector3.new(k * 2.6, 3.1, s * 2.3)) * CFrame.Angles(0, math.rad(90), 0), Material = Enum.Material.Glass, Color = Color3.fromRGB(150, 210, 240) })
+			end
+		end
+		sp({ Name = "SubTower", Size = Vector3.new(3, 2.4, 2.4), Position = c + Vector3.new(-0.5, 5.6, 0) })
+		sp({ Name = "Periscope", Size = Vector3.new(0.3, 1.6, 0.3), Position = c + Vector3.new(0.3, 7.5, 0), Color = Color3.fromRGB(120, 125, 132), Material = Enum.Material.Metal })
+		sp({ Name = "PeriscopeTop", Size = Vector3.new(0.9, 0.35, 0.35), Position = c + Vector3.new(0.6, 8.3, 0), Color = Color3.fromRGB(120, 125, 132), Material = Enum.Material.Metal })
+		-- the back (+X): a rudder and a three-bladed propeller
+		sp({ Name = "Rudder", Size = Vector3.new(1.4, 1.8, 0.2), Position = c + Vector3.new(7.2, 4.4, 0) })
+		sp({ Name = "PropHub", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.8, 0.8), Position = c + Vector3.new(8, 2.9, 0), Color = Color3.fromRGB(120, 125, 132), Material = Enum.Material.Metal })
+		for k = 0, 2 do
+			sp({ Name = "PropBlade", Size = Vector3.new(0.15, 1.7, 0.5), CFrame = CFrame.new(c + Vector3.new(8.05, 2.9, 0)) * CFrame.Angles(k * math.pi * 2 / 3, 0, 0) * CFrame.new(0, 0.8, 0) * CFrame.Angles(0, math.rad(25), 0), Color = Color3.fromRGB(200, 160, 70), Material = Enum.Material.Metal })
+		end
 		part(root, { Name = "SubBlock", Size = Vector3.new(T, 5, T), Position = at(x, y, 2.5), Transparency = 1 })
 		return true
 	elseif kind == "bones" then
@@ -701,9 +767,20 @@ local function aquariumFurniture(root, kind, x, y, map)
 	elseif kind == "coral" then
 		part(root, { Name = "Reef", Size = Vector3.new(T, 1.6, T), Position = at(x, y, 0.8), Material = Enum.Material.Slate, Color = Color3.fromRGB(80, 70, 90) })
 		local cols = { Color3.fromRGB(255, 110, 140), Color3.fromRGB(255, 170, 60), Color3.fromRGB(170, 110, 255), Color3.fromRGB(90, 220, 200) }
-		for i = 1, 4 do
-			part(root, { Name = "Coral", Shape = Enum.PartType.Ball, Size = Vector3.new(1.8, 2.4, 1.8), Position = at(x, y, 2.6) + Vector3.new(math.cos(i * 1.7) * 2, (i % 2) * 0.6, math.sin(i * 1.7) * 2), Material = Enum.Material.Neon, Color = cols[(x + i) % 4 + 1], CanCollide = false })
+		-- branching coral: a trunk with three arms reaching up; and a round brain coral
+		for i = 1, 3 do
+			local base = at(x, y, 1.6) + Vector3.new(math.cos(i * 2.1) * 2.2, 0, math.sin(i * 2.1) * 2.2)
+			local col = cols[(x + i) % 4 + 1]
+			part(root, { Name = "Coral", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.6, 0.5, 0.5), CFrame = CFrame.new(base + Vector3.new(0, 0.8, 0)) * CFrame.Angles(0, 0, math.rad(90)), Material = Enum.Material.SmoothPlastic, Color = col, CanCollide = false })
+			for k = 0, 2 do
+				local a = k * math.pi * 2 / 3 + i
+				local from = base + Vector3.new(0, 1.4, 0)
+				local to = from + Vector3.new(math.cos(a) * 0.8, 1.3, math.sin(a) * 0.8)
+				part(root, { Name = "CoralArm", Size = Vector3.new(0.35, 0.35, (to - from).Magnitude), CFrame = CFrame.lookAt((from + to) / 2, to), Material = Enum.Material.SmoothPlastic, Color = col, CanCollide = false })
+				part(root, { Name = "CoralTip", Shape = Enum.PartType.Ball, Size = Vector3.new(0.45, 0.45, 0.45), Position = to, Material = Enum.Material.Neon, Color = col, CanCollide = false })
+			end
 		end
+		part(root, { Name = "BrainCoral", Shape = Enum.PartType.Ball, Size = Vector3.new(2, 1.4, 2), Position = at(x, y, 1.9), Material = Enum.Material.Slate, Color = Color3.fromRGB(230, 150, 160), CanCollide = false })
 		return true
 	end
 	return false
@@ -1930,9 +2007,20 @@ function House.decorate(world)
 				end)
 			else
 				-- a chair with a bunch of balloons tied to it
-				deco({ Name = "PartyChair", Size = Vector3.new(1.6, 2.4, 1.6), Position = base + Vector3.new(0, 1.2, 0), Color = Color3.fromRGB(120, 80, 160) })
+				local CHAIR = Color3.fromRGB(120, 80, 160)
+				deco({ Name = "PartyChair", Size = Vector3.new(1.6, 0.25, 1.6), Position = base + Vector3.new(0, 1.5, 0), Color = CHAIR })
+				deco({ Name = "ChairBack", Size = Vector3.new(1.6, 1.6, 0.2), Position = base + Vector3.new(0, 2.4, 0.7), Color = CHAIR })
+				for _, lx in ipairs({ -0.65, 0.65 }) do
+					for _, lz in ipairs({ -0.65, 0.65 }) do
+						deco({ Name = "ChairLeg", Size = Vector3.new(0.18, 1.4, 0.18), Position = base + Vector3.new(lx, 0.7, lz), Color = CHAIR })
+					end
+				end
+				local knot = base + Vector3.new(0, 3.2, 0.7)
 				for i = 0, 2 do
-					deco({ Name = "ChairBalloon", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.9, 1.6), Position = base + Vector3.new(math.cos(i * 2.1) * 0.8, 6 + i * 0.5, math.sin(i * 2.1) * 0.8), Color = DECOR[(i + r + 2) % #DECOR + 1] })
+					local bp = base + Vector3.new(math.cos(i * 2.1) * 0.8, 6 + i * 0.5, math.sin(i * 2.1) * 0.8)
+					deco({ Name = "ChairBalloon", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.9, 1.6), Position = bp, Color = DECOR[(i + r + 2) % #DECOR + 1] })
+					local bottom = bp - Vector3.new(0, 0.95, 0)
+					deco({ Name = "BalloonString", Size = Vector3.new(0.06, 0.06, (bottom - knot).Magnitude), CFrame = CFrame.lookAt((bottom + knot) / 2, bottom), Color = Color3.fromRGB(235, 235, 235) })
 				end
 			end
 		end

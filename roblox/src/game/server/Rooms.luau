@@ -150,7 +150,9 @@ end }
 
 PIECES.WaterTank = { size = Vector3.new(6, 9, 6), build = function(f, b)
 	add(f, b, { size = Vector3.new(8, 5.5, 5.5), at = Vector3.new(0, 4, 0.8), rot = UP, shape = Enum.PartType.Cylinder, color = C(150, 160, 170), mat = METAL })
-	add(f, b, { size = Vector3.new(0.6, 0.6, T), at = Vector3.new(2.4, 7, 0), color = C(110, 120, 130), mat = METAL })
+	-- the pipe comes out of the wall and down into the top of the tank
+	add(f, b, { size = Vector3.new(0.6, 0.6, 3.4), at = Vector3.new(0, 8.4, 2.3), color = C(110, 120, 130), mat = METAL })
+	add(f, b, { size = Vector3.new(0.6, 0.7, 0.6), at = Vector3.new(0, 8.1, 0.8), color = C(110, 120, 130), mat = METAL })
 end }
 
 PIECES.Pipes = { size = Vector3.new(8, 3, 1), build = function(f, b)
@@ -219,6 +221,24 @@ PIECES.TaffyPuller = { size = Vector3.new(5, 7, 4), build = function(f, b)
 	end
 	add(f, b, { size = Vector3.new(2.6, 0.9, 0.9), at = Vector3.new(0, 5.8, 1.4), color = C(255, 150, 200), shape = Enum.PartType.Ball })
 end }
+
+-- a little plush animal (the Plushie Book's builder, without its sparkle),
+-- `height` studs tall, its feet at `cf` (facing -Z like the pieces)
+local function plush(f, cf, height, color, animal)
+	local ok, m = pcall(function()
+		return require(game:GetService("ReplicatedStorage").Shared.Plushies).build({ animal = animal or "bear", color = color }, cf, true, true)
+	end)
+	if not ok or not m then
+		return
+	end
+	local _, size = m:GetBoundingBox()
+	if size.Y > 0.1 then
+		m:ScaleTo(height / size.Y)
+	end
+	local bcf, bsize = m:GetBoundingBox()
+	m:PivotTo(m:GetPivot() + (cf.Position + Vector3.new(0, bsize.Y / 2, 0) - bcf.Position))
+	m.Parent = f
+end
 
 PIECES.GummyBear = { size = Vector3.new(4, 7, 4), build = function(f, b)
 	-- a big gummy bear on a stand, facing the room: shiny candy body, a paler
@@ -377,6 +397,11 @@ end }
 
 PIECES.Curtain = { size = Vector3.new(6, 8, 1), build = function(f, b)
 	add(f, b, { size = Vector3.new(6, 0.2, 0.2), at = Vector3.new(0, 8, 0), color = C(180, 185, 190), mat = METAL })
+	-- a curtain on a stand: a pole at each end, with feet
+	for _, x in ipairs({ -3, 3 }) do
+		add(f, b, { size = Vector3.new(0.15, 8, 0.15), at = Vector3.new(x, 4, 0), color = C(180, 185, 190), mat = METAL })
+		add(f, b, { size = Vector3.new(0.2, 0.15, 1.4), at = Vector3.new(x, 0.08, 0), color = C(180, 185, 190), mat = METAL })
+	end
 	for i = -2, 2 do
 		add(f, b, { size = Vector3.new(1.3, 6.5, 0.12), at = Vector3.new(i * 1.15, 4.6, (i % 2) * 0.2), color = C(150, 200, 180), mat = Enum.Material.Fabric })
 	end
@@ -437,6 +462,11 @@ end }
 
 PIECES.RadioDesk = { size = Vector3.new(5, 6, 3), build = function(f, b)
 	add(f, b, { size = Vector3.new(4.5, 0.3, 2.2), at = Vector3.new(0, 3, 1.8), color = C(110, 80, 55), mat = WOOD })
+	for _, x in ipairs({ -2, 2 }) do
+		for _, z in ipairs({ 0.9, 2.7 }) do
+			add(f, b, { size = Vector3.new(0.25, 2.85, 0.25), at = Vector3.new(x, 1.43, z), color = C(110, 80, 55), mat = WOOD })
+		end
+	end
 	add(f, b, { size = Vector3.new(2.6, 1.5, 1.4), at = Vector3.new(0, 3.9, 2), color = C(60, 70, 60), mat = METAL })
 	for i = -1, 1 do
 		glow(add(f, b, { size = Vector3.new(0.3, 0.3, 0.1), at = Vector3.new(i * 0.6, 4.1, 1.28), shape = Enum.PartType.Ball, color = i == 0 and C(255, 60, 60) or C(80, 255, 120), mat = NEON }), C(80, 255, 120), 4, 0.5)
@@ -503,7 +533,7 @@ PIECES.WaterPool = { size = Vector3.new(8, 1, 8), build = function(f, b)
 	for i = -1, 1, 2 do
 		add(f, b, { size = Vector3.new(T, 0.5, 0.4), at = Vector3.new(0, 0.25, i * (T * 0.35 + 0.2)), color = C(95, 100, 110), mat = Enum.Material.Slate })
 	end
-	add(f, b, { size = Vector3.new(0.9, 0.5, 0.25), at = Vector3.new(1.4, 0.3, 0.4), color = C(255, 140, 40) })
+	require(script.Parent.Fish).make(f, b * CFrame.new(1.4, 0.35, 0.4) * CFrame.Angles(0, 0.8, 0), C(255, 140, 40), 0.9)
 end }
 
 PIECES.Porthole = { size = Vector3.new(4, 4, 1), build = function(f, b)
@@ -561,10 +591,9 @@ PIECES.PrizeWall = { size = Vector3.new(7, 8, 2), build = function(f, b)
 	for row = 0, 2 do
 		add(f, b, { size = Vector3.new(6.6, 0.3, 1.4), at = Vector3.new(0, 1.2 + row * 2.3, T / 2 - 0.9), color = C(150, 100, 60), mat = WOOD })
 		for i = -2, 2 do
-			-- a plush prize: a round body and a round head in candy colours
+			-- a plush prize: a little bear, bunny, cat or dog in candy colors
 			local col = CANDY[(i + row * 2) % #CANDY + 1]
-			add(f, b, { size = Vector3.new(0.9, 0.9, 0.8), at = Vector3.new(i * 1.25, 1.85 + row * 2.3, T / 2 - 0.9), shape = Enum.PartType.Ball, color = col, mat = Enum.Material.Fabric })
-			add(f, b, { size = Vector3.new(0.7, 0.7, 0.7), at = Vector3.new(i * 1.25, 2.55 + row * 2.3, T / 2 - 0.9), shape = Enum.PartType.Ball, color = col, mat = Enum.Material.Fabric })
+			plush(f, b * CFrame.new(i * 1.25, 1.35 + row * 2.3, T / 2 - 0.9), 1.5, col, ({ "bear", "bunny", "cat", "dog" })[(i + row) % 4 + 1])
 		end
 	end
 	label(add(f, b, { size = Vector3.new(5, 1, 0.1), at = Vector3.new(0, 7.9, T / 2 - 0.45), color = C(40, 20, 50) }), Enum.NormalId.Front, "\u{2B50} PRIZES \u{2B50}", C(255, 210, 63))
@@ -622,7 +651,13 @@ PIECES.BumperCars = { size = Vector3.new(7, 3, 4), build = function(f, b)
 	for i, x in ipairs({ -1.8, 1.8 }) do
 		add(f, b, { size = Vector3.new(1.4, 3.2, 3.2), at = Vector3.new(x, 0.8, 0), shape = Enum.PartType.Cylinder, rot = UP, color = C(30, 30, 35) })
 		add(f, b, { size = Vector3.new(1.2, 2.8, 2.8), at = Vector3.new(x, 1.8, 0), shape = Enum.PartType.Cylinder, rot = UP, color = i == 1 and C(220, 40, 60) or C(80, 170, 230) })
-		add(f, b, { size = Vector3.new(0.15, 6, 0.15), at = Vector3.new(x, 5, 0.6), color = C(150, 150, 160), mat = METAL })
+		local col = i == 1 and C(220, 40, 60) or C(80, 170, 230)
+		add(f, b, { size = Vector3.new(1.8, 1.3, 0.35), at = Vector3.new(x, 2.8, 0.95), color = col })
+		add(f, b, { size = Vector3.new(1.4, 0.3, 1), at = Vector3.new(x, 2.35, 0.4), color = C(40, 40, 45) })
+		add(f, b, { size = Vector3.new(0.15, 0.9, 0.9), at = Vector3.new(x, 2.8, -0.6), rot = CFrame.Angles(0, math.rad(90), math.rad(60)), shape = Enum.PartType.Cylinder, color = C(30, 30, 30) })
+		add(f, b, { size = Vector3.new(2.6, 0.6, 0.5), at = Vector3.new(x, 0.9, -1.55), color = C(30, 30, 35) })
+		add(f, b, { size = Vector3.new(0.15, 6, 0.15), at = Vector3.new(x, 5, 1.35), color = C(150, 150, 160), mat = METAL })
+		glow(add(f, b, { size = Vector3.new(0.3, 0.3, 0.3), at = Vector3.new(x, 8, 1.35), shape = Enum.PartType.Ball, color = C(255, 230, 120), mat = NEON }), C(255, 220, 120), 4, 0.6)
 	end
 end }
 
@@ -676,6 +711,12 @@ PIECES.SchoolDesks = { size = Vector3.new(8, 4, 6), build = function(f, b)
 			add(f, b, { size = Vector3.new(2.4, 0.25, 1.6), at = Vector3.new(dx, 2.5, dz), color = C(176, 128, 78), mat = WOOD })
 			add(f, b, { size = Vector3.new(2.2, 2.4, 0.15), at = Vector3.new(dx, 1.2, dz - 0.7), color = C(120, 125, 132), mat = METAL })
 			add(f, b, { size = Vector3.new(1.4, 0.2, 1.2), at = Vector3.new(dx, 1.5, dz + 1.1), color = C(70, 110, 170) })
+			add(f, b, { size = Vector3.new(1.4, 1.2, 0.15), at = Vector3.new(dx, 2.2, dz + 1.65), color = C(70, 110, 170) })
+			for _, lx in ipairs({ -0.6, 0.6 }) do
+				for _, lz in ipairs({ 0.6, 1.6 }) do
+					add(f, b, { size = Vector3.new(0.12, 1.4, 0.12), at = Vector3.new(dx + lx, 0.7, dz + lz), color = C(120, 125, 132), mat = METAL })
+				end
+			end
 		end
 	end
 	add(f, b, { size = Vector3.new(0.8, 1.1, 0.2), at = Vector3.new(-2, 2.75, -1.6), color = C(250, 245, 230) }) -- a test paper
@@ -708,6 +749,7 @@ PIECES.BigBell = { size = Vector3.new(5, 8, 5), build = function(f, b)
 	add(f, b, { size = Vector3.new(0.5, 7, 0.5), at = Vector3.new(2.2, 3.5, 1), color = C(90, 70, 50), mat = WOOD })
 	add(f, b, { size = Vector3.new(5, 0.5, 0.5), at = Vector3.new(0, 7, 1), color = C(90, 70, 50), mat = WOOD })
 	local bell = add(f, b, { size = Vector3.new(3, 3.2, 3), at = Vector3.new(0, 5, 1), shape = Enum.PartType.Ball, color = C(205, 160, 60), mat = METAL, shine = 0.25 })
+	add(f, b, { size = Vector3.new(0.6, 0.5, 0.6), at = Vector3.new(0, 6.6, 1), color = C(90, 70, 50), mat = WOOD }) -- what it hangs from
 	add(f, b, { size = Vector3.new(3.6, 0.4, 3.6), at = Vector3.new(0, 3.6, 1), rot = UP, shape = Enum.PartType.Cylinder, color = C(205, 160, 60), mat = METAL })
 	noisy(bell, "Big bell", Config.SOUNDS.bell, 3)
 end }
@@ -748,6 +790,7 @@ end }
 
 PIECES.Candelabra = { size = Vector3.new(2, 4, 2), build = function(f, b)
 	add(f, b, { size = Vector3.new(0.3, 3, 0.3), at = Vector3.new(0, 1.5, 0), color = C(200, 170, 80), mat = METAL })
+	add(f, b, { size = Vector3.new(1.5, 0.15, 0.15), at = Vector3.new(0, 2.92, 0), color = C(200, 170, 80), mat = METAL }) -- the arms
 	for i = -1, 1 do
 		add(f, b, { size = Vector3.new(0.2, 0.8, 0.2), at = Vector3.new(i * 0.6, 3.3, 0), color = C(250, 245, 230) })
 		glow(add(f, b, { size = Vector3.new(0.25, 0.35, 0.25), at = Vector3.new(i * 0.6, 3.85, 0), shape = Enum.PartType.Ball, color = C(255, 200, 80), mat = NEON }), C(255, 190, 90), 6, 0.6)
@@ -799,10 +842,27 @@ PIECES.ToyBox = { size = Vector3.new(4, 4, 3), build = function(f, b)
 	add(f, b, { size = Vector3.new(3.4, 2, 2.2), at = Vector3.new(0, 1, 2), color = C(230, 80, 90) })
 	add(f, b, { size = Vector3.new(1.2, 1.2, 1.2), at = Vector3.new(-0.8, 2.6, 2), shape = Enum.PartType.Ball, color = C(61, 139, 255) })
 	add(f, b, { size = Vector3.new(1, 1, 1), at = Vector3.new(0.8, 2.5, 2), color = C(250, 210, 40) })
-	-- a rocking horse
-	add(f, b, { size = Vector3.new(2.6, 1.2, 0.8), at = Vector3.new(0, 2.2, -0.6), color = C(200, 150, 90), mat = WOOD })
-	add(f, b, { size = Vector3.new(0.8, 1.4, 0.7), at = Vector3.new(1.3, 3.1, -0.6), color = C(200, 150, 90), mat = WOOD })
-	add(f, b, { size = Vector3.new(3.2, 0.3, 0.4), at = Vector3.new(0, 0.3, -0.6), color = C(150, 90, 50), mat = WOOD })
+	-- a rocking horse: curved rockers, four legs, body, saddle, neck, head,
+	-- ears, eye, mane and tail
+	local HORSE, DARKW, MANE = C(200, 150, 90), C(150, 90, 50), C(90, 55, 35)
+	for _, z in ipairs({ -0.95, -0.25 }) do
+		add(f, b, { size = Vector3.new(1.6, 0.2, 0.15), at = Vector3.new(0, 0.12, z), color = DARKW, mat = WOOD })
+		add(f, b, { size = Vector3.new(1, 0.2, 0.15), at = Vector3.new(-1.2, 0.27, z), rot = CFrame.Angles(0, 0, math.rad(-20)), color = DARKW, mat = WOOD })
+		add(f, b, { size = Vector3.new(1, 0.2, 0.15), at = Vector3.new(1.2, 0.27, z), rot = CFrame.Angles(0, 0, math.rad(20)), color = DARKW, mat = WOOD })
+		for _, x in ipairs({ -0.8, 0.8 }) do
+			add(f, b, { size = Vector3.new(0.22, 1.2, 0.22), at = Vector3.new(x, 0.8, z), color = HORSE, mat = WOOD })
+		end
+	end
+	add(f, b, { size = Vector3.new(2.2, 0.9, 0.75), at = Vector3.new(0, 1.75, -0.6), color = HORSE, mat = WOOD })
+	add(f, b, { size = Vector3.new(0.7, 0.12, 0.8), at = Vector3.new(-0.1, 2.25, -0.6), color = C(200, 40, 50) })
+	add(f, b, { size = Vector3.new(0.55, 1.2, 0.5), at = Vector3.new(1.05, 2.5, -0.6), rot = CFrame.Angles(0, 0, math.rad(-25)), color = HORSE, mat = WOOD })
+	add(f, b, { size = Vector3.new(1, 0.55, 0.5), at = Vector3.new(1.5, 3.05, -0.6), color = HORSE, mat = WOOD })
+	for _, z in ipairs({ -0.75, -0.45 }) do
+		add(f, b, { size = Vector3.new(0.14, 0.32, 0.12), at = Vector3.new(1.25, 3.42, z), color = HORSE, mat = WOOD })
+	end
+	add(f, b, { size = Vector3.new(0.1, 0.1, 0.52), at = Vector3.new(1.65, 3.15, -0.6), color = C(20, 20, 20) })
+	add(f, b, { size = Vector3.new(0.14, 1.1, 0.2), at = Vector3.new(0.82, 2.7, -0.6), rot = CFrame.Angles(0, 0, math.rad(-25)), color = MANE })
+	add(f, b, { size = Vector3.new(0.18, 0.8, 0.18), at = Vector3.new(-1.25, 1.65, -0.6), rot = CFrame.Angles(0, 0, math.rad(30)), color = MANE })
 end }
 
 PIECES.Easels = { size = Vector3.new(6, 6, 2), build = function(f, b)
@@ -826,20 +886,28 @@ PIECES.DustSheets = { size = Vector3.new(6, 5, 4), build = function(f, b)
 end }
 
 PIECES.Dolls = { size = Vector3.new(5, 3, 2), build = function(f, b)
-	add(f, b, { size = Vector3.new(4.6, 0.3, 1.4), at = Vector3.new(0, 2.6, 2.6), color = C(150, 100, 60), mat = WOOD })
+	add(f, b, { size = Vector3.new(4.6, 0.3, 1.4), at = Vector3.new(0, 2.6, 3.3), color = C(150, 100, 60), mat = WOOD })
 	for i = -1, 1 do
 		local col = CANDY[i + 3]
-		add(f, b, { size = Vector3.new(0.7, 1, 0.5), at = Vector3.new(i * 1.4, 3.3, 2.6), color = col, mat = Enum.Material.Fabric })
-		add(f, b, { size = Vector3.new(0.6, 0.6, 0.6), at = Vector3.new(i * 1.4, 4.1, 2.6), shape = Enum.PartType.Ball, color = C(250, 220, 200) })
+		add(f, b, { size = Vector3.new(0.7, 1, 0.5), at = Vector3.new(i * 1.4, 3.3, 3.3), color = col, mat = Enum.Material.Fabric })
+		add(f, b, { size = Vector3.new(0.6, 0.6, 0.6), at = Vector3.new(i * 1.4, 4.1, 3.3), shape = Enum.PartType.Ball, color = C(250, 220, 200) })
 	end
 end }
 
 PIECES.Crib = { size = Vector3.new(5, 4, 3), build = function(f, b)
-	add(f, b, { size = Vector3.new(4.4, 0.3, 2.6), at = Vector3.new(0, 1.6, 1.8), color = C(240, 240, 245) })
-	for i = 0, 6 do
-		add(f, b, { size = Vector3.new(0.15, 2.4, 0.15), at = Vector3.new(-2.1 + i * 0.7, 2.4, 0.5), color = C(240, 240, 245) })
+	-- a cot on four posts: a mattress, bars front and back, rails along the top
+	local WHITE = C(240, 240, 245)
+	add(f, b, { size = Vector3.new(4.4, 0.3, 2.6), at = Vector3.new(0, 1.6, 1.8), color = WHITE })
+	for _, z in ipairs({ 0.5, 3.1 }) do
+		for i = 0, 6 do
+			add(f, b, { size = Vector3.new(0.15, 2.4, 0.15), at = Vector3.new(-2.1 + i * 0.7, 2.4, z), color = WHITE })
+		end
+		add(f, b, { size = Vector3.new(4.6, 0.2, 0.2), at = Vector3.new(0, 3.6, z), color = WHITE })
+		for _, x in ipairs({ -2.25, 2.25 }) do
+			add(f, b, { size = Vector3.new(0.3, 3.8, 0.3), at = Vector3.new(x, 1.9, z), color = WHITE })
+		end
 	end
-	add(f, b, { size = Vector3.new(1.2, 1.2, 1.2), at = Vector3.new(0, 2.3, 2), shape = Enum.PartType.Ball, color = C(160, 110, 70), mat = Enum.Material.Fabric })
+	plush(f, b * CFrame.new(0, 1.75, 2), 1.4, C(160, 110, 70), "bear")
 end }
 
 PIECES.Clocks = { size = Vector3.new(4, 8, 2), build = function(f, b)
@@ -865,7 +933,9 @@ end }
 PIECES.Drums = { size = Vector3.new(5, 4, 3), build = function(f, b)
 	add(f, b, { size = Vector3.new(2, 2, 2), at = Vector3.new(-1, 1, 1.6), rot = CFrame.Angles(0, math.rad(90), 0), shape = Enum.PartType.Cylinder, color = C(200, 40, 50) })
 	add(f, b, { size = Vector3.new(0.8, 1.4, 1.4), at = Vector3.new(0.8, 2.4, 1.2), rot = UP, shape = Enum.PartType.Cylinder, color = C(200, 40, 50) })
+	add(f, b, { size = Vector3.new(0.12, 2, 0.12), at = Vector3.new(0.8, 1, 1.2), color = C(150, 150, 160), mat = METAL }) -- the tom's stand
 	add(f, b, { size = Vector3.new(0.1, 1.6, 1.6), at = Vector3.new(1.8, 3.6, 1.8), rot = UP, shape = Enum.PartType.Cylinder, color = C(220, 190, 80), mat = METAL })
+	add(f, b, { size = Vector3.new(0.1, 3.55, 0.1), at = Vector3.new(1.8, 1.78, 1.8), color = C(150, 150, 160), mat = METAL }) -- the cymbal's stand
 	-- a guitar on the wall
 	add(f, b, { size = Vector3.new(1.6, 2, 0.4), at = Vector3.new(-1.5, 5, T / 2 - 0.4), shape = Enum.PartType.Ball, color = C(190, 110, 40), mat = WOOD })
 	local neck = add(f, b, { size = Vector3.new(0.3, 2.6, 0.2), at = Vector3.new(-1.5, 7, T / 2 - 0.4), color = C(90, 60, 40), mat = WOOD })
@@ -1663,6 +1733,10 @@ local function buildChute(folder, world, map, busy, open)
 	if kind == "cannon" then
 		add(folder, basket, { size = Vector3.new(0.6, 5.4, 5.4), at = Vector3.new(0, 1.4, 0), rot = UP, shape = Enum.PartType.Cylinder, color = C(200, 40, 60) })
 		add(folder, basket, { size = Vector3.new(0.2, 4.8, 4.8), at = Vector3.new(0, 1.6, 0), rot = UP, shape = Enum.PartType.Cylinder, color = C(250, 240, 225), mat = Enum.Material.Fabric })
+		for k = 0, 3 do
+			local ang = k * math.pi / 2 + math.pi / 4
+			add(folder, basket, { size = Vector3.new(0.3, 1.3, 0.3), at = Vector3.new(math.cos(ang) * 2.3, 0.6, math.sin(ang) * 2.3), color = C(150, 150, 160), mat = METAL })
+		end
 	else
 		add(folder, basket, { size = Vector3.new(1.4, 4.2, 4.2), at = Vector3.new(0, 0.7, 0), rot = UP, shape = Enum.PartType.Cylinder, color = kind == "slide" and C(80, 170, 230) or C(190, 160, 110), mat = kind == "slide" and Enum.Material.SmoothPlastic or Enum.Material.Fabric })
 		for i = 1, 4 do

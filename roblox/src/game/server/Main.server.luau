@@ -2529,23 +2529,34 @@ do
 		end
 		local m = Instance.new("Model")
 		m.Name = "WindUpMouse"
-		local body = Instance.new("Part")
-		body.Shape = Enum.PartType.Ball
-		body.Size = Vector3.new(1.6, 1, 2)
-		body.Color = Color3.fromRGB(160, 160, 170)
-		body.Material = Enum.Material.Metal
-		body.Anchored, body.CanCollide, body.CanQuery = true, false, false
-		body.CFrame = CFrame.new(hrp.Position - Vector3.new(0, 2.4, 0))
-		body.Parent = m
-		local key = Instance.new("Part")
-		key.Size = Vector3.new(0.2, 0.8, 0.8)
-		key.Color = Color3.fromRGB(230, 190, 80)
-		key.Material = Enum.Material.Foil
-		key.Anchored, key.CanCollide, key.CanQuery = true, false, false
-		key.CFrame = body.CFrame * CFrame.new(0, 0.7, 0)
-		key.Parent = m
+		local start = hrp.Position - Vector3.new(0, 2.4, 0)
+		local to = clearRun(start, hrp.CFrame.LookVector, Config.MOUSE.run)
+		local face = (to - start) * Vector3.new(1, 0, 1)
+		local look = face.Magnitude > 0.1 and CFrame.lookAt(start, start + face) or CFrame.new(start)
+		-- a clockwork mouse facing where it will run: ears, eyes, a pink nose,
+		-- a tail and the winding key on its back
+		local function bit(size, off, col, mat, shape)
+			local p = Instance.new("Part")
+			p.Shape = shape or Enum.PartType.Ball
+			p.Size = size
+			p.Color = col
+			p.Material = mat or Enum.Material.SmoothPlastic
+			p.Anchored, p.CanCollide, p.CanQuery = true, false, false
+			p.CFrame = look * CFrame.new(off)
+			p.Parent = m
+			return p
+		end
+		local GREY = Color3.fromRGB(160, 160, 170)
+		local body = bit(Vector3.new(1.6, 1, 2), Vector3.zero, GREY, Enum.Material.Metal)
+		for _, s in ipairs({ -1, 1 }) do
+			bit(Vector3.new(0.7, 0.7, 0.12), Vector3.new(s * 0.45, 0.65, -0.55), GREY, Enum.Material.Metal)
+			bit(Vector3.new(0.45, 0.45, 0.08), Vector3.new(s * 0.45, 0.65, -0.62), Color3.fromRGB(255, 170, 190))
+			bit(Vector3.new(0.16, 0.16, 0.16), Vector3.new(s * 0.3, 0.25, -0.85), Color3.fromRGB(20, 20, 25))
+		end
+		bit(Vector3.new(0.22, 0.2, 0.2), Vector3.new(0, 0, -1.02), Color3.fromRGB(255, 130, 160))
+		bit(Vector3.new(0.08, 0.08, 1.4), Vector3.new(0, 0.1, 1.6), Color3.fromRGB(255, 170, 190), nil, Enum.PartType.Block)
+		bit(Vector3.new(0.2, 0.8, 0.8), Vector3.new(0, 0.7, 0.2), Color3.fromRGB(230, 190, 80), Enum.Material.Foil, Enum.PartType.Block)
 		m.PrimaryPart = body
-		local to = clearRun(body.Position, hrp.CFrame.LookVector, Config.MOUSE.run)
 		Effects.sound(body.Position, "noise", 0.8)
 		decoy(m, body.Position, to, Config.MOUSE.seconds)
 		say("info", plr.DisplayName .. " let a wind-up mouse go - squeak squeak! The host chases it.")
@@ -2604,13 +2615,27 @@ do
 			v.CFrame = fullCF - Vector3.new(0, fullSize.Y / 2, 0)
 			game:GetService("TweenService"):Create(v, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, i * 0.05), { Size = fullSize, CFrame = fullCF }):Play()
 			if snapper and i == 4 then
-				local head = Instance.new("Part")
-				head.Shape = Enum.PartType.Ball
-				head.Size = Vector3.new(1.4, 1.4, 1.4)
-				head.Position = fullCF.Position + Vector3.new(0, fullSize.Y / 2 + 0.6, 0)
-				head.Color = Color3.fromRGB(220, 60, 80)
-				head.Anchored, head.CanCollide, head.CanQuery = true, false, false
-				head.Parent = m
+				-- the snapper: a red head with an open mouth and white teeth, two
+				-- leaves under it; it pops open once its stem has grown
+				local top = fullCF.Position + Vector3.new(0, fullSize.Y / 2 + 0.6, 0)
+				local function snap(size, off, col, shape)
+					local p = Instance.new("Part")
+					p.Shape = shape or Enum.PartType.Ball
+					p.Size = size
+					p.CFrame = CFrame.new(top) * CFrame.new(off)
+					p.Color = col
+					p.Anchored, p.CanCollide, p.CanQuery = true, false, false
+					p.Transparency = 1
+					p.Parent = m
+					game:GetService("TweenService"):Create(p, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.5), { Transparency = 0 }):Play()
+				end
+				snap(Vector3.new(1.4, 1.2, 1.4), Vector3.new(0, 0.1, 0), Color3.fromRGB(220, 60, 80))
+				snap(Vector3.new(1, 0.45, 0.6), Vector3.new(0, 0, -0.5), Color3.fromRGB(70, 15, 25))
+				for k = -1, 1, 2 do
+					snap(Vector3.new(0.14, 0.2, 0.1), Vector3.new(k * 0.25, 0.18, -0.72), Color3.new(1, 1, 1), Enum.PartType.Block)
+					snap(Vector3.new(0.14, 0.2, 0.1), Vector3.new(k * 0.25, -0.18, -0.72), Color3.new(1, 1, 1), Enum.PartType.Block)
+					snap(Vector3.new(1, 0.15, 0.5), Vector3.new(k * 0.6, -0.7, 0), Color3.fromRGB(70, 160, 70))
+				end
 			end
 		end
 		m.Parent = world.root
@@ -2621,7 +2646,8 @@ do
 				-- the vines sink back into the floor
 				for _, v in ipairs(m:GetChildren()) do
 					if v:IsA("BasePart") then
-						game:GetService("TweenService"):Create(v, TweenInfo.new(0.4), { Size = Vector3.new(v.Size.X, 0.1, v.Size.Z), Transparency = 1 }):Play()
+						-- shrinking down to the floor, not to its middle
+						game:GetService("TweenService"):Create(v, TweenInfo.new(0.4), { Size = Vector3.new(v.Size.X, 0.1, v.Size.Z), CFrame = v.CFrame - Vector3.new(0, v.Size.Y / 2, 0), Transparency = 1 }):Play()
 					end
 				end
 				game:GetService("Debris"):AddItem(m, 0.45)
