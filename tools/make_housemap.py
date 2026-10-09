@@ -476,12 +476,12 @@ def plan_school():
               (2, 3, 8, 3, 'shelf'), (2, 6, 8, 6, 'shelf'), (12, 2, 18, 2, 'shelf'), (12, 7, 14, 7, 'desk'),
               (22, 3, 23, 4, 'table'), (33, 3, 35, 4, 'table'), (37, 7, 38, 7, 'desk')]:
         p.furnish(*f)
-    p.floors = [(1, 1, 9, 8, 'boards', 'Lost Property'), (11, 1, 19, 8, 'carpet', "Head's Office"), (21, 1, 29, 8, 'wood', 'Front Lobby'),
+    p.floors = [(1, 1, 9, 8, 'boards', 'Lost and Found'), (11, 1, 19, 8, 'carpet', "Principal's Office"), (21, 1, 29, 8, 'wood', 'Front Lobby'),
                 (31, 1, 38, 8, 'green', 'Staff Room'), (1, 10, 38, 13, 'greylino', 'Long Hallway'), (1, 15, 9, 21, 'tiles', 'Cafeteria'),
                 (1, 23, 9, 28, 'tiles', 'Kitchen'), (11, 15, 29, 28, 'wood', 'Assembly Hall'), (31, 15, 38, 21, 'purple', 'Music Room'),
                 (31, 23, 38, 28, 'boards', 'Art Room')]
     p.fixed = [dict(id='door', kind='door', x=25, y=0),
-               dict(id='L1', kind='lock', x=15, y=9, name="Head's Office door"), dict(id='L2', kind='lock', x=20, y=5, name='Front Lobby door'),
+               dict(id='L1', kind='lock', x=15, y=9, name="Principal's Office door"), dict(id='L2', kind='lock', x=20, y=5, name='Front Lobby door'),
                dict(id='cage', kind='cage', x=12, y=27),
                dict(id='v1a', kind='vent', pair='v1', x=9, y=20), dict(id='v1b', kind='vent', pair='v1', x=11, y=20),
                dict(id='v2a', kind='vent', pair='v2', x=29, y=16), dict(id='v2b', kind='vent', pair='v2', x=31, y=16),
@@ -521,7 +521,7 @@ def plan_school2():
     p.floors = [(1, 1, 9, 8, 'tiles', 'Science Lab'), (11, 1, 19, 8, 'greylino', 'Computer Room'), (21, 1, 29, 8, 'boards', 'Upper Stairs'),
                 (31, 1, 38, 8, 'carpet', 'Trophy Room'), (1, 10, 9, 18, 'wood', 'Classroom 2B'), (11, 10, 29, 18, 'green', 'Library'),
                 (31, 10, 38, 18, 'wood', 'Classroom 2C'), (1, 20, 9, 28, 'boards', 'Art Room'), (11, 20, 19, 28, 'boards', 'Landing'),
-                (21, 20, 29, 28, 'tiles', 'Washrooms'), (31, 20, 38, 28, 'boards', "Caretaker's Room")]
+                (21, 20, 29, 28, 'tiles', 'Restrooms'), (31, 20, 38, 28, 'boards', "Caretaker's Room")]
     p.tall = {'Library'}
     p.loft = dict(x0=11, y0=10, x1=29, y1=12, h=7, stair_x=28, stair_y0=13, stair_y1=16)
     p.fixed = [dict(id='door', kind='door', x=25, y=0),
@@ -610,7 +610,7 @@ def plan_midway():
     p.floors = [(1, 1, 9, 8, 'boards', 'Ring-Toss Stall'), (11, 1, 19, 8, 'purple', "Fortune Teller's Tent"), (21, 1, 29, 8, 'boards', 'Main Gate'),
                 (31, 1, 38, 8, 'carpet', 'Prize Tent'), (1, 10, 9, 18, 'boards', 'Popcorn Stand'), (11, 10, 29, 18, 'wood', 'Carousel'),
                 (31, 10, 38, 18, 'boards', 'Duck Pond'), (1, 20, 9, 28, 'greylino', 'Hall of Mirrors'), (11, 20, 29, 28, 'boards', 'Ticket Booth'),
-                (31, 20, 38, 28, 'boards', 'Toffee Apple Stall')]
+                (31, 20, 38, 28, 'boards', 'Candy Apple Stall')]
     p.fixed = [dict(id='door', kind='door', x=25, y=0),
                dict(id='L1', kind='lock', x=15, y=9, name="Fortune Teller's door"), dict(id='L2', kind='lock', x=20, y=5, name='Main Gate'),
                dict(id='cage', kind='cage', x=12, y=27),
@@ -732,7 +732,7 @@ def plan_mainhall():
     p = aquarium(plan_midway, 'mainhall_a', 'Sunken Aquarium - Main Hall', 1, '',
                  {'Ring-Toss Stall': 'Seahorse Room', "Fortune Teller's Tent": "Keeper's Office", 'Main Gate': 'Front Doors',
                   'Prize Tent': 'Gift Shop', 'Popcorn Stand': 'Cafe', 'Carousel': 'Great Tank Hall', 'Duck Pond': 'Touch Pools',
-                  'Hall of Mirrors': 'Shark Tunnel', 'Ticket Booth': 'Entrance Hall', 'Toffee Apple Stall': 'Jellyfish Room'},
+                  'Hall of Mirrors': 'Shark Tunnel', 'Ticket Booth': 'Entrance Hall', 'Candy Apple Stall': 'Jellyfish Room'},
                  {'L1': "Keeper's door", 'L2': 'Front Doors'},
                  {'stall': 'tank', 'carousel': 'bigtank', 'counter': 'counter'})
     # the Shark Tunnel: a winding glass tunnel (its own walls, not the Hall of Mirrors')
@@ -746,7 +746,7 @@ def plan_deepsea():
     return aquarium(plan_bigtop, 'deepsea_a', 'Sunken Aquarium - Deep Sea', 2, 'Up to the Rooftop Pools',
                     {"Ringmaster's Wagon": 'Submarine Bay', "Juggler's Room": 'Research Lab', 'Funhouse Stairs': 'Pump Stairs',
                      'Clown Car Garage': 'Diving Locker', 'Costume Wagon': 'Kelp Forest', 'The Ring': 'Whale Skeleton Hall',
-                     'Trapeze Nets': 'Bubble Vents', 'Cannon Deck': 'Pipe Room', 'Backstage': 'Deep Sea Lift',
+                     'Trapeze Nets': 'Bubble Vents', 'Cannon Deck': 'Pipe Room', 'Backstage': 'Deep Sea Elevator',
                      'Band Stand': 'Anglerfish Den', "Strongman's Gym": 'Coral Cave'},
                     {'L1': 'Submarine Bay hatch', 'L2': 'Pump Stairs door'},
                     {'car': 'sub', 'seats': 'bones', 'stage': 'coral'})
@@ -965,7 +965,7 @@ def add_closets(p):
         if n == 0:
             p.fixed.append(dict(id='B1', kind='lock', bonus=True, name='Store Room door', x=door[0], y=door[1], ix=mid[0], iy=mid[1]))
         else:
-            p.fixed.append(dict(id='B2', kind='lock', bonus=True, blocked=True, name='Junk Cupboard door', x=door[0], y=door[1], ix=mid[0], iy=mid[1]))
+            p.fixed.append(dict(id='B2', kind='lock', bonus=True, blocked=True, name='Junk Closet door', x=door[0], y=door[1], ix=mid[0], iy=mid[1]))
         p.closets += inside
         # the host's patrol points never inside: moved just outside the door
         out = (door[0] + (door[0] - mid[0]), door[1])

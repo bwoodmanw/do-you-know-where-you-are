@@ -1218,6 +1218,16 @@ charGrid.CellSize = UDim2.fromOffset(72, 64)
 charGrid.CellPadding = UDim2.fromOffset(6, 0)
 charGrid.Parent = charRow
 local selected = Config.SKILLS[1].id
+-- the owner's test buttons: jump the shown character to a level (only you see them)
+if game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId then
+	local testRow = frame(chars, { Size = UDim2.fromOffset(240, 34), Position = UDim2.fromOffset(10, 514), BackgroundTransparency = 1, ZIndex = 11 })
+	label(testRow, { Size = UDim2.fromOffset(54, 30), Position = UDim2.fromOffset(0, 2), Text = "\u{1F9EA} Lv", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 12 })
+	for i, lv in ipairs({ 1, 5, 10, 15, 20 }) do
+		button(testRow, tostring(lv), { Size = UDim2.fromOffset(34, 30), Position = UDim2.fromOffset(56 + (i - 1) * 37, 2), BackgroundColor3 = Color3.fromRGB(110, 70, 30), ZIndex = 12 }, function()
+			remotes:WaitForChild("OwnerSetLevel"):FireServer(selected, lv)
+		end)
+	end
+end
 local charBtns = {}
 for _, sk in ipairs(Config.SKILLS) do
 	charBtns[sk.id] = button(charRow, (Config.PORTRAITS[sk.id] or 0) > 0 and "" or sk.icon, { BackgroundColor3 = sk.color, ZIndex = 12 }, function()
@@ -1648,10 +1658,10 @@ do
 		ZIndex = 12,
 		Text = "\u{1F3E0} You were dropped at a party. It was a trick! Escape the floor before the host catches you - and before the timer runs out.\n\n"
 			.. "\u{1F465} The party leader picks the floor, difficulty and Giggly or Spooky. Everyone picks a character and presses \u{25B6} Play when ready.\n\n"
-			.. "\u{1F388} Pop balloons (E) to learn the 3-colour door code - some are tricks. Brainy, Glow and Bramble learn it a faster way. Tinker can pick the big door's keypad (F) for one colour.\n\n"
+			.. "\u{1F388} Pop balloons (E) to learn the 3-color door code - some are tricks. Brainy, Glow and Bramble learn it a faster way. Tinker can pick the big door's keypad (F) for one color.\n\n"
 			.. "\u{1F511} Locked doors: find the key in a drawer, box or coat - or Tinker picks the lock (F).\n"
 			.. "\u{1F6A7} Blocked doorways: Muscle shoves the junk (E), or anyone plants a \u{1F389} Confetti Cannon (F). Cannons belong to the whole team - but the BOOM brings the host!\n"
-			.. "\u{1F381} The Store Room and the Junk Cupboard hide a bonus present - 20 to 60 points for everyone in the game!\n\n"
+			.. "\u{1F381} The Store Room and the Junk Closet hide a bonus present - 20 to 60 points for everyone in the game!\n\n"
 			.. "\u{1F3C3} Run with Shift or the Run button (it uses stamina).\n"
 			.. "\u{1F648} Hide where you see a \u{1F648} - each fits 1 to 3. Press Space to come out.\n"
 			.. "\u{1F573} Crawl through vents to the next room - the host can't follow.\n\n"

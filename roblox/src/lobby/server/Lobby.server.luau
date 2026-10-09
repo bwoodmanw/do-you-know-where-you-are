@@ -1007,6 +1007,31 @@ do
 	end)
 end
 
+-- the owner's test button: set a character's level (its XP) to try the
+-- ladder and the level-10 / level-20 powers. Only the experience's owner.
+do
+	local OwnerSetLevel = remote("OwnerSetLevel") -- (skill, level)
+	OwnerSetLevel.OnServerEvent:Connect(function(plr, skill, level)
+		if not (game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId) then
+			return
+		end
+		local data = Profile.get(plr)
+		local known = false
+		for _, sk in ipairs(Config.SKILLS) do
+			if sk.id == skill then
+				known = true
+			end
+		end
+		if not data or not known or typeof(level) ~= "number" or level % 1 ~= 0 or level < 1 or level > Progress.MAX_LEVEL then
+			return
+		end
+		data.xp[skill] = Progress.LEVEL_XP[level]
+		Profile.publish(plr)
+		Profile.save(plr)
+		Notice:FireClient(plr, "\u{1F9EA} Test: " .. skill .. " is now level " .. level .. ". Pick its upgrades in the ladder.")
+	end)
+end
+
 -- the - button: a boost bought with points goes back for its full price
 SellBoost.OnServerEvent:Connect(function(plr, id)
 	local boost = typeof(id) == "string" and Progress.BOOSTS[id]

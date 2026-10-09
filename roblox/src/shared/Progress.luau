@@ -162,7 +162,7 @@ local SPECIAL = {
 	tinker = {
 		[3] = {
 			{ id = "fingers", name = "Quick Fingers", say = "Pick locked doors 15% faster", mods = { holdMult = 0.85 } },
-			{ id = "lucky", name = "Lucky Guess", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
+			{ id = "lucky", name = "Lucky Guess", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[5] = {
 			{ id = "master", name = "Handy", say = "Everything you hold is 15% faster", mods = { holdMult = 0.85 } },
@@ -201,7 +201,7 @@ local SPECIAL = {
 			{ id = "dash19", name = "Quick Dash", say = "Run 5% faster", mods = { runMult = 1.05 } },
 		},
 		[20] = {
-			{ id = "mastertinker20", name = "Master Tinker", say = "Picking the big door's keypad shows the team two colours", mods = { p20 = "mastertinker" } },
+			{ id = "mastertinker20", name = "Master Tinker", say = "Picking the big door's keypad shows the team two colors", mods = { p20 = "mastertinker" } },
 			{ id = "boots20", name = "Rocket Boots", say = "Run 15% faster", mods = { runMult = 1.15 } },
 		},
 	},
@@ -256,7 +256,7 @@ local SPECIAL = {
 	brainy = {
 		[3] = {
 			{ id = "hints", name = "Bonus Hint", say = "+1 free clue for the team", mods = { clues = 1 } },
-			{ id = "trick", name = "Trick Spotter", say = "Trick balloons look grey and droopy to your whole team", mods = { trickSight = true } },
+			{ id = "trick", name = "Trick Spotter", say = "Trick balloons look gray and droopy to your whole team", mods = { trickSight = true } },
 		},
 		[5] = {
 			{ id = "speedread", name = "Quick Reader", say = "Read and use things 20% faster", mods = { holdMult = 0.8 } },
@@ -295,7 +295,7 @@ local SPECIAL = {
 			{ id = "quiet19", name = "Library Voice", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
 		},
 		[20] = {
-			{ id = "photo20", name = "Photographic Memory", say = "Your first Think! each game also shows one colour of the door code (not on Nightmare)", mods = { p20 = "photo" } },
+			{ id = "photo20", name = "Photographic Memory", say = "Your first Think! each game also shows one color of the door code (not on Nightmare)", mods = { p20 = "photo" } },
 			{ id = "bigbrain20", name = "Big Brain", say = "Think! shows the next two steps", mods = { p20 = "bigbrain" } },
 		},
 	},
@@ -348,7 +348,7 @@ local SPECIAL = {
 	glow = {
 		[3] = {
 			{ id = "bright", name = "Brighter Bulb", say = "Your light reaches a bit further", mods = { glowRange = 28 } },
-			{ id = "secrets", name = "Secret Seeker", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
+			{ id = "secrets", name = "Secret Seeker", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[5] = {
 			{ id = "sun", name = "Bright Beam", say = "Your light reaches further", mods = { glowRange = 32 } },
@@ -376,7 +376,7 @@ local SPECIAL = {
 		},
 		[15] = {
 			{ id = "flare15", name = "Longer Flare", say = "Flare lasts 12 s", mods = { flareTime = 12 } },
-			{ id = "secret15", name = "Secret Seeker", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
+			{ id = "secret15", name = "Secret Seeker", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[17] = {
 			{ id = "quick17", name = "Bright Spark", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -490,7 +490,7 @@ local SPECIAL = {
 		},
 		[5] = {
 			{ id = "camo", name = "Leafy", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
-			{ id = "bloom", name = "Bloom", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
+			{ id = "bloom", name = "Bloom", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[7] = {
 			{ id = "listen", name = "Good Listener", say = "Ask the plant 20% faster", mods = { holdMult = 0.8 } },
@@ -514,7 +514,7 @@ local SPECIAL = {
 		},
 		[15] = {
 			{ id = "vine15", name = "Bramble Wall", say = "Vines last 10 s", mods = { vineTime = 10 } },
-			{ id = "bloom15", name = "Bloom", say = "Your team starts knowing one colour of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
+			{ id = "bloom15", name = "Bloom", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[17] = {
 			{ id = "quick17", name = "Spring Growth", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
@@ -525,7 +525,7 @@ local SPECIAL = {
 			{ id = "thicket19", name = "Thicket", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
 		},
 		[20] = {
-			{ id = "forest20", name = "Forest Friend", say = "Your team starts knowing one colour of the code, and the big plant answers twice as fast", mods = { revealOne = true, holdMult = 0.5 } },
+			{ id = "forest20", name = "Forest Friend", say = "Your team starts knowing one color of the code, and the big plant answers twice as fast", mods = { revealOne = true, holdMult = 0.5 } },
 			{ id = "overgrowth20", name = "Overgrowth", say = "Vines grow across two doorways at once", mods = { p20 = "overgrowth" } },
 		},
 	},

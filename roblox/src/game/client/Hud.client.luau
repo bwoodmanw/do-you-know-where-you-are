@@ -1013,7 +1013,7 @@ local function useSkill()
 			end
 			return "house"
 		end
-		local tips = { tinker = "Hold F at a locked door to pick it - no key needed. Once a game, hold F at the big door's keypad to learn a colour.", brainy = "Find the twisty invitation in the " .. roomOfObj("invite") .. " and press E to read it.",
+		local tips = { tinker = "Hold F at a locked door to pick it - no key needed. Once a game, hold F at the big door's keypad to learn a color.", brainy = "Find the twisty invitation in the " .. roomOfObj("invite") .. " and press E to read it.",
 			muscle = "Find the doorway heaped with junk and hold E to shove it clear.", glow = "Find the painted wall in the " .. roomOfObj("uv") .. " and press E to light it up.",
 			bramble = "Find the big plant in the " .. roomOfObj("plant") .. " and press E to ask it." }
 		local tip = tips[s] or "Walk up to things and press E."
@@ -1989,11 +1989,11 @@ end)
 do
 	local STEPS = {
 		"\u{1F388} Find the clue balloons and pop them: walk up and press E. Careful - some are tricks!",
-		"A real balloon shows a colour. Three colours = the code for the big exit door.",
+		"A real balloon shows a color. Three colors = the code for the big exit door.",
 		"\u{1F512} A locked door? Search drawers, boxes and coats for its key. Tinker can pick locks.",
 		"\u{1F47B} The host is out! Hold Shift to run, and press E at a \u{1F648} hiding place to hide.",
 		"Caught? Friends free you from the cage. Stuck? Press \u{1F4A1} Clue for a hint (it costs points).",
-		"\u{1F6AA} You know the code! Go to the big door and type the colours on the keypad.",
+		"\u{1F6AA} You know the code! Go to the big door and type the colors on the keypad.",
 	}
 	local box = frame(gui, { Size = UDim2.fromOffset(330, 116), Position = UDim2.new(0, 10, 0.3, 0), BackgroundColor3 = NIGHT, BackgroundTransparency = 0.15, Visible = false, ZIndex = 9 })
 	corner(box, 12)

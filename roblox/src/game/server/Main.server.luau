@@ -993,7 +993,7 @@ local function wirePrompts()
 					return
 				end
 				if plr:GetAttribute("Skill") ~= "tinker" then
-					return need(plr, "tinker", "Only Tinker can pick a keypad. Everyone else needs the colour code!")
+					return need(plr, "tinker", "Only Tinker can pick a keypad. Everyone else needs the color code!")
 				end
 				if state.padPicked then
 					return say("info", "The keypad has already been picked this game.", nil, plr)
@@ -1016,7 +1016,7 @@ local function wirePrompts()
 				quest(plr, "skill")
 				plr:SetAttribute("ToolkitReady", false)
 				Effects.burst(entry.keypad.Position, "pick")
-				say("reveal", "Click! Tinker picked the keypad: colour " .. k .. " is " .. colourWord(state.code[k]) .. "!")
+				say("reveal", "Click! Tinker picked the keypad: color " .. k .. " is " .. colourWord(state.code[k]) .. "!")
 				-- Master Tinker: a second colour too (never the last one)
 				if plr:GetAttribute("Power20") == "mastertinker" then
 					local more = {}
@@ -1029,7 +1029,7 @@ local function wirePrompts()
 						local k2 = more[math.random(1, #more)]
 						state.known[k2] = state.code[k2]
 						RoundState:SetAttribute("Known" .. k2, state.code[k2])
-						say("reveal", "Master Tinker: colour " .. k2 .. " is " .. colourWord(state.code[k2]) .. " too!")
+						say("reveal", "Master Tinker: color " .. k2 .. " is " .. colourWord(state.code[k2]) .. " too!")
 					end
 				end
 			end)
@@ -2125,7 +2125,7 @@ local function clueSteps()
 		else
 			for _, id in ipairs({ "b0", "b1", "b2" }) do
 				if o[id] and not o[id].popped and reachable(id) then
-					add(id, "Pop balloon " .. o[id].def.n .. " in the " .. roomOf(id) .. " - it shows a colour of the door code. Careful: some balloons are tricks!")
+					add(id, "Pop balloon " .. o[id].def.n .. " in the " .. roomOf(id) .. " - it shows a color of the door code. Careful: some balloons are tricks!")
 				end
 			end
 		end
@@ -2136,7 +2136,7 @@ local function clueSteps()
 	if not world.unlocked.L2 then
 		add(lockHint("L2"))
 	end
-	add("door", known and ("You know the colours! Use the keypad by the big door in the " .. roomOf("door") .. ".") or ("Try the keypad by the big door in the " .. roomOf("door") .. "."))
+	add("door", known and ("You know the colors! Use the keypad by the big door in the " .. roomOf("door") .. ".") or ("Try the keypad by the big door in the " .. roomOf("door") .. "."))
 	return list, skills, lockHint
 end
 
@@ -2510,7 +2510,7 @@ do
 				once["photo" .. plr.UserId] = true
 				local k = revealAColour()
 				if k then
-					say("reveal", "\u{1F4F8} Brainy remembers: colour " .. k .. " of the code is " .. colourWord(state.code[k]) .. "!")
+					say("reveal", "\u{1F4F8} Brainy remembers: color " .. k .. " of the code is " .. colourWord(state.code[k]) .. "!")
 				end
 			end
 			return true
@@ -3513,7 +3513,7 @@ function round.start()
 					end
 				end
 			end
-			say("info", "\u{1F9E0} Brainy spotted the trick balloons - they look grey and droopy. Pop the bright ones!")
+			say("info", "\u{1F9E0} Brainy spotted the trick balloons - they look gray and droopy. Pop the bright ones!")
 		end
 		if team.longRead and world.objects.invite and world.objects.invite.prompt then
 			-- Long Read: the invitation can be read from twice as far
@@ -3565,7 +3565,7 @@ function round.start()
 			end
 		end
 		if reveals > 0 or bonusClues > 0 then
-			say("info", (reveals > 0 and "Your upgrades showed a colour of the code! " or "") .. (bonusClues > 0 and ("+" .. bonusClues .. " free " .. (bonusClues == 1 and "clue" or "clues") .. " from your upgrades.") or ""))
+			say("info", (reveals > 0 and "Your upgrades showed a color of the code! " or "") .. (bonusClues > 0 and ("+" .. bonusClues .. " free " .. (bonusClues == 1 and "clue" or "clues") .. " from your upgrades.") or ""))
 		end
 		-- the escape timer starts now
 		local t0 = workspace:GetServerTimeNow()

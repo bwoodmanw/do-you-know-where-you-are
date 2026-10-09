@@ -998,7 +998,7 @@ function House.buildObjects(world)
 			end
 			entry.usePrompt = prompt(entry.keypad, "Use keypad", "Big door")
 			-- Tinker can pick the keypad once a game to learn one colour
-			entry.padPrompt = prompt(entry.keypad, "Pick the keypad", "Tinker: learn one colour", 6)
+			entry.padPrompt = prompt(entry.keypad, "Pick the keypad", "Tinker: learn one color", 6)
 			entry.padPrompt.KeyboardKeyCode = Enum.KeyCode.F
 			entry.padPrompt.GamepadKeyCode = Enum.KeyCode.ButtonY -- X is every other prompt
 			entry.padPrompt:SetAttribute("Only", "tinker")
@@ -1147,11 +1147,11 @@ function House.buildObjects(world)
 				txt.Font = Enum.Font.FredokaOne
 				txt.TextColor3 = Color3.fromRGB(255, 120, 120)
 				txt.TextStrokeTransparency = 0.4
-				txt.Text = o.bonus and "\u{1F6A7} Junk Cupboard" or "\u{1F6A7} Blocked!"
+				txt.Text = o.bonus and "\u{1F6A7} Junk Closet" or "\u{1F6A7} Blocked!"
 				txt.Parent = sg
 			end
-			entry.shovePrompt = prompt(entry.part, "Shove", (o.bonus and "Junk Cupboard" or "Blocked passage") .. " - Muscle", 3)
-			entry.popperPrompt = prompt(entry.part, "Plant Confetti Cannon", o.bonus and "Junk Cupboard" or "Blocked passage", 1)
+			entry.shovePrompt = prompt(entry.part, "Shove", (o.bonus and "Junk Closet" or "Blocked passage") .. " - Muscle", 3)
+			entry.popperPrompt = prompt(entry.part, "Plant Confetti Cannon", o.bonus and "Junk Closet" or "Blocked passage", 1)
 			entry.popperPrompt.KeyboardKeyCode = Enum.KeyCode.F
 			entry.popperPrompt.GamepadKeyCode = Enum.KeyCode.ButtonY -- X is every other prompt
 			-- Muscle sees Shove; everyone else sees the Confetti Cannon

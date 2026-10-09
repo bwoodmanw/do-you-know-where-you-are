@@ -82,7 +82,7 @@ local function soften(model)
 					if tex and tex ~= "" then
 						part.TextureID = tex
 					else
-						error("no colour map")
+						error("no color map")
 					end
 				end)
 				if ok then

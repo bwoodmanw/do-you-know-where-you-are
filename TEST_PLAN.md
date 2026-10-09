@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,10 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 29 (8 Oct) - test levels, American English
+- [ ] Lobby -> Characters (only you): bottom left "Lv 1 5 10 15 20"; tap one: "Test: <character> is now level n"; the ladder opens to that level; pick the level-10 / level-20 powers and try them in a game
+- [ ] Text says color / colors / gray / Junk Closet; rooms: Lost and Found, Principal's Office (School), Candy Apple Stall (Carnival), Restrooms (School), Deep Sea Elevator (Aquarium)
 
 ## Round 28 (8 Oct) - skills version 2 (SKILLS_V2.md)
 Camera:

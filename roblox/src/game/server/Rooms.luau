@@ -931,7 +931,7 @@ local LOOKS = {
 	{ { "gift shop" }, "aqua", { "ToyBox", "Plants" }, "aquarium" },
 	{ { "cafe", "snack kiosk" }, "tiles", { "Trays", "Plants" }, "aquarium" },
 	{ { "touch pools", "otter pool", "rock pool", "sea lion" }, "aqua", { "WaterPool", "WaterPool", "Plants" }, "aquarium" },
-	{ { "submarine bay", "diving locker", "deep sea lift" }, "steel", { "DivingGear", "Porthole", "Crates" }, "aquarium" },
+	{ { "submarine bay", "diving locker", "deep sea elevator" }, "steel", { "DivingGear", "Porthole", "Crates" }, "aquarium" },
 	{ { "research lab" }, "tiles", { "Beakers", "Monitors", "FishTank" }, "aquarium" },
 	{ { "whale skeleton" }, "deep", { "Porthole", "FishTank" }, "aquarium" },
 	{ { "bubble vents", "pipe room", "pump" }, "steel", { "Pipes", "WaterTank" }, "aquarium" },
@@ -942,7 +942,7 @@ local LOOKS = {
 	{ { "ticket booth", "main gate" }, "tent", { "TicketWindow", "Plants", "Crates" }, "carnival" },
 	{ { "fortune teller" }, "purple", { "CrystalBall", "Candelabra", "Curtain" }, "carnival" },
 	{ { "prize tent", "ring-toss", "duck pond" }, "tent", { "PrizeWall", "PrizeWall", "ToyBox" }, "carnival" },
-	{ { "popcorn", "toffee" }, "honey", { "Crates", "Sacks", "Trays" }, "carnival" },
+	{ { "popcorn", "candy apple" }, "honey", { "Crates", "Sacks", "Trays" }, "carnival" },
 	{ { "carousel" }, "purple", { "Plants", "Drums" }, "carnival" },
 	{ { "hall of mirrors", "clown mirror", "laughing gallery" }, "grey", { "FunMirror", "FunMirror", "FunMirror" }, "carnival" },
 	{ { "ringmaster" }, "red", { "FilingCabinets", "CoatRack", "Trunks" }, "carnival" },
@@ -963,12 +963,12 @@ local LOOKS = {
 	{ { "assembly hall" }, "wood", { "Trophies", "WaitingChairs", "WaitingChairs" }, "school" },
 	{ { "hallway", "top corridor" }, "green", { "Lockers", "Lockers", "Trophies" }, "school" },
 	{ { "front lobby", "trophy room" }, "wood", { "Trophies", "Trophies", "Plants" }, "school" },
-	{ { "head's office" }, "red", { "FilingCabinets", "Globe", "Blackboard" }, "school" },
-	{ { "lost property" }, "grey", { "CoatRack", "Crates", "PaperStacks" }, "school" },
+	{ { "principal's office" }, "red", { "FilingCabinets", "Globe", "Blackboard" }, "school" },
+	{ { "lost and found" }, "grey", { "CoatRack", "Crates", "PaperStacks" }, "school" },
 	{ { "cafeteria" }, "tiles", { "Trays", "Trays", "Plants" }, "school" },
 	{ { "computer room" }, "grey", { "Monitors", "Monitors", "SchoolDesks" }, "school" },
 	{ { "art room" }, "pastel", { "Easels", "Easels", "ToyBox" }, "school" },
-	{ { "washroom" }, "tiles", { "Bathroom", "Bathroom" }, "school" },
+	{ { "restroom" }, "tiles", { "Bathroom", "Bathroom" }, "school" },
 	{ { "caretaker" }, "brick", { "Crates", "Pipes", "CoatRack" }, "school" },
 	{ { "bell room" }, "brick", { "BigBell", "Pipes" }, "school" },
 	{ { "observatory" }, "purple", { "Telescope", "Globe" }, "school" },
@@ -1019,7 +1019,7 @@ local LOOKS = {
 	{ { "lab store" }, "steel", { "Crates", "Beakers", "PaperStacks" } },
 	{ { "plant lab" }, "green", { "Plants", "Plants", "Beakers" } },
 	{ { "radio" }, "steel", { "RadioDesk", "Monitors" } },
-	{ { "lift" }, "steel", { "LiftDoors", "WaitingChairs" } },
+	{ { "lift", "elevator" }, "steel", { "LiftDoors", "WaitingChairs" } },
 	{ { "pharmacy", "medicine" }, "tiles", { "Counter", "Beakers" } },
 	{ { "records", "nurses' office" }, "grey", { "FilingCabinets", "FilingCabinets", "Monitors" } },
 	{ { "supply" }, "grey", { "Crates", "Crates", "PaperStacks" } },
@@ -1062,14 +1062,14 @@ local SOUNDS_BY_NAME = {
 	{ { "clock" }, "tick" },
 	{ { "trunk", "dusty", "box room", "doll", "rooftop", "attic" }, "wind" },
 	{ { "ward", "x-ray", "nurses", "records", "pharmacy", "medicine" }, "beep" },
-	{ { "corridor", "waiting", "reception", "lift", "lab", "canteen" }, "buzz", "hospital" },
+	{ { "corridor", "waiting", "reception", "lift", "elevator", "lab", "canteen" }, "buzz", "hospital" },
 	{ { "chocolate", "jelly" }, "bubble" },
 	{ { "bath", "laundry", "linen", "sticky", "archive", "cellar" }, "drip" },
 }
 -- effects: steam, dust, bubbles, sparkles, mist
 local EFFECTS_BY_NAME = {
 	{ { "boiler", "generator", "laundry" }, "steam" },
-	{ { "trunk", "dusty", "box room", "clock", "doll", "storage", "coal", "workshop", "lost property", "caretaker" }, "dust" },
+	{ { "trunk", "dusty", "box room", "clock", "doll", "storage", "coal", "workshop", "lost and found", "caretaker" }, "dust" },
 	{ { "chocolate" }, "bubbles" },
 	{ { "vault", "gold", "jelly bank" }, "sparkles" },
 	{ { "jelly pool", "wobble" }, "mist" },
@@ -1631,7 +1631,7 @@ end
 -- painted view, so nothing outside needs building): stars, the moon, hills
 -- and trees (candy clouds at the Gummy Bounce House, town lights at the
 -- hospital). One soft beam of moonlight per room.
-local NO_WINDOWS = { "vault", "bank", "security", "boiler", "generator", "water tank", "lift", "x-ray", "store", "cupboard", "archive", "locker" }
+local NO_WINDOWS = { "vault", "bank", "security", "boiler", "generator", "water tank", "lift", "x-ray", "store", "cupboard", "closet", "archive", "locker" }
 local function paintView(sg, theme, seed)
 	local rng = Random.new(seed)
 	local sky = Instance.new("Frame")
