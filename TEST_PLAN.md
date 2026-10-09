@@ -17,6 +17,10 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 54 (10 Oct) - the party arrives together; one press plants the cannon
+- [ ] Live, a party of 2-3: whoever arrives first waits on the character screen until everyone is in (at most 45 s), then the game starts with all of you - nobody sent to the garden
+- [ ] Junk Closet / blocked passage: one tap of E (no holding) plants the Confetti Cannon, 3-2-1, BOOM; pressing again while it counts says it's already planted
+
 ## Round 53 (10 Oct) - parties, the Junk Closet, carousel unicorns
 Parties (live, 2-3 accounts):
 - [ ] Anyone presses Leave while standing on the circle: they step off it and are out (not pulled back in); the others stay

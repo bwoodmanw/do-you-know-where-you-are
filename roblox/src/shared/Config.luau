@@ -345,6 +345,7 @@ Config.PLACE_IDS = { lobby = 115501124890066, game = 110069561824739 }
 Config.VOTE_SECONDS = 10
 -- the host waits until everyone has chosen a character, or this many seconds
 Config.PICK_WAIT = 120
+Config.ARRIVE_WAIT = 45 -- the first game waits this long at most for the rest of the party to arrive
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)

@@ -791,7 +791,12 @@ local function start(party)
 		local code = TeleportService:ReserveServer(placeId)
 		local options = Instance.new("TeleportOptions")
 		options.ReservedServerAccessCode = code
-		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook, map = mapId, leader = party.leader.UserId, code = code, tower = party.tower == true })
+		-- who is coming: the game waits for all of them before it starts
+		local who = {}
+		for _, m in ipairs(party.members) do
+			table.insert(who, m.UserId)
+		end
+		options:SetTeleportData({ difficulty = party.difficulty, spook = party.spook, map = mapId, leader = party.leader.UserId, code = code, tower = party.tower == true, party = who })
 		TeleportService:TeleportAsync(placeId, party.members, options)
 	end)
 	if not ok then

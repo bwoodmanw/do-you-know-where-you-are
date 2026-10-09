@@ -1354,7 +1354,9 @@ function House.buildObjects(world)
 				txt.Parent = sg
 			end
 			entry.shovePrompt = prompt(entry.part, "Shove", (o.bonus and "Junk Closet" or "Blocked passage") .. " - Muscle", 3)
-			entry.popperPrompt = prompt(entry.part, "Plant Confetti Cannon", o.bonus and "Junk Closet" or "Blocked passage", 1)
+			-- one press plants it (a hold was easy to miss - a tap did nothing, 10 Oct);
+			-- the cannon's own 3-2-1 is the wait
+			entry.popperPrompt = prompt(entry.part, "Plant Confetti Cannon", o.bonus and "Junk Closet" or "Blocked passage", 0)
 			-- E like every prompt: Muscle only ever sees Shove and everyone else only the
 			-- Confetti Cannon, so the two never clash (F confused players, 10 Oct)
 			-- Muscle sees Shove; everyone else sees the Confetti Cannon

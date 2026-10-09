@@ -1147,8 +1147,11 @@ local function wirePrompts()
 				quest(plr, "skill")
 			end)
 			entry.popperPrompt.Triggered:Connect(function(plr)
-				if state.status ~= "playing" or world.unlocked[id] or entry.fuse then
+				if state.status ~= "playing" or world.unlocked[id] then
 					return
+				end
+				if entry.fuse then
+					return say("info", "The Confetti Cannon is already planted - stand back!", nil, plr)
 				end
 				if (world.poppers or 0) <= 0 then
 					return need(plr, "muscle", "You need a Confetti Cannon - search drawers and boxes for one! Or bring Muscle to shove it.")
@@ -2995,6 +2998,8 @@ pcall(function()
 	liveMap = MemoryStoreService:GetHashMap("EC_Live")
 end)
 local serverCode = nil -- this reserved server's access code (from the Lobby)
+local expectedPlayers = {} -- [userId] = true: the party members the Lobby sent here (the first game waits for them)
+local firstArrival = nil -- os.clock() when the first of them arrived
 local leaving = {} -- [userId] = true: going to the Lobby on purpose
 local dropped = {} -- [userId] = { skill, caged, escaped }: dropped out mid-game
 local rejoining = {} -- [userId] = what they had, while they come back in
@@ -3802,11 +3807,20 @@ function round.start()
 	local deadline = workspace:GetServerTimeNow() + (carry and 0 or Config.PICK_WAIT)
 	RoundState:SetAttribute("PickDeadline", deadline)
 	hostTimer = task.spawn(function()
+		firstArrival = firstArrival or os.clock()
 		while state.status == "playing" do
 			local waiting = 0
 			for _, p in ipairs(Players:GetPlayers()) do
 				if not (p:GetAttribute("Skill") and p:GetAttribute("Ready")) and not p:GetAttribute("Waiting") then
 					waiting += 1
+				end
+			end
+			-- party members still on their way here (the first game only, at most ARRIVE_WAIT)
+			if not carry and os.clock() - firstArrival < Config.ARRIVE_WAIT then
+				for uid in pairs(expectedPlayers) do
+					if not Players:GetPlayerByUserId(uid) then
+						waiting += 1
+					end
 				end
 			end
 			RoundState:SetAttribute("WaitingToPick", waiting)
@@ -3828,6 +3842,7 @@ function round.start()
 		end
 		RoundState:SetAttribute("WaitingToPick", 0)
 		RoundState:SetAttribute("PickDeadline", nil)
+		table.clear(expectedPlayers)
 		-- everyone has their character now: its ladder upgrades count from here
 		-- (free clues - never paid for with points - a code colour, stamina, a Shield)
 		local bonusClues, reveals = 0, 0
@@ -4079,6 +4094,14 @@ Players.PlayerAdded:Connect(function(plr)
 	end
 	if type(data) == "table" and typeof(data.code) == "string" then
 		serverCode = data.code
+	end
+	-- the party the Lobby sent: the first game waits for all of them
+	if type(data) == "table" and type(data.party) == "table" and not data.rejoin then
+		for _, uid in ipairs(data.party) do
+			if typeof(uid) == "number" then
+				expectedPlayers[uid] = true
+			end
+		end
 	end
 	-- back after a dropped connection: the same character, where they were
 	leaving[plr.UserId] = nil
