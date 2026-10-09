@@ -134,7 +134,7 @@ local function packFor(name)
 end
 
 -- put a pack's animations into a copy of Roblox's R15 Animate script
-local function setPack(animate, pack)
+local function setPack(animate, pack, plain)
 	if not pack then
 		return
 	end
@@ -145,8 +145,8 @@ local function setPack(animate, pack)
 			a.AnimationId = "rbxassetid://" .. id
 		end
 	end
-	set("idle", "Animation1", pack.idle)
-	set("idle", "Animation2", pack.idle2)
+	set("idle", "Animation1", plain and plain.idle or pack.idle)
+	set("idle", "Animation2", plain and plain.idle2 or pack.idle2)
 	set("walk", "WalkAnim", pack.walk)
 	set("run", "RunAnim", pack.run)
 	set("jump", "JumpAnim", pack.jump)
@@ -206,7 +206,8 @@ function Characters.apply(plr, name)
 	local animate = old:FindFirstChild("Animate")
 	if animate then
 		animate = animate:Clone()
-		setPack(animate, packFor(name))
+		local A = require(game:GetService("ReplicatedStorage").Shared.Config).ANIM
+		setPack(animate, packFor(name), A and A.plainIdle[name] and A.plain or nil)
 		animate.Parent = m
 	end
 	-- an Animator made here on the server lets everyone else see this

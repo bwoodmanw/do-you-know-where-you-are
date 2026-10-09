@@ -37,6 +37,11 @@ Config.ANIM = {
 	-- the kids (their skins use the same pack unless listed under model)
 	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy" },
 	model = { MuscleMummy = "zombie" },
+	-- models saved in a T-pose whose pack idle swings the arms behind the back
+	-- (Echo, 9 Oct): they keep the pack's walk and run but stand in Roblox's
+	-- plain idle
+	plainIdle = { Echo = true, EchoStar = true },
+	plain = { idle = 507766388, idle2 = 507766666 },
 	-- the hosts
 	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation" },
 }

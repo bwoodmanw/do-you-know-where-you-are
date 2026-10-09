@@ -6,9 +6,10 @@
 	animation bends the model's skin properly (moving the arm parts by hand
 	squashed them - 8 Oct).
 
-	A character saved in a T-pose (arms straight out, like the remade Echo
-	and Ghostly Shadow) plays it at 85%: the arms hang a little out from the
-	body, which keeps the shoulders from bunching.
+	A character saved in a T-pose (arms straight out, like Echo) plays
+	Roblox's plain idle at 85% instead: the arms hang a little out from the
+	body, which keeps the shoulders from bunching (a pack's idle swung Echo's
+	arms behind her back - 9 Oct).
 
 	Call it after the copy is in the view's WorldModel, with the character's
 	skill id (and the model's name, for a skin with its own pack). If
@@ -46,6 +47,9 @@ local function idleFor(skillId, modelName)
 	if not A then
 		return IDLE
 	end
+	if modelName and A.plainIdle and A.plainIdle[modelName] then
+		return IDLE
+	end
 	local pack = A.packs[(modelName and A.model[modelName]) or A.skill[skillId or ""] or ""]
 	return pack and pack.idle or IDLE
 end
@@ -68,7 +72,7 @@ return function(model, skillId, modelName)
 		animator.Parent = hum
 	end
 	local anim = Instance.new("Animation")
-	anim.AnimationId = "rbxassetid://" .. idleFor(skillId, modelName or model.Name)
+	anim.AnimationId = "rbxassetid://" .. (tPose and IDLE or idleFor(skillId, modelName or model.Name))
 	local track = animator:LoadAnimation(anim)
 	track.Looped = true
 	track:Play(0, tPose and 0.85 or 1)
