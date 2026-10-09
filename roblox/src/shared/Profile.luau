@@ -135,11 +135,13 @@ end
 
 -- write the save (and keep holding it, unless letting go); false if it could
 -- not be written, or another server holds it now
+local handed = {} -- [userId] = true: about to teleport, the next server may take the save
 local function write(userId, letGo)
 	local data = cache[userId]
 	if not data or not store then
 		return false
 	end
+	letGo = letGo or handed[userId] == true
 	local wrote = false
 	local ok = pcall(function()
 		store:UpdateAsync("u" .. userId, function(old)
@@ -162,6 +164,19 @@ end
 function Profile.release(plr)
 	write(plr.UserId, true)
 	cache[plr.UserId] = nil
+	handed[plr.UserId] = nil
+end
+
+-- just before a teleport: save and let go now, so the game server can load
+-- the save at once instead of waiting (up to 20 s) for this server to notice
+-- the player has gone. The data stays here; reclaim it if the teleport fails.
+function Profile.handOff(plr)
+	handed[plr.UserId] = true
+	return write(plr.UserId, true)
+end
+function Profile.reclaim(plr)
+	handed[plr.UserId] = nil
+	return write(plr.UserId, false)
 end
 
 -- every minute: save everyone here (keeps the hold fresh; a crash loses a minute at most)

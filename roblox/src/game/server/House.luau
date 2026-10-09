@@ -417,20 +417,36 @@ local function carnivalFurniture(root, kind, x, y, map)
 				local a = i / 6 * math.pi * 2
 				local p0 = centre + Vector3.new(math.cos(a) * r * 0.68, 0, math.sin(a) * r * 0.68)
 				local face = CFrame.lookAt(p0, p0 + Vector3.new(-math.sin(a), 0, math.cos(a)))
-				local function h(size, off, col, mat)
-					local hp = bit({ Name = "Horse", Size = size, CFrame = face * CFrame.new(off), Color = col, Material = mat or Enum.Material.SmoothPlastic, CanCollide = false })
+				local function h(size, off, col, mat, shape, rot)
+					local hp = bit({ Name = "Horse", Shape = shape or Enum.PartType.Block, Size = size, CFrame = face * CFrame.new(off) * (rot or CFrame.new()), Color = col, Material = mat or Enum.Material.SmoothPlastic, CanCollide = false })
 					horseBob[hp] = i * 1.9 -- each horse goes up and down in its own time
 					return hp
 				end
 				bit({ Name = "HorsePole", Shape = Enum.PartType.Cylinder, Size = Vector3.new(11, 0.35, 0.35), CFrame = CFrame.new(p0 + Vector3.new(0, 6, 0)) * up, Material = Enum.Material.Foil, Color = Color3.fromRGB(230, 190, 80), CanCollide = false })
-				h(Vector3.new(1.3, 1.5, 3.2), Vector3.new(0, 3.6, 0), cols[i])
-				h(Vector3.new(0.9, 1.7, 1), Vector3.new(0, 4.7, -1.5), cols[i])
-				h(Vector3.new(0.8, 0.8, 1.4), Vector3.new(0, 5.4, -2.1), cols[i])
-				h(Vector3.new(0.3, 1.2, 0.8), Vector3.new(0, 5.6, -1.2), Color3.fromRGB(230, 190, 80), Enum.Material.Foil) -- mane
-				h(Vector3.new(1.4, 0.3, 1.2), Vector3.new(0, 4.45, 0.2), Color3.fromRGB(200, 40, 60)) -- saddle
-				for _, lx in ipairs({ -0.45, 0.45 }) do
-					for _, lz in ipairs({ -1.2, 1.2 }) do
-						h(Vector3.new(0.3, 1.8, 0.3), Vector3.new(lx, 2.2, lz), cols[i])
+				-- a painted carousel unicorn (nose to -Z): a rounded body, an arched
+				-- neck and head with a muzzle, ears, eyes and a golden horn, a golden
+				-- mane and tail, a red saddle, slim legs with golden hooves
+				local BALL, GOLD, FOIL = Enum.PartType.Ball, Color3.fromRGB(230, 190, 80), Enum.Material.Foil
+				local col = cols[i]
+				local dark = col:Lerp(Color3.new(0, 0, 0), 0.25)
+				h(Vector3.new(1.5, 1.6, 3.4), Vector3.new(0, 3.6, 0), col, nil, BALL)
+				h(Vector3.new(0.95, 2, 1.1), Vector3.new(0, 4.75, -1.45), col, nil, BALL, CFrame.Angles(math.rad(-25), 0, 0))
+				h(Vector3.new(0.9, 0.95, 1.6), Vector3.new(0, 5.6, -2.15), col, nil, BALL, CFrame.Angles(math.rad(20), 0, 0))
+				h(Vector3.new(0.7, 0.6, 0.75), Vector3.new(0, 5.3, -2.8), dark, nil, BALL)
+				for _, s in ipairs({ -1, 1 }) do
+					h(Vector3.new(0.22, 0.45, 0.16), Vector3.new(s * 0.27, 6.12, -1.95), col, nil, BALL)
+					h(Vector3.new(0.16, 0.16, 0.12), Vector3.new(s * 0.4, 5.75, -2.4), Color3.fromRGB(20, 20, 25), nil, BALL)
+				end
+				h(Vector3.new(0.18, 0.95, 0.18), Vector3.new(0, 6.3, -2.45), GOLD, FOIL, BALL, CFrame.Angles(math.rad(-35), 0, 0)) -- the horn
+				for k = 0, 3 do
+					h(Vector3.new(0.35, 0.55, 0.5), Vector3.new(0, 5.95 - k * 0.42, -1.75 + k * 0.32), GOLD, FOIL, BALL) -- the mane
+				end
+				h(Vector3.new(0.4, 1.4, 0.4), Vector3.new(0, 3.5, 1.95), GOLD, FOIL, BALL, CFrame.Angles(math.rad(30), 0, 0)) -- the tail
+				h(Vector3.new(1.55, 0.25, 1.2), Vector3.new(0, 4.42, 0.2), Color3.fromRGB(200, 40, 60)) -- the saddle
+				for _, lx in ipairs({ -0.42, 0.42 }) do
+					for _, lz in ipairs({ -1.15, 1.15 }) do
+						h(Vector3.new(0.28, 1.7, 0.28), Vector3.new(lx, 2.15, lz), col)
+						h(Vector3.new(0.34, 0.3, 0.38), Vector3.new(lx, 1.2, lz), GOLD, FOIL) -- a hoof
 					end
 				end
 			end
@@ -1301,7 +1317,8 @@ function House.buildObjects(world)
 		elseif o.kind == "lock" and o.blocked then
 			-- a doorway heaped with party junk: Muscle shoves it, or a Confetti Cannon
 			local alongX = cell(map, o.x - 1, o.y) ~= "."
-			entry.part = part(root, { Name = "BlockedPassage", Size = alongX and Vector3.new(T, 13, 1.4) or Vector3.new(1.4, 13, T), Position = base + Vector3.new(0, 6.5, 0), Transparency = 1 })
+			-- as thick as the junk drawn in it (1.4 was thinner, and kids got through)
+			entry.part = part(root, { Name = "BlockedPassage", Size = alongX and Vector3.new(T, 13, 3) or Vector3.new(3, 13, T), Position = base + Vector3.new(0, 6.5, 0), Transparency = 1 })
 			entry.pile = {}
 			-- { size (across the doorway, up, through), offset (across, up, through), colour, material, tilt }
 			local JUNK = {
@@ -1338,8 +1355,8 @@ function House.buildObjects(world)
 			end
 			entry.shovePrompt = prompt(entry.part, "Shove", (o.bonus and "Junk Closet" or "Blocked passage") .. " - Muscle", 3)
 			entry.popperPrompt = prompt(entry.part, "Plant Confetti Cannon", o.bonus and "Junk Closet" or "Blocked passage", 1)
-			entry.popperPrompt.KeyboardKeyCode = Enum.KeyCode.F
-			entry.popperPrompt.GamepadKeyCode = Enum.KeyCode.ButtonY -- X is every other prompt
+			-- E like every prompt: Muscle only ever sees Shove and everyone else only the
+			-- Confetti Cannon, so the two never clash (F confused players, 10 Oct)
 			-- Muscle sees Shove; everyone else sees the Confetti Cannon
 			entry.shovePrompt:SetAttribute("Only", "muscle")
 			entry.popperPrompt:SetAttribute("Not", "muscle")

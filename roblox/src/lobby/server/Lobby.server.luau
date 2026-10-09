@@ -554,6 +554,9 @@ local function padFor(party)
 	end
 	return nil
 end
+local leftAtFn = function(_)
+	return nil
+end -- set below, once leave() exists: when this player last left a party
 local function standOnPad(party, plr)
 	if party.max <= 1 then
 		return -- solo games have no circle
@@ -631,7 +634,7 @@ local function paintPads()
 			disc.CanTouch = true
 			disc.Touched:Connect(function(hit)
 				local plr = Players:GetPlayerFromCharacter(hit.Parent)
-				if plr and partyOf[plr] ~= party and joinPartyFn and (tried[plr] or 0) < os.clock() then
+				if plr and partyOf[plr] ~= party and joinPartyFn and (tried[plr] or 0) < os.clock() and os.clock() - (leftAtFn(plr) or -99) > 5 then
 					tried[plr] = os.clock() + 3
 					joinPartyFn(plr, party.id)
 				end
@@ -688,17 +691,44 @@ function broadcast()
 	paintPads()
 end
 
+-- leaving a party: anyone can; the leader leaving closes it for everyone.
+-- The one who left steps off the circle and isn't pulled back onto a party by
+-- walking over a circle for a few seconds (before, the redrawn circle under
+-- their feet joined them again straight away).
+local leftAt = {} -- [player] = os.clock() when they last left a party
+leftAtFn = function(plr)
+	return leftAt[plr]
+end
 local function leave(plr)
 	local party = partyOf[plr]
 	if not party then
 		return
 	end
+	leftAt[plr] = os.clock()
 	partyOf[plr] = nil
 	local i = table.find(party.members, plr)
 	if i then
 		table.remove(party.members, i)
 	end
+	-- off the circle (a few studs out from its middle)
+	local pad = party.max > 1 and padFor(party)
+	local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+	if pad and hrp and PAD_SPOTS[pad] then
+		local centre = PAD_SPOTS[pad]
+		local away = (hrp.Position - centre) * Vector3.new(1, 0, 1)
+		away = away.Magnitude > 0.5 and away.Unit or Vector3.new(1, 0, 0)
+		plr.Character:PivotTo(CFrame.new(centre + away * 11 + Vector3.new(0, 3, 0)))
+	end
 	if #party.members == 0 then
+		parties[party.id] = nil
+	elseif party.leader == plr and not party.starting then
+		-- the leader left: the party closes for everyone in it
+		for _, m in ipairs(party.members) do
+			partyOf[m] = nil
+			leftAt[m] = os.clock()
+			Notice:FireClient(m, plr.DisplayName .. " left, so the party closed. Make a new one or join another!")
+		end
+		party.members = {}
 		parties[party.id] = nil
 	elseif party.leader == plr then
 		party.leader = party.members[1]
@@ -729,6 +759,9 @@ local function start(party)
 		end
 	end
 	local mapName = Progress.MAPS[Progress.mapIndex(mapId)].name
+	-- everyone's save at once (not one after another - that was the wait
+	-- after picking a map), handed straight to the game server
+	local pending = 0
 	for _, m in ipairs(party.members) do
 		Notice:FireClient(m, "Off to " .. mapName .. "...")
 		-- the boosts each player chose leave their bag now and wait for them in the game
@@ -742,9 +775,17 @@ local function start(party)
 				end
 			end
 			data.loadout = kept
-			Profile.save(m)
 			Profile.publish(m)
+			pending += 1
+			task.spawn(function()
+				Profile.handOff(m)
+				pending -= 1
+			end)
 		end
+	end
+	local waitUntil = os.clock() + 8
+	while pending > 0 and os.clock() < waitUntil do
+		task.wait(0.1)
 	end
 	local ok, err = pcall(function()
 		local code = TeleportService:ReserveServer(placeId)
@@ -756,10 +797,20 @@ local function start(party)
 	if not ok then
 		party.starting = false
 		for _, m in ipairs(party.members) do
+			task.spawn(Profile.reclaim, m)
 			Notice:FireClient(m, "Couldn't start the game: " .. tostring(err))
 		end
 	end
 end
+
+TeleportService.TeleportInitFailed:Connect(function(plr, result, message)
+	task.spawn(Profile.reclaim, plr)
+	local party = partyOf[plr]
+	if party then
+		party.starting = false
+	end
+	Notice:FireClient(plr, "The trip to the game didn't work (" .. tostring(message or result) .. ") - press Play again.")
+end)
 
 CreateParty.OnServerEvent:Connect(function(plr, solo)
 	leave(plr)
@@ -870,9 +921,14 @@ QuickPlay.OnServerEvent:Connect(function(plr)
 	if mine and mine.starting then
 		return
 	end
-	for id, party in pairs(parties) do
-		if party ~= mine and not party.starting and not party.friendsOnly and #party.members < party.max then
-			return joinParty(plr, id)
+	-- a friend's party first, then any open one
+	for _, friendsFirst in ipairs({ true, false }) do
+		for id, party in pairs(parties) do
+			local isFriendParty = isFriend(plr, party.leader)
+			if party ~= mine and not party.starting and #party.members < party.max and party.max > 1
+				and ((friendsFirst and isFriendParty) or (not friendsFirst and not party.friendsOnly)) then
+				return joinParty(plr, id)
+			end
 		end
 	end
 	local data = Profile.get(plr)

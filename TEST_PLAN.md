@@ -17,6 +17,16 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 53 (10 Oct) - parties, the Junk Closet, carousel unicorns
+Parties (live, 2-3 accounts):
+- [ ] Anyone presses Leave while standing on the circle: they step off it and are out (not pulled back in); the others stay
+- [ ] The host presses Leave: the party closes for everyone ("<host> left, so the party closed")
+- [ ] Start a party after picking a map: much shorter wait before the trip; everyone arrives in the same game
+- [ ] Friends press Quick Play: they join a friend's open party rather than each starting alone
+In the game:
+- [ ] Junk Closet / blocked passage: nobody can walk through the junk; Plant Confetti Cannon is on E (Y on a controller); with a cannon it counts 3-2-1 and blasts it open; the present inside then opens
+- [ ] Carousel: unicorns - rounded body, arched neck, head with muzzle, ears, eyes, golden horn, golden mane and tail, saddle, golden hooves; still bobbing as it turns (photo)
+
 ## Round 52 (10 Oct) - the clean menu look (art/ui-mockups/menus-v2.png, hud-v2.png)
 Lobby:
 - [ ] Every pop-up (Invite, Shop, Characters, Quests, Plushies, Help, Candy Shop, map screen): dark glass with a cream border; words in a clean bold font, orange titles in the rounded font; nothing huge - text stays a normal size
