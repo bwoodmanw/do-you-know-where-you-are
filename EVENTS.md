@@ -20,7 +20,11 @@ Picture: `art/roblox-store/events/event-halloween.png` (1920 x 1080).
 - **Starts:** now (today)
 - **Ends:** November 1, 12:00 AM Eastern Time (October 31, 9:00 PM Pacific) -
   the moment the corns disappear from the game.
-- **Category:** the seasonal / holiday one if there is a choice.
+- **Category:** Quest (a goal to complete for rewards: collect corns, earn the
+  badge and the skin). Not Item Drop (that means avatar items to get).
+- **Start Place:** Escape Crew. **Privacy:** Public.
+- **Submit for Featuring:** on (free; Roblox may pick it for its own
+  marketing, nothing to lose).
 
 ## 2. Thanksgiving and 3. Christmas
 

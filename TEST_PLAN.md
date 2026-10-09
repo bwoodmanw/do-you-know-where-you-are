@@ -27,6 +27,9 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 - [ ] Escape: about 2 s after you land in the garden your character cheers, the camera swings round in front of you, the buttons vanish for a blink, then a card "📸 Escape photo!" shows the picture with Save / Share / No thanks
 - [ ] Save: Roblox asks to save it to your captures (photo of the prompt); Share: Roblox's share screen; No thanks closes it; it closes itself after 25 s
 - [ ] The camera goes back to normal after the picture (spectating still works)
+- [ ] The card has "📸 Photos: Once a day (tap to change)": tap cycles Every escape / Once a day / Off; the Lobby has "📸 Escape photo: ..." beside Emote doing the same (it stays after leaving and coming back)
+- [ ] Once a day (the default): only the first escape of the day takes a photo; Every escape: each one; Off: none
+- [ ] Plushie Collector badge (id 4046817833899589) at 19 plushies
 
 ## Round 39 (9 Oct) - emotes and rumble
 - [ ] Game: "😄 Emote (G)" with the action buttons; Lobby: "😄 Emote (G)" top right under your points. G, the button, or the right-stick click opens 8 choices: Wave, Point, Cheer, Laugh, Dance 1-3, Stop
