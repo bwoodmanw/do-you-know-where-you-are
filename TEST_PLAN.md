@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,10 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 35 (8 Oct) - skill and boost timers
+- [ ] Each skill's button counts down while it works (orange), then the recharge (gray): Shadow "Sneaking 14s", Glow "Flare 8s", Bramble "Vines 6s", Echo "Burst 3s", Muscle "Barricade 10s", Brainy "Thinking 15s"; Tinker "Toolkit ready!" until the next pick; Patch goes straight to the recharge
+- [ ] A speed burst (Echo, Glow's Flare, Beacon) shows a lightning slot in the boost row with its seconds, and the extra speed stops when it reaches 0
 
 ## Round 34 (8 Oct) - map icons, Skeleton Key, Shadow's recharge
 - [ ] Map: a padlock on locked doors, a roadwork sign on junk doorways (both gone when open), chains on the cage, a door on the exit; on the Classrooms floor "Loft" sits bottom-right of the Library, not over its name

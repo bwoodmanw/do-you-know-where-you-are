@@ -1587,6 +1587,7 @@ end
 local shieldSlot, shieldText = activeSlot("shield", "\u{1F6E1}")
 local candySlot, candyText = activeSlot("candy", "\u{1F36C}")
 local freezeSlot, freezeText = activeSlot("freeze", "\u{1F9CA}")
+local speedSlot, speedText = activeSlot("speed", "\u{26A1}") -- a burst of speed (it always runs out)
 
 -- ---------- running and stamina ----------
 local stamina, tired, candyUntil = 100, false, 0
@@ -1698,6 +1699,9 @@ RunService.RenderStepped:Connect(function(dt)
 	local frozenLeft = (RoundState:GetAttribute("FrozenUntil") or 0) - workspace:GetServerTimeNow()
 	freezeSlot.Visible = frozenLeft > 0
 	freezeText.Text = frozenLeft > 0 and (math.ceil(frozenLeft) .. "s") or ""
+	local burstLeft = (player:GetAttribute("TeamBurstUntil") or 0) - workspace:GetServerTimeNow()
+	speedSlot.Visible = burstLeft > 0
+	speedText.Text = burstLeft > 0 and (math.ceil(burstLeft) .. "s") or ""
 	staminaBar.Size = UDim2.fromScale(stamina / 100, 1)
 	staminaBar.BackgroundColor3 = tired and Color3.fromRGB(255, 77, 94) or Color3.fromRGB(123, 227, 107)
 	gameEarned.Text = "\u{2B50} " .. tostring(player:GetAttribute("GameEarned") or 0) .. " points this game" .. (player:GetAttribute("FriendBonus") and "  \u{1F46B} +10%" or "")
@@ -1706,10 +1710,17 @@ RunService.RenderStepped:Connect(function(dt)
 	local serverNow = workspace:GetServerTimeNow()
 	local skill = player:GetAttribute("Skill")
 	if SKILL_TEXT[skill] then
-		local active = (player:GetAttribute("SneakUntil") or 0) - serverNow
+		-- while a skill is working: its own countdown; then the recharge countdown
+		local ACTIVE = { shadow = { "SneakUntil", "\u{1F319} Sneaking" }, glow = { "FlareUntil", "\u{2728} Flare" }, bramble = { "VinesUntil", "\u{1F33F} Vines" },
+			echo = { "EchoBurstUntil", "\u{1F3A7} Burst" }, muscle = { "BarricadeUntil", "\u{1F4AA} Barricade" }, brainy = { "ThinkUntil", "\u{1F9E0} Thinking" } }
+		local a = ACTIVE[skill]
+		local active = a and ((player:GetAttribute(a[1]) or 0) - serverNow) or 0
 		local cool = (player:GetAttribute("CoolUntil") or 0) - serverNow
-		if skill == "shadow" and active > 0 then
-			skillBtn.Text = "\u{1F319} Sneaking " .. math.ceil(active) .. "s" .. (KEYS and " (R)" or "")
+		if skill == "tinker" and player:GetAttribute("ToolkitReady") then
+			skillBtn.Text = "\u{1F527} Toolkit ready!" .. (KEYS and " (R)" or "")
+			skillBtn.BackgroundColor3 = PUMP
+		elseif active > 0 then
+			skillBtn.Text = a[2] .. " " .. math.ceil(active) .. "s" .. (KEYS and " (R)" or "")
 			skillBtn.BackgroundColor3 = PUMP
 		elseif cool > 0 then
 			skillBtn.Text = SKILL_TEXT[skill] .. " " .. math.ceil(cool) .. "s" .. (KEYS and " (R)" or "")

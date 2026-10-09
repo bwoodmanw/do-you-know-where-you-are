@@ -2511,6 +2511,7 @@ do
 				end
 			end
 			say("clue", text)
+			plr:SetAttribute("ThinkUntil", workspace:GetServerTimeNow() + 15) -- the lit-up step stays 15 s
 			if p20 == "photo" and not once["photo" .. plr.UserId] then
 				once["photo" .. plr.UserId] = true
 				local k = revealAColour()
@@ -2531,6 +2532,7 @@ do
 				growVines(plr, spots[i], seconds, p10 == "snapper")
 			end
 			say("info", "\u{1F33F} " .. plr.DisplayName .. " grew vines across the doorway - the host will wade through slowly!")
+			plr:SetAttribute("VinesUntil", workspace:GetServerTimeNow() + seconds)
 			return true
 		end
 		return nil -- not a new button
@@ -2645,6 +2647,7 @@ do
 			-- the burst: Echo herself runs faster for a moment
 			plr:SetAttribute("TeamBurstMult", plr:GetAttribute("BurstMult") or Config.ECHO_BURST.mult)
 			plr:SetAttribute("TeamBurstUntil", workspace:GetServerTimeNow() + (plr:GetAttribute("BurstTime") or Config.ECHO_BURST.seconds))
+			plr:SetAttribute("EchoBurstUntil", plr:GetAttribute("TeamBurstUntil"))
 			if p10 == "echomap" then
 				say("hostmap", "\u{1F3A7} You can hear exactly where the host is!", { seconds = 5 }, plr)
 			end
@@ -2958,6 +2961,7 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 			end
 		else
 			barricade(plr, best)
+			plr:SetAttribute("BarricadeUntil", now + Config.BARRICADE.stands)
 		end
 	elseif skill == "glow" then
 		local head = plr.Character and plr.Character:FindFirstChild("Head")
