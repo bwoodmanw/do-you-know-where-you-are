@@ -195,13 +195,23 @@ only when everyone presses Play.
 3. Closed for now: our own skill animations recorded in Studio's Animation
    Editor (an Echo throw, a Muscle pound) - needs Brent's time in Studio.
 
+- 9-10 Oct (session 6, later): the Plushie Book, emotes, rumble, escape
+  photo, invite reward, Halloween Event page; object audit (3 groups) and the
+  round-ball fix (`Shapes.fix`); random loot; the new look (`STYLE_UPGRADE.md`:
+  lighting, Lobby tile screen, 34 icons, 12 posters, clean menus in Lobby and
+  game); party fixes (leave, host leaves closes, saves handed off, the game
+  waits for the whole party); carousel unicorns; one-press Confetti Cannon.
+
 ## Next
-1. Brent: publish both places once more; play-test live (TEST_PLAN 12-37).
-2. Host balance per difficulty from the 📊 Balance table after a week live.
-3. Thanksgiving event (after Halloween ends 1 Nov), then Christmas: a
-   secret seasonal floor and / or a community-wide goal (Brent's picks).
-4. Built 9 Oct: collectibles book (Plushie Book), emotes, rumble, escape photo, invite reward, Halloween event page art. Still: community group bonus (needs a Roblox group), translation fixes.
-5. Later: B8 analytics, subscriptions (parked).
+1. Brent: publish both places; live-test parties and TEST_PLAN 46-54.
+2. The Tinker cartoon test: import `tinker-toon.glb` as TinkerToon, compare
+   in Studio (`Config.STUDIO_TRY_MODEL`); if better, remake the others.
+3. Host balance from the 📊 Balance table (from about 15 Oct);
+   translation fixes after a week of data.
+4. Thanksgiving event (after 1 Nov; event page 7+ days ahead), then
+   Christmas: a secret seasonal floor and / or a community-wide goal.
+5. Community group bonus (once Brent makes the group).
+6. Later: B8 analytics, subscriptions (parked).
 
 ## Ideas from top Roblox adventure / horror games (8 Oct, Brent to pick)
 Already have: spectating when caught, game invites, Quick Play, daily and

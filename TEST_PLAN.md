@@ -1,6 +1,6 @@
-# Escape Crew - test plan (updated 9 Oct 2026)
+# Escape Crew - test plan (updated 10 Oct 2026)
 
-**Rounds 35 down to 12 (top): built 7-9 Oct, live since the 8 Oct publish, not yet fully play-tested.**
+**Rounds 54 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `aquarium`, the Aquarium's
 Main Hall); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
