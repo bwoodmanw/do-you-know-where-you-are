@@ -13,7 +13,11 @@ Config.GRACE_SPOOKY = 12
 
 Config.WALK = 12
 -- the Lobby's tile pictures (uploaded images; 0 = the emoji until then)
-Config.UI_ICONS = { quick = 0, solo = 0, party = 0, characters = 0, shop = 0, quests = 0, plushies = 0, invite = 0, join = 0, emote = 0, photo = 0, help = 0 }
+Config.UI_ICONS = { -- art/ui-icons/*.png (ids checked on Roblox's API, 9 Oct)
+	quick = 130312324808720, solo = 111604455080937, party = 132394341105577, characters = 91602978926313,
+	shop = 121270726908728, quests = 124036731444475, plushies = 83371177246486, invite = 135623826629543,
+	join = 93585865196369, emote = 138133123294708, photo = 107867066033525, help = 75310601818446,
+}
 -- trying a remade character in Studio only (STYLE_UPGRADE.md part B): the
 -- plain character uses this model instead when it is in ServerStorage/Characters,
 -- e.g. { Tinker = "TinkerToon" }. Live players never see it.
