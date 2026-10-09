@@ -303,6 +303,8 @@ for i = 1, 5 do
 	steps[i] = label(top, { Position = UDim2.new(0.02 + (i - 1) * 0.065, 0, 0.2, 0), Size = UDim2.new(0.065, 0, 0.6, 0), Text = "\u{1F463}", TextTransparency = 0.8, Visible = false })
 end
 local timerLabel = label(top, { Size = UDim2.new(0.26, 0, 0.7, 0), Position = UDim2.fromScale(0.36, 0.15), Text = "\u{23F1} --:--" })
+-- the room you're in, at the top left of the bar (the building and floor stay above the map)
+local topRoom = label(top, { Size = UDim2.new(0.33, 0, 0.7, 0), Position = UDim2.fromScale(0.02, 0.15), Text = "", TextColor3 = PUMP })
 -- the countdown: a flash at 1:00, bigger and shaking from 0:30, big red numbers from 0:10
 local countdown = { scale = Instance.new("UIScale"), last = nil, flashUntil = 0 }
 countdown.scale.Parent = timerLabel
@@ -1780,7 +1782,8 @@ RunService.RenderStepped:Connect(function(dt)
 	if RoundState:GetAttribute("Tower") then
 		where = "\u{1F5FC} " .. (RoundState:GetAttribute("TowerFloor") or 1) .. "/3 \u{00B7} " .. where
 	end
-	roomName.Text = r and (where .. " \u{00B7} " .. r) or where
+	roomName.Text = where
+	topRoom.Text = r and ("\u{1F4CD} " .. r) or ""
 	local host = workspace:FindFirstChild("PartyHost")
 	if host ~= breathFor then
 		breathFor = host
