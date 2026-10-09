@@ -2018,7 +2018,12 @@ function round.hostCaught(_, plr)
 		state.everCaught[plr.UserId] = true
 	end
 	if plr:GetAttribute("Shield") then
-		plr:SetAttribute("Shield", false)
+		local extra = plr:GetAttribute("ExtraShields") or 0
+		if extra > 0 then
+			plr:SetAttribute("ExtraShields", extra - 1) -- still shielded once more
+		else
+			plr:SetAttribute("Shield", false)
+		end
 		host:stun(2.5)
 		return say("shield", "POP! " .. plr.DisplayName .. "'s Party Shield saved them - run!")
 	end
@@ -2435,6 +2440,25 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 			return say("info", "No \u{1F4AA} crate close by - Barricade works next to one beside a doorway.", nil, plr)
 		end
 		barricade(plr, best)
+	elseif skill == "glow" then
+		local head = plr.Character and plr.Character:FindFirstChild("Head")
+		local bulb = head and head:FindFirstChild("GlowBulb")
+		local light = bulb and bulb:FindFirstChildOfClass("PointLight")
+		if not light then
+			return
+		end
+		local f = Config.GLOW_FLARE
+		local base = plr:GetAttribute("GlowRange") or 24
+		light.Range = math.min(60, base * f.mult)
+		light.Brightness = 3
+		plr:SetAttribute("FlareUntil", now + f.seconds)
+		Effects.at(plr, "light")
+		say("flare", plr.DisplayName .. "'s Flare lights up everything around!", { userId = plr.UserId })
+		task.delay(f.seconds, function()
+			if light.Parent then
+				light.Range, light.Brightness = plr:GetAttribute("GlowRange") or 24, 1.6
+			end
+		end)
 	elseif skill == "echo" then
 		if typeof(pos) ~= "Vector3" or (pos - hrp.Position).Magnitude > (plr:GetAttribute("EchoRange") or 70) then
 			return say("info", "Throw it somewhere closer!", nil, plr)
@@ -2865,6 +2889,7 @@ function round.start()
 		plr:SetAttribute("Caged", false)
 		plr:SetAttribute("Hidden", false)
 		plr:SetAttribute("Shield", false)
+		plr:SetAttribute("ExtraShields", 0)
 		plr:SetAttribute("Energy", 100)
 		local hrp = hrpOf(plr)
 		if hrp then
@@ -2879,11 +2904,15 @@ function round.start()
 		if pd and pd.loadout and #pd.loadout > 0 then
 			for _, id in ipairs(pd.loadout) do
 				if id == "shield" then
+					if plr:GetAttribute("Shield") then
+						-- a second Party Shield: saves you a second time
+						plr:SetAttribute("ExtraShields", (plr:GetAttribute("ExtraShields") or 0) + 1)
+					end
 					plr:SetAttribute("Shield", true)
 					plr:SetAttribute("ShieldBoost", true)
 					table.insert(on, id)
 				elseif id == "headstart" then
-					extraGrace = 10
+					extraGrace += 10 -- two Head Starts: 20 seconds
 					table.insert(on, id)
 				elseif Progress.BOOSTS[id] then
 					table.insert(bags[plr.UserId], id)

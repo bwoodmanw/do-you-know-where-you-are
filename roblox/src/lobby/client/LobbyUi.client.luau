@@ -1069,7 +1069,7 @@ end
 local shop = frame(gui, { Size = UDim2.fromOffset(620, 610), Position = UDim2.new(0.5, -310, 0.5, -305), Visible = false, ZIndex = 10 })
 corner(shop, 18)
 local shopTitle = label(shop, { Size = UDim2.new(1, -40, 0, 40), Position = UDim2.fromOffset(20, 10), Text = "\u{1F6D2} Boost Shop", TextColor3 = PUMP, ZIndex = 11 })
-label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "+ buys, - sells back. Tap Take on up to " .. Progress.MAX_BOOSTS .. " to bring into your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "+ buys, - sells back. Equip up to " .. Progress.MAX_BOOSTS .. " (two of the same is fine) for your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 local shopRows = {}
 for i, id in ipairs(Progress.BOOST_ORDER) do
 	local b = Progress.BOOSTS[id]
@@ -1087,39 +1087,49 @@ for i, id in ipairs(Progress.BOOST_ORDER) do
 	else
 		label(row, { Size = UDim2.fromOffset(46, 46), Position = UDim2.fromOffset(8, 9), Text = b.icon, ZIndex = 12 })
 	end
-	label(row, { Size = UDim2.fromOffset(200, 26), Position = UDim2.fromOffset(60, 6), Text = b.name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
-	label(row, { Size = UDim2.fromOffset(220, 22), Position = UDim2.fromOffset(60, 34), Text = b.say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
-	local owned = label(row, { Size = UDim2.fromOffset(84, 20), Position = UDim2.fromOffset(282, 4), Text = "You have 0", ZIndex = 12 })
-	button(row, "+ " .. b.price .. " \u{2B50}", { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(282, 30 - 18 + 14), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, function()
+	label(row, { Size = UDim2.fromOffset(205, 26), Position = UDim2.fromOffset(60, 6), Text = b.name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+	label(row, { Size = UDim2.fromOffset(205, 22), Position = UDim2.fromOffset(60, 34), Text = b.say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
+	-- everything on the right sits inside the row: have, price, + (buy), - (sell), Robux, Equip
+	local owned = label(row, { Size = UDim2.fromOffset(56, 40), Position = UDim2.fromOffset(268, 12), Text = "", ZIndex = 12 })
+	label(row, { Size = UDim2.fromOffset(60, 40), Position = UDim2.fromOffset(326, 12), Text = b.price .. " \u{2B50}", TextColor3 = Color3.fromRGB(255, 210, 63), ZIndex = 12 })
+	button(row, "+", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(388, 12), BackgroundColor3 = Color3.fromRGB(47, 140, 70), ZIndex = 12 }, function()
 		remotes.BuyBoost:FireServer(id)
 	end)
-	local minus = button(row, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(370, 26), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
+	local minus = button(row, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(430, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
 		remotes.SellBoost:FireServer(id)
 	end)
 	local productId = Config.ROBUX_PRODUCTS[id] or 0
 	if productId > 0 then
-		local rb = button(row, "", { Size = UDim2.fromOffset(46, 40), Position = UDim2.fromOffset(414, 26), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 12 }, function()
+		local rb = button(row, "", { Size = UDim2.fromOffset(44, 40), Position = UDim2.fromOffset(472, 12), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 12 }, function()
 			MarketplaceService:PromptProductPurchase(player, productId)
 		end)
 		local pic = robuxIcon(rb, 26)
 		pic.Position = UDim2.new(0.5, -13, 0.5, -13) -- the icon alone, in the middle
 		rb:FindFirstChildOfClass("UIPadding").PaddingRight = UDim.new(0, 8)
 	end
-	local take = button(row, "", { Size = UDim2.fromOffset(92, 40), Position = UDim2.fromOffset(496, 12), ZIndex = 12 }, function()
-		local list, have = {}, false
+	-- Equip: each tap packs one more (up to what you have and the limit); then empties
+	local take = button(row, "", { Size = UDim2.fromOffset(72, 40), Position = UDim2.fromOffset(518, 12), ZIndex = 12 }, function()
+		local list, mine = {}, 0
 		for _, x in ipairs(profile.loadout or {}) do
-			if x == id and not have then
-				have = true
-			else
-				table.insert(list, x)
+			if x == id then
+				mine += 1
 			end
+			table.insert(list, x)
 		end
-		if not have then
-			if #list >= Progress.MAX_BOOSTS then
-				notice("You can take " .. Progress.MAX_BOOSTS .. " boosts. Tap a \u{2705} Taking one to put it back first.")
-				return
-			end
+		local have = (profile.inv and profile.inv[id]) or 0
+		if mine < have and #list < Progress.MAX_BOOSTS then
 			table.insert(list, id)
+		elseif mine > 0 then
+			local kept = {}
+			for _, x in ipairs(list) do
+				if x ~= id then
+					table.insert(kept, x)
+				end
+			end
+			list = kept
+		else
+			notice("You can take " .. Progress.MAX_BOOSTS .. " boosts. Tap Equip on one to put it back first.")
+			return
 		end
 		-- show the change straight away; the server's copy follows
 		profile.loadout = list
@@ -1139,10 +1149,15 @@ repaintShop = function()
 	shopTitle.Text = "\u{1F6D2} Boost Shop  \u{00B7}  \u{2B50} " .. tostring(profile.points or 0) .. " points"
 	for id, r in pairs(shopRows) do
 		local n = (profile.inv and profile.inv[id]) or 0
-		r.owned.Text = "You have " .. n
-		local taking = table.find(profile.loadout or {}, id) ~= nil
-		r.take.Text = taking and "\u{2705} Taking" or "Take"
-		r.take.BackgroundColor3 = taking and Color3.fromRGB(47, 107, 58) or PLUM
+		r.owned.Text = "Have\n" .. n
+		local mine = 0
+		for _, x in ipairs(profile.loadout or {}) do
+			if x == id then
+				mine += 1
+			end
+		end
+		r.take.Text = mine == 0 and "Equip" or mine == 1 and "\u{2705} Equipped" or ("\u{2705} x" .. mine)
+		r.take.BackgroundColor3 = mine > 0 and Color3.fromRGB(47, 107, 58) or PLUM
 		r.take.Visible = n > 0
 		r.minus.Visible = n > 0
 	end
@@ -1153,7 +1168,7 @@ repaintShop = function()
 			table.insert(names, b.icon .. " " .. b.name)
 		end
 	end
-	packedText.Text = #names > 0 and ("Next game: " .. table.concat(names, " + ") .. "  (tap \u{2705} to put back)") or "Next game: nothing packed yet"
+	packedText.Text = #names > 0 and ("Next game: " .. table.concat(names, " + ") .. "  (tap Equipped to put back)") or "Next game: nothing equipped yet"
 
 end
 shopBtn.Activated:Connect(function()
@@ -1169,9 +1184,10 @@ local chars = frame(gui, { Size = UDim2.fromOffset(900, 560), Position = UDim2.n
 corner(chars, 18)
 label(chars, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "Characters & skill ladder", TextColor3 = PUMP, ZIndex = 11 })
 -- left: the character in 3D (drag to turn) and what their skill does
+local charName = label(chars, { Size = UDim2.fromOffset(230, 30), Position = UDim2.fromOffset(14, 54), Text = "", TextColor3 = PUMP, ZIndex = 11 })
 local view = Instance.new("ViewportFrame")
-view.Size = UDim2.fromOffset(230, 300)
-view.Position = UDim2.fromOffset(14, 56)
+view.Size = UDim2.fromOffset(230, 268)
+view.Position = UDim2.fromOffset(14, 88)
 view.BackgroundColor3 = Color3.fromRGB(40, 26, 58)
 view.Ambient = Color3.fromRGB(170, 160, 190)
 view.LightColor = Color3.fromRGB(255, 240, 220)
@@ -1442,7 +1458,8 @@ repaintChars = function()
 	local xp = (profile.xp and profile.xp[selected]) or 0
 	local lvl = Progress.level(xp)
 	local nextNeed = Progress.LEVEL_XP[lvl + 1]
-	charTitle.Text = sk.icon .. " " .. sk.name .. "  \u{00B7}  Level " .. lvl .. "  \u{00B7}  " .. xp .. " XP" .. (nextNeed and (" (next at " .. nextNeed .. ")") or " (max!)")
+	charName.Text = sk.icon .. " " .. sk.name
+	charTitle.Text = "Level " .. lvl .. "  \u{00B7}  " .. xp .. " XP" .. (nextNeed and (" (next at " .. nextNeed .. ")") or " (max!)")
 	local prev = Progress.LEVEL_XP[lvl]
 	xpFill.Size = UDim2.fromScale(nextNeed and math.clamp((xp - prev) / (nextNeed - prev), 0, 1) or 1, 1)
 	local picks = (profile.picks and profile.picks[selected]) or {}

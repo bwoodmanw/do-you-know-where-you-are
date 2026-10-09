@@ -129,7 +129,9 @@ Config.SKILLS = {
 	{ id = "bramble", name = "Bramble", icon = "\u{1F33F}", say = "Talks to plants", color = Color3.fromRGB(143, 209, 106) },
 }
 
-Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25 }
+Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30 }
+-- Glow's Flare: her light reaches `mult` times as far (at most 60 studs) for `seconds`
+Config.GLOW_FLARE = { seconds = 8, mult = 2.2 }
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
@@ -156,12 +158,12 @@ Config.BARRICADE = { crates = 6, reach = 16, stands = 10, hold = 4 }
 Config.SKILL_INFO = {
 	tinker = { about = "Picks the locked doors inside the house, so the team never needs to hunt for their keys - the Store Room too. Once a game Tinker can pick the big door's keypad to learn one colour of the code.", how = "Hold F at a locked door, or at the big door's keypad." },
 	shadow = { about = "Sneaks: for a few seconds the host can't see or grab Shadow. Shadow is also harder to spot than anyone.", how = "Press the Sneak button. It recharges." },
-	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as many points.", how = "Find the invitation in the Parlour and press E." },
+	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as many points.", how = "Find the twisty invitation (behind the first locked door) and press E." },
 	muscle = { about = "Shoves away junk heaped in blocked doorways (and the Junk Cupboard's bonus present), quietly. Barricade: slides a \u{1F4AA} crate into a doorway - friends squeeze through, the host has to smash it.", how = "Hold E at blocked doorways. Press Barricade next to a \u{1F4AA} crate." },
-	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.", how = "Press E at the painted wall in the Library." },
+	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code. Flare: her light reaches more than twice as far for 8 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
 	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). Her Shield button gives a friend a Party Shield. She frees every caged friend at once, faster than anyone.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
 	echo = { about = "Hears the host coming from further away, and throws a noise that sends the host to look somewhere else.", how = "Press Noise, then tap where to throw it." },
-	bramble = { about = "Talks to plants: the big plant in the Conservatory whispers the door code to Bramble.", how = "Press E at the plant." },
+	bramble = { about = "Talks to plants: the big plant in the Conservatory whispers the door code to Bramble.", how = "Find the big plant (in a room open from the start) and press E." },
 }
 
 Config.PHRASES = {

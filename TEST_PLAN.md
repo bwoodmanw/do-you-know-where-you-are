@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,14 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 27 (8 Oct) - shop rows, Equip, Flare, R key, names
+- [ ] Boost Shop: every row's buttons sit inside the purple row: Have n, price, green +, red -, Robux, Equip
+- [ ] Equip: tap once = Equipped, again (if you have 2) = x2, again = back to Equip; "Next game: ..." lists both; in the game two Party Shields save you twice, two Head Starts give 20 s, two tap boosts are both in your bag
+- [ ] Characters (Lobby): the name in orange above the 3D model; the line on the right starts "Level n"
+- [ ] In a game the skill button shows "(R)" on a computer; R uses the skill (Echo: R then click where to throw)
+- [ ] Glow: the skill button is "Flare (R)": her light reaches much further for 8 s, recharges in 30 s
+- [ ] Character select in a game: Brainy / Glow / Bramble name this floor's real room for the invitation / painted wall / plant
 
 ## Round 26 (8 Oct) - fixes after the first publish
 - [ ] Candy corns in a game look like candy corn: a rounded yellow base, an orange band, a white tip, bobbing and glowing

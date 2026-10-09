@@ -713,7 +713,28 @@ local function showChar()
 	infoName.Text = sk.name
 	infoSay.Text = sk.say
 	infoAbout.Text = si.about or ""
-	infoHow.Text = si.how and ("\u{1F3AE} " .. si.how) or ""
+	-- this floor's real room for the invitation, the painted wall and the plant
+	local how = si.how
+	local function roomOf(id)
+		for _, o in ipairs(HouseMap.objects or {}) do
+			if o.id == id then
+				local y = (o.kind == "invite" or o.kind == "uv") and o.y + 1 or o.y
+				for _, f in ipairs(HouseMap.floors) do
+					if o.x >= f.x0 and o.x <= f.x1 and y >= f.y0 and y <= f.y1 then
+						return f.name
+					end
+				end
+			end
+		end
+		return nil
+	end
+	local where = { brainy = { "invite", "Find the twisty invitation in the %s and press E." }, glow = { "uv", "Press E at the painted wall in the %s. Press Flare to light up far around you." }, bramble = { "plant", "Find the big plant in the %s and press E." } }
+	local w = where[sk.id]
+	local room = w and roomOf(w[1])
+	if room then
+		how = string.format(w[2], room)
+	end
+	infoHow.Text = how and ("\u{1F3AE} " .. how) or ""
 	local data = profileData()
 	local xp = data and data.xp and data.xp[sk.id] or 0
 	local level = Progress.level(xp)
@@ -945,7 +966,8 @@ Gamepad.panel(keypad)
 
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
-local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade" }
+local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare" }
+local KEYS = not TOUCH and UserInputService.KeyboardEnabled -- show the R key on the button
 do
 local function paintSkill()
 	local s = player:GetAttribute("Skill")
@@ -955,7 +977,7 @@ local function paintSkill()
 			icon = sk.icon
 		end
 	end
-	skillBtn.Text = SKILL_TEXT[s] or (icon .. " Skill")
+	skillBtn.Text = (SKILL_TEXT[s] or (icon .. " Skill")) .. (KEYS and " (R)" or "")
 end
 player:GetAttributeChangedSignal("Skill"):Connect(paintSkill)
 paintSkill()
@@ -999,6 +1021,12 @@ local function useSkill()
 	end
 end
 skillBtn.Activated:Connect(useSkill)
+-- R uses the skill from the keyboard
+UserInputService.InputBegan:Connect(function(input, used)
+	if not used and input.KeyCode == Enum.KeyCode.R then
+		useSkill()
+	end
+end)
 -- controller: RB uses the skill (not while choosing a character or caged)
 Gamepad.bind(Enum.KeyCode.ButtonR1, function()
 	if not picker.Visible and not player:GetAttribute("Caged") and not player:GetAttribute("Escaped") then
