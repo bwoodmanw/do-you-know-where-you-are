@@ -1551,11 +1551,13 @@ ladderScroll.BackgroundTransparency = 1
 ladderScroll.BorderSizePixel = 0
 ladderScroll.ScrollBarThickness = 8
 ladderScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 138, 31)
-ladderScroll.CanvasSize = UDim2.fromOffset(0, (Progress.MAX_LEVEL - 1) * 68)
+ladderScroll.CanvasSize = UDim2.fromOffset(0, (Progress.MAX_LEVEL - 1) * 68 + 8)
 ladderScroll.ZIndex = 11
 ladderScroll.Parent = right
 for level = 2, Progress.MAX_LEVEL do
-	local y = (level - 2) * 68
+	-- 4 down from the top: the buttons' cream edge is drawn just outside them,
+	-- and the list cut it off on the first row (level 2)
+	local y = (level - 2) * 68 + 4
 	local tag = label(ladderScroll, { Size = UDim2.fromOffset(70, 56), Position = UDim2.fromOffset(16, y), Text = "Lv " .. level, ZIndex = 12 })
 	local a = button(ladderScroll, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(92, y), ZIndex = 12 })
 	local b = button(ladderScroll, "", { Size = UDim2.fromOffset(265, 56), Position = UDim2.fromOffset(364, y), ZIndex = 12 })
