@@ -307,6 +307,8 @@ PIECES.Monitors = { size = Vector3.new(5, 6, 3), build = function(f, b)
 	add(f, b, { size = Vector3.new(4.6, 2.8, 2), at = Vector3.new(0, 1.5, 1.8), color = C(55, 60, 70), mat = METAL, alpha = 0.1 })
 	for i = -1, 1 do
 		local scr = add(f, b, { size = Vector3.new(1.4, 1, 0.1), at = Vector3.new(i * 1.55, 4, 2.4), color = C(40, 160, 255), mat = NEON })
+		add(f, b, { size = Vector3.new(1.55, 1.15, 0.35), at = Vector3.new(i * 1.55, 4, 2.62), color = C(35, 35, 40) }) -- its case
+		add(f, b, { size = Vector3.new(0.25, 0.4, 0.25), at = Vector3.new(i * 1.55, 3.35, 2.6), color = C(35, 35, 40) }) -- its stand
 		label(scr, Enum.NormalId.Front, ({ "\u{1F4F9}", "\u{1F47B}", "\u{1F4C8}" })[i + 2])
 	end
 end }
@@ -674,10 +676,30 @@ end }
 PIECES.RollingBarrel = { size = Vector3.new(7, 7, 4), build = function(f, b)
 	-- a giant striped barrel on its side (the ride's spare), slowly rolling in place
 	local barrel = add(f, b, { size = Vector3.new(6.4, 6, 6), at = Vector3.new(0, 3.1, T / 2 - 3.2), shape = Enum.PartType.Cylinder, color = C(200, 40, 60), mat = WOOD })
+	local turning = { barrel }
 	for i = -1, 1 do
-		add(f, b, { size = Vector3.new(0.6, 6.15, 6.15), at = Vector3.new(i * 2.2, 3.1, T / 2 - 3.2), shape = Enum.PartType.Cylinder, color = C(250, 240, 225), mat = WOOD })
+		table.insert(turning, add(f, b, { size = Vector3.new(0.6, 6.15, 6.15), at = Vector3.new(i * 2.2, 3.1, T / 2 - 3.2), shape = Enum.PartType.Cylinder, color = C(250, 240, 225), mat = WOOD }))
 	end
-	local _ = barrel
+	-- dark planks along it, so you can see it roll
+	for k = 0, 5 do
+		local a = k * math.pi / 3
+		table.insert(turning, add(f, b, { size = Vector3.new(6.45, 0.25, 0.5), at = Vector3.new(0, 3.1 + math.cos(a) * 2.95, T / 2 - 3.2 + math.sin(a) * 2.95), rot = CFrame.Angles(a, 0, 0), color = C(120, 25, 40), mat = WOOD }))
+	end
+	local centre = barrel.CFrame
+	local offsets = {}
+	for _, p in ipairs(turning) do
+		offsets[p] = centre:ToObjectSpace(p.CFrame)
+	end
+	task.spawn(function()
+		local angle = 0
+		while barrel.Parent do
+			angle += 0.05 * 0.7
+			for p, off in pairs(offsets) do
+				p.CFrame = centre * CFrame.Angles(angle, 0, 0) * off
+			end
+			task.wait(0.05)
+		end
+	end)
 	label(add(f, b, { size = Vector3.new(4, 1.2, 0.1), at = Vector3.new(0, 8, T / 2 - 0.1), color = C(40, 20, 50) }), Enum.NormalId.Front, "ROLL UP! ROLL UP!", C(255, 210, 63))
 end }
 
@@ -868,6 +890,11 @@ end }
 PIECES.Easels = { size = Vector3.new(6, 6, 2), build = function(f, b)
 	for i = -1, 1, 2 do
 		add(f, b, { size = Vector3.new(0.2, 5, 0.2), at = Vector3.new(i * 1.8, 2.5, 1.5), color = C(150, 100, 60), mat = WOOD })
+		-- two front legs and the ledge the picture stands on
+		for _, s in ipairs({ -1, 1 }) do
+			add(f, b, { size = Vector3.new(0.15, 4.4, 0.15), at = Vector3.new(i * 1.8 + s * 0.75, 2.2, 1.05), rot = CFrame.Angles(math.rad(-6), 0, math.rad(s * 10)), color = C(150, 100, 60), mat = WOOD })
+		end
+		add(f, b, { size = Vector3.new(2.7, 0.15, 0.45), at = Vector3.new(i * 1.8, 2.85, 1.2), color = C(150, 100, 60), mat = WOOD })
 		local c = add(f, b, { size = Vector3.new(2.6, 2.2, 0.15), at = Vector3.new(i * 1.8, 4, 1.3), color = C(240, 235, 220) })
 		label(c, Enum.NormalId.Front, i < 0 and "\u{1F5BC}" or "\u{1F305}")
 	end

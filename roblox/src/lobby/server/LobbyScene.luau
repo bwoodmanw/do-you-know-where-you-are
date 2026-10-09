@@ -22,6 +22,20 @@ local function part(parent, props)
 	return p
 end
 
+-- a jack-o'-lantern's glowing face (two eyes and a grin) facing `toward`, and a stem
+local function jackFace(folder, pumpkin, toward)
+	local s = pumpkin.Size
+	local dir = (toward - pumpkin.Position) * Vector3.new(1, 0, 1)
+	dir = dir.Magnitude > 0.1 and dir.Unit or Vector3.new(0, 0, -1)
+	local face = CFrame.lookAt(pumpkin.Position, pumpkin.Position + dir)
+	local GLOW = Color3.fromRGB(255, 210, 80)
+	for _, x in ipairs({ -0.22, 0.22 }) do
+		part(folder, { Name = "JackEye", Size = Vector3.new(s.X * 0.16, s.X * 0.16, 0.1), CFrame = face * CFrame.new(x * s.X, s.Y * 0.12, -s.Z * 0.47) * CFrame.Angles(0, 0, math.rad(45)), Color = GLOW, Material = Enum.Material.Neon, CanCollide = false })
+	end
+	part(folder, { Name = "JackGrin", Size = Vector3.new(s.X * 0.5, s.Y * 0.1, 0.1), CFrame = face * CFrame.new(0, -s.Y * 0.16, -s.Z * 0.47), Color = GLOW, Material = Enum.Material.Neon, CanCollide = false })
+	part(folder, { Name = "JackStem", Size = Vector3.new(s.X * 0.15, s.Y * 0.25, s.X * 0.15), Position = pumpkin.Position + Vector3.new(0, s.Y * 0.55, 0), Color = Color3.fromRGB(70, 110, 40), CanCollide = false })
+end
+
 -- a seat you can sit on by walking into it or pressing E; jump to get up
 local function seat(parent, cf, size, color)
 	local s = Instance.new("Seat")
@@ -363,6 +377,7 @@ function Scene.perimeter()
 	for i = 1, #spots, 3 do
 		local p = spots[i] + Vector3.new(spots[i].X < 0 and 3 or spots[i].X > 0 and -3 or 0, 0, spots[i].Z > E - 10 and -3 or 7)
 		local pumpkin = part(folder, { Name = "JackOLantern", Shape = Enum.PartType.Ball, Size = Vector3.new(2.6, 2.2, 2.6), Position = p + Vector3.new(0, 1.1, 0), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
+		jackFace(folder, pumpkin, Vector3.new(0, p.Y + 1.1, 0))
 		local glow = Instance.new("PointLight")
 		glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 140, 40), 12, 1.2
 		glow.Parent = pumpkin
@@ -391,6 +406,11 @@ function Scene.halloween()
 		part(folder, { Name = "HayBale", Size = Vector3.new(5, 2.6, 3), Position = Vector3.new(x, 1.3, -62), Color = Color3.fromRGB(215, 180, 90), Material = Enum.Material.Fabric })
 		for i = -1, 1 do
 			local pk = part(folder, { Name = "Pumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.4, 1.6), Position = Vector3.new(x + i * 1.6, 3.3, -62), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
+			if i == 0 then
+				jackFace(folder, pk, pk.Position + Vector3.new(0, 0, 10)) -- the lit one grins down the lane
+			else
+				part(folder, { Name = "PumpkinStem", Size = Vector3.new(0.25, 0.4, 0.25), Position = pk.Position + Vector3.new(0, 0.85, 0), Color = Color3.fromRGB(70, 110, 40), CanCollide = false })
+			end
 			if i == 0 then
 				local l = Instance.new("PointLight")
 				l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 140, 40), 10, 1
@@ -609,7 +629,7 @@ function Scene.fun()
 
 	-- a giant pumpkin that giggles and glows when you poke it
 	local pumpkin = part(folder, { Name = "GiantPumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(6, 5, 6), Position = Vector3.new(16, 2.5, 54), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
-	part(folder, { Name = "Stem", Size = Vector3.new(0.6, 1.2, 0.6), Position = Vector3.new(16, 5.4, 54), Color = Color3.fromRGB(70, 110, 40) })
+	local stem = part(folder, { Name = "Stem", Size = Vector3.new(0.6, 1.2, 0.6), Position = Vector3.new(16, 5.4, 54), Color = Color3.fromRGB(70, 110, 40) })
 	local glow = Instance.new("PointLight")
 	glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 140, 40), 14, 0
 	glow.Parent = pumpkin
@@ -622,7 +642,10 @@ function Scene.fun()
 		busy = true
 		sound(pumpkin, "giggle", 1)
 		TweenService:Create(glow, TweenInfo.new(0.3), { Brightness = 4 }):Play()
-		TweenService:Create(pumpkin, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, true), { Size = Vector3.new(6.8, 5.8, 6.8) }):Play()
+		-- it swells upward (its bottom stays on the ground) and lifts its stem
+		local swell = TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, true)
+		TweenService:Create(pumpkin, swell, { Size = Vector3.new(6.8, 5.8, 6.8), Position = Vector3.new(16, 2.9, 54) }):Play()
+		TweenService:Create(stem, swell, { Position = Vector3.new(16, 6.2, 54) }):Play()
 		task.wait(1.6)
 		TweenService:Create(glow, TweenInfo.new(0.8), { Brightness = 0 }):Play()
 		task.wait(1)

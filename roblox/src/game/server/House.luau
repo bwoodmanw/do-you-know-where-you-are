@@ -361,7 +361,7 @@ end
 -- clown car, circus seats, a band stage; the carousel and the spinning floor
 -- turn slowly and carry you round if you hop on (built once, from their corner)
 local CARNIVAL_STRIPES = { Color3.fromRGB(220, 40, 60), Color3.fromRGB(250, 240, 225) }
-local function spin(parts, centre, speed, platform)
+local function spin(parts, centre, speed, platform, bobs)
 	-- every part keeps its place relative to the centre while the whole thing turns
 	local offsets = {}
 	for _, pt in ipairs(parts) do
@@ -380,7 +380,8 @@ local function spin(parts, centre, speed, platform)
 		angle += dt * speed
 		local base = CFrame.new(centre) * CFrame.Angles(0, angle, 0)
 		for pt, off in pairs(offsets) do
-			pt.CFrame = base * off
+			local bob = bobs and bobs[pt]
+			pt.CFrame = bob and (base * off + Vector3.new(0, math.sin(angle * 5 + bob) * 0.45, 0)) or base * off
 		end
 	end)
 end
@@ -401,19 +402,23 @@ local function carnivalFurniture(root, kind, x, y, map)
 			return b
 		end
 		local up = CFrame.Angles(0, 0, math.rad(90))
+		local horseBob -- the horse parts' bobbing (carousel only)
 		if kind == "carousel" then
 			local platform = bit({ Name = "CarouselFloor", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.6, r * 2, r * 2), CFrame = CFrame.new(centre + Vector3.new(0, 0.3, 0)) * up, Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(150, 60, 70) })
 			bit({ Name = "CarouselPole", Shape = Enum.PartType.Cylinder, Size = Vector3.new(11, 2.2, 2.2), CFrame = CFrame.new(centre + Vector3.new(0, 6, 0)) * up, Material = Enum.Material.Foil, Color = Color3.fromRGB(230, 190, 80) })
 			bit({ Name = "CarouselRoof", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.8, r * 2 + 1, r * 2 + 1), CFrame = CFrame.new(centre + Vector3.new(0, 11.6, 0)) * up, Material = Enum.Material.Fabric, Color = Color3.fromRGB(220, 40, 60), CanCollide = false })
 			bit({ Name = "CarouselTop", Shape = Enum.PartType.Ball, Size = Vector3.new(5, 3, 5), CFrame = CFrame.new(centre + Vector3.new(0, 12.6, 0)), Material = Enum.Material.Fabric, Color = Color3.fromRGB(250, 240, 225), CanCollide = false })
 			-- six painted horses (and a pumpkin coach) on golden poles, bobbing gently
+			horseBob = {}
 			local cols = { Color3.fromRGB(250, 245, 235), Color3.fromRGB(120, 80, 170), Color3.fromRGB(255, 150, 60), Color3.fromRGB(90, 170, 220), Color3.fromRGB(240, 120, 170), Color3.fromRGB(120, 200, 120) }
 			for i = 1, 6 do
 				local a = i / 6 * math.pi * 2
 				local p0 = centre + Vector3.new(math.cos(a) * r * 0.68, 0, math.sin(a) * r * 0.68)
 				local face = CFrame.lookAt(p0, p0 + Vector3.new(-math.sin(a), 0, math.cos(a)))
 				local function h(size, off, col, mat)
-					return bit({ Name = "Horse", Size = size, CFrame = face * CFrame.new(off), Color = col, Material = mat or Enum.Material.SmoothPlastic, CanCollide = false })
+					local hp = bit({ Name = "Horse", Size = size, CFrame = face * CFrame.new(off), Color = col, Material = mat or Enum.Material.SmoothPlastic, CanCollide = false })
+					horseBob[hp] = i * 1.9 -- each horse goes up and down in its own time
+					return hp
 				end
 				bit({ Name = "HorsePole", Shape = Enum.PartType.Cylinder, Size = Vector3.new(11, 0.35, 0.35), CFrame = CFrame.new(p0 + Vector3.new(0, 6, 0)) * up, Material = Enum.Material.Foil, Color = Color3.fromRGB(230, 190, 80), CanCollide = false })
 				h(Vector3.new(1.3, 1.5, 3.2), Vector3.new(0, 3.6, 0), cols[i])
@@ -437,7 +442,7 @@ local function carnivalFurniture(root, kind, x, y, map)
 					l.Parent = bulb
 				end
 			end
-			spin(moving, centre, 0.35, platform)
+			spin(moving, centre, 0.35, platform, horseBob)
 		else
 			-- the Spinning Room's floor: a big turning disc with a swirl on it
 			local platform = bit({ Name = "SpinnerFloor", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, r * 2, r * 2), CFrame = CFrame.new(centre + Vector3.new(0, 0.2, 0)) * up, Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(110, 60, 160) })
@@ -594,8 +599,11 @@ local function aquariumFurniture(root, kind, x, y, map)
 	elseif kind == "shelf" and string.find(room, "kelp", 1, true) then
 		-- tall waving kelp
 		for i = -1, 1 do
-			local k = part(root, { Name = "Kelp", Size = Vector3.new(0.6, 9 + (x + i) % 3, 0.3), Position = at(x, y, 4.8) + Vector3.new(i * 2.2, 0, (i % 2) * 1.2), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(60, 140 + i * 15, 70), CanCollide = false })
-			TweenService:Create(k, TweenInfo.new(2 + (x % 3) * 0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Orientation = Vector3.new(0, 0, 8) }):Play()
+			local kh = 9 + (x + i) % 3
+			-- sways like a hinge at the rock, not round its middle
+			local root0 = CFrame.new(at(x, y, 1.6) + Vector3.new(i * 2.2, 0, (i % 2) * 1.2))
+			local k = part(root, { Name = "Kelp", Size = Vector3.new(0.6, kh, 0.3), CFrame = root0 * CFrame.Angles(0, 0, math.rad(-6)) * CFrame.new(0, kh / 2, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(60, 140 + i * 15, 70), CanCollide = false })
+			TweenService:Create(k, TweenInfo.new(2 + (x % 3) * 0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = root0 * CFrame.Angles(0, 0, math.rad(6)) * CFrame.new(0, kh / 2, 0) }):Play()
 		end
 		part(root, { Name = "KelpRock", Size = Vector3.new(T, 1.6, T * 0.6), Position = at(x, y, 0.8), Material = Enum.Material.Slate, Color = Color3.fromRGB(70, 75, 85) })
 		part(root, { Name = "KelpBlock", Size = Vector3.new(T, 8, T * 0.6), Position = at(x, y, 4), Transparency = 1 })
@@ -810,6 +818,9 @@ local function hospitalFurniture(root, kind, x, y)
 		part(root, { Name = "DeskBody", Size = Vector3.new(T * 0.9, 3.4, T * 0.6), Position = at(x, y, 1.7), Material = Enum.Material.Metal, Color = Color3.fromRGB(140, 146, 152) })
 	elseif kind == "bath" then
 		part(root, { Name = "Tub", Size = Vector3.new(T, 3, T), Position = at(x, y, 1.5), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(240, 242, 245) })
+		part(root, { Name = "TubWater", Size = Vector3.new(T - 1.2, 0.12, T - 1.2), Position = at(x, y, 3.02), Material = Enum.Material.Glass, Color = Color3.fromRGB(120, 190, 230), Transparency = 0.15, CanCollide = false })
+		part(root, { Name = "TubTap", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.9, 0.35, 0.35), CFrame = CFrame.new(at(x, y, 3.6) + Vector3.new(0, 0, T / 2 - 0.4)) * CFrame.Angles(0, 0, math.rad(90)), Material = Enum.Material.Metal, Color = Color3.fromRGB(200, 205, 212), CanCollide = false })
+		part(root, { Name = "TubSpout", Size = Vector3.new(0.3, 0.3, 0.9), Position = at(x, y, 4) + Vector3.new(0, 0, T / 2 - 0.75), Material = Enum.Material.Metal, Color = Color3.fromRGB(200, 205, 212), CanCollide = false })
 	else
 		part(root, { Name = "SteelTable", Size = Vector3.new(T, 0.6, T), Position = at(x, y, 3.4), Material = Enum.Material.Metal, Color = Color3.fromRGB(200, 205, 210) })
 		for _, o in ipairs({ { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } }) do
@@ -953,6 +964,9 @@ function House.build(map)
 					part(root, { Name = "DeskBody", Size = Vector3.new(T * 0.9, 3.4, T * 0.6), Position = at(x, y, 1.7), Material = Enum.Material.Wood, Color = Color3.fromRGB(100, 66, 40) })
 				elseif kind == "bath" then
 					part(root, { Name = "Bath", Size = Vector3.new(T, 3, T), Position = at(x, y, 1.5), Material = Enum.Material.Marble, Color = Color3.fromRGB(235, 235, 240) })
+					part(root, { Name = "TubWater", Size = Vector3.new(T - 1.2, 0.12, T - 1.2), Position = at(x, y, 3.02), Material = Enum.Material.Glass, Color = Color3.fromRGB(120, 190, 230), Transparency = 0.15, CanCollide = false })
+					part(root, { Name = "TubTap", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.9, 0.35, 0.35), CFrame = CFrame.new(at(x, y, 3.6) + Vector3.new(0, 0, T / 2 - 0.4)) * CFrame.Angles(0, 0, math.rad(90)), Material = Enum.Material.Metal, Color = Color3.fromRGB(200, 205, 212), CanCollide = false })
+					part(root, { Name = "TubSpout", Size = Vector3.new(0.3, 0.3, 0.9), Position = at(x, y, 4) + Vector3.new(0, 0, T / 2 - 0.75), Material = Enum.Material.Metal, Color = Color3.fromRGB(200, 205, 212), CanCollide = false })
 				elseif kind == "planter" then
 					part(root, { Name = "Planter", Size = Vector3.new(T, 3, T * 0.7), Position = at(x, y, 1.5), Material = Enum.Material.Brick, Color = Color3.fromRGB(150, 80, 60) })
 					for i = -1, 1 do
