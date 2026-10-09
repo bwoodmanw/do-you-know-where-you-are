@@ -278,6 +278,9 @@ Config.EVENT = { name = "Candy Corn Hunt", ends = 1793505600, perFloor = 6, poin
 	giftCorn = { 25, 100 }, giftPoints = { 500, 2000 } }
 
 -- icons for things you pick up
+-- what hides on each floor: these always, plus one of `extra`, each in a
+-- random present or search spot (any look; never one holding a key)
+Config.LOOT = { always = { "candy", "shield" }, extra = { "energy", "clue", "freeze" } }
 Config.ITEM_ICONS = { candy = "\u{1F36C}", shield = "\u{1F6E1}", balloon = "\u{1F388}" }
 
 -- the two places in the experience: players arrive in the Lobby; a party is

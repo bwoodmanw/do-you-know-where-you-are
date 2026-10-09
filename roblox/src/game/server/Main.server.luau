@@ -752,6 +752,56 @@ local NOTHING = {
 	{ "Squeak! Bats! Try somewhere else.", "bats" },
 }
 
+-- a boost happens: from the bag (tapped) or found in a present / search spot
+local function applyBoost(plr, id)
+	if id == "candy" then
+		Boost:FireClient(plr, "candy")
+	elseif id == "energy" then
+		Boost:FireClient(plr, "stamina")
+	elseif id == "shield" then
+		plr:SetAttribute("Shield", true)
+	elseif id == "freeze" then
+		if host and host.model then
+			host:stun(10)
+			RoundState:SetAttribute("FrozenUntil", workspace:GetServerTimeNow() + 10)
+			local ice = Instance.new("Highlight")
+			ice.FillColor = Color3.fromRGB(140, 220, 255)
+			ice.OutlineColor = Color3.new(1, 1, 1)
+			ice.FillTransparency = 0.35
+			ice.Parent = host.model
+			Effects.burst(host.root.Position, "reveal")
+			task.delay(10, function()
+				ice:Destroy()
+			end)
+		end
+	elseif id == "clue" then
+		state.cluesLeft += 1
+		state.freeClues = (state.freeClues or 0) + 1
+		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+		RoundState:SetAttribute("FreeClues", state.freeClues)
+	end
+end
+
+-- this floor's hidden item, found: it works at once (found items never go in
+-- the bag - the bag goes back to your saved boosts when you leave)
+local FOUND_TEXT = {
+	candy = " found Candy Corn - run without getting puffed!",
+	shield = " found a Party Shield - it saves you from one grab!",
+	energy = " found a Second Wind - all their stamina back!",
+	clue = " found an Extra Clue - the team gets a free clue!",
+	freeze = " found a Frozen Pop - the host is frozen for 10 seconds!",
+}
+local function foundLoot(plr, item, pos)
+	local b = Progress.BOOSTS[item]
+	if not b then
+		return
+	end
+	addPoints(plr, 5)
+	Effects.burst(pos, "boost")
+	applyBoost(plr, item)
+	say("boost", plr.DisplayName .. (FOUND_TEXT[item] or (" found " .. b.name .. "!")), { icon = b.icon, userId = plr.UserId, item = b.name })
+end
+
 -- a locked inner door opens (with its key, or Tinker picks it)
 local function openLock(plr, id, how)
 	if world.unlocked[id] then
@@ -934,21 +984,13 @@ local function wirePrompts()
 				entry.opened = true
 				entry.prompt.Enabled = false
 				House.openObject(entry)
-				if not def.boost then
+				local item = world.lootIn and world.lootIn[id]
+				if not item then
 					Effects.sound(entry.part.Position, "hide")
 					Effects.surprise(entry.part.Position, "tissue")
 					return say("info", "Empty! Just tissue paper.", nil, plr)
 				end
-				addPoints(plr, 5)
-				if def.boost == "shield" then
-					plr:SetAttribute("Shield", true)
-					Effects.burst(entry.part.Position, "boost")
-					say("boost", plr.DisplayName .. " found a Party Shield - it saves you from one grab!", { icon = Config.ITEM_ICONS.shield, userId = plr.UserId, item = "Party Shield" })
-				else
-					Boost:FireClient(plr, "candy")
-					Effects.burst(entry.part.Position, "boost")
-					say("boost", plr.DisplayName .. " found Candy Corn - run without getting puffed!", { icon = Config.ITEM_ICONS.candy, userId = plr.UserId, item = "Candy Corn" })
-				end
+				foundLoot(plr, item, entry.part.Position)
 			end)
 		elseif def.kind == "invite" then
 			entry.prompt.Triggered:Connect(function(plr)
@@ -1211,6 +1253,8 @@ local function wirePrompts()
 					addPoints(plr, 10)
 					quest(plr, "key")
 					say("key", plr.DisplayName .. " found the key to the " .. world.objects[lock].def.name .. "!", { icon = "\u{1F511}", userId = plr.UserId, item = "Key" })
+				elseif world.lootIn and world.lootIn[id] then
+					foundLoot(plr, world.lootIn[id], entry.part.Position)
 				else
 					local what = NOTHING[math.random(1, #NOTHING)]
 					Effects.surprise(entry.part.Position, what[2])
@@ -3314,30 +3358,7 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 	local boost = Progress.BOOSTS[id]
 	table.remove(bag, i)
 	paintBag(plr)
-	if id == "candy" then
-		Boost:FireClient(plr, "candy")
-	elseif id == "energy" then
-		Boost:FireClient(plr, "stamina")
-	elseif id == "freeze" then
-		if host and host.model then
-			host:stun(10)
-			RoundState:SetAttribute("FrozenUntil", workspace:GetServerTimeNow() + 10)
-			local ice = Instance.new("Highlight")
-			ice.FillColor = Color3.fromRGB(140, 220, 255)
-			ice.OutlineColor = Color3.new(1, 1, 1)
-			ice.FillTransparency = 0.35
-			ice.Parent = host.model
-			Effects.burst(host.root.Position, "reveal")
-			task.delay(10, function()
-				ice:Destroy()
-			end)
-		end
-	elseif id == "clue" then
-		state.cluesLeft += 1
-		state.freeClues = (state.freeClues or 0) + 1
-		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
-		RoundState:SetAttribute("FreeClues", state.freeClues)
-	end
+	applyBoost(plr, id)
 	Effects.at(plr, "boost")
 	local spot = hrpOf(plr)
 	if spot and (id == "candy" or id == "energy") then
@@ -3603,6 +3624,26 @@ function round.start()
 		end
 		RoundState:SetAttribute("Lock_" .. lock[1], false)
 		RoundState:SetAttribute("Key_" .. lock[1], false)
+	end
+	-- this floor's items (Candy Corn, a Party Shield and one more) each hide in
+	-- a random present or search spot of any look - never one holding a key
+	world.lootIn = {}
+	do
+		local spots = {}
+		for oid, e in pairs(world.objects) do
+			if e.def and (e.def.kind == "present" or (e.def.kind == "search" and not world.keyIn[oid])) then
+				table.insert(spots, oid)
+			end
+		end
+		table.sort(spots) -- (pairs order is not random: shuffle from a sorted list)
+		local items = table.clone(Config.LOOT.always)
+		table.insert(items, Config.LOOT.extra[math.random(1, #Config.LOOT.extra)])
+		for _, item in ipairs(items) do
+			if #spots == 0 then
+				break
+			end
+			world.lootIn[table.remove(spots, math.random(1, #spots))] = item
+		end
 	end
 	local code = {}
 	for i = 1, 3 do

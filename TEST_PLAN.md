@@ -17,6 +17,16 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 47 (9 Oct) - items hide anywhere
+- [ ] Each floor hides 3 items: Candy Corn, a Party Shield, and one of Second Wind / Extra Clue / Frozen Pop - in random presents AND search spots (drawers, crates, cake boxes, coats, toy boxes, vases, laundry, chests); the rest are empty (play a few games: items turn up in different kinds of things)
+- [ ] Finding one works at once: "<name> found a Frozen Pop - the host is frozen for 10 seconds!" etc.; keys and Confetti Cannons still turn up as before
+- [ ] The bag's tap boosts (from the Lobby shop) still work the same
+
+## Round 46 (9 Oct) - the object audit (photos please)
+Group 1: Lobby cars on their wheels; swing set legs an A; the great tank's shark (snout, fins, crescent tail, eyes, gills); the Whale Skeleton Hall (spine on posts, arching ribs, skull, flukes); the duck pond duck (head, beak, eyes bob together); starfish with five arms; jellyfish with tentacles, inside their tank; penguins (head, face, beak, flippers, feet, waddle as one); the Gummy Bear Man's puddle bears (faces) fade when it melts
+Group 2: the rocking horse; the submarine; the clown car; carnival stalls (posts, two prize teddies); bumper cars; coral; Tinker's wind-up mouse (ears, eyes, tail); bats from empty spots have wings; drum stands, radio desk legs, chair legs and backs, the crib, the curtain stand, candelabra arms, the bell's hanger, the water-tank pipe, the doll shelf on the wall, the safety net's legs, the party chair and its balloon strings, the Lobby gate balloon strings; teddies on the prize wall / in the crib / on shelves; Bramble's snapper (mouth and teeth after the stem grows), vines sink to the floor
+Group 3: the rolling barrel rolls; carousel horses bob; kelp sways from the rock; bathtubs have water and taps; monitors on stands; easels with legs; Lobby jack-o'-lanterns have glowing faces and stems; the giant pumpkin grows upward when poked
+
 ## Round 45 (9 Oct) - Ghostly Shadow size, the scare on every host (after publishing)
 - [ ] Characters: Ghostly Shadow now 15% bigger in the preview (Config.PREVIEW_SCALE) - the same size as plain Shadow? (photo; tell Claude a number if not)
 - [ ] Spooky game with the Gummy Bear Man (and each other host): a roar and his face rushes at you when he comes out - never only a black flash

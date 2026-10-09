@@ -6,8 +6,8 @@
 	two in step.
 
 	Every game: 3 clue balloons (two in rooms open from the start, one behind
-	the first locked door), 3 trick balloons, the plant (start rooms), 2 real
-	and 2 empty presents, 11 search spots (7 / 3 / 1 by zone; the keys go in
+	the first locked door), 3 trick balloons, the plant (start rooms), 4
+	presents (Main hides the floor's 3 items in random presents / search spots), 11 search spots (7 / 3 / 1 by zone; the keys go in
 	these), 8 hiding places in different rooms (plus more until every two
 	rooms joined by a doorway share one; each fits 1-3), and the invitation and painted
 	wall behind the first locked door.
