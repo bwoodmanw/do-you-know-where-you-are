@@ -374,7 +374,7 @@ menuStroke.Parent = menu
 local menuPad = Instance.new("UIPadding")
 menuPad.PaddingTop, menuPad.PaddingBottom = UDim.new(0, 16), UDim.new(0, 16)
 menuPad.Parent = menu
-list(menu, 14)
+list(menu, 10)
 label(menu, { Size = UDim2.new(0.9, 0, 0, 20), Text = "THE PARTY AT THE END OF THE LANE", TextColor3 = Color3.fromRGB(255, 217, 168), LayoutOrder = 1 })
 label(menu, { Size = UDim2.new(0.9, 0, 0, 48), Text = "ESCAPE CREW", TextColor3 = PUMP, LayoutOrder = 2 })
 button(menu, "\u{26A1} Quick Play", { Size = UDim2.new(0.86, 0, 0, 46), BackgroundColor3 = Color3.fromRGB(70, 209, 96), TextColor3 = NIGHT, LayoutOrder = 3 }, function()
@@ -872,16 +872,18 @@ end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 do
 	-- emotes in the Lobby too (G / the right stick), under the points
-	local emoteBtn = button(gui, (UserInputService.KeyboardEnabled and not UserInputService.TouchEnabled) and "\u{1F604} Emote (G)" or "\u{1F604} Emote", { Size = UDim2.fromOffset(140, 40), Position = UDim2.new(1, -160, 0, 106), ZIndex = 5 })
+	-- a row of the menu, under How to play (they sat on the sound buttons before)
+	local row = frame(menu, { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 11, BackgroundTransparency = 1 })
+	local emoteBtn = button(row, (UserInputService.KeyboardEnabled and not UserInputService.TouchEnabled) and "\u{1F604} Emote (G)" or "\u{1F604} Emote", { Size = UDim2.new(0.5, -4, 1, 0) })
 	require(ReplicatedStorage.Shared.Emotes).mount(gui, emoteBtn, UDim2.new(0.5, -218, 1, -260))
 	-- the escape photo setting (the only way back on once it is Off)
-	local MODES = { every = "Every escape", daily = "Once a day", off = "Off" }
+	local MODES = { every = "Every escape", daily = "Daily", off = "Off" }
 	local NEXT = { every = "daily", daily = "off", off = "every" }
-	local photoBtn = button(gui, "", { Size = UDim2.fromOffset(200, 40), Position = UDim2.new(1, -370, 0, 106), ZIndex = 5 }, function()
+	local photoBtn = button(row, "", { Size = UDim2.new(0.5, -4, 1, 0), Position = UDim2.new(0.5, 4, 0, 0) }, function()
 		remotes:WaitForChild("SetPhoto"):FireServer(NEXT[player:GetAttribute("PhotoMode") or "daily"])
 	end)
 	local function paintPhoto()
-		photoBtn.Text = "\u{1F4F8} Escape photo: " .. (MODES[player:GetAttribute("PhotoMode") or "daily"] or "Once a day")
+		photoBtn.Text = "\u{1F4F8} Photo: " .. (MODES[player:GetAttribute("PhotoMode") or "daily"] or "Daily")
 	end
 	player:GetAttributeChangedSignal("PhotoMode"):Connect(paintPhoto)
 	paintPhoto()
@@ -1499,6 +1501,11 @@ local function showModel(sk)
 	if src then
 		shown = src:Clone()
 		shown.Parent = viewWorld
+		shown:PivotTo(CFrame.Angles(0, math.pi, 0))
+		do
+			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown)
+			shown:SetAttribute("FitH", standing.Y)
+		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, modelName) -- the character's own idle
 		shownFor = modelName
 		noModel.Visible = false
@@ -1545,8 +1552,11 @@ RunService.RenderStepped:Connect(function()
 	-- characters face -Z; turn it round to face the camera on +Z
 	shown:PivotTo(CFrame.Angles(0, math.pi + spin, 0))
 	local cf, size = require(ReplicatedStorage.Shared.ModelBounds)(shown) -- the parts you can see
-	local dist = size.Y * 0.54 / math.tan(math.rad(viewCam.FieldOfView / 2))
-	viewCam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0, size.Y * 0.05, dist), cf.Position)
+	-- the distance from its standing height (measured once), so every
+	-- character and skin is the same size on screen whatever its pose
+	local h = shown:GetAttribute("FitH") or size.Y
+	local dist = h * 0.54 / math.tan(math.rad(viewCam.FieldOfView / 2))
+	viewCam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0, h * 0.05, dist), cf.Position)
 end)
 
 repaintChars = function()

@@ -17,6 +17,10 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 42 (9 Oct) - Lobby buttons, preview sizes
+- [ ] Lobby: "😄 Emote (G)" and "📸 Photo: Daily" are a row in the left menu under How to play; nothing sits on the sound / music buttons top right; the menu's buttons all fit (photo)
+- [ ] Characters (Lobby and the game's select): Shadow and Ghostly Shadow (and every other skin) are about the same size on screen
+
 ## Round 41 (9 Oct) - invite reward (live only: needs a second account that has never played)
 - [ ] Lobby -> Invite friends: Roblox's invite shows "Come and escape with me! New players who join from my invite get a Party Shield - and so do I."
 - [ ] A brand-new account joins from the invite: it sees "Welcome! You came with a friend's invite - here's a Party Shield and 100 points!"; you (in the Lobby) see "<name> joined from your invite! ..." and your Party Shields go up by 1

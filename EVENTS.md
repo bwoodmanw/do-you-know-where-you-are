@@ -26,9 +26,14 @@ Picture: `art/roblox-store/events/event-halloween.png` (1920 x 1080).
 - **Submit for Featuring:** on (free; Roblox may pick it for its own
   marketing, nothing to lose).
 
+**Live since 9 Oct.**
+
 ## 2. Thanksgiving and 3. Christmas
 
-Added once Brent picks their designs (November). Their pictures will be made
+Added once Brent picks their designs (November). **Submit for Featuring
+only works when the event is created at least 7 days before it starts** -
+create the Thanksgiving page by mid-November (a week before its start) and
+the Christmas page a week before its start. Their pictures will be made
 the same way.
 
 ## Click by click (Creator Hub; menus move between versions - send a photo if a screen differs)

@@ -755,6 +755,11 @@ local function showChar()
 	if src then
 		shown = src:Clone()
 		shown.Parent = viewWorld
+		shown:PivotTo(CFrame.Angles(0, math.pi, 0))
+		do
+			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown)
+			shown:SetAttribute("FitH", standing.Y)
+		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, src.Name) -- the character's own idle
 		noModel.Visible = false
 	else
@@ -880,8 +885,11 @@ RunService.RenderStepped:Connect(function()
 	-- Roblox characters face -Z; turn it round to face the camera on +Z
 	shown:PivotTo(CFrame.Angles(0, math.pi + spin, 0))
 	local cf, size = require(ReplicatedStorage.Shared.ModelBounds)(shown) -- the parts you can see
-	local dist = size.Y * 0.62 / math.tan(math.rad(viewCam.FieldOfView / 2))
-	viewCam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0, size.Y * 0.05, dist), cf.Position)
+	-- the distance from its standing height (measured once), so every
+	-- character and skin is the same size on screen whatever its pose
+	local h = shown:GetAttribute("FitH") or size.Y
+	local dist = h * 0.62 / math.tan(math.rad(viewCam.FieldOfView / 2))
+	viewCam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0, h * 0.05, dist), cf.Position)
 end)
 
 local function openPicker()
