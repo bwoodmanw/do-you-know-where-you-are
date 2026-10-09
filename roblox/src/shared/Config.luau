@@ -12,6 +12,13 @@ Config.GRACE = 20 -- seconds before the host comes out (Giggly)
 Config.GRACE_SPOOKY = 12
 
 Config.WALK = 12
+-- framed posters on the inside walls (art/posters/game/<building>-1/-2.png,
+-- uploaded as images; 0 = not uploaded yet, so none hang)
+Config.POSTERS = {
+	perFloor = 4,
+	party = { 0, 0 }, gummy = { 0, 0 }, hospital = { 0, 0 },
+	school = { 0, 0 }, carnival = { 0, 0 }, aquarium = { 0, 0 },
+}
 -- the Lobby's tile pictures (uploaded images; 0 = the emoji until then)
 Config.UI_ICONS = { -- art/ui-icons/*.png (ids checked on Roblox's API, 9 Oct)
 	quick = 130312324808720, solo = 111604455080937, party = 132394341105577, characters = 91602978926313,

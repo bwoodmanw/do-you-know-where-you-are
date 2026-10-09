@@ -1851,6 +1851,67 @@ local function paintView(sg, theme, seed)
 	end
 end
 
+-- ---------------------------------------------------------------- posters
+-- The building's two posters (Config.POSTERS), framed, high on inside walls
+-- (the outside walls have the windows): only where the floor in front of the
+-- wall is free (no furniture against it), never beside the invitation or the
+-- painted wall, one per room, up to perFloor a floor.
+local function buildPosters(folder, map, busy)
+	local P = Config.POSTERS
+	local ids = P and P[map.theme or "party"]
+	if not ids or (ids[1] or 0) <= 0 then
+		return
+	end
+	local wallObj = {}
+	for _, o in ipairs(map.objects or {}) do
+		if o.kind == "invite" or o.kind == "uv" then
+			for dx = -1, 1 do
+				wallObj[(o.x + dx) .. "," .. o.y] = true
+			end
+		end
+	end
+	local rooms = table.clone(map.floors)
+	for i = #rooms, 2, -1 do
+		local j = math.random(1, i)
+		rooms[i], rooms[j] = rooms[j], rooms[i]
+	end
+	local hung = 0
+	for _, f in ipairs(rooms) do
+		if hung >= (P.perFloor or 4) then
+			break
+		end
+		local spots = {}
+		for y = f.y0, f.y1 do
+			for x = f.x0, f.x1 do
+				local wx, wy = x, y - 1 -- the wall north of this floor tile
+				if cell(map, x, y) == "." and not busy[x .. "," .. y] and cell(map, wx, wy) == "#" and not onEdge(map, wx, wy)
+					and not wallObj[wx .. "," .. wy] then
+					table.insert(spots, { x, y })
+				end
+			end
+		end
+		if #spots > 0 then
+			local s = spots[math.random(1, #spots)]
+			busy[s[1] .. "," .. s[2] .. ",poster"] = true
+			hung += 1
+			local id = ids[(hung - 1) % #ids + 1]
+			if (id or 0) <= 0 then
+				id = ids[1]
+			end
+			-- on the wall's south face, facing into the room (+Z)
+			local wall = at(s[1], s[2] - 1)
+			local cf = CFrame.new(wall + Vector3.new(0, 8.4, T / 2 + 0.12))
+			local frameP = add(folder, cf, { name = "PosterFrame", size = Vector3.new(3.7, 5.3, 0.16), color = C(60, 38, 28), mat = WOOD })
+			local _ = frameP
+			local poster = add(folder, cf * CFrame.new(0, 0, 0.1), { name = "Poster", size = Vector3.new(3.3, 4.9, 0.05), color = C(20, 15, 20) })
+			local d = Instance.new("Decal")
+			d.Face = Enum.NormalId.Back
+			d.Texture = "rbxassetid://" .. id
+			d.Parent = poster
+		end
+	end
+end
+
 local function buildWindows(folder, world, map, busy, pieceAt)
 	if string.find(string.lower(map.name or ""), "basement", 1, true) then
 		return -- under the ground: no windows
@@ -2078,6 +2139,10 @@ function Rooms.dress(world)
 	local okW, errW = pcall(buildWindows, folder, world, map, busy, {})
 	if not okW then
 		warn("Room dressing: windows failed - " .. tostring(errW))
+	end
+	local okP, errP = pcall(buildPosters, folder, map, busy)
+	if not okP then
+		warn("Room dressing: posters failed - " .. tostring(errP))
 	end
 	return folder
 end
