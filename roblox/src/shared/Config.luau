@@ -26,7 +26,16 @@ Config.UI_ICONS = { -- art/ui-icons/*.png (ids checked on Roblox's API, 9 Oct)
 	quick = 130312324808720, solo = 111604455080937, party = 132394341105577, characters = 91602978926313,
 	shop = 121270726908728, quests = 124036731444475, plushies = 83371177246486, invite = 135623826629543,
 	join = 93585865196369, emote = 138133123294708, photo = 107867066033525, help = 75310601818446,
+	-- the second set (art/ui-icons; 0 until uploaded): the game's buttons, the skills, the emotes
+	run = 0, say = 0, clue = 0, change = 0, look = 0, map = 0,
+	["skill-tinker"] = 0, ["skill-shadow"] = 0, ["skill-brainy"] = 0, ["skill-muscle"] = 0,
+	["skill-glow"] = 0, ["skill-patch"] = 0, ["skill-echo"] = 0, ["skill-bramble"] = 0,
+	["emote-wave"] = 0, ["emote-point"] = 0, ["emote-cheer"] = 0, ["emote-laugh"] = 0,
+	["emote-dance1"] = 0, ["emote-dance2"] = 0, ["emote-dance3"] = 0, ["emote-stop"] = 0,
 }
+-- the clean look for menus (Brent's yes to art/ui-mockups/menus-v2.png):
+-- text stays a normal size instead of growing to fill its box
+Config.UI_TEXT = { title = 36, body = 26 }
 -- trying a remade character in Studio only (STYLE_UPGRADE.md part B): the
 -- plain character uses this model instead when it is in ServerStorage/Characters,
 -- e.g. { Tinker = "TinkerToon" }. Live players never see it.

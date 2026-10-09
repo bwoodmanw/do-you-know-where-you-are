@@ -97,14 +97,17 @@ function Emotes.mount(gui, button, position)
 	panel.Name = "Emotes"
 	panel.Size = UDim2.fromOffset(4 * 100 + 5 * 6, 2 * 70 + 3 * 6)
 	panel.Position = position
-	panel.BackgroundColor3 = Color3.fromRGB(26, 15, 38)
-	panel.BackgroundTransparency = 0.15
+	panel.BackgroundColor3 = Color3.fromRGB(22, 13, 34)
+	panel.BackgroundTransparency = 0.08
 	panel.Visible = false
 	panel.ZIndex = 30
 	panel.Parent = gui
 	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, 14)
+	c.CornerRadius = UDim.new(0, 18)
 	c.Parent = panel
+	local edge = Instance.new("UIStroke")
+	edge.Color, edge.Thickness, edge.ApplyStrokeMode = Color3.fromRGB(255, 244, 224), 3, Enum.ApplyStrokeMode.Border
+	edge.Parent = panel
 	local grid = Instance.new("UIGridLayout")
 	grid.CellSize = UDim2.fromOffset(100, 70)
 	grid.CellPadding = UDim2.fromOffset(6, 6)
@@ -112,33 +115,60 @@ function Emotes.mount(gui, button, position)
 	grid.VerticalAlignment = Enum.VerticalAlignment.Center
 	grid.SortOrder = Enum.SortOrder.LayoutOrder
 	grid.Parent = panel
-	local function choice(i, text, onClick)
+	-- a tile per emote: its picture (Config.UI_ICONS "emote-<id>", or the
+	-- emoji until uploaded) and one word, plum with a cream edge
+	local okC, Config = pcall(require, script.Parent.Config)
+	local icons = okC and Config.UI_ICONS or {}
+	local font = Enum.Font.GothamBold
+	pcall(function()
+		font = Enum.Font.BuilderSansBold
+	end)
+	local function choice(i, key, emoji, word, onClick)
 		local b = Instance.new("TextButton")
 		b.LayoutOrder = i
-		b.Font = Enum.Font.FredokaOne
-		b.TextScaled = true
-		b.Text = text
-		b.TextColor3 = Color3.fromRGB(42, 26, 58)
-		b.BackgroundColor3 = Color3.fromRGB(255, 244, 224)
+		b.Text = ""
+		b.BackgroundColor3 = Color3.fromRGB(75, 58, 102)
 		b.ZIndex = 31
 		local bc = Instance.new("UICorner")
 		bc.CornerRadius = UDim.new(0, 12)
 		bc.Parent = b
-		local pad = Instance.new("UIPadding")
-		pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 4), UDim.new(0, 4)
-		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 4), UDim.new(0, 4)
-		pad.Parent = b
+		local be = Instance.new("UIStroke")
+		be.Color, be.Thickness, be.ApplyStrokeMode, be.Transparency = Color3.fromRGB(255, 244, 224), 2, Enum.ApplyStrokeMode.Border, 0.35
+		be.Parent = b
+		local id = icons[key] or 0
+		if id > 0 then
+			local pic = Instance.new("ImageLabel")
+			pic.BackgroundTransparency = 1
+			pic.Image = "rbxassetid://" .. id
+			pic.ScaleType = Enum.ScaleType.Fit
+			pic.Size, pic.Position = UDim2.fromScale(0.6, 0.6), UDim2.fromScale(0.2, 0.04)
+			pic.ZIndex = 32
+			pic.Parent = b
+		else
+			local em = Instance.new("TextLabel")
+			em.BackgroundTransparency, em.TextScaled, em.Text, em.ZIndex = 1, true, emoji, 32
+			em.Size, em.Position = UDim2.fromScale(0.6, 0.56), UDim2.fromScale(0.2, 0.06)
+			em.Parent = b
+		end
+		local w = Instance.new("TextLabel")
+		w.BackgroundTransparency, w.TextScaled, w.Text, w.Font, w.ZIndex = 1, true, word, font, 32
+		w.TextColor3 = Color3.fromRGB(255, 244, 224)
+		w.Size, w.Position = UDim2.fromScale(0.9, 0.26), UDim2.fromScale(0.05, 0.68)
+		local cap = Instance.new("UITextSizeConstraint")
+		cap.MaxTextSize = 18
+		cap.Parent = w
+		w.Parent = b
 		b.Parent = panel
 		b.Activated:Connect(onClick)
 		return b
 	end
 	for i, e in ipairs(Emotes.LIST) do
-		choice(i, e.icon .. "\n" .. e.name, function()
+		choice(i, "emote-" .. e.id, e.icon, e.name, function()
 			Emotes.play(e.id)
 			panel.Visible = false
 		end)
 	end
-	choice(#Emotes.LIST + 1, "\u{270B}\nStop", function()
+	choice(#Emotes.LIST + 1, "emote-stop", "\u{270B}", "Stop", function()
 		Emotes.stop()
 		panel.Visible = false
 	end)

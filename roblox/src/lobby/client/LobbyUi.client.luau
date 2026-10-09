@@ -45,21 +45,38 @@ local function frame(parent, props)
 	f.Parent = parent
 	return f
 end
+-- the clean look (art/ui-mockups/menus-v2.png): Roblox's Builder Sans for
+-- words, the rounded game font only for orange titles, and text that stays a
+-- normal size instead of growing to fill its box
+local BODY_FONT = Enum.Font.GothamBold
+pcall(function()
+	BODY_FONT = Enum.Font.BuilderSansBold
+end)
+local function capText(o, max)
+	local c = Instance.new("UITextSizeConstraint")
+	c.MaxTextSize = max
+	c.Parent = o
+end
 local function label(parent, props)
 	local l = Instance.new("TextLabel")
 	l.BackgroundTransparency = 1
-	l.Font = Enum.Font.FredokaOne
+	l.Font = BODY_FONT
 	l.TextColor3 = CREAM
 	l.TextScaled = true
 	for k, v in pairs(props) do
 		l[k] = v
 	end
+	local title = l.TextColor3 == PUMP
+	if title and props.Font == nil then
+		l.Font = Enum.Font.FredokaOne
+	end
+	capText(l, title and Config.UI_TEXT.title or Config.UI_TEXT.body)
 	l.Parent = parent
 	return l
 end
 local function button(parent, text, props, onClick)
 	local b = Instance.new("TextButton")
-	b.Font = Enum.Font.FredokaOne
+	b.Font = BODY_FONT
 	b.Text = text
 	b.TextScaled = true
 	b.TextColor3 = CREAM
@@ -67,6 +84,14 @@ local function button(parent, text, props, onClick)
 	for k, v in pairs(props) do
 		b[k] = v
 	end
+	-- no light buttons: plum (or the color given) with a thin cream edge
+	if b.BackgroundColor3 == CREAM then
+		b.BackgroundColor3, b.TextColor3 = PLUM, CREAM
+	end
+	capText(b, Config.UI_TEXT.body)
+	local edge = Instance.new("UIStroke")
+	edge.Color, edge.Thickness, edge.ApplyStrokeMode, edge.Transparency = CREAM, 2, Enum.ApplyStrokeMode.Border, 0.35
+	edge.Parent = b
 	corner(b, 12)
 	local pad = Instance.new("UIPadding")
 	pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8)
@@ -937,9 +962,79 @@ local function readProfile()
 end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 do
+	-- every pop-up panel: dark glass with a cream border, and only one open at
+	-- a time (opening one closes the others). A pop-up is a panel on the
+	-- screen that starts hidden and sits above the rest (ZIndex 10+), or the
+	-- emote picker.
+	local popups = {}
+	local function isPopup(f)
+		if not f:IsA("Frame") or f.BackgroundTransparency > 0.9 then
+			return false
+		end
+		if f.Name == "Emotes" then
+			return true
+		end
+		return f.ZIndex >= 10 and f.Size.X.Offset >= 300 and f.Size.Y.Offset >= 200
+	end
+	-- text inside a pop-up built by hand (not with label / button): the same
+	-- clean look - capped size, Builder Sans unless an orange title, no light buttons
+	local function clean(o)
+		if not (o:IsA("TextLabel") or o:IsA("TextButton")) or o:FindFirstChildOfClass("UITextSizeConstraint") then
+			return
+		end
+		local title = o.TextColor3 == PUMP
+		if o.Font == Enum.Font.FredokaOne and not title then
+			o.Font = BODY_FONT
+		end
+		if o:IsA("TextButton") and o.BackgroundColor3 == CREAM then
+			o.BackgroundColor3, o.TextColor3 = PLUM, CREAM
+		end
+		capText(o, title and Config.UI_TEXT.title or Config.UI_TEXT.body)
+	end
+	local function adopt(f)
+		if popups[f] or not isPopup(f) then
+			return
+		end
+		popups[f] = true
+		for _, d in ipairs(f:GetDescendants()) do
+			clean(d)
+		end
+		f.DescendantAdded:Connect(function(d)
+			task.defer(clean, d)
+		end)
+		if not f:FindFirstChildOfClass("UIStroke") then
+			local edge = Instance.new("UIStroke")
+			edge.Color, edge.Thickness, edge.ApplyStrokeMode = CREAM, 3, Enum.ApplyStrokeMode.Border
+			edge.Parent = f
+		end
+		if not f:FindFirstChildOfClass("UICorner") then
+			corner(f, 20)
+		end
+		local function closeOthers()
+			if f.Visible then
+				for other in pairs(popups) do
+					if other ~= f and other.Parent and other.Visible then
+						other.Visible = false
+					end
+				end
+			end
+		end
+		f:GetPropertyChangedSignal("Visible"):Connect(closeOthers)
+		closeOthers() -- a pop-up made already open (the invite list)
+	end
+	task.defer(function()
+		for _, c in ipairs(gui:GetChildren()) do
+			adopt(c)
+		end
+		gui.ChildAdded:Connect(function(c)
+			task.defer(adopt, c)
+		end)
+	end)
+end
+do
 	-- emotes in the Lobby too (G / the right stick), under the points
 	local emoteBtn = tileBtn(rightBar, "emote", "\u{1F604}", "Emote", { Size = UDim2.fromOffset(104, 96), Position = UDim2.fromOffset(0, 208) })
-	require(ReplicatedStorage.Shared.Emotes).mount(gui, emoteBtn, UDim2.new(0.5, -218, 1, -260))
+	require(ReplicatedStorage.Shared.Emotes).mount(gui, emoteBtn, UDim2.new(1, -580, 0, 300))
 	-- the escape photo setting (the only way back on once it is Off)
 	local MODES = { every = "Every escape", daily = "Daily", off = "Off" }
 	local NEXT = { every = "daily", daily = "off", off = "every" }
