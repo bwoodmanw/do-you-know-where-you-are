@@ -7,6 +7,12 @@ commits on `main`. **Both places were published 8 Oct (late) with
 everything up to commit 38a5814**; later commits (the room name in the top
 bar, the last four badge ids) need one more publish of both places.
 
+**Session 6 (9 Oct), so far:** Brent's first live-test fixes (1b0954c) and
+effects step 1, the levels line, animation packs (`Config.ANIM`), American
+room names and real gummy bears (26bd316) - TEST_PLAN rounds 36-37, all
+untested. Party House needs a publish for these; the Lobby only for the
+8 Oct items. Open: which character Brent was at the Bramble plant.
+
 ## What it is
 
 **Escape Crew** is a co-operative horror-escape game on **Roblox** for ages 8+.
