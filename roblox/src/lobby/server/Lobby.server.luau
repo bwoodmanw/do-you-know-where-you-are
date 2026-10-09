@@ -35,8 +35,19 @@ do
 	local function atLeast(c, r, g, b)
 		return Color3.fromRGB(math.max(c.R * 255, r), math.max(c.G * 255, g), math.max(c.B * 255, b))
 	end
-	Lighting.Ambient = atLeast(Lighting.Ambient, 70, 62, 84)
-	Lighting.OutdoorAmbient = atLeast(Lighting.OutdoorAmbient, 105, 96, 125)
+	local L = require(game:GetService("ReplicatedStorage").Shared.Config).LOOK
+	Lighting.Ambient = atLeast(Lighting.Ambient, L.lobby.ambient.R * 255, L.lobby.ambient.G * 255, L.lobby.ambient.B * 255)
+	Lighting.OutdoorAmbient = atLeast(Lighting.OutdoorAmbient, L.lobby.outdoor.R * 255, L.lobby.outdoor.G * 255, L.lobby.outdoor.B * 255)
+	-- richer colors and a soft glow on the lamps and pumpkins (Config.LOOK)
+	local function fx(class, props)
+		local e = Lighting:FindFirstChildOfClass(class) or Instance.new(class)
+		for k, v in pairs(props) do
+			e[k] = v
+		end
+		e.Parent = Lighting
+	end
+	fx("BloomEffect", L.bloom)
+	fx("ColorCorrectionEffect", { Saturation = L.saturation, Contrast = L.contrast, Brightness = L.brightness, TintColor = L.lobby.tint })
 end
 local function part(props)
 	local p = Instance.new("Part")

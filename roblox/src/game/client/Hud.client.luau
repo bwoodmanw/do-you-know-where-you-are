@@ -1951,6 +1951,10 @@ RunService.RenderStepped:Connect(function(dt)
 		or (r ~= nil and string.find("," .. (RoundState:GetAttribute("DarkRooms") or "") .. ",", "," .. r .. ",", 1, true) ~= nil)
 	if nowDark ~= inBlackout then
 		inBlackout = nowDark
+		if nowDark then
+			-- remember this floor's own light (each building has its own) to go back to
+			normalLight = { Ambient = LightingService.Ambient, OutdoorAmbient = LightingService.OutdoorAmbient, Brightness = LightingService.Brightness }
+		end
 		TweenService:Create(LightingService, TweenInfo.new(0.4), nowDark and darkLight or normalLight):Play()
 	end
 	local where = HouseMap.name or "The Party House"

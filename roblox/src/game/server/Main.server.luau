@@ -146,9 +146,20 @@ local function effect(class, props)
 	e.Parent = Lighting
 	return e
 end
-effect("Atmosphere", { Density = 0.35, Color = Color3.fromRGB(120, 100, 150), Decay = Color3.fromRGB(40, 30, 60), Glare = 0, Haze = 1.5 })
-effect("BloomEffect", { Intensity = 0.6, Size = 30, Threshold = 1.4 })
-effect("ColorCorrectionEffect", { Saturation = -0.05, Contrast = 0.12, TintColor = Color3.fromRGB(255, 240, 230) })
+-- a cleaner, more colorful look (Config.LOOK): less haze, richer colors, a
+-- soft glow on lights; each building gets its own light and tint (applyLook)
+local LOOK = Config.LOOK
+effect("Atmosphere", { Density = LOOK.haze.Density, Color = Color3.fromRGB(120, 100, 150), Decay = Color3.fromRGB(40, 30, 60), Glare = 0, Haze = LOOK.haze.Haze })
+effect("BloomEffect", LOOK.bloom)
+local colorFx = effect("ColorCorrectionEffect", { Saturation = LOOK.saturation, Contrast = LOOK.contrast, Brightness = LOOK.brightness, TintColor = LOOK.themes.party.tint })
+local function applyLook(theme, spooky)
+	local t = LOOK.themes[theme or "party"] or LOOK.themes.party
+	local k = spooky and LOOK.spooky or 1
+	Lighting.Ambient = t.ambient:Lerp(Color3.new(0, 0, 0), 1 - k)
+	Lighting.OutdoorAmbient = t.outdoor:Lerp(Color3.new(0, 0, 0), 1 - k)
+	colorFx.TintColor = t.tint
+end
+applyLook("party", false)
 
 -- ---------- saved progress (shared with the Lobby) ----------
 local Profile = require(ReplicatedStorage.Shared.Profile)
@@ -3401,6 +3412,7 @@ SetSpook.OnServerEvent:Connect(function(plr, level)
 	end
 	if (level == "giggly" or level == "spooky") and not (host and host.model) then
 		RoundState:SetAttribute("Spook", level)
+		applyLook(HouseMap.theme, level == "spooky")
 		say("info", "This game is " .. (level == "spooky" and "SPOOKY" or "Giggly") .. ".")
 	end
 end)
@@ -3689,6 +3701,7 @@ function round.start()
 	for _, l in ipairs(world.lights) do
 		l.Brightness = spook == "spooky" and 0.45 or 1.2
 	end
+	applyLook(HouseMap.theme, spook == "spooky")
 	local extraGrace = 0
 	for i, plr in ipairs(Players:GetPlayers()) do
 		plr:SetAttribute("Waiting", false)

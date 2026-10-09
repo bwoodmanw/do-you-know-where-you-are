@@ -12,6 +12,27 @@ Config.GRACE = 20 -- seconds before the host comes out (Giggly)
 Config.GRACE_SPOOKY = 12
 
 Config.WALK = 12
+-- the look of each building: base light (ambient), a color tint, and for
+-- everyone richer colors, a soft glow on lights and a light haze. A Spooky
+-- game keeps `spooky` of the ambient light (darker). Tune freely.
+local function rgb(r, g, b)
+	return Color3.fromRGB(r, g, b)
+end
+Config.LOOK = {
+	saturation = 0.15, contrast = 0.08, brightness = 0.02,
+	bloom = { Intensity = 0.45, Size = 24, Threshold = 1.1 },
+	haze = { Density = 0.2, Haze = 0.6 },
+	spooky = 0.6,
+	themes = {
+		party = { ambient = rgb(92, 78, 104), outdoor = rgb(110, 95, 125), tint = rgb(255, 240, 225) },
+		gummy = { ambient = rgb(105, 85, 110), outdoor = rgb(125, 100, 130), tint = rgb(255, 236, 246) },
+		hospital = { ambient = rgb(80, 92, 90), outdoor = rgb(95, 110, 108), tint = rgb(236, 252, 245) },
+		school = { ambient = rgb(95, 85, 80), outdoor = rgb(115, 102, 96), tint = rgb(255, 244, 226) },
+		carnival = { ambient = rgb(100, 78, 88), outdoor = rgb(120, 92, 105), tint = rgb(255, 236, 222) },
+		aquarium = { ambient = rgb(70, 90, 115), outdoor = rgb(85, 108, 135), tint = rgb(226, 240, 255) },
+	},
+	lobby = { ambient = rgb(85, 76, 100), outdoor = rgb(125, 115, 145), tint = rgb(255, 242, 230) },
+}
 -- the 3D character previews: a model that still looks too small or too big
 -- next to its plain character gets a size here (1.15 = 15% bigger)
 Config.PREVIEW_SCALE = { ShadowGhost = 1.15 }

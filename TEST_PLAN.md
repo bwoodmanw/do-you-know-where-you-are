@@ -17,6 +17,13 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 48 (9 Oct) - the look: lighting and color
+- [ ] Every building: brighter, cleaner, more colorful than before (less haze); each has its own light (Party House warm, Gummy pink, Hospital cool green, School paper-warm, Carnival warm red, Aquarium blue); lamps and neon softly glow (photos of two or three floors)
+- [ ] Spooky game: clearly darker than Giggly
+- [ ] Robot blackout / dark rooms still go dark, and come back to the floor's own light
+- [ ] Lobby: richer colors and a soft glow on lamps and pumpkins (photo)
+- [ ] Too bright / too dark / too colorful anywhere? Tell Claude: every number is in Config.LOOK
+
 ## Round 47 (9 Oct) - items hide anywhere
 - [ ] Each floor hides 3 items: Candy Corn, a Party Shield, and one of Second Wind / Extra Clue / Frozen Pop - in random presents AND search spots (drawers, crates, cake boxes, coats, toy boxes, vases, laundry, chests); the rest are empty (play a few games: items turn up in different kinds of things)
 - [ ] Finding one works at once: "<name> found a Frozen Pop - the host is frozen for 10 seconds!" etc.; keys and Confetti Cannons still turn up as before
