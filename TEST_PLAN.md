@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,20 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 28 (8 Oct) - skills version 2 (SKILLS_V2.md)
+Camera:
+- [ ] Squeeze between a bookshelf and a wall: walls and furniture in the way fade out; you see the gap in front of you (no black screen, no next room)
+Buttons (R on a computer):
+- [ ] Tinker "Toolkit": then a lock / keypad picks instantly; used up after one pick
+- [ ] Brainy "Think!": the next thing to do lights up blue and the team gets the hint (free)
+- [ ] Bramble "Vines": standing in or next to a doorway, vines grow across it for 6 s; the host is slow through them, kids are not; away from doorways: "Stand in or next to a doorway"
+- [ ] Echo: after a noise, 5% faster for 3 s
+Levels (set XP in Studio or ask Claude for a test profile):
+- [ ] Characters (Lobby): the ladder scrolls to level 20; level 10 and 20 rows show the big powers; XP needed for 20 is 78,500
+- [ ] Level-10 powers: Tinker Wind-up Mouse / Skeleton Key; Shadow Clone; Muscle Ground Pound (no crate near); Glow Night Light / Dazzle; Patch Group Hug; Echo Double Throw / Echo Map; Bramble Snapper / Hide in the Leaves
+- [ ] Level-20 powers: Master Tinker (2 colours); Night Walker / Double Clone; Photographic Memory / Big Brain; Beacon; Guardian / Medic Run; Sound Wave / Super Burst; Overgrowth
+- [ ] Guard rails: a skill stun is at most 2 s (1 s on Nightmare); a second skill stun within 8 s does nothing
 
 ## Round 27 (8 Oct) - shop rows, Equip, Flare, R key, names
 - [ ] Boost Shop: every row's buttons sit inside the purple row: Have n, price, green +, red -, Robux, Equip

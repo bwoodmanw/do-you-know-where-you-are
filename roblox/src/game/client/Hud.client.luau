@@ -486,7 +486,9 @@ ProximityPromptService.PromptShown:Connect(function(prompt)
 		base = prompt.HoldDuration
 		prompt:SetAttribute("BaseHold", base)
 	end
-	prompt.HoldDuration = base * (player:GetAttribute("HoldMult") or 1)
+	-- Tinker's Toolkit: the next pick is instant
+	local toolkit = prompt:GetAttribute("Only") == "tinker" and player:GetAttribute("ToolkitReady") == true
+	prompt.HoldDuration = toolkit and 0 or base * (player:GetAttribute("HoldMult") or 1)
 end)
 -- mouse look (computers): the camera turns as the mouse moves, no button held
 local mouseLook = false
@@ -728,7 +730,7 @@ local function showChar()
 		end
 		return nil
 	end
-	local where = { brainy = { "invite", "Find the twisty invitation in the %s and press E." }, glow = { "uv", "Press E at the painted wall in the %s. Press Flare to light up far around you." }, bramble = { "plant", "Find the big plant in the %s and press E." } }
+	local where = { brainy = { "invite", "Find the twisty invitation in the %s and press E. Press Think! (R) when you're stuck." }, glow = { "uv", "Press E at the painted wall in the %s. Press Flare (R) to light up far around you." }, bramble = { "plant", "Find the big plant in the %s and press E. Stand in a doorway and press Vines (R)." } }
 	local w = where[sk.id]
 	local room = w and roomOf(w[1])
 	if room then
@@ -966,7 +968,8 @@ Gamepad.panel(keypad)
 
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
-local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare" }
+local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare",
+	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines" }
 local KEYS = not TOUCH and UserInputService.KeyboardEnabled -- show the R key on the button
 do
 local function paintSkill()
@@ -1602,8 +1605,13 @@ RunService.RenderStepped:Connect(function(dt)
 		local moving = hum.MoveDirection.Magnitude > 0.1
 		local wantRun = runToggle or shiftHeld
 		local candy = os.clock() < candyUntil
+		-- Echo's burst after a noise, Patch's Medic Run
+		local bonus = player:GetAttribute("RunBonus") or 1
+		if (player:GetAttribute("BurstUntil") or 0) > workspace:GetServerTimeNow() then
+			bonus *= player:GetAttribute("BurstMult") or 1
+		end
 		if wantRun and moving and not tired then
-			hum.WalkSpeed = Config.RUN * (player:GetAttribute("RunMult") or 1)
+			hum.WalkSpeed = Config.RUN * (player:GetAttribute("RunMult") or 1) * bonus
 			if not candy then
 				stamina = math.max(0, stamina - Config.STAMINA_DRAIN * dt / (player:GetAttribute("StaminaMult") or 1))
 				if stamina <= 0 then
@@ -1612,7 +1620,7 @@ RunService.RenderStepped:Connect(function(dt)
 				end
 			end
 		else
-			hum.WalkSpeed = Config.WALK
+			hum.WalkSpeed = Config.WALK * bonus
 			stamina = math.min(100, stamina + Config.STAMINA_REGEN * dt)
 			if tired and stamina >= 25 then
 				tired = false
@@ -1950,6 +1958,16 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 			task.delay(i * 0.04, function()
 				cam.CFrame = cam.CFrame * CFrame.Angles(0, 0, (math.random() - 0.5) * 0.06)
 			end)
+		end
+	elseif kind == "hostmap" then
+		-- Echo Map: the host shows through walls for a few seconds
+		local h = workspace:FindFirstChild("PartyHost")
+		if h then
+			local hl = Instance.new("Highlight")
+			hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(255, 80, 80), Color3.fromRGB(255, 220, 220), 0.5
+			hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+			hl.Parent = h
+			game:GetService("Debris"):AddItem(hl, data and data.seconds or 5)
 		end
 	elseif kind == "corn" and data and data.userId == player.UserId then
 		local pic = Config.BOOST_IMAGES and Config.BOOST_IMAGES.candy or 0

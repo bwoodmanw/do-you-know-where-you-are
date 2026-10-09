@@ -1,7 +1,31 @@
-# Skills, version 2 - a proposal (8 Oct, for Brent to choose)
+# Skills, version 2 (proposed and **built 8 Oct** - Brent agreed to all of it)
 
-Nothing here is built yet. Pick, change or drop any line; then I build it in
-the phases at the end.
+**Built:** every character's button, Echo's speed burst, levels 11-20 (the
+XP curve, half-size even levels, each character's odd levels), the level-10
+and level-20 powers and the guard rails (`Config.SKILL_STUN`). The ladder is
+in `shared/Progress.luau`; `tools/check_ladder.luau` checks it.
+
+**Where the build differs from the table below** (and why):
+- Brainy keeps Genius / Mastermind at level 10 (already there). Four of his
+  new odd-level options were repeats of levels 3-9, so they became small
+  steps instead (Watchful, Deep Thinker, Quick Steps, Library Voice).
+- **Photographic Memory:** colours already stay on screen once found, so it
+  is now: the first Think! each game also shows one colour of the code
+  (never the last one, not on Nightmare).
+- **Forest Friend:** the big plant already tells Bramble the whole code, so
+  it is now: the team starts knowing one colour, and the plant answers twice
+  as fast.
+- **Hide in the Leaves:** standing still anywhere, Bramble is only seen up
+  close (8 studs) - no need to find a plant first.
+- **Snapper Plant** rides on the vines (they snap shut the first time the
+  host steps in) rather than being a separate plant.
+- **Night Light:** the lamp lights the room for 60 s (switches a dark room's
+  lights on); it does not change how far the host sees.
+- **Fortress:** the button recharges twice as fast (barricade after
+  barricade) rather than two crates at once.
+- **Muscle's Ground Pound** is the same button: with no crate near, it pounds.
+- Old level-10 picks that are no longer offered (for example Tinker's Master
+  Hands) stop counting; that player simply picks a new level-10 power.
 
 ## What is wrong with skills today
 

@@ -208,6 +208,16 @@ local function applyMods(plr)
 	plr:SetAttribute("HealShield", m.healShield == true)
 	plr:SetAttribute("EchoRange", m.echoRange or 70)
 	plr:SetAttribute("BarricadeHold", m.barricadeHold or Config.BARRICADE.hold)
+	-- skills version 2: the level-10 / level-20 powers and the new buttons' numbers
+	plr:SetAttribute("Power10", m.p10 or "")
+	plr:SetAttribute("Power20", m.p20 or "")
+	plr:SetAttribute("BurstMult", m.burstMult or Config.ECHO_BURST.mult)
+	plr:SetAttribute("BurstTime", m.burstTime or Config.ECHO_BURST.seconds)
+	plr:SetAttribute("FlareTime", m.flareTime or Config.GLOW_FLARE.seconds)
+	plr:SetAttribute("VineTime", m.vineTime or Config.VINES.seconds)
+	plr:SetAttribute("CloneTime", m.cloneTime or Config.CLONE.seconds)
+	plr:SetAttribute("ToolkitReady", false)
+	plr:SetAttribute("RunBonus", 1)
 	return m
 end
 
@@ -1004,8 +1014,24 @@ local function wirePrompts()
 				RoundState:SetAttribute("Known" .. k, state.code[k])
 				addPoints(plr, 15)
 				quest(plr, "skill")
+				plr:SetAttribute("ToolkitReady", false)
 				Effects.burst(entry.keypad.Position, "pick")
 				say("reveal", "Click! Tinker picked the keypad: colour " .. k .. " is " .. colourWord(state.code[k]) .. "!")
+				-- Master Tinker: a second colour too (never the last one)
+				if plr:GetAttribute("Power20") == "mastertinker" then
+					local more = {}
+					for i = 1, 3 do
+						if not state.known[i] then
+							table.insert(more, i)
+						end
+					end
+					if #more > 1 then
+						local k2 = more[math.random(1, #more)]
+						state.known[k2] = state.code[k2]
+						RoundState:SetAttribute("Known" .. k2, state.code[k2])
+						say("reveal", "Master Tinker: colour " .. k2 .. " is " .. colourWord(state.code[k2]) .. " too!")
+					end
+				end
 			end)
 			entry.exit.Touched:Connect(function(hit)
 				local plr = Players:GetPlayerFromCharacter(hit.Parent)
@@ -1123,6 +1149,7 @@ local function wirePrompts()
 				end
 				Effects.burst(entry.lockPart.Position, "pick")
 				openLock(plr, id, "pick")
+				plr:SetAttribute("ToolkitReady", false)
 				quest(plr, "skill")
 			end)
 		elseif def.kind == "search" then
@@ -2195,6 +2222,425 @@ local function giveClue(prefix)
 	say("clue", text)
 end
 
+-- ---------- skills version 2: buttons for everyone, the level-10/20 powers ----------
+do
+	-- the camera fades walls and furniture between it and you (never jumps
+	-- inside a bookshelf or out into the next room)
+	local StarterPlayer = game:GetService("StarterPlayer")
+	StarterPlayer.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
+	local function camera(p)
+		p.DevCameraOcclusionMode = Enum.DevCameraOcclusionMode.Invisicam
+	end
+	Players.PlayerAdded:Connect(camera)
+	for _, p in ipairs(Players:GetPlayers()) do
+		camera(p)
+	end
+
+	-- the guard rails: a skill stun is short, and never twice in a row
+	function round.skillStun(_, seconds, text)
+		if not (host and host.model) or state.status ~= "playing" then
+			return false
+		end
+		local now = os.clock()
+		if (host.stunImmune or 0) > now then
+			return false
+		end
+		local g = Config.SKILL_STUN
+		seconds = math.min(seconds, g.max)
+		if state.diff == "nightmare" then
+			seconds = math.min(seconds, g.nightmare)
+		end
+		host:stun(seconds)
+		host.stunImmune = now + seconds + g.gap
+		if host.root then
+			Effects.burst(host.root.Position + Vector3.new(0, 3, 0), "light")
+		end
+		if text then
+			say("info", text)
+		end
+		return true
+	end
+
+	-- how far you can go from a spot in a direction before a wall (on the floor)
+	local function clearRun(from, dir, most)
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		local skip = {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Character then
+				table.insert(skip, p.Character)
+			end
+		end
+		if host and host.model then
+			table.insert(skip, host.model)
+		end
+		params.FilterDescendantsInstances = skip
+		local flat = Vector3.new(dir.X, 0, dir.Z)
+		if flat.Magnitude < 0.01 then
+			flat = Vector3.new(0, 0, 1)
+		end
+		flat = flat.Unit
+		local hit = workspace:Raycast(from, flat * most, params)
+		local d = hit and math.max(2, (hit.Position - from).Magnitude - 2) or most
+		return from + flat * d
+	end
+
+	-- a decoy that runs off: the host goes after it (Shadow's clone, Tinker's mouse)
+	local function decoy(model, from, to, seconds)
+		model.Parent = world.root
+		local t = Instance.new("NumberValue")
+		local base = model:GetPivot()
+		local turn = CFrame.lookAt(from, Vector3.new(to.X, from.Y, to.Z)).Rotation
+		t.Changed:Connect(function(a)
+			if model.Parent then
+				model:PivotTo(CFrame.new(from:Lerp(to, a)) * turn * base.Rotation:Inverse() * base.Rotation)
+			end
+		end)
+		TweenService:Create(t, TweenInfo.new(math.min(seconds, 3), Enum.EasingStyle.Linear), { Value = 1 }):Play()
+		task.delay(seconds, function()
+			t:Destroy()
+			if model.Parent then
+				model:Destroy()
+			end
+		end)
+		if host and host.model then
+			host:lure(to, seconds)
+		end
+	end
+
+	-- Shadow's clone: a dark copy of Shadow runs away from the host
+	function round.shadowClone(plr, count)
+		local char = plr.Character
+		local hrp = hrpOf(plr)
+		if not char or not hrp then
+			return
+		end
+		local seconds = plr:GetAttribute("CloneTime") or Config.CLONE.seconds
+		local away = host and host.root and (hrp.Position - host.root.Position) or hrp.CFrame.LookVector
+		for i = 1, count do
+			local dir = i == 1 and away or CFrame.Angles(0, math.rad(i == 2 and 110 or -110), 0):VectorToWorldSpace(away)
+			local was = char.Archivable
+			char.Archivable = true
+			local c = char:Clone()
+			char.Archivable = was
+			if c then
+				for _, d in ipairs(c:GetDescendants()) do
+					if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("Sound") or d:IsA("BillboardGui") then
+						d:Destroy()
+					elseif d:IsA("BasePart") then
+						d.Anchored, d.CanCollide, d.CanQuery, d.CanTouch = true, false, false, false
+					end
+				end
+				local hum = c:FindFirstChildOfClass("Humanoid")
+				if hum then
+					hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+				end
+				local hl = Instance.new("Highlight")
+				hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(40, 20, 70), Color3.fromRGB(150, 100, 220), 0.15
+				hl.Parent = c
+				c.Name = "ShadowClone"
+				local to = clearRun(hrp.Position, dir, Config.CLONE.run)
+				decoy(c, hrp.Position, to, seconds)
+			end
+		end
+		say("info", plr.DisplayName .. "'s shadow clone runs off - the host goes after it!")
+	end
+
+	-- Tinker's wind-up mouse
+	local function windUpMouse(plr)
+		local hrp = hrpOf(plr)
+		if not hrp then
+			return
+		end
+		local m = Instance.new("Model")
+		m.Name = "WindUpMouse"
+		local body = Instance.new("Part")
+		body.Shape = Enum.PartType.Ball
+		body.Size = Vector3.new(1.6, 1, 2)
+		body.Color = Color3.fromRGB(160, 160, 170)
+		body.Material = Enum.Material.Metal
+		body.Anchored, body.CanCollide, body.CanQuery = true, false, false
+		body.CFrame = CFrame.new(hrp.Position - Vector3.new(0, 2.4, 0))
+		body.Parent = m
+		local key = Instance.new("Part")
+		key.Size = Vector3.new(0.2, 0.8, 0.8)
+		key.Color = Color3.fromRGB(230, 190, 80)
+		key.Material = Enum.Material.Foil
+		key.Anchored, key.CanCollide, key.CanQuery = true, false, false
+		key.CFrame = body.CFrame * CFrame.new(0, 0.7, 0)
+		key.Parent = m
+		m.PrimaryPart = body
+		local to = clearRun(body.Position, hrp.CFrame.LookVector, Config.MOUSE.run)
+		Effects.sound(body.Position, "noise", 0.8)
+		decoy(m, body.Position, to, Config.MOUSE.seconds)
+		say("info", plr.DisplayName .. " let a wind-up mouse go - squeak squeak! The host chases it.")
+	end
+
+	-- a plain doorway near a spot (for Bramble's vines)
+	local function doorwaysNear(pos, reach)
+		local px, py = math.floor(pos.X / T), math.floor(pos.Z / T)
+		local found = {}
+		for dx = -reach, reach do
+			for dy = -reach, reach do
+				local x, y = px + dx, py + dy
+				if cellAt(x, y) == "." then
+					local across = (cellAt(x - 1, y) == "#" and cellAt(x + 1, y) == "#") and "x"
+						or (cellAt(x, y - 1) == "#" and cellAt(x, y + 1) == "#") and "z" or nil
+					if across then
+						table.insert(found, { x = x, y = y, across = across, d = math.abs(dx) + math.abs(dy) })
+					end
+				end
+			end
+		end
+		table.sort(found, function(a, b)
+			return a.d < b.d
+		end)
+		return found
+	end
+
+	local function growVines(plr, spot, seconds, snapper)
+		local c = House.at(spot.x, spot.y, 0)
+		local m = Instance.new("Model")
+		m.Name = "BrambleVines"
+		local floor = Instance.new("Part")
+		floor.Name = "Vines"
+		floor.Size = Vector3.new(T, 0.3, T)
+		floor.Position = c + Vector3.new(0, 0.15, 0)
+		floor.Color = Color3.fromRGB(60, 140, 60)
+		floor.Material = Enum.Material.Grass
+		floor.Anchored, floor.CanCollide, floor.CanQuery, floor.CanTouch = true, false, true, false
+		if snapper then
+			floor:SetAttribute("Snapper", true)
+		end
+		floor.Parent = m
+		for i = 1, 7 do
+			local v = Instance.new("Part")
+			v.Size = Vector3.new(0.35, 2 + (i % 3), 0.35)
+			local off = (i - 4) * (T / 8)
+			v.Position = c + (spot.across == "x" and Vector3.new(off, v.Size.Y / 2, (i % 2) * 1.2 - 0.6) or Vector3.new((i % 2) * 1.2 - 0.6, v.Size.Y / 2, off))
+			v.Orientation = Vector3.new((i % 2) * 20 - 10, i * 37, (i % 3) * 12 - 12)
+			v.Color = i % 2 == 0 and Color3.fromRGB(70, 160, 70) or Color3.fromRGB(40, 110, 50)
+			v.Material = Enum.Material.Grass
+			v.Anchored, v.CanCollide, v.CanQuery, v.CanTouch = true, false, false, false
+			v.Parent = m
+			if snapper and i == 4 then
+				local head = Instance.new("Part")
+				head.Shape = Enum.PartType.Ball
+				head.Size = Vector3.new(1.4, 1.4, 1.4)
+				head.Position = v.Position + Vector3.new(0, v.Size.Y / 2 + 0.6, 0)
+				head.Color = Color3.fromRGB(220, 60, 80)
+				head.Anchored, head.CanCollide, head.CanQuery = true, false, false
+				head.Parent = m
+			end
+		end
+		m.Parent = world.root
+		local myWorld = world
+		task.delay(seconds, function()
+			if m.Parent and world == myWorld then
+				m:Destroy()
+			end
+		end)
+	end
+
+	-- a colour of the door code nobody knows yet (not on Nightmare)
+	local function revealAColour()
+		if state.diff == "nightmare" and not Config.CODE_COLOUR_ON_NIGHTMARE then
+			return nil
+		end
+		local unknown = {}
+		for k = 1, 3 do
+			if not state.known[k] then
+				table.insert(unknown, k)
+			end
+		end
+		if #unknown <= 1 then
+			return nil -- never the last one
+		end
+		local k = unknown[math.random(1, #unknown)]
+		state.known[k] = state.code[k]
+		RoundState:SetAttribute("Known" .. k, state.code[k])
+		return k
+	end
+
+	-- the new buttons (and the powers that ride on the old ones); returns
+	-- false when nothing happened (no cooldown then)
+	function round.skillV2(plr, skill, hrp, pos)
+		local p10, p20 = plr:GetAttribute("Power10"), plr:GetAttribute("Power20")
+		state.oncePerGame = state.oncePerGame or {}
+		local once = state.oncePerGame
+		if skill == "tinker" then
+			if p10 == "skeleton" and not once["skel" .. plr.UserId] then
+				-- Skeleton Key: every locked door on the floor, once a game
+				once["skel" .. plr.UserId] = true
+				local n = 0
+				for id, e in pairs(world.objects) do
+					if e.def and e.def.kind == "lock" and not world.unlocked[id] then
+						openLock(plr, id, "pick")
+						n += 1
+					end
+				end
+				say("info", "\u{1F5DD} " .. plr.DisplayName .. "'s Skeleton Key opened " .. n .. (n == 1 and " door!" or " doors!"))
+				return true
+			end
+			plr:SetAttribute("ToolkitReady", true)
+			say("info", "\u{1F527} Toolkit ready: your next lock or keypad picks in an instant.", nil, plr)
+			if p10 == "mouse" then
+				windUpMouse(plr)
+			end
+			return true
+		elseif skill == "brainy" then
+			local steps = clueSteps()
+			if not steps[1] then
+				say("info", "\u{1F9E0} Nothing left to work out - get to the exit!", nil, plr)
+				return false
+			end
+			lightUp(steps[1].id, Color3.fromRGB(120, 190, 255))
+			local text = "\u{1F9E0} " .. plr.DisplayName .. " thinks: " .. steps[1].text
+			if p20 == "bigbrain" then
+				for i = 2, #steps do
+					if steps[i].id ~= steps[1].id then
+						lightUp(steps[i].id, Color3.fromRGB(255, 210, 63))
+						text ..= "  Then: " .. steps[i].text
+						break
+					end
+				end
+			end
+			say("clue", text)
+			if p20 == "photo" and not once["photo" .. plr.UserId] then
+				once["photo" .. plr.UserId] = true
+				local k = revealAColour()
+				if k then
+					say("reveal", "\u{1F4F8} Brainy remembers: colour " .. k .. " of the code is " .. colourWord(state.code[k]) .. "!")
+				end
+			end
+			return true
+		elseif skill == "bramble" then
+			local spots = doorwaysNear(hrp.Position, Config.VINES.reach)
+			if #spots == 0 then
+				say("info", "\u{1F33F} Stand in or next to a doorway to grow vines across it.", nil, plr)
+				return false
+			end
+			local seconds = plr:GetAttribute("VineTime") or Config.VINES.seconds
+			local many = p20 == "overgrowth" and 2 or 1
+			for i = 1, math.min(many, #spots) do
+				growVines(plr, spots[i], seconds, p10 == "snapper")
+			end
+			say("info", "\u{1F33F} " .. plr.DisplayName .. " grew vines across the doorway - the host will wade through slowly!")
+			return true
+		end
+		return nil -- not a new button
+	end
+
+	-- after the old buttons: the powers that ride on them
+	function round.skillAfter(plr, skill, hrp, pos)
+		local p10, p20 = plr:GetAttribute("Power10"), plr:GetAttribute("Power20")
+		if skill == "shadow" and (p10 == "clone" or p20 == "doubleclone") then
+			round.shadowClone(plr, p20 == "doubleclone" and 2 or 1)
+		elseif skill == "patch" and p10 == "hug" then
+			local n = 0
+			for _, p in ipairs(Players:GetPlayers()) do
+				local h = hrpOf(p)
+				if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude < 20 then
+					Boost:FireClient(p, "stamina")
+					Effects.at(p, "heal")
+					n += 1
+				end
+			end
+			if n > 0 then
+				say("info", "\u{1F917} Group Hug! " .. n .. (n == 1 and " friend" or " friends") .. " got all their stamina back.")
+			end
+		elseif skill == "glow" then
+			local light = plr.Character and plr.Character:FindFirstChild("Head") and plr.Character.Head:FindFirstChild("GlowBulb")
+			light = light and light:FindFirstChildOfClass("PointLight")
+			local range = light and light.Range or 40
+			if p10 == "nightlight" then
+				local lamp = Instance.new("Part")
+				lamp.Name = "NightLight"
+				lamp.Shape = Enum.PartType.Ball
+				lamp.Size = Vector3.new(1.4, 1.4, 1.4)
+				lamp.Material = Enum.Material.Neon
+				lamp.Color = Color3.fromRGB(255, 242, 160)
+				lamp.Anchored, lamp.CanCollide, lamp.CanQuery = true, false, false
+				lamp.Position = hrp.Position + Vector3.new(0, 4, 0)
+				local l = Instance.new("PointLight")
+				l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 242, 160), Config.NIGHT_LIGHT.range, 1.5
+				l.Parent = lamp
+				lamp.Parent = world.root
+				local tx, ty = math.floor(hrp.Position.X / T), math.floor(hrp.Position.Z / T)
+				for _, f in ipairs(HouseMap.floors) do
+					if tx >= f.x0 and tx <= f.x1 and ty >= f.y0 and ty <= f.y1 and world.dark[f.name] then
+						world.setDark(f.name, false)
+					end
+				end
+				game:GetService("Debris"):AddItem(lamp, Config.NIGHT_LIGHT.seconds)
+			elseif p10 == "dazzle" and host and host.root and (host.root.Position - hrp.Position).Magnitude < range then
+				round:skillStun(2, "\u{2728} Dazzled! The host stops to rub his eyes.")
+			end
+			if p20 == "beacon" then
+				local seconds = plr:GetAttribute("FlareTime") or Config.GLOW_FLARE.seconds
+				for _, p in ipairs(Players:GetPlayers()) do
+					if p.Character and not p:GetAttribute("Escaped") then
+						local hl = Instance.new("Highlight")
+						hl.Name = "Beacon"
+						hl.FillTransparency, hl.FillColor, hl.OutlineColor = 0.7, Color3.fromRGB(255, 242, 160), Color3.fromRGB(255, 220, 90)
+						hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+						hl.Parent = p.Character
+						game:GetService("Debris"):AddItem(hl, seconds)
+					end
+				end
+			end
+		elseif skill == "echo" then
+			-- the burst: Echo runs faster for a moment
+			plr:SetAttribute("BurstMult", plr:GetAttribute("BurstMult") or Config.ECHO_BURST.mult)
+			plr:SetAttribute("BurstUntil", workspace:GetServerTimeNow() + (plr:GetAttribute("BurstTime") or Config.ECHO_BURST.seconds))
+			if p10 == "echomap" then
+				say("hostmap", "\u{1F3A7} You can hear exactly where the host is!", { seconds = 5 }, plr)
+			end
+			if p20 == "soundwave" and typeof(pos) == "Vector3" and host and host.root and (host.root.Position - pos).Magnitude < 12 then
+				round:skillStun(1, "\u{1F4A5} Sound Wave! The host is stunned by the noise.")
+			end
+		end
+	end
+
+	-- Patch's level-20 powers: Guardian (once a game) and Medic Run
+	task.spawn(function()
+		while true do
+			task.wait(0.5)
+			if state.status == "playing" and world then
+				for _, patch in ipairs(Players:GetPlayers()) do
+					local p20 = patch:GetAttribute("Skill") == "patch" and patch:GetAttribute("Power20")
+					local ph = hrpOf(patch)
+					if p20 == "medicrun" and ph then
+						local near = false
+						for _, p in ipairs(Players:GetPlayers()) do
+							local h = hrpOf(p)
+							if p ~= patch and h and not p:GetAttribute("Caged") and (h.Position - ph.Position).Magnitude < 14 then
+								near = true
+							end
+						end
+						patch:SetAttribute("RunBonus", near and 1.1 or 1)
+					elseif p20 == "guardian" and ph and not patch:GetAttribute("Caged") then
+						state.oncePerGame = state.oncePerGame or {}
+						local cage = world.objects.cage
+						local cp = cage and (cage.part or cage.outside)
+						cp = typeof(cp) == "Instance" and cp.Position or cp
+						if not state.oncePerGame["guard" .. patch.UserId] and typeof(cp) == "Vector3" and (cp - ph.Position).Magnitude < 12 then
+							for _, p in ipairs(Players:GetPlayers()) do
+								if p:GetAttribute("Caged") and not state.oncePerGame["guard" .. patch.UserId] then
+									state.oncePerGame["guard" .. patch.UserId] = true
+									freeFromCage(p)
+									Effects.at(p, "heal")
+									say("info", "\u{1F607} Guardian! Patch freed " .. p.DisplayName .. " the moment she arrived.")
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	end)
+end
+
 -- ---------- after a round: play again or go back to the lobby ----------
 local votes = {}
 local voting = false
@@ -2397,6 +2843,15 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 	if not hrp then
 		return
 	end
+	-- skills version 2: Tinker's Toolkit, Brainy's Think!, Bramble's Vines
+	local v2 = round.skillV2(plr, skill, hrp, pos)
+	if v2 ~= nil then
+		if v2 then
+			plr:SetAttribute("CoolUntil", now + cd * (plr:GetAttribute("CooldownMult") or 1))
+			quest(plr, "skill")
+		end
+		return
+	end
 	if skill == "shadow" then
 		plr:SetAttribute("SneakUntil", now + (plr:GetAttribute("SneakTime") or 6))
 		Effects.at(plr, "sneak")
@@ -2437,9 +2892,21 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 			end
 		end
 		if not best then
-			return say("info", "No \u{1F4AA} crate close by - Barricade works next to one beside a doorway.", nil, plr)
+			if plr:GetAttribute("Power10") == "pound" then
+				-- Ground Pound: no crate here, so stamp the floor
+				Effects.burst(hrp.Position, "shove")
+				Effects.sound(hrp.Position, "shove", 1.2)
+				if host and host.root and (host.root.Position - hrp.Position).Magnitude < Config.POUND.range then
+					round:skillStun(Config.POUND.stun, "\u{1F4A5} GROUND POUND! " .. plr.DisplayName .. " stunned the host!")
+				else
+					say("info", "\u{1F4A5} Ground Pound! (The host was too far away to feel it.)", nil, plr)
+				end
+			else
+				return say("info", "No \u{1F4AA} crate close by - Barricade works next to one beside a doorway.", nil, plr)
+			end
+		else
+			barricade(plr, best)
 		end
-		barricade(plr, best)
 	elseif skill == "glow" then
 		local head = plr.Character and plr.Character:FindFirstChild("Head")
 		local bulb = head and head:FindFirstChild("GlowBulb")
@@ -2449,12 +2916,13 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		end
 		local f = Config.GLOW_FLARE
 		local base = plr:GetAttribute("GlowRange") or 24
+		local seconds = plr:GetAttribute("FlareTime") or f.seconds
 		light.Range = math.min(60, base * f.mult)
 		light.Brightness = 3
-		plr:SetAttribute("FlareUntil", now + f.seconds)
+		plr:SetAttribute("FlareUntil", now + seconds)
 		Effects.at(plr, "light")
 		say("flare", plr.DisplayName .. "'s Flare lights up everything around!", { userId = plr.UserId })
-		task.delay(f.seconds, function()
+		task.delay(seconds, function()
 			if light.Parent then
 				light.Range, light.Brightness = plr:GetAttribute("GlowRange") or 24, 1.6
 			end
@@ -2469,6 +2937,14 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		Effects.burst(pos + Vector3.new(0, 1, 0), "noise")
 		say("lure", "Echo threw a noise - the host has gone to look!", { pos = pos, userId = plr.UserId })
 	end
+	round.skillAfter(plr, skill, hrp, pos)
+	-- Echo's Double Throw: the first of two throws doesn't start the recharge
+	if skill == "echo" and plr:GetAttribute("Power10") == "double" and not plr:GetAttribute("EchoSecond") then
+		plr:SetAttribute("EchoSecond", true)
+		quest(plr, "skill")
+		return say("info", "\u{1F3A7} One more noise to throw!", nil, plr)
+	end
+	plr:SetAttribute("EchoSecond", false)
 	plr:SetAttribute("CoolUntil", now + cd * (plr:GetAttribute("CooldownMult") or 1))
 	quest(plr, "skill")
 end)

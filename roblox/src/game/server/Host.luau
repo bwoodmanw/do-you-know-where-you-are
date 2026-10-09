@@ -259,9 +259,16 @@ function Host:canSee(char)
 		local tx, ty = math.floor(target.Position.X / Config.TILE), math.floor(target.Position.Z / Config.TILE)
 		for _, f in ipairs(self.world.map.floors) do
 			if tx >= f.x0 and tx <= f.x1 and ty >= f.y0 and ty <= f.y1 and self.world.dark[f.name] then
+				if plr:GetAttribute("Power20") == "nightwalker" then
+					return false -- Shadow's Night Walker: never seen in the dark
+				end
 				range *= 0.55
 			end
 		end
+	end
+	-- Bramble's Hide in the Leaves: standing still, only seen up close
+	if plr:GetAttribute("Power10") == "leaves" and target.AssemblyLinearVelocity.Magnitude < 1 then
+		range = math.min(range, 8)
 	end
 	if dist > range then
 		return false
@@ -413,6 +420,14 @@ function Host:step(dt)
 		local below = workspace:Raycast(self.root.Position, Vector3.new(0, -14, 0), params)
 		if below and (below.Instance.Name == "ChocolateRiver" or below.Instance.Name == "WadeWater") then
 			self.hum.WalkSpeed *= Config.WADE.host
+		elseif below and below.Instance.Name == "Vines" then
+			-- Bramble's vines: slow going for the host only
+			self.hum.WalkSpeed *= Config.VINES.slow
+			if below.Instance:GetAttribute("Snapper") then
+				-- Snapper Plant: they snap shut the first time he steps in
+				below.Instance:SetAttribute("Snapper", nil)
+				self.round:skillStun(2, "SNAP! Bramble's snapper plant has the host by the foot!")
+			end
 		end
 	end
 
