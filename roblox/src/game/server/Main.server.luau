@@ -2907,7 +2907,7 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 	if skill == "shadow" then
 		plr:SetAttribute("SneakUntil", now + (plr:GetAttribute("SneakTime") or 6))
 		Effects.at(plr, "sneak")
-		say("sneak", plr.DisplayName .. " is sneaking - the host cannot see or grab them for 6 seconds!", { userId = plr.UserId })
+		say("sneak", plr.DisplayName .. " is sneaking - the host cannot see or grab them for " .. (plr:GetAttribute("SneakTime") or 6) .. " seconds!", { userId = plr.UserId })
 	elseif skill == "patch" then
 		-- a Party Shield for the nearest friend (all nearby with Shields for
 		-- All), everyone's breath back; alone, Patch shields herself
@@ -2997,7 +2997,9 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		return say("info", "\u{1F3A7} One more noise to throw!", nil, plr)
 	end
 	plr:SetAttribute("EchoSecond", false)
-	plr:SetAttribute("CoolUntil", now + cd * (plr:GetAttribute("CooldownMult") or 1))
+	-- Shadow's recharge starts when the sneak ends (never hidden all the time)
+	local after = skill == "shadow" and (plr:GetAttribute("SneakTime") or 6) or 0
+	plr:SetAttribute("CoolUntil", now + after + cd * (plr:GetAttribute("CooldownMult") or 1))
 	quest(plr, "skill")
 end)
 

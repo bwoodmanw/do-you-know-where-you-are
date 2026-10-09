@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,11 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 34 (8 Oct) - map icons, Skeleton Key, Shadow's recharge
+- [ ] Map: a padlock on locked doors, a roadwork sign on junk doorways (both gone when open), chains on the cage, a door on the exit; on the Classrooms floor "Loft" sits bottom-right of the Library, not over its name
+- [ ] Tinker with Skeleton Key (level 10): the first lock you pick opens every other locked door ("Skeleton Key opened n more doors!")
+- [ ] Shadow: the Sneak message says the real length; the recharge counts down only after the sneak ends (the button shows Sneaking, then the recharge)
 
 ## Round 33 (8 Oct) - swings, Frenzy, (R)
 - [ ] Lobby swings: you sit facing the way the swing goes (not sideways)
