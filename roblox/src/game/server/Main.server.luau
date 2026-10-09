@@ -333,8 +333,10 @@ local function modelFor(plr, s)
 			return skin.model
 		end
 	end
-	-- Studio only: a remade test model for this character, if it is imported
-	local try = game:GetService("RunService"):IsStudio() and Config.STUDIO_TRY_MODEL and Config.STUDIO_TRY_MODEL[s.name]
+	-- Studio (and the owner live): a remade test model for this character, if it is imported
+	local tester = RunService:IsStudio()
+		or (Config.TRY_MODEL_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId)
+	local try = tester and Config.STUDIO_TRY_MODEL and Config.STUDIO_TRY_MODEL[s.name]
 	if try and Characters.has(try) then
 		return try
 	end

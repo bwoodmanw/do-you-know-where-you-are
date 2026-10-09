@@ -41,8 +41,10 @@ Config.UI_ICONS = { -- art/ui-icons/*.png (ids checked on Roblox's API, 9 Oct)
 Config.UI_TEXT = { title = 36, body = 26 }
 -- trying a remade character in Studio only (STYLE_UPGRADE.md part B): the
 -- plain character uses this model instead when it is in ServerStorage/Characters,
--- e.g. { Tinker = "TinkerToon" }. Live players never see it.
+-- e.g. { Tinker = "TinkerToon" }. With TRY_MODEL_FOR_OWNER the owner also
+-- plays it in the live game; other players never see it.
 Config.STUDIO_TRY_MODEL = { Tinker = "TinkerToon" }
+Config.TRY_MODEL_FOR_OWNER = true
 -- the look of each building: base light (ambient), a color tint, and for
 -- everyone richer colors, a soft glow on lights and a light haze. A Spooky
 -- game keeps `spooky` of the ambient light (darker). Tune freely.
@@ -91,7 +93,7 @@ Config.ANIM = {
 	},
 	-- the kids (their skins use the same pack unless listed under model)
 	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy" },
-	model = { MuscleMummy = "zombie" },
+	model = { MuscleMummy = "zombie", TinkerToon = "robot" },
 	-- models saved in a T-pose whose pack idle swings the arms behind the back
 	-- (Echo, 9 Oct): they keep the pack's walk and run but stand in Roblox's
 	-- plain idle
