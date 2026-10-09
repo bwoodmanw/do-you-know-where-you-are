@@ -180,4 +180,205 @@ function Effects.at(player, kind)
 	end
 end
 
+-- ---------- lasting effects (skills version 2 polish) ----------
+
+local function fxPart(props)
+	local p = Instance.new("Part")
+	p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+	for k, v in pairs(props) do
+		p[k] = v
+	end
+	p.Parent = props.Parent or workspace
+	return p
+end
+
+local function hrpOf(player)
+	return player and player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+end
+
+-- a flat ring that spreads across the floor from a spot (y = the floor)
+function Effects.ring(position, color, size, seconds, delay)
+	if typeof(position) ~= "Vector3" then
+		return
+	end
+	task.delay(delay or 0, function()
+		local ring = fxPart({ Shape = Enum.PartType.Cylinder, Material = Enum.Material.Neon, Color = color, Transparency = 0.15,
+			Size = Vector3.new(0.15, 2, 2), CFrame = CFrame.new(position + Vector3.new(0, 0.25, 0)) * CFrame.Angles(0, 0, math.rad(90)) })
+		TweenService:Create(ring, TweenInfo.new(seconds or 0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = Vector3.new(0.15, size, size), Transparency = 1 }):Play()
+		Debris:AddItem(ring, (seconds or 0.8) + 0.1)
+	end)
+end
+
+-- a soft ball of light that swells out and fades (Glow's Flare)
+function Effects.swell(position, color, size, seconds)
+	if typeof(position) ~= "Vector3" then
+		return
+	end
+	local ball = fxPart({ Shape = Enum.PartType.Ball, Material = Enum.Material.Neon, Color = color, Transparency = 0.55,
+		Size = Vector3.new(2, 2, 2), Position = position })
+	TweenService:Create(ball, TweenInfo.new(seconds or 0.7, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = Vector3.new(size, size, size), Transparency = 1 }):Play()
+	Debris:AddItem(ball, (seconds or 0.7) + 0.1)
+end
+
+-- particles that follow a player for a while: Shadow's smoke while he
+-- sneaks, Glow's sparkles while her Flare lasts, a streak while running fast
+local AURAS = {
+	sneak = { SMOKE, { Color3.fromRGB(120, 80, 190), Color3.fromRGB(30, 15, 50) }, 14, 1.5, 2.4, 1.3, 0.45 },
+	flare = { SPARKLE, { Color3.fromRGB(255, 242, 122), Color3.fromRGB(255, 255, 255) }, 22, 4, 0.8, 1, 0.1 },
+}
+function Effects.aura(player, kind, seconds)
+	local hrp = hrpOf(player)
+	if not hrp or not seconds or seconds <= 0 then
+		return
+	end
+	local name = "Aura_" .. kind
+	local untilT = os.clock() + seconds
+	local att = hrp:FindFirstChild(name)
+	if att then
+		if (att:GetAttribute("Until") or 0) >= untilT then
+			return
+		end
+	elseif kind == "speed" then
+		-- a golden streak behind a runner (Echo's burst, Glow's lift, Beacon)
+		att = Instance.new("Attachment")
+		att.Name = name
+		att.Position = Vector3.new(0, 0.9, 0)
+		local low = Instance.new("Attachment")
+		low.Name = "Low"
+		low.Position = Vector3.new(0, -1.8, 0)
+		low.Parent = att
+		local tr = Instance.new("Trail")
+		tr.Attachment0, tr.Attachment1 = att, low
+		tr.Lifetime = 0.35
+		tr.LightEmission = 0.8
+		tr.Color = ColorSequence.new(Color3.fromRGB(255, 230, 120), Color3.fromRGB(255, 150, 40))
+		tr.Transparency = NumberSequence.new(0.35, 1)
+		tr.Parent = att
+		att.Parent = hrp
+	else
+		local k = AURAS[kind]
+		if not k then
+			return
+		end
+		att = Instance.new("Attachment")
+		att.Name = name
+		local pe = Instance.new("ParticleEmitter")
+		pe.Texture = k[1]
+		pe.Color = sequence(k[2])
+		pe.Rate = k[3]
+		pe.Speed = NumberRange.new(k[4] * 0.4, k[4])
+		pe.SpreadAngle = Vector2.new(180, 180)
+		pe.Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, k[5]), NumberSequenceKeypoint.new(1, k[5] * 0.3) })
+		pe.Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, k[7]), NumberSequenceKeypoint.new(1, 1) })
+		pe.Lifetime = NumberRange.new(k[6] * 0.6, k[6])
+		pe.LightEmission = 0.6
+		pe.Parent = att
+		att.Parent = hrp
+	end
+	att:SetAttribute("Until", untilT)
+	task.delay(seconds + 0.05, function()
+		if att.Parent and os.clock() >= (att:GetAttribute("Until") or 0) then
+			local pe = att:FindFirstChildOfClass("ParticleEmitter")
+			if pe then
+				pe.Enabled = false -- let the last puffs fade
+				Debris:AddItem(att, 1.5)
+			else
+				att:Destroy()
+			end
+		end
+	end)
+end
+
+-- dizzy stars circling a head (the host stunned by a skill)
+function Effects.stars(model, seconds)
+	local head = model and (model:FindFirstChild("Head") or model.PrimaryPart)
+	if not head or not head:IsA("BasePart") then
+		return
+	end
+	local root = model.PrimaryPart or head
+	local stars = {}
+	for i = 1, 3 do
+		local s = fxPart({ Shape = Enum.PartType.Ball, Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 225, 90), Size = Vector3.new(0.7, 0.7, 0.7) })
+		local l = Instance.new("PointLight")
+		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 225, 90), 5, 1
+		l.Parent = s
+		stars[i] = s
+	end
+	local t0 = os.clock()
+	local conn
+	conn = game:GetService("RunService").Heartbeat:Connect(function()
+		local t = os.clock() - t0
+		if t > seconds or not root.Parent then
+			conn:Disconnect()
+			for _, s in ipairs(stars) do
+				s:Destroy()
+			end
+			return
+		end
+		local cf, size = model:GetBoundingBox()
+		local c = cf.Position + Vector3.new(0, size.Y / 2 + 0.6, 0)
+		for i, s in ipairs(stars) do
+			local a = t * 6 + i * (math.pi * 2 / 3)
+			s.Position = c + Vector3.new(math.cos(a) * 1.6, math.sin(t * 8 + i) * 0.2, math.sin(a) * 1.6)
+		end
+	end)
+	Effects.sound(head.Position, "pop", 0.6)
+end
+
+-- a picture that pops up over a player's head for a moment (💡 Think!, 🔧 Toolkit)
+function Effects.icon(player, text, seconds)
+	local char = player.Character
+	local head = char and (char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart"))
+	if not head then
+		return
+	end
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "SkillIcon"
+	gui.Size = UDim2.fromScale(0.5, 0.5)
+	gui.StudsOffset = Vector3.new(0, 3.2, 0)
+	gui.AlwaysOnTop = true
+	gui.LightInfluence = 0
+	gui.Parent = head
+	local l = Instance.new("TextLabel")
+	l.Size = UDim2.fromScale(1, 1)
+	l.BackgroundTransparency = 1
+	l.TextScaled = true
+	l.Text = text
+	l.Parent = gui
+	TweenService:Create(gui, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromScale(3, 3) }):Play()
+	task.delay(seconds or 1.8, function()
+		if gui.Parent then
+			TweenService:Create(l, TweenInfo.new(0.4), { TextTransparency = 1 }):Play()
+			TweenService:Create(gui, TweenInfo.new(0.4), { StudsOffset = Vector3.new(0, 4.5, 0) }):Play()
+		end
+	end)
+	Debris:AddItem(gui, (seconds or 1.8) + 0.5)
+end
+
+-- a shimmering bubble round a player who has a Party Shield
+function Effects.shield(player, on)
+	local hrp = hrpOf(player)
+	if not hrp then
+		return
+	end
+	local bubble = hrp:FindFirstChild("ShieldBubble")
+	if on and not bubble then
+		bubble = Instance.new("Part")
+		bubble.Name = "ShieldBubble"
+		bubble.Shape = Enum.PartType.Ball
+		bubble.Size = Vector3.new(7, 7, 7)
+		bubble.Material = Enum.Material.ForceField
+		bubble.Color = Color3.fromRGB(120, 200, 255)
+		bubble.Transparency = 0.2
+		bubble.CanCollide, bubble.CanQuery, bubble.CanTouch, bubble.CastShadow, bubble.Massless = false, false, false, false, true
+		bubble.CFrame = hrp.CFrame
+		local w = Instance.new("WeldConstraint")
+		w.Part0, w.Part1 = bubble, hrp
+		w.Parent = bubble
+		bubble.Parent = hrp
+	elseif not on and bubble then
+		bubble:Destroy()
+	end
+end
+
 return Effects

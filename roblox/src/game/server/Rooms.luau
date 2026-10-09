@@ -221,19 +221,29 @@ PIECES.TaffyPuller = { size = Vector3.new(5, 7, 4), build = function(f, b)
 end }
 
 PIECES.GummyBear = { size = Vector3.new(4, 7, 4), build = function(f, b)
+	-- a big gummy bear on a stand, facing the room: shiny candy body, a paler
+	-- belly and muzzle, round ears, dark eyes and nose (it read as a pile of
+	-- see-through balls before)
 	local col = CANDY[math.random(1, #CANDY)]
-	local function ball(s, at)
-		add(f, b, { size = s, at = at, shape = Enum.PartType.Ball, color = col, mat = GLASS, alpha = 0.25 })
+	local pale = col:Lerp(C(255, 255, 255), 0.45)
+	local DARK = C(40, 25, 35)
+	local function ball(s, at, c, rot)
+		return add(f, b, { size = s, at = at, rot = rot, shape = Enum.PartType.Ball, color = c or col, alpha = c and 0 or 0.12, shine = 0.12 })
 	end
-	ball(Vector3.new(3, 3.6, 2.6), Vector3.new(0, 2.4, 1))
-	ball(Vector3.new(2.4, 2.2, 2.2), Vector3.new(0, 5, 1))
-	ball(Vector3.new(0.9, 0.9, 0.7), Vector3.new(-0.9, 6.1, 1))
-	ball(Vector3.new(0.9, 0.9, 0.7), Vector3.new(0.9, 6.1, 1))
-	ball(Vector3.new(1, 1.5, 1), Vector3.new(-1.6, 3, 0.8))
-	ball(Vector3.new(1, 1.5, 1), Vector3.new(1.6, 3, 0.8))
-	ball(Vector3.new(1.2, 1.2, 1.4), Vector3.new(-0.8, 0.6, 0.6))
-	ball(Vector3.new(1.2, 1.2, 1.4), Vector3.new(0.8, 0.6, 0.6))
-	add(f, b, { size = Vector3.new(3.4, 0.4, 3.4), at = Vector3.new(0, 0.2, 1), rot = UP, shape = Enum.PartType.Cylinder, color = C(250, 250, 250) })
+	add(f, b, { size = Vector3.new(0.4, 3.6, 3.6), at = Vector3.new(0, 0.2, 1), rot = UP, shape = Enum.PartType.Cylinder, color = C(250, 250, 250) })
+	ball(Vector3.new(1.4, 1.5, 1.6), Vector3.new(-0.8, 1.1, 0.8)) -- feet
+	ball(Vector3.new(1.4, 1.5, 1.6), Vector3.new(0.8, 1.1, 0.8))
+	ball(Vector3.new(2.8, 3.2, 2.4), Vector3.new(0, 2.7, 1)) -- body
+	ball(Vector3.new(1.8, 2, 0.6), Vector3.new(0, 2.6, -0.05), pale) -- belly
+	ball(Vector3.new(1, 1.8, 1), Vector3.new(-1.5, 3.2, 0.8), nil, CFrame.Angles(0, 0, math.rad(-25))) -- arms
+	ball(Vector3.new(1, 1.8, 1), Vector3.new(1.5, 3.2, 0.8), nil, CFrame.Angles(0, 0, math.rad(25)))
+	ball(Vector3.new(2.6, 2.3, 2.2), Vector3.new(0, 5.2, 1)) -- head
+	ball(Vector3.new(1, 1, 0.6), Vector3.new(-0.95, 6.3, 1)) -- ears
+	ball(Vector3.new(1, 1, 0.6), Vector3.new(0.95, 6.3, 1))
+	ball(Vector3.new(1.1, 0.8, 0.6), Vector3.new(0, 4.85, -0.05), pale) -- muzzle
+	ball(Vector3.new(0.45, 0.32, 0.3), Vector3.new(0, 5.05, -0.32), DARK) -- nose
+	ball(Vector3.new(0.35, 0.42, 0.22), Vector3.new(-0.5, 5.6, 0), DARK) -- eyes
+	ball(Vector3.new(0.35, 0.42, 0.22), Vector3.new(0.5, 5.6, 0), DARK)
 end }
 
 PIECES.Lollipop = { size = Vector3.new(4, 9, 2), build = function(f, b)
@@ -1012,11 +1022,11 @@ local LOOKS = {
 	{ { "ward" }, "mint", { "Curtain", "IVStand", "Curtain", "Monitors" } },
 	{ { "waiting" }, nil, { "WaitingChairs", "WaitingChairs", "TV", "Plants" } },
 	{ { "laundry" }, "tiles", { "WashingMachines", "WashingMachines" } },
-	{ { "canteen" }, "tiles", { "Trays", "Trays", "Plants" } },
+	{ { "canteen", "cafeteria" }, "tiles", { "Trays", "Trays", "Plants" } },
 	{ { "reception", "nurses' station" }, nil, { "Counter", "WaitingChairs", "Plants" } },
-	{ { "day room", "quiet room", "staff room" }, nil, { "Sofa", "TV", "Plants" } },
+	{ { "day room", "quiet room", "staff room", "lounge" }, nil, { "Sofa", "TV", "Plants" } },
 	{ { "science lab" }, "steel", { "Beakers", "Beakers", "Monitors" } },
-	{ { "lab store" }, "steel", { "Crates", "Beakers", "PaperStacks" } },
+	{ { "lab store", "lab storage" }, "steel", { "Crates", "Beakers", "PaperStacks" } },
 	{ { "plant lab" }, "green", { "Plants", "Plants", "Beakers" } },
 	{ { "radio" }, "steel", { "RadioDesk", "Monitors" } },
 	{ { "lift", "elevator" }, "steel", { "LiftDoors", "WaitingChairs" } },
@@ -1033,7 +1043,7 @@ local LOOKS = {
 	{ { "cellar entrance" }, "brick", { "Crates", "CoatRack" } },
 	{ { "old storage" }, "wood", { "DustSheets", "Crates", "Trunks" } },
 	{ { "cellar stairs" }, "brick", { "Pipes", "Crates" } },
-	{ { "parlour" }, "red", { "Fireplace", "Armchair", "Armchair" } },
+	{ { "parlour", "parlor" }, "red", { "Fireplace", "Armchair", "Armchair" } },
 	{ { "library" }, "green", { "Globe", "Armchair", "Fireplace" } },
 	{ { "study" }, "green", { "Globe", "Armchair", "PaperStacks" } },
 	{ { "music" }, "purple", { "Drums", "Armchair" } },
@@ -1045,7 +1055,7 @@ local LOOKS = {
 	{ { "bath" }, "tiles", { "Bathroom", "Plants" } },
 	{ { "clock" }, "wood", { "Clocks", "Clocks" } },
 	{ { "trunk" }, "wood", { "Trunks", "Trunks", "DustSheets" } },
-	{ { "dusty", "box room" }, "wood", { "DustSheets", "Crates", "DustSheets" } },
+	{ { "dusty", "box room", "storage room" }, "wood", { "DustSheets", "Crates", "DustSheets" } },
 	{ { "doll" }, "pastel", { "Dolls", "ToyBox", "Dolls" } },
 	{ { "nursery", "playroom", "kids", "children" }, "pastel", { "ToyBox", "Wardrobe", "ToyBox" } },
 	{ { "bedroom", "guest" }, "blue", { "Wardrobe", "Armchair", "Globe" } },
@@ -1058,11 +1068,11 @@ local LOOKS = {
 local SOUNDS_BY_NAME = {
 	{ { "boiler", "generator", "water tank" }, "hum" },
 	{ { "conveyor", "factory", "wrapper", "packing", "taffy" }, "factory" },
-	{ { "parlour", "library" }, "fire" },
+	{ { "parlour", "parlor", "library" }, "fire" },
 	{ { "clock" }, "tick" },
-	{ { "trunk", "dusty", "box room", "doll", "rooftop", "attic" }, "wind" },
+	{ { "trunk", "dusty", "box room", "storage room", "doll", "rooftop", "attic" }, "wind" },
 	{ { "ward", "x-ray", "nurses", "records", "pharmacy", "medicine" }, "beep" },
-	{ { "corridor", "waiting", "reception", "lift", "elevator", "lab", "canteen" }, "buzz", "hospital" },
+	{ { "corridor", "waiting", "reception", "lift", "elevator", "lab", "canteen", "cafeteria" }, "buzz", "hospital" },
 	{ { "chocolate", "jelly" }, "bubble" },
 	{ { "bath", "laundry", "linen", "sticky", "archive", "cellar" }, "drip" },
 }
@@ -1631,7 +1641,7 @@ end
 -- painted view, so nothing outside needs building): stars, the moon, hills
 -- and trees (candy clouds at the Gummy Bounce House, town lights at the
 -- hospital). One soft beam of moonlight per room.
-local NO_WINDOWS = { "vault", "bank", "security", "boiler", "generator", "water tank", "lift", "x-ray", "store", "cupboard", "closet", "archive", "locker" }
+local NO_WINDOWS = { "vault", "bank", "security", "boiler", "generator", "water tank", "lift", "elevator lobby", "x-ray", "store", "lab storage", "coal room", "sugar room", "cupboard", "closet", "archive", "locker" }
 local function paintView(sg, theme, seed)
 	local rng = Random.new(seed)
 	local sky = Instance.new("Frame")

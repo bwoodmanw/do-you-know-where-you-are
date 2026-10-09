@@ -89,7 +89,7 @@ def plan_a():
               (13, 6, 18, 6, 'shelf'), (2, 21, 8, 21, 'shelf'), (2, 25, 6, 25, 'shelf'), (14, 23, 17, 24, 'table'),
               (22, 15, 23, 16, 'table'), (33, 14, 36, 14, 'planter'), (33, 3, 35, 3, 'piano')]:
         p.furnish(*f)
-    p.floors = [(1, 1, 9, 8, 'carpet', 'Parlour'), (11, 1, 19, 8, 'green', 'Library'), (21, 1, 29, 8, 'boards', 'Corridor'),
+    p.floors = [(1, 1, 9, 8, 'carpet', 'Parlor'), (11, 1, 19, 8, 'green', 'Library'), (21, 1, 29, 8, 'boards', 'Corridor'),
                 (31, 1, 38, 8, 'purple', 'Music Room'), (1, 10, 9, 18, 'tiles', 'Kitchen'), (11, 10, 19, 18, 'wood', 'Dining Room'),
                 (21, 10, 29, 18, 'purple', 'Game Room'), (31, 10, 38, 18, 'green', 'Conservatory'), (1, 20, 9, 28, 'boards', 'Pantry'),
                 (11, 20, 29, 28, 'wood', 'Front Hall'), (31, 20, 38, 28, 'tiles', 'Bathroom')]
@@ -224,7 +224,7 @@ def plan_factory():
               (3, 3, 5, 4, 'table'), (2, 8, 6, 8, 'shelf'), (34, 3, 36, 4, 'table'), (33, 7, 34, 7, 'desk')]:
         p.furnish(*f)
     p.floors = [(1, 1, 7, 9, 'mint', 'Wrapper Room'), (9, 1, 19, 9, 'caramel', 'Chocolate River'), (21, 1, 30, 9, 'pinktiles', 'Packing Hall'),
-                (32, 1, 38, 9, 'lilac', 'Taste Lab'), (1, 11, 7, 18, 'caramel', 'Sugar Store'), (9, 11, 30, 18, 'pinktiles', 'Conveyor Hall'),
+                (32, 1, 38, 9, 'lilac', 'Taste Lab'), (1, 11, 7, 18, 'caramel', 'Sugar Room'), (9, 11, 30, 18, 'pinktiles', 'Conveyor Hall'),
                 (32, 11, 38, 18, 'mint', 'Boiler Room'), (1, 20, 7, 28, 'lilac', 'Locker Room'), (9, 20, 30, 28, 'mint', 'Factory Floor'),
                 (32, 20, 38, 28, 'caramel', 'Loading Dock')]
     p.fixed = [dict(id='door', kind='door', x=25, y=0),
@@ -286,7 +286,7 @@ def plan_hospital():
     for y in (9, 14):
         p.rect(0, y, W - 1, y)      # the Main Corridor runs between them
     p.rect(0, 22, 9, 22)            # Waiting Room / Laundry
-    p.rect(30, 22, W - 1, 22)       # X-Ray Room / Canteen
+    p.rect(30, 22, W - 1, 22)       # X-Ray Room / Cafeteria
     for y in range(1, H - 1):
         p.grid[y][0] = '#'
         p.grid[y][W - 1] = '#'
@@ -306,9 +306,9 @@ def plan_hospital():
               (22, 3, 23, 4, 'bed'), (33, 3, 35, 4, 'table'), (37, 7, 38, 7, 'desk')]:
         p.furnish(*f)
     p.floors = [(1, 1, 9, 8, 'greylino', 'Records Room'), (11, 1, 19, 8, 'whitetiles', 'Pharmacy'), (21, 1, 29, 8, 'greylino', 'Ambulance Bay'),
-                (31, 1, 38, 8, 'mintlino', 'Staff Room'), (1, 10, 38, 13, 'mintlino', 'Main Corridor'), (1, 15, 9, 21, 'whitetiles', 'Waiting Room'),
+                (31, 1, 38, 8, 'mintlino', 'Staff Lounge'), (1, 10, 38, 13, 'mintlino', 'Main Corridor'), (1, 15, 9, 21, 'whitetiles', 'Waiting Room'),
                 (1, 23, 9, 28, 'greylino', 'Laundry'), (11, 15, 29, 28, 'whitetiles', 'Reception'), (31, 15, 38, 21, 'greylino', 'X-Ray Room'),
-                (31, 23, 38, 28, 'mintlino', 'Canteen')]
+                (31, 23, 38, 28, 'mintlino', 'Cafeteria')]
     p.fixed = [dict(id='door', kind='door', x=25, y=0),
                dict(id='L1', kind='lock', x=15, y=9, name='Pharmacy door'), dict(id='L2', kind='lock', x=20, y=5, name='Ambulance Bay door'),
                dict(id='cage', kind='cage', x=12, y=27),
@@ -339,8 +339,8 @@ def plan_wards():
     p.rect(20, 20, 20, 28, '.')     # the Nurses' Station spans the bottom middle
     for x, y in [(10, 24), (30, 25), (15, 19), (25, 19), (10, 14), (5, 19), (30, 13), (20, 16), (35, 19), (10, 4), (30, 4)]:
         p.put(x, y, '.')
-    p.put(15, 9, 'L')    # L1: Ward B -> Medicine Store
-    p.put(20, 5, 'L')    # L2: Medicine Store -> Stairwell
+    p.put(15, 9, 'L')    # L1: Ward B -> Medicine Closet
+    p.put(20, 5, 'L')    # L2: Medicine Closet -> Stairwell
     p.put(25, 0, 'D')
     p.put(0, 14, 'C')
     p.rect(20, 22, 20, 24)
@@ -353,12 +353,12 @@ def plan_wards():
               (13, 6, 18, 6, 'shelf'), (2, 21, 8, 21, 'shelf'), (2, 25, 6, 25, 'shelf'), (14, 23, 17, 24, 'counter'),
               (22, 15, 23, 16, 'table'), (33, 14, 36, 14, 'bed'), (33, 3, 35, 3, 'desk')]:
         p.furnish(*f)
-    p.floors = [(1, 1, 9, 8, 'greylino', "Nurses' Office"), (11, 1, 19, 8, 'whitetiles', 'Medicine Store'), (21, 1, 29, 8, 'greylino', 'Stairwell'),
+    p.floors = [(1, 1, 9, 8, 'greylino', "Nurses' Office"), (11, 1, 19, 8, 'whitetiles', 'Medicine Closet'), (21, 1, 29, 8, 'greylino', 'Stairwell'),
                 (31, 1, 38, 8, 'mintlino', 'Quiet Room'), (1, 10, 9, 18, 'mintlino', 'Ward A'), (11, 10, 19, 18, 'mintlino', 'Ward B'),
                 (21, 10, 29, 18, 'whitetiles', 'Day Room'), (31, 10, 38, 18, 'whitetiles', "Children's Ward"), (1, 20, 9, 28, 'greylino', 'Linen Room'),
                 (11, 20, 29, 28, 'whitetiles', "Nurses' Station"), (31, 20, 38, 28, 'whitetiles', 'Bathroom')]
     p.fixed = [dict(id='door', kind='door', x=25, y=0),
-               dict(id='L1', kind='lock', x=15, y=9, name='Medicine Store door'), dict(id='L2', kind='lock', x=20, y=5, name='Stairwell door'),
+               dict(id='L1', kind='lock', x=15, y=9, name='Medicine Closet door'), dict(id='L2', kind='lock', x=20, y=5, name='Stairwell door'),
                dict(id='cage', kind='cage', x=12, y=27),
                dict(id='v1a', kind='vent', pair='v1', x=9, y=17), dict(id='v1b', kind='vent', pair='v1', x=11, y=17),
                dict(id='v2a', kind='vent', pair='v2', x=29, y=11), dict(id='v2b', kind='vent', pair='v2', x=31, y=11)]
@@ -380,8 +380,8 @@ def plan_labs():
         p.rect(0, y, W - 1, y)
     for x, y in [(13, 25), (26, 24), (19, 20), (22, 20), (6, 20), (13, 15), (26, 16), (33, 20), (26, 4)]:
         p.put(x, y, '.')
-    p.put(6, 10, 'L')    # L1: Science Lab -> Lab Store
-    p.put(13, 5, 'L')    # L2: Lab Store -> Helipad Stairs
+    p.put(6, 10, 'L')    # L1: Science Lab -> Lab Storage
+    p.put(13, 5, 'L')    # L2: Lab Storage -> Helipad Stairs
     p.put(19, 0, 'D')
     p.put(0, 24, 'C')
     for x, y in [(17, 3), (22, 3), (17, 7), (22, 7)]:
@@ -393,11 +393,11 @@ def plan_labs():
               (29, 14, 35, 15, 'planter'), (16, 16, 17, 17, 'table'), (2, 22, 10, 22, 'shelf'), (2, 26, 8, 26, 'shelf'),
               (30, 3, 32, 3, 'desk'), (15, 22, 17, 23, 'counter')]:
         p.furnish(*f)
-    p.floors = [(1, 1, 12, 9, 'greylino', 'Lab Store'), (14, 1, 25, 9, 'greylino', 'Helipad Stairs'), (27, 1, 38, 9, 'mintlino', 'Radio Room'),
-                (1, 11, 12, 19, 'whitetiles', 'Science Lab'), (14, 11, 25, 19, 'mintlino', 'Lift Lobby'), (27, 11, 38, 19, 'greylino', 'Plant Lab'),
+    p.floors = [(1, 1, 12, 9, 'greylino', 'Lab Storage'), (14, 1, 25, 9, 'greylino', 'Helipad Stairs'), (27, 1, 38, 9, 'mintlino', 'Radio Room'),
+                (1, 11, 12, 19, 'whitetiles', 'Science Lab'), (14, 11, 25, 19, 'mintlino', 'Elevator Lobby'), (27, 11, 38, 19, 'greylino', 'Plant Lab'),
                 (1, 21, 12, 28, 'greylino', 'Supply Room'), (14, 21, 25, 28, 'whitetiles', 'Lab Entrance'), (27, 21, 38, 28, 'greylino', 'Generator Room')]
     p.fixed = [dict(id='door', kind='door', x=19, y=0),
-               dict(id='L1', kind='lock', x=6, y=10, name='Lab Store door'), dict(id='L2', kind='lock', x=13, y=5, name='Helipad door'),
+               dict(id='L1', kind='lock', x=6, y=10, name='Lab Storage door'), dict(id='L2', kind='lock', x=13, y=5, name='Helipad door'),
                dict(id='cage', kind='cage', x=15, y=27),
                dict(id='v1a', kind='vent', pair='v1', x=12, y=18), dict(id='v1b', kind='vent', pair='v1', x=14, y=18),
                dict(id='v2a', kind='vent', pair='v2', x=36, y=19), dict(id='v2b', kind='vent', pair='v2', x=36, y=21)]
@@ -430,7 +430,7 @@ def plan_attic():
         p.furnish(*f)
     p.floors = [(1, 1, 12, 9, 'boards', 'Clock Room'), (14, 1, 25, 9, 'boards', 'Rooftop Stairs'), (27, 1, 38, 9, 'purple', 'Doll Room'),
                 (1, 11, 12, 19, 'wood', 'Trunk Room'), (14, 11, 25, 19, 'boards', 'Dusty Storage'), (27, 11, 38, 19, 'carpet', 'Old Nursery'),
-                (1, 21, 12, 28, 'boards', 'Box Room'), (14, 21, 25, 28, 'wood', 'Attic Landing'), (27, 21, 38, 28, 'tiles', 'Water Tank Room')]
+                (1, 21, 12, 28, 'boards', 'Storage Room'), (14, 21, 25, 28, 'wood', 'Attic Landing'), (27, 21, 38, 28, 'tiles', 'Water Tank Room')]
     p.fixed = [dict(id='door', kind='door', x=19, y=0),
                dict(id='L1', kind='lock', x=6, y=10, name='Clock Room door'), dict(id='L2', kind='lock', x=13, y=5, name='Roof door'),
                dict(id='cage', kind='cage', x=15, y=27),
@@ -477,7 +477,7 @@ def plan_school():
               (22, 3, 23, 4, 'table'), (33, 3, 35, 4, 'table'), (37, 7, 38, 7, 'desk')]:
         p.furnish(*f)
     p.floors = [(1, 1, 9, 8, 'boards', 'Lost and Found'), (11, 1, 19, 8, 'carpet', "Principal's Office"), (21, 1, 29, 8, 'wood', 'Front Lobby'),
-                (31, 1, 38, 8, 'green', 'Staff Room'), (1, 10, 38, 13, 'greylino', 'Long Hallway'), (1, 15, 9, 21, 'tiles', 'Cafeteria'),
+                (31, 1, 38, 8, 'green', "Teachers' Lounge"), (1, 10, 38, 13, 'greylino', 'Long Hallway'), (1, 15, 9, 21, 'tiles', 'Cafeteria'),
                 (1, 23, 9, 28, 'tiles', 'Kitchen'), (11, 15, 29, 28, 'wood', 'Assembly Hall'), (31, 15, 38, 21, 'purple', 'Music Room'),
                 (31, 23, 38, 28, 'boards', 'Art Room')]
     p.fixed = [dict(id='door', kind='door', x=25, y=0),
@@ -776,7 +776,7 @@ def plan_basement():
         p.rect(0, y, W - 1, y)
     for x, y in [(13, 24), (26, 25), (19, 20), (13, 14), (26, 12), (36, 20), (6, 20), (26, 4)]:
         p.put(x, y, '.')
-    p.put(6, 10, 'L')    # L1: Coal Store -> Wine Cellar
+    p.put(6, 10, 'L')    # L1: Coal Room -> Wine Cellar
     p.put(13, 5, 'L')    # L2: Wine Cellar -> Cellar Stairs
     p.put(19, 0, 'D')
     p.put(0, 24, 'C')
@@ -787,7 +787,7 @@ def plan_basement():
               (3, 6, 9, 6, 'shelf'), (29, 7, 35, 7, 'shelf'), (30, 3, 32, 3, 'table')]:
         p.furnish(*f)
     p.floors = [(1, 1, 12, 9, 'boards', 'Wine Cellar'), (14, 1, 25, 9, 'boards', 'Cellar Stairs'), (27, 1, 38, 9, 'boards', 'Pumpkin Cellar'),
-                (1, 11, 12, 19, 'boards', 'Coal Store'), (14, 11, 25, 19, 'boards', 'Boiler Room'), (27, 11, 38, 19, 'wood', 'Workshop'),
+                (1, 11, 12, 19, 'boards', 'Coal Room'), (14, 11, 25, 19, 'boards', 'Boiler Room'), (27, 11, 38, 19, 'wood', 'Workshop'),
                 (1, 21, 12, 28, 'tiles', 'Laundry'), (14, 21, 25, 28, 'boards', 'Cellar Entrance'), (27, 21, 38, 28, 'wood', 'Old Storage')]
     p.fixed = [dict(id='door', kind='door', x=19, y=0),
                dict(id='L1', kind='lock', x=6, y=10, name='Wine Cellar door'), dict(id='L2', kind='lock', x=13, y=5, name='Cellar Stairs door'),

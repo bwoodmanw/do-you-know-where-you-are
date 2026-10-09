@@ -25,12 +25,12 @@ them as it places them, so a free model cannot do anything sneaky.
 
 | Name (exact) | Room(s) | Search words | Notes |
 |---|---|---|---|
-| **Fireplace** | Parlour | victorian fireplace | the centrepiece of the Parlour |
-| **Armchair** | Parlour | victorian armchair | |
-| **GrandfatherClock** | Parlour | grandfather clock | tall and creepy |
-| **Rug** | Parlour, Corridor | persian rug | flat; you walk on it |
-| **SideTable** | Parlour | antique side table | |
-| **Chandelier** | Parlour, Front Hall | chandelier candles | hangs from the ceiling |
+| **Fireplace** | Parlor | victorian fireplace | the centrepiece of the Parlor |
+| **Armchair** | Parlor | victorian armchair | |
+| **GrandfatherClock** | Parlor | grandfather clock | tall and creepy |
+| **Rug** | Parlor, Corridor | persian rug | flat; you walk on it |
+| **SideTable** | Parlor | antique side table | |
+| **Chandelier** | Parlor, Front Hall | chandelier candles | hangs from the ceiling |
 | **Bench** | Corridor | wooden bench antique | |
 | **PottedPlant** | Corridor | potted plant large | |
 | **Desk** | Library | antique desk | |
@@ -80,10 +80,10 @@ are fitted into the size shown, stand on the floor, and are never solid.
 | Ambulance | Ambulance Bay | ambulance | 8 x 7 x 14 |
 | XRay | X-Ray Room | x-ray machine, hospital scanner | 6 x 8 x 5 |
 | WashingMachines | Laundry, Linen Room | washing machine | 8 x 4 x 3 |
-| Sofa | Day Room, Quiet Room, Staff Room | sofa, couch | 7 x 4 x 3 |
+| Sofa | Day Room, Quiet Room, Staff Lounge, Teachers' Lounge | sofa, couch | 7 x 4 x 3 |
 | TV | Day Room, Waiting Room | old tv, retro tv | 4 x 5 x 2 |
-| LiftDoors | Lift Lobby, hospital stairwells | elevator doors | 6 x 9 x 1 |
-| Fireplace | Parlour, Library | fireplace | 6 x 7 x 2 |
+| LiftDoors | Elevator Lobby, hospital stairwells | elevator doors | 6 x 9 x 1 |
+| Fireplace | Parlor, Library | fireplace | 6 x 7 x 2 |
 | Arcade | Game Room | arcade machine | 3 x 7 x 3 |
 | Stove | Kitchen, Candy Kitchen | stove, old stove | 6 x 6 x 3 |
 | Lockers | Locker Room | lockers | 6 x 8 x 2 |

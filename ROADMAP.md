@@ -180,8 +180,23 @@ only when everyone presses Play.
   effects, private servers / translation / notifications live, all 14
   badges in. Both places published 8 Oct (late).
 
+- 9 Oct (session 6): live-test fixes (Sound Wave keeps the lure, moving in
+  the cage, Loft label, plant message, boost pop-ups); **effects step 1**
+  (sneak smoke, flare swell, noise rings, growing vines, pound shockwave and
+  shake, shield bubbles, 🔧 / 💡 icons, dizzy stars on a stunned host, caught
+  / rescue rings, speed streaks); the **levels line** (permanent ladder
+  bonuses on screen); **animation packs step 2** (Roblox's own packs per
+  kid and host, `Config.ANIM`); American room names; real gummy bears.
+
+## Effects and animation (Brent's yes, 9 Oct)
+1. Built: skill and host effects in code (`Effects.luau`: ring, swell, aura,
+   stars, icon, shield).
+2. Built: Roblox animation packs per character and host (`Config.ANIM`).
+3. Closed for now: our own skill animations recorded in Studio's Animation
+   Editor (an Echo throw, a Muscle pound) - needs Brent's time in Studio.
+
 ## Next
-1. Brent: publish both places once more; play-test live (TEST_PLAN 12-35).
+1. Brent: publish both places once more; play-test live (TEST_PLAN 12-37).
 2. Host balance per difficulty from the 📊 Balance table after a week live.
 3. Thanksgiving event (after Halloween ends 1 Nov), then Christmas: a
    secret seasonal floor and / or a community-wide goal (Brent's picks).

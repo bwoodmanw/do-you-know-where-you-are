@@ -110,6 +110,50 @@ function Characters.has(name)
 	return template(name) ~= nil
 end
 
+-- the animation pack for a character's model ("Glow", or a skin's model name)
+local function packFor(name)
+	local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+	local A = Config.ANIM
+	if not A then
+		return nil
+	end
+	if A.model[name] then
+		return A.packs[A.model[name]]
+	end
+	for _, s in ipairs(Config.SKILLS) do
+		if s.name == name then
+			return A.packs[A.skill[s.id] or ""]
+		end
+	end
+	for _, skin in ipairs(Config.SKINS or {}) do
+		if skin.model == name then
+			return A.packs[A.skill[skin.skill] or ""]
+		end
+	end
+	return nil
+end
+
+-- put a pack's animations into a copy of Roblox's R15 Animate script
+local function setPack(animate, pack)
+	if not pack then
+		return
+	end
+	local function set(folder, child, id)
+		local f = animate:FindFirstChild(folder)
+		local a = f and f:FindFirstChild(child)
+		if a and a:IsA("Animation") and id then
+			a.AnimationId = "rbxassetid://" .. id
+		end
+	end
+	set("idle", "Animation1", pack.idle)
+	set("idle", "Animation2", pack.idle2)
+	set("walk", "WalkAnim", pack.walk)
+	set("run", "RunAnim", pack.run)
+	set("jump", "JumpAnim", pack.jump)
+	set("fall", "FallAnim", pack.fall)
+	set("climb", "ClimbAnim", pack.climb)
+end
+
 -- name is the character's display name, e.g. "Glow"
 function Characters.apply(plr, name)
 	local t = template(name)
@@ -157,10 +201,13 @@ function Characters.apply(plr, name)
 		hum.HipHeight = hip
 	end
 	soften(m)
-	-- keep Roblox's walk/run/jump animations from the avatar
+	-- Roblox's walk/run/jump script from the avatar, with this character's
+	-- own animation pack (Config.ANIM)
 	local animate = old:FindFirstChild("Animate")
 	if animate then
-		animate:Clone().Parent = m
+		animate = animate:Clone()
+		setPack(animate, packFor(name))
+		animate.Parent = m
 	end
 	-- an Animator made here on the server lets everyone else see this
 	-- character's walk and run (without it they glide)

@@ -20,7 +20,7 @@ distract from the clues, and a fairer Tinker. **Built 6 Oct 2026** (2 locked doo
 ## Bigger house
 
 - About **10 rooms** instead of 6, on a 40 x 30 grid (the code is not tied to
-  the size): Front Hall (start), Corridor (exit door), Parlour, Kitchen,
+  the size): Front Hall (start), Corridor (exit door), Parlor, Kitchen,
   Pantry, Dining Room, Library, Game Room, Music Room, Bathroom, Conservatory.
 - **More walls inside rooms:** half walls, shelves and screens that make small
   dead ends and corners to hide behind.

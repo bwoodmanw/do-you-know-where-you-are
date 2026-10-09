@@ -118,24 +118,32 @@ function Host:spawn(diff)
 		-- and a host placed too high ends up walking on the roof)
 		local cf, size = custom:GetBoundingBox()
 		custom:PivotTo(custom:GetPivot() + (pos + Vector3.new(0, size.Y / 2 + 0.05, 0) - cf.Position))
-		-- Roblox's own R15 walk and run, played as it moves
+		-- the host's own animation pack (Config.ANIM.host), or Roblox's plain
+		-- R15 walk and run; it stands in its idle when still
 		local animator = self.hum:FindFirstChildOfClass("Animator") or Instance.new("Animator", self.hum)
 		local function track(id)
 			local a = Instance.new("Animation")
-			a.AnimationId = id
+			a.AnimationId = "rbxassetid://" .. id
 			return animator:LoadAnimation(a)
 		end
-		local walk, run = track("rbxassetid://507777826"), track("rbxassetid://507767714")
+		local A = Config.ANIM
+		local pack = A and A.packs[A.host[self.kind or "pumpkin"] or ""] or { walk = 507777826, run = 507767714, idle = 507766388 }
+		local walk, run, idle = track(pack.walk), track(pack.run), track(pack.idle)
+		idle.Looped = true
+		idle:Play()
 		self.hum.Running:Connect(function(speed)
 			if speed > 11 then
 				if walk.IsPlaying then walk:Stop() end
+				if idle.IsPlaying then idle:Stop() end
 				if not run.IsPlaying then run:Play() end
 			elseif speed > 0.5 then
 				if run.IsPlaying then run:Stop() end
+				if idle.IsPlaying then idle:Stop() end
 				if not walk.IsPlaying then walk:Play() end
 			else
 				walk:Stop()
 				run:Stop()
+				if not idle.IsPlaying then idle:Play() end
 			end
 		end)
 	else

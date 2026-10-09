@@ -7,7 +7,7 @@ plan_school3, each with a mirror), each checked with 2,000 random fills.
 
 | Floor | Start | Behind the 1st lock | Way out (behind the 2nd) | Other rooms |
 |---|---|---|---|---|
-| 1 Ground Floor | Assembly Hall | Head's Office | Front Lobby (out to the playground) | Long Hallway (lockers), Lost Property, Staff Room, Cafeteria, Kitchen, Music Room, Art Room |
+| 1 Ground Floor | Assembly Hall | Principal's Office | Front Lobby (out to the playground) | Long Hallway (lockers), Lost and Found, Teachers' Lounge, Cafeteria, Kitchen, Music Room, Art Room |
 | 2 Classrooms | Landing | Science Lab | Upper Stairs ("Up to the Clock Tower") | the Library (two storeys, a balcony), Computer Room, Trophy Room, Classroom 2B and 2C, Art Room, Washrooms, Caretaker's Room |
 | 3 Clock Tower | Exam Hall | Old Classroom | Clock Tower ("Out onto the tower roof!") | Bell Room (a big bell you can ring - the host hears it), Observatory (a telescope), Top Corridor, Storage Loft, Boiler Room, Locker Room, Detention Room |
 

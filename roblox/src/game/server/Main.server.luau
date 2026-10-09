@@ -1061,6 +1061,7 @@ local function wirePrompts()
 				end
 				if freed > 0 then
 					Effects.burst(world.objects.cage.outside, "rescue")
+					Effects.ring(world.objects.cage.outside - Vector3.new(0, 2.8, 0), Color3.fromRGB(255, 210, 63), 26, 0.9)
 					addPoints(plr, 20 * freed)
 					local pd = Profile.get(plr)
 					if pd then
@@ -2080,9 +2081,21 @@ function round.hostCaught(_, plr)
 			plr:SetAttribute("Shield", false)
 		end
 		host:stun(2.5)
+		Effects.stars(host.model, 2.5)
+		Effects.at(plr, "pop")
+		local sh = hrpOf(plr)
+		if sh then
+			Effects.ring(sh.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(120, 200, 255), 18, 0.6)
+		end
 		return say("shield", "POP! " .. plr.DisplayName .. "'s Party Shield saved them - run!")
 	end
 	Effects.at(plr, "caught")
+	do
+		local ch = hrpOf(plr)
+		if ch then
+			Effects.ring(ch.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(255, 60, 60), 22, 0.7)
+		end
+	end
 	if host then
 		host:stun(2.8) -- holds still for the close-up
 	end
@@ -2280,6 +2293,7 @@ do
 		end
 		host:stun(seconds)
 		host.stunImmune = now + seconds + g.gap
+		Effects.stars(host.model, seconds)
 		if host.root then
 			Effects.burst(host.root.Position + Vector3.new(0, 3, 0), "light")
 		end
@@ -2451,21 +2465,33 @@ do
 			v.Material = Enum.Material.Grass
 			v.Anchored, v.CanCollide, v.CanQuery, v.CanTouch = true, false, false, false
 			v.Parent = m
+			-- grows up out of the floor, one stem after another
+			local fullCF, fullSize = v.CFrame, v.Size
+			v.Size = Vector3.new(fullSize.X, 0.1, fullSize.Z)
+			v.CFrame = fullCF - Vector3.new(0, fullSize.Y / 2, 0)
+			game:GetService("TweenService"):Create(v, TweenInfo.new(0.45, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, i * 0.05), { Size = fullSize, CFrame = fullCF }):Play()
 			if snapper and i == 4 then
 				local head = Instance.new("Part")
 				head.Shape = Enum.PartType.Ball
 				head.Size = Vector3.new(1.4, 1.4, 1.4)
-				head.Position = v.Position + Vector3.new(0, v.Size.Y / 2 + 0.6, 0)
+				head.Position = fullCF.Position + Vector3.new(0, fullSize.Y / 2 + 0.6, 0)
 				head.Color = Color3.fromRGB(220, 60, 80)
 				head.Anchored, head.CanCollide, head.CanQuery = true, false, false
 				head.Parent = m
 			end
 		end
 		m.Parent = world.root
+		Effects.burst(c + Vector3.new(0, 1, 0), "plant")
 		local myWorld = world
 		task.delay(seconds, function()
 			if m.Parent and world == myWorld then
-				m:Destroy()
+				-- the vines sink back into the floor
+				for _, v in ipairs(m:GetChildren()) do
+					if v:IsA("BasePart") then
+						game:GetService("TweenService"):Create(v, TweenInfo.new(0.4), { Size = Vector3.new(v.Size.X, 0.1, v.Size.Z), Transparency = 1 }):Play()
+					end
+				end
+				game:GetService("Debris"):AddItem(m, 0.45)
 			end
 		end)
 	end
@@ -2498,6 +2524,8 @@ do
 		local once = state.oncePerGame
 		if skill == "tinker" then
 			plr:SetAttribute("ToolkitReady", true)
+			Effects.icon(plr, "\u{1F527}", 1.6)
+			Effects.at(plr, "pick")
 			say("info", "\u{1F527} Toolkit ready: your next lock or keypad picks in an instant.", nil, plr)
 			if p10 == "mouse" then
 				windUpMouse(plr)
@@ -2510,6 +2538,8 @@ do
 				return false
 			end
 			lightUp(steps[1].id, Color3.fromRGB(120, 190, 255))
+			Effects.icon(plr, "\u{1F4A1}", 2)
+			Effects.at(plr, "reveal")
 			local text = "\u{1F9E0} " .. plr.DisplayName .. " thinks: " .. steps[1].text
 			if p20 == "bigbrain" then
 				for i = 2, #steps do
@@ -2666,6 +2696,24 @@ do
 			end
 		end
 	end
+
+	-- a shimmering bubble on anyone with a Party Shield; a golden streak
+	-- behind anyone in a burst of speed
+	task.spawn(function()
+		while true do
+			task.wait(0.25)
+			local nowS = workspace:GetServerTimeNow()
+			for _, p in ipairs(Players:GetPlayers()) do
+				local playing = state.status == "playing" and not p:GetAttribute("Escaped") and not p:GetAttribute("Caged")
+					and not p:GetAttribute("Hidden") and not p:GetAttribute("Crawling")
+				Effects.shield(p, playing and p:GetAttribute("Shield") == true)
+				local left = (p:GetAttribute("TeamBurstUntil") or 0) - nowS
+				if playing and left > 0.2 then
+					Effects.aura(p, "speed", left)
+				end
+			end
+		end
+	end)
 
 	-- Patch's level-20 powers: Guardian (once a game) and Medic Run
 	task.spawn(function()
@@ -2920,6 +2968,7 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 	if skill == "shadow" then
 		plr:SetAttribute("SneakUntil", now + (plr:GetAttribute("SneakTime") or 6))
 		Effects.at(plr, "sneak")
+		Effects.aura(plr, "sneak", plr:GetAttribute("SneakTime") or 6)
 		say("sneak", plr.DisplayName .. " is sneaking - the host cannot see or grab them for " .. (plr:GetAttribute("SneakTime") or 6) .. " seconds!", { userId = plr.UserId })
 	elseif skill == "patch" then
 		-- a Party Shield for the nearest friend (all nearby with Shields for
@@ -2947,6 +2996,7 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 			plr:SetAttribute("Shield", true)
 		end
 		Effects.at(plr, "heal")
+		Effects.ring(hrp.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(123, 227, 107), 36, 0.8)
 		say("heal", given == 0 and "Patch gave herself a Party Shield!" or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!"), { userId = plr.UserId })
 	elseif skill == "muscle" then
 		local best, bd = nil, Config.BARRICADE.reach
@@ -2961,6 +3011,15 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 				-- Ground Pound: no crate here, so stamp the floor
 				Effects.burst(hrp.Position, "shove")
 				Effects.sound(hrp.Position, "shove", 1.2)
+				local floorAt = hrp.Position - Vector3.new(0, 2.8, 0)
+				Effects.ring(floorAt, Color3.fromRGB(200, 160, 110), Config.POUND.range * 2, 0.6)
+				Effects.ring(floorAt, Color3.fromRGB(255, 230, 190), Config.POUND.range * 1.4, 0.5, 0.12)
+				for _, p in ipairs(Players:GetPlayers()) do
+					local h = hrpOf(p)
+					if h and (h.Position - hrp.Position).Magnitude < 40 then
+						Boost:FireClient(p, "shake", p == plr and 1 or 0.6)
+					end
+				end
 				if host and host.root and (host.root.Position - hrp.Position).Magnitude < Config.POUND.range then
 					round:skillStun(Config.POUND.stun, "\u{1F4A5} GROUND POUND! " .. plr.DisplayName .. " stunned the host!")
 				else
@@ -2987,6 +3046,8 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		light.Brightness = 3
 		plr:SetAttribute("FlareUntil", now + seconds)
 		Effects.at(plr, "light")
+		Effects.swell(hrp.Position, Color3.fromRGB(255, 242, 160), math.min(60, base * f.mult) * 1.2, 0.8)
+		Effects.aura(plr, "flare", seconds)
 		say("flare", plr.DisplayName .. "'s Flare lights up everything around!", { userId = plr.UserId })
 		task.delay(seconds, function()
 			if light.Parent then
@@ -3001,6 +3062,8 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 			host:lure(pos, Config.ECHO_LURE)
 		end
 		Effects.burst(pos + Vector3.new(0, 1, 0), "noise")
+		Effects.ring(pos, Color3.fromRGB(255, 210, 63), 24, 0.9, 0.25)
+		Effects.ring(pos, Color3.fromRGB(190, 140, 255), 18, 0.9, 0.5)
 		say("lure", "Echo threw a noise - the host has gone to look!", { pos = pos, userId = plr.UserId })
 	end
 	round.skillAfter(plr, skill, hrp, pos)

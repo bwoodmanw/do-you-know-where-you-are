@@ -12,6 +12,34 @@ Config.GRACE = 20 -- seconds before the host comes out (Giggly)
 Config.GRACE_SPOOKY = 12
 
 Config.WALK = 12
+-- Roblox's own animation packs (free for any game; every id checked on
+-- Roblox's public API 9 Oct). Each character and host walks, runs, idles,
+-- jumps and climbs in its own style. Swap a name below to try another pack.
+Config.ANIM = {
+	packs = {
+		ninja = { idle = 656117400, idle2 = 656118341, walk = 656121766, run = 656118852, jump = 656117878, fall = 656115606, climb = 656114359 },
+		robot = { idle = 616088211, idle2 = 616089559, walk = 616095330, run = 616091570, jump = 616090535, fall = 616087089, climb = 616086039 },
+		zombie = { idle = 616158929, idle2 = 616160636, walk = 616168032, run = 616163682, jump = 616161997, fall = 616157476, climb = 616156119 },
+		superhero = { idle = 616111295, idle2 = 616113536, walk = 616122287, run = 616117076, jump = 616115533, fall = 616108001, climb = 616104706 },
+		stylish = { idle = 616136790, idle2 = 616138447, walk = 616146177, run = 616140816, jump = 616139451, fall = 616134815, climb = 616133594 },
+		toy = { idle = 782841498, idle2 = 782845736, walk = 782843345, run = 782842708, jump = 782847020, fall = 782846423, climb = 782843869 },
+		bubbly = { idle = 910004836, idle2 = 910009958, walk = 910034870, run = 910025107, jump = 910016857, fall = 910001910, climb = 909997997 },
+		cartoony = { idle = 742637544, idle2 = 742638445, walk = 742640026, run = 742638842, jump = 742637942, fall = 742637151, climb = 742636889 },
+		mage = { idle = 707742142, idle2 = 707855907, walk = 707897309, run = 707861613, jump = 707853694, fall = 707829716, climb = 707826056 },
+		elder = { idle = 845397899, idle2 = 845400520, walk = 845403856, run = 845386501, jump = 845398858, fall = 845396048, climb = 845392038 },
+		werewolf = { idle = 1083195517, idle2 = 1083214717, walk = 1083178339, run = 1083216690, jump = 1083218792, fall = 1083189019, climb = 1083182000 },
+		knight = { idle = 657595757, idle2 = 657568135, walk = 657552124, run = 657564596, jump = 658409194, fall = 657600338, climb = 658360781 },
+		vampire = { idle = 1083445855, idle2 = 1083450166, walk = 1083473930, run = 1083462077, jump = 1083455352, fall = 1083443587, climb = 1083439238 },
+		pirate = { idle = 750781874, idle2 = 750782770, walk = 750785693, run = 750783738, jump = 750782230, fall = 750780242, climb = 750779899 },
+		astronaut = { idle = 891621366, idle2 = 891633237, walk = 891667138, run = 891636393, jump = 891627522, fall = 891617961, climb = 891609353 },
+		levitation = { idle = 616006778, idle2 = 616008087, walk = 616013216, run = 616010382, jump = 616008936, fall = 616005863, climb = 616003713 },
+	},
+	-- the kids (their skins use the same pack unless listed under model)
+	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy" },
+	model = { MuscleMummy = "zombie" },
+	-- the hosts
+	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation" },
+}
 Config.CAGE_WALK = 5 -- a caged kid can shuffle round inside the cage (no jumping)
 Config.RUN = 20
 Config.STAMINA_DRAIN = 22 -- per second while running

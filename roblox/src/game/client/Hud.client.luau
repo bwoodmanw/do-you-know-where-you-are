@@ -1193,9 +1193,60 @@ local PX = MAP_W / HouseMap.w
 local MAP_H = math.floor(PX * HouseMap.h + 0.5)
 -- computers: the map in the bottom-left corner with the bars above it;
 -- touch screens: the bars at the top left with the map under them
-local BARS_H = 92
+local BARS_H = TOUCH and 92 or 124 -- computers: a line of level bonuses at the bottom
 local mapAt = TOUCH and UDim2.fromOffset(10, 60 + BARS_H + 6) or UDim2.new(0, 10, 1, -(MAP_H + 32) - 10)
 bars.Size = UDim2.fromOffset(MAP_W + 8, BARS_H)
+do
+	-- what this character's levels give, all the time: "Your levels: run +10%,
+	-- stamina +20%..." (computers: its own line; phones: it takes turns with
+	-- the building name, 5 s each)
+	local levels = label(bars, { Size = UDim2.new(1, -16, 0, TOUCH and 32 or 30), Position = UDim2.fromOffset(8, TOUCH and 54 or 88), Text = "", TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextColor3 = Color3.fromRGB(150, 220, 255), Visible = not TOUCH })
+	local cap = Instance.new("UITextSizeConstraint")
+	cap.MaxTextSize = 14
+	cap.Parent = levels
+	local function pct(x)
+		return math.floor(x * 100 + 0.5)
+	end
+	local function paint()
+		local parts = {}
+		local run = (player:GetAttribute("RunMult") or 1) - 1
+		if run > 0.001 then
+			table.insert(parts, "\u{1F3C3} run +" .. pct(run) .. "%")
+		end
+		local stam = (player:GetAttribute("StaminaMult") or 1) - 1
+		if stam > 0.001 then
+			table.insert(parts, "\u{1F49A} stamina +" .. pct(stam) .. "%")
+		end
+		-- Patch's own "twice as fast" is her character, not a level
+		local hold = (player:GetAttribute("HoldMult") or 1) / (player:GetAttribute("Skill") == "patch" and 0.5 or 1)
+		if hold < 0.999 then
+			table.insert(parts, "\u{270B} hands " .. pct(1 / hold - 1) .. "% faster")
+		end
+		local sight = 1 - (player:GetAttribute("SightMult") or 1)
+		if sight > 0.001 then
+			table.insert(parts, "\u{1F441} host sees you " .. pct(sight) .. "% less")
+		end
+		local cool = 1 - (player:GetAttribute("CooldownMult") or 1)
+		if cool > 0.001 then
+			table.insert(parts, "\u{1F504} recharge " .. pct(cool) .. "% faster")
+		end
+		levels.Text = #parts > 0 and ("\u{2B06} Your levels: " .. table.concat(parts, "  ")) or "\u{2B06} No level bonuses yet - play to level up!"
+	end
+	for _, a in ipairs({ "RunMult", "StaminaMult", "HoldMult", "SightMult", "CooldownMult", "Skill" }) do
+		player:GetAttributeChangedSignal(a):Connect(paint)
+	end
+	paint()
+	if TOUCH then
+		task.spawn(function()
+			while levels.Parent do
+				task.wait(5)
+				levels.Visible = not levels.Visible
+				roomName.Visible = not levels.Visible
+			end
+		end)
+	end
+end
 local mapBox = frame(gui, { Size = UDim2.fromOffset(MAP_W + 8, MAP_H + 32), Position = mapAt, BackgroundTransparency = 0.25 })
 corner(mapBox, 10)
 local mapArea = frame(mapBox, { Size = UDim2.fromOffset(MAP_W, MAP_H), Position = UDim2.fromOffset(4, 28), BackgroundColor3 = Color3.fromRGB(10, 6, 16), BackgroundTransparency = 0, ClipsDescendants = true })
@@ -1630,6 +1681,20 @@ do
 			float("\u{1F49A} Full stamina!", GREEN)
 		elseif kind == "candy" then
 			float("\u{1F36C} No tiring for 20 s", GREEN)
+		elseif kind == "shake" then
+			-- a quick shake of the camera (Muscle's Ground Pound nearby)
+			local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+			local strength = tonumber(amount) or 1
+			if hum then
+				task.spawn(function()
+					for i = 1, 8 do
+						local s = strength * (1 - i / 9) * 0.6
+						hum.CameraOffset = Vector3.new((math.random() - 0.5) * s, (math.random() - 0.5) * s, 0)
+						task.wait(0.03)
+					end
+					hum.CameraOffset = Vector3.zero
+				end)
+			end
 		end
 	end)
 	player:GetAttributeChangedSignal("TeamBurstUntil"):Connect(function()

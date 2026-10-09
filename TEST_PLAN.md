@@ -17,6 +17,29 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 37 (9 Oct) - effects, level bonuses, animation packs, American room names, gummy bears
+Effects (everyone sees them):
+- [ ] Shadow's Sneak: purple smoke trails him while it lasts
+- [ ] Glow's Flare: a ball of light swells out from her; sparkles round her while it lasts
+- [ ] Echo's noise: a white, then gold, then purple ring spread out where it lands
+- [ ] Bramble's Vines grow up out of the floor one stem after another (leaf burst), and sink away at the end
+- [ ] Muscle's Ground Pound: two dusty rings and the screen shakes for players nearby
+- [ ] Patch: a green ring as she hands out shields; anyone with a Party Shield has a shimmering blue bubble round them (gone when hidden / in a vent); when it saves you: POP, a blue ring, and the host sees stars
+- [ ] Tinker's Toolkit: a 🔧 pops up over his head; Brainy's Think!: a 💡
+- [ ] A host stunned by a skill (Ground Pound, Dazzle, Sound Wave, Snapper): three yellow stars circle his head while he is stunned
+- [ ] Caught: a red ring slams out; freed: a gold ring round the cage
+- [ ] Any speed burst: a golden streak behind the runner
+Levels line:
+- [ ] Computer: under the building name, light blue "⬆ Your levels: 🏃 run +10%  💚 stamina +20% ..." (or "No level bonuses yet") - try 🧪 Lv 1 / 10 / 20 and compare (photo)
+- [ ] Phone: the building name and the levels line take turns every 5 s; the map still fits on screen (photo)
+Animation packs (Config.ANIM - ask Claude to swap any):
+- [ ] Kids: Tinker robot, Shadow ninja, Brainy mage, Muscle superhero, Glow bubbly, Patch cartoony, Echo stylish, Bramble toy; Muscle Mummy zombie. Walk, run, stand still, jump - each looks like its own (video or photos)
+- [ ] Hosts: Pumpkin zombie, Gummy Bear Man werewolf, Robot robot, Caretaker elder, Clown Bear toy, Anglerfish Keeper levitation; they stand in an idle pose when still (not frozen)
+- [ ] Nobody's legs sink into the floor or float with the new packs (photo if they do)
+Names and bears:
+- [ ] Rooms say Parlor, Elevator Lobby, Cafeteria (Hospital), Storage Room (Attic), Coal Room (Basement), Sugar Room (Candy Factory), Lab Storage, Medicine Closet, Staff Lounge (Hospital), Teachers' Lounge (School)
+- [ ] Gummy Bounce House, Bear Gallery: three big gummy bears (face, ears, belly) on white stands, facing into the room (photo)
+
 ## Round 36 (9 Oct) - Brent's first live-test fixes
 - [ ] Echo with Sound Wave (level 20): throw a noise close to the host - he is stunned 1 s, then still walks to the noise (and ignores kids on the way, as a normal noise)
 - [ ] Caught: in the cage you can walk slowly round inside it (no jumping); slipping out puts you back in; freeing still works
