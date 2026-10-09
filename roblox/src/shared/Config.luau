@@ -26,12 +26,15 @@ Config.UI_ICONS = { -- art/ui-icons/*.png (ids checked on Roblox's API, 9 Oct)
 	quick = 130312324808720, solo = 111604455080937, party = 132394341105577, characters = 91602978926313,
 	shop = 121270726908728, quests = 124036731444475, plushies = 83371177246486, invite = 135623826629543,
 	join = 93585865196369, emote = 138133123294708, photo = 107867066033525, help = 75310601818446,
-	-- the second set (art/ui-icons; 0 until uploaded): the game's buttons, the skills, the emotes
-	run = 0, say = 0, clue = 0, change = 0, look = 0, map = 0,
-	["skill-tinker"] = 0, ["skill-shadow"] = 0, ["skill-brainy"] = 0, ["skill-muscle"] = 0,
-	["skill-glow"] = 0, ["skill-patch"] = 0, ["skill-echo"] = 0, ["skill-bramble"] = 0,
-	["emote-wave"] = 0, ["emote-point"] = 0, ["emote-cheer"] = 0, ["emote-laugh"] = 0,
-	["emote-dance1"] = 0, ["emote-dance2"] = 0, ["emote-dance3"] = 0, ["emote-stop"] = 0,
+	-- the second set (art/ui-icons, ids checked on Roblox's API 10 Oct): the game's buttons, the skills, the emotes
+	run = 123414688985710, say = 127157120335346, clue = 83915461496640, change = 73228299415374,
+	look = 119689028196381, map = 74497490089362,
+	["skill-tinker"] = 125253090151263, ["skill-shadow"] = 122833619672235, ["skill-brainy"] = 88694764071896,
+	["skill-muscle"] = 111012437636051, ["skill-glow"] = 79995490435238, ["skill-patch"] = 124927699659337,
+	["skill-echo"] = 104667451078873, ["skill-bramble"] = 111735284994326,
+	["emote-wave"] = 91108624177477, ["emote-point"] = 119927036397486, ["emote-cheer"] = 87893385946810,
+	["emote-laugh"] = 100088092280645, ["emote-dance1"] = 102728279626825, ["emote-dance2"] = 133487841239662,
+	["emote-dance3"] = 106045742443407, ["emote-stop"] = 129902482804856,
 }
 -- the clean look for menus (Brent's yes to art/ui-mockups/menus-v2.png):
 -- text stays a normal size instead of growing to fill its box
