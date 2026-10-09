@@ -149,6 +149,7 @@ function Effects.surprise(position, kind)
 				p.Name = k == 1 and "Bat" or "BatWing"
 				p.Shape = piece[3]
 				p.Size = piece[1]
+				require(game:GetService("ReplicatedStorage").Shared.Shapes).fix(p, piece[3], piece[1])
 				p.Color = Color3.fromRGB(25, 15, 30)
 				p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch = true, false, false, false
 				p.CFrame = from * piece[2]
@@ -191,12 +192,14 @@ end
 
 -- ---------- lasting effects (skills version 2 polish) ----------
 
+local Shapes = require(game:GetService("ReplicatedStorage").Shared.Shapes) -- stretched balls (eggs, fish bodies) need a sphere mesh
 local function fxPart(props)
 	local p = Instance.new("Part")
 	p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
 	for k, v in pairs(props) do
 		p[k] = v
 	end
+	Shapes.fix(p, props.Shape, props.Size)
 	p.Parent = props.Parent or workspace
 	return p
 end

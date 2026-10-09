@@ -6,6 +6,7 @@
 ]]
 
 local Plushies = {}
+local Shapes = require(script.Parent.Shapes)
 
 local FABRIC = Enum.Material.Fabric
 local BLACK = Color3.fromRGB(30, 22, 28)
@@ -18,6 +19,7 @@ local function add(m, base, size, at, color, shape, rot, mat)
 	p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
 	p.Shape = shape or Enum.PartType.Ball
 	p.Size = size
+	Shapes.fix(p, shape or Enum.PartType.Ball, size)
 	p.Color = color
 	p.Material = mat or FABRIC
 	p.CFrame = base * CFrame.new(at) * (rot or CFrame.new())

@@ -77,6 +77,7 @@ end
 
 -- one decoration part: o.at is the offset from the piece's base (+Z towards
 -- the wall behind it, +Y up), o.rot an extra turn
+local Shapes = require(game:GetService("ReplicatedStorage").Shared.Shapes) -- stretched balls (eggs, fish bodies) need a sphere mesh
 local function add(folder, base, o)
 	local p = Instance.new("Part")
 	p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
@@ -88,6 +89,7 @@ local function add(folder, base, o)
 	if o.shape then
 		p.Shape = o.shape
 	end
+	Shapes.fix(p, o.shape, o.size)
 	p.Transparency = o.alpha or 0
 	p.Reflectance = o.shine or 0
 	p.CFrame = base * CFrame.new(o.at or Vector3.zero) * (o.rot or CFrame.new())
@@ -160,7 +162,7 @@ PIECES.Pipes = { size = Vector3.new(8, 3, 1), build = function(f, b)
 		add(f, b, { size = Vector3.new(T, 0.55, 0.55), at = Vector3.new(0, y, T / 2 - 0.5 - i * 0.2), color = i == 1 and C(150, 110, 70) or C(120, 125, 130), mat = METAL })
 	end
 	add(f, b, { size = Vector3.new(0.55, H - 3, 0.55), at = Vector3.new(-2, (H - 3) / 2, T / 2 - 0.7), color = C(150, 110, 70), mat = METAL })
-	add(f, b, { size = Vector3.new(1, 1, 0.3), at = Vector3.new(-2, 4, T / 2 - 1), color = C(200, 40, 40), shape = Enum.PartType.Cylinder, rot = CFrame.Angles(0, math.rad(90), 0) })
+	add(f, b, { size = Vector3.new(0.3, 1, 1), at = Vector3.new(-2, 4, T / 2 - 1), color = C(200, 40, 40), shape = Enum.PartType.Cylinder, rot = CFrame.Angles(0, math.rad(90), 0) })
 end }
 
 -- a conveyor belt with sweets riding along it, and a candy machine at its end
@@ -177,7 +179,7 @@ PIECES.Conveyor = { size = Vector3.new(8, 4, 3), build = function(f, b)
 		table.insert(sweets, add(f, b, { size = Vector3.new(0.9, 0.9, 0.9), at = Vector3.new(-3 + i * 1.8, 3.1, 1.6), shape = Enum.PartType.Ball, color = CANDY[i % #CANDY + 1] }))
 	end
 	local machine = add(f, b, { size = Vector3.new(2.4, 4.6, 3.2), at = Vector3.new(T / 2 - 1.2, 2.3, 1.6), color = C(255, 120, 170) })
-	add(f, b, { size = Vector3.new(1.6, 2, 1.6), at = Vector3.new(T / 2 - 1.2, 5.4, 1.6), rot = UP, shape = Enum.PartType.Cylinder, color = C(250, 250, 250), mat = GLASS, alpha = 0.3 })
+	add(f, b, { size = Vector3.new(2, 1.6, 1.6), at = Vector3.new(T / 2 - 1.2, 5.4, 1.6), rot = UP, shape = Enum.PartType.Cylinder, color = C(250, 250, 250), mat = GLASS, alpha = 0.3 })
 	glow(add(f, b, { size = Vector3.new(0.5, 0.5, 0.5), at = Vector3.new(T / 2 - 1.2, 4, 0), shape = Enum.PartType.Ball, color = C(80, 255, 120), mat = NEON }), C(80, 255, 120), 6, 0.8)
 	local _ = machine
 	task.spawn(function()
@@ -411,7 +413,7 @@ end }
 
 PIECES.IVStand = { size = Vector3.new(2, 7, 2), build = function(f, b)
 	add(f, b, { size = Vector3.new(0.15, 6.5, 0.15), at = Vector3.new(0, 3.25, 1), color = C(190, 195, 200), mat = METAL })
-	add(f, b, { size = Vector3.new(1.6, 0.15, 1.6), at = Vector3.new(0, 0.1, 1), rot = UP, shape = Enum.PartType.Cylinder, color = C(190, 195, 200), mat = METAL })
+	add(f, b, { size = Vector3.new(0.15, 1.6, 1.6), at = Vector3.new(0, 0.1, 1), rot = UP, shape = Enum.PartType.Cylinder, color = C(190, 195, 200), mat = METAL })
 	add(f, b, { size = Vector3.new(0.7, 1.1, 0.3), at = Vector3.new(0.3, 5.9, 1), color = C(200, 230, 255), mat = GLASS, alpha = 0.3 })
 	local mon = add(f, b, { size = Vector3.new(1.4, 1, 0.2), at = Vector3.new(-0.6, 4.8, 1), color = C(30, 30, 35) })
 	label(mon, Enum.NormalId.Front, "\u{1F49A}", C(80, 255, 120))
@@ -602,7 +604,7 @@ PIECES.PrizeWall = { size = Vector3.new(7, 8, 2), build = function(f, b)
 end }
 
 PIECES.CrystalBall = { size = Vector3.new(4, 5, 4), build = function(f, b)
-	add(f, b, { size = Vector3.new(3.4, 3, 3.4), at = Vector3.new(0, 1.5, 0.6), shape = Enum.PartType.Cylinder, rot = UP, color = C(80, 40, 110), mat = Enum.Material.Fabric })
+	add(f, b, { size = Vector3.new(3, 3.4, 3.4), at = Vector3.new(0, 1.5, 0.6), shape = Enum.PartType.Cylinder, rot = UP, color = C(80, 40, 110), mat = Enum.Material.Fabric })
 	local ball = add(f, b, { size = Vector3.new(1.8, 1.8, 1.8), at = Vector3.new(0, 3.9, 0.6), shape = Enum.PartType.Ball, color = C(190, 150, 255), mat = GLASS, alpha = 0.25 })
 	glow(ball, C(180, 120, 255), 12, 1.2)
 	TweenService:Create(ball, TweenInfo.new(1.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Color = C(120, 220, 255) }):Play()
@@ -749,7 +751,7 @@ PIECES.Trophies = { size = Vector3.new(5, 7, 2), build = function(f, b)
 	add(f, b, { size = Vector3.new(4.6, 6, 0.1), at = Vector3.new(0, 3.3, T / 2 - 1.72), color = C(200, 225, 240), mat = GLASS, alpha = 0.6 })
 	for row = 0, 2 do
 		for i = -1, 1 do
-			local cup = add(f, b, { size = Vector3.new(0.6, 0.9, 0.6), at = Vector3.new(i * 1.3, 1.4 + row * 1.9, T / 2 - 1.1), shape = Enum.PartType.Cylinder, rot = UP, color = row == 0 and C(205, 127, 50) or row == 1 and C(200, 200, 210) or C(255, 205, 60), mat = Enum.Material.Foil, shine = 0.3 })
+			local cup = add(f, b, { size = Vector3.new(0.9, 0.6, 0.6), at = Vector3.new(i * 1.3, 1.4 + row * 1.9, T / 2 - 1.1), shape = Enum.PartType.Cylinder, rot = UP, color = row == 0 and C(205, 127, 50) or row == 1 and C(200, 200, 210) or C(255, 205, 60), mat = Enum.Material.Foil, shine = 0.3 })
 			local _ = cup
 		end
 	end
@@ -772,7 +774,7 @@ PIECES.BigBell = { size = Vector3.new(5, 8, 5), build = function(f, b)
 	add(f, b, { size = Vector3.new(5, 0.5, 0.5), at = Vector3.new(0, 7, 1), color = C(90, 70, 50), mat = WOOD })
 	local bell = add(f, b, { size = Vector3.new(3, 3.2, 3), at = Vector3.new(0, 5, 1), shape = Enum.PartType.Ball, color = C(205, 160, 60), mat = METAL, shine = 0.25 })
 	add(f, b, { size = Vector3.new(0.6, 0.5, 0.6), at = Vector3.new(0, 6.6, 1), color = C(90, 70, 50), mat = WOOD }) -- what it hangs from
-	add(f, b, { size = Vector3.new(3.6, 0.4, 3.6), at = Vector3.new(0, 3.6, 1), rot = UP, shape = Enum.PartType.Cylinder, color = C(205, 160, 60), mat = METAL })
+	add(f, b, { size = Vector3.new(0.4, 3.6, 3.6), at = Vector3.new(0, 3.6, 1), rot = UP, shape = Enum.PartType.Cylinder, color = C(205, 160, 60), mat = METAL })
 	noisy(bell, "Big bell", Config.SOUNDS.bell, 3)
 end }
 
@@ -805,7 +807,7 @@ PIECES.Stove = { size = Vector3.new(6, 6, 3), build = function(f, b)
 	for _, x in ipairs({ -2.2, -1 }) do
 		add(f, b, { size = Vector3.new(0.1, 0.9, 0.9), at = Vector3.new(x, 3.65, 2.3), rot = UP, shape = Enum.PartType.Cylinder, color = C(200, 60, 40), mat = NEON })
 	end
-	add(f, b, { size = Vector3.new(1.4, 1, 1.4), at = Vector3.new(-1.6, 4.2, 2.3), rot = UP, shape = Enum.PartType.Cylinder, color = C(150, 150, 155), mat = METAL })
+	add(f, b, { size = Vector3.new(1, 1.4, 1.4), at = Vector3.new(-1.6, 4.2, 2.3), rot = UP, shape = Enum.PartType.Cylinder, color = C(150, 150, 155), mat = METAL })
 	add(f, b, { size = Vector3.new(2.6, 6.5, 2.6), at = Vector3.new(1.8, 3.25, 2.3), color = C(235, 235, 230) })
 	add(f, b, { size = Vector3.new(0.15, 1.6, 0.2), at = Vector3.new(0.7, 4.5, 0.95), color = C(150, 150, 155), mat = METAL })
 end }
@@ -1900,10 +1902,10 @@ local function buildPosters(folder, map, busy)
 			end
 			-- on the wall's south face, facing into the room (+Z)
 			local wall = at(s[1], s[2] - 1)
-			local cf = CFrame.new(wall + Vector3.new(0, 8.4, T / 2 + 0.12))
-			local frameP = add(folder, cf, { name = "PosterFrame", size = Vector3.new(3.7, 5.3, 0.16), color = C(60, 38, 28), mat = WOOD })
+			local cf = CFrame.new(wall + Vector3.new(0, 8.2, T / 2 + 0.12))
+			local frameP = add(folder, cf, { name = "PosterFrame", size = Vector3.new(5, 7.1, 0.16), color = C(60, 38, 28), mat = WOOD })
 			local _ = frameP
-			local poster = add(folder, cf * CFrame.new(0, 0, 0.1), { name = "Poster", size = Vector3.new(3.3, 4.9, 0.05), color = C(20, 15, 20) })
+			local poster = add(folder, cf * CFrame.new(0, 0, 0.1), { name = "Poster", size = Vector3.new(4.5, 6.6, 0.05), color = C(20, 15, 20) })
 			local d = Instance.new("Decal")
 			d.Face = Enum.NormalId.Back
 			d.Texture = "rbxassetid://" .. id

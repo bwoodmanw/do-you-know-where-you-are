@@ -9,11 +9,13 @@
 local TweenService = game:GetService("TweenService")
 
 local Fish = {}
+local Shapes = require(game:GetService("ReplicatedStorage").Shared.Shapes)
 
 local function piece(model, body, size, offset, color, shape, rot)
 	local p = Instance.new("Part")
 	p.Shape = shape or Enum.PartType.Ball
 	p.Size = size
+	Shapes.fix(p, shape or Enum.PartType.Ball, size)
 	p.Color = color
 	p.Material = Enum.Material.SmoothPlastic
 	p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow, p.Massless = false, false, false, false, true
@@ -35,6 +37,7 @@ function Fish.make(parent, cf, color, scale)
 	body.Name = "Body"
 	body.Shape = Enum.PartType.Ball
 	body.Size = Vector3.new(0.5, 0.75, 1.3) * s
+	Shapes.fix(body, Enum.PartType.Ball, Vector3.new(0.5, 0.75, 1.3) * s)
 	body.Color = color
 	body.Material = Enum.Material.SmoothPlastic
 	body.Anchored = true

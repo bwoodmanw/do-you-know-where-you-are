@@ -56,6 +56,7 @@ local FLOOR = {
 	door = { Enum.Material.WoodPlanks, Color3.fromRGB(62, 44, 34) },
 }
 
+local Shapes = require(game:GetService("ReplicatedStorage").Shared.Shapes) -- stretched balls (eggs, fish bodies) need a sphere mesh
 local function part(parent, props)
 	local p = Instance.new("Part")
 	p.Anchored = true
@@ -64,6 +65,7 @@ local function part(parent, props)
 	for k, v in pairs(props) do
 		p[k] = v
 	end
+	Shapes.fix(p, props.Shape, props.Size)
 	p.Parent = parent
 	return p
 end

@@ -26,6 +26,7 @@ local House = require(script.Parent.House)
 local Host = require(script.Parent.Host)
 local Effects = require(script.Parent.Effects)
 local Plushies = require(ReplicatedStorage.Shared.Plushies)
+local Shapes = require(ReplicatedStorage.Shared.Shapes) -- stretched balls need a sphere mesh
 local Characters = require(script.Parent.Characters)
 local Props = require(script.Parent.Props)
 
@@ -1454,6 +1455,7 @@ function round.hostGummy(_, pos, hostModel)
 			b.Anchored, b.CanCollide, b.CanQuery, b.CanTouch, b.CastShadow = true, false, false, false, false
 			b.Shape = Enum.PartType.Ball
 			b.Size = size
+			Shapes.fix(b, Enum.PartType.Ball, size)
 			b.CFrame = cf
 			b.Color = col
 			b.Material = Enum.Material.SmoothPlastic
@@ -2153,6 +2155,7 @@ function round.placeCandyCorn()
 			pt.Anchored, pt.CanCollide, pt.CanTouch, pt.CanQuery, pt.CastShadow = true, false, false, false, false
 			pt.Shape = bd[1]
 			pt.Size = bd[2]
+			Shapes.fix(pt, bd[1], bd[2])
 			pt.CFrame = CFrame.new(pos + Vector3.new(0, bd[3], 0)) * (bd[1] == Enum.PartType.Cylinder and CFrame.Angles(0, 0, math.rad(90)) or CFrame.new())
 			pt.Color = bd[4]
 			pt.Material = Enum.Material.SmoothPlastic
@@ -2599,6 +2602,7 @@ do
 			local p = Instance.new("Part")
 			p.Shape = shape or Enum.PartType.Ball
 			p.Size = size
+			Shapes.fix(p, shape or Enum.PartType.Ball, size)
 			p.Color = col
 			p.Material = mat or Enum.Material.SmoothPlastic
 			p.Anchored, p.CanCollide, p.CanQuery = true, false, false
@@ -2682,6 +2686,7 @@ do
 					local p = Instance.new("Part")
 					p.Shape = shape or Enum.PartType.Ball
 					p.Size = size
+					Shapes.fix(p, shape or Enum.PartType.Ball, size)
 					p.CFrame = CFrame.new(top) * CFrame.new(off)
 					p.Color = col
 					p.Anchored, p.CanCollide, p.CanQuery = true, false, false

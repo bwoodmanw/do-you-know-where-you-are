@@ -49,6 +49,7 @@ do
 	fx("BloomEffect", L.bloom)
 	fx("ColorCorrectionEffect", { Saturation = L.saturation, Contrast = L.contrast, Brightness = L.brightness, TintColor = L.lobby.tint })
 end
+local Shapes = require(game:GetService("ReplicatedStorage").Shared.Shapes) -- stretched balls (eggs, fish bodies) need a sphere mesh
 local function part(props)
 	local p = Instance.new("Part")
 	p.Anchored = true
@@ -56,6 +57,7 @@ local function part(props)
 	for k, v in pairs(props) do
 		p[k] = v
 	end
+	Shapes.fix(p, props.Shape, props.Size)
 	p.Parent = workspace
 	return p
 end

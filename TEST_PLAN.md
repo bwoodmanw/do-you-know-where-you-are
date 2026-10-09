@@ -17,6 +17,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 51 (10 Oct) - stretched shapes now really stretched (Roblox squashed every egg shape into a round ball)
+- [ ] The great tank shark is one long fish: body, snout, fins, crescent tail all joined (photo)
+- [ ] Fish bodies are oval, plushies have proper heads and bodies, gummy bears (Bear Gallery, Gummy puddles) are real bear shapes, penguins, duck, jellyfish, starfish arms, coral, candy corns, rocking horse, the clown car / sub, the Lobby pumpkins - all as drawn, nothing floating apart
+- [ ] Fixed cylinders: IV stand base, crystal ball table, trophies, the big bell's rim, the valve wheel, the water bottle, the boiler pot are flat / upright as meant
+- [ ] Posters a third bigger (5 x 7 studs)
+
 ## Round 50 (9 Oct) - posters and tile icons
 - [ ] Every floor: up to 4 framed posters high on inside walls (never the outside walls with windows, never over furniture against the wall, not beside the invitation or painted wall), the building's own two (photo of a few)
 - [ ] Lobby tiles show their own pictures (lightning, flashlight, balloons, Brainy-like face, shop bag, scroll, teddy, envelope, door, hand, camera, question mark)
