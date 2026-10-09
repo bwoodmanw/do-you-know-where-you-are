@@ -52,21 +52,32 @@ building; the game hangs one or two in each room once their ids are in.
 
 ### Making each one (ChatGPT, portrait)
 
-Paste this, then the poster's own line from the list below:
+Paste this, then the poster's own line from the list below. (The first try,
+9 Oct, came out too young - big smiles, blush cheeks, confetti. These aim at
+8-12 year olds: mysterious and a bit creepy, like an old spooky adventure
+book cover, never gory.)
 
-> A cute spooky cartoon poster for a kids' game, flat colors, thick dark
-> outlines, simple shapes, bold and readable from far away, soft purple and
-> orange night palette, a plain colored border. No text, no letters, no
-> logos, no real brands, no famous characters. Portrait 2:3.
+> An eerie illustrated poster for a spooky adventure game for older kids,
+> like a vintage creepy storybook cover: moody night lighting, deep shadows,
+> one strong glow, a limited palette of dark purples, teals and burnt orange,
+> painterly texture, a sense of mystery and something watching. Faces are
+> sly, sinister or hidden - not smiling, not cute, no blush cheeks, no
+> chibi, no confetti or party clutter. A worn paper border. Not gory, no
+> blood. No text, no letters, no logos, no real brands, no famous
+> characters. Portrait 2:3.
 
 | Building | Poster 1 | Poster 2 |
 |---|---|---|
-| Party House | a jack-o'-lantern wearing a party hat, with balloons and streamers | a friendly ghost blowing out candles on a giant cake |
-| Gummy Bounce House | three gummy bears bouncing on a trampoline of cotton candy | a candy machine pouring out lollipops and gumdrops |
-| Abandoned Hospital | a smiling skeleton waving from an X-ray screen | a ghost nurse holding a giant bandage and a teddy bear |
-| Midnight School | an owl in glasses reading a big book by candlelight | a chalkboard covered in doodles of bats and stars |
-| Creepy Carnival | a vintage circus poster of a clown bear juggling pumpkins | a carousel at night with glowing lights and painted horses |
-| Sunken Aquarium | a smiling anglerfish with a glowing lure in the deep sea | a parade of glowing jellyfish over a coral reef |
+| Party House | a tall old party house on a hill at night, one window glowing, the shadow of a pumpkin-headed figure in a top hat behind the curtain | a long dining table set for a party with an untouched cake, every chair empty, one candle still burning |
+| Gummy Bounce House | a candy factory at night, its chimneys puffing pink smoke, a giant gummy bear's silhouette in a lit doorway | a jar of gummy bears on a shelf in the dark, one bear pressed against the glass looking out |
+| Abandoned Hospital | an empty hospital corridor, a wheelchair alone under one flickering light, a door ajar at the end | an old X-ray of a hand with one finger too many, lit from behind |
+| Midnight School | a school clock tower at midnight under a full moon, its hands pointing to twelve, an owl on the ledge | an empty classroom with a single desk lit by moonlight and chalk drawings of eyes on the board |
+| Creepy Carnival | a vintage circus poster style picture of a carnival tent at night, a bear in a clown ruff peeking from the dark entrance | a carousel standing still at night, its painted horses' eyes catching the light |
+| Sunken Aquarium | an anglerfish's glowing lure in pitch-black water, the shape of its jaws just visible | a diver's helmet on the seabed covered in coral, a faint light inside it |
+
+**Make one first** (the Party House poster 1) and send it to Claude before
+the rest - if it is still too young or too scary, we change the prompt once,
+not twelve times.
 
 Save each as `art/posters/<building>-1.png` / `-2.png` (for example
 `art/posters/gummy-1.png`). **Send Claude the pictures first** - Claude
