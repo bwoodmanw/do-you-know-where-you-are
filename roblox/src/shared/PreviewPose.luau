@@ -1,17 +1,24 @@
 --[[
-	PreviewPose (client) - a character saved in a T-pose (arms straight out,
-	like the remade Echo and Ghostly Shadow) plays Roblox's standard idle
-	animation in the 3D character views, so its arms come down the same way
-	they do in the game. The animation bends the model's skin properly
-	(moving the arm parts by hand squashed them - 8 Oct). Characters already
-	standing with their arms down are left exactly as they are.
+	PreviewPose (client) - the 3D character views (Lobby -> Characters, the
+	game's character select) play the character's own idle from its
+	animation pack (Config.ANIM: Shadow's ninja idle, Muscle's superhero
+	idle...), so the preview stands the way it does in the game. The
+	animation bends the model's skin properly (moving the arm parts by hand
+	squashed them - 8 Oct).
 
-	Call it after the copy is in the view's WorldModel. If anything is
-	missing (no Humanoid, the animation does not load) the model simply stays
-	in its T-pose.
+	A character saved in a T-pose (arms straight out, like the remade Echo
+	and Ghostly Shadow) plays it at 85%: the arms hang a little out from the
+	body, which keeps the shoulders from bunching.
+
+	Call it after the copy is in the view's WorldModel, with the character's
+	skill id (and the model's name, for a skin with its own pack). If
+	anything is missing (no Humanoid, the animation does not load) the model
+	simply stays as it was saved.
 ]]
 
-local IDLE = "rbxassetid://507766666" -- Roblox's R15 idle (the Animate script's own)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local IDLE = 507766666 -- Roblox's R15 idle (the Animate script's own)
 
 local function armsOut(model)
 	local root = model:FindFirstChild("HumanoidRootPart", true)
@@ -32,14 +39,23 @@ local function armsOut(model)
 	return false
 end
 
-return function(model)
-	if not armsOut(model) then
-		return
+-- the idle of this character's pack (a skin's own pack first), or Roblox's
+local function idleFor(skillId, modelName)
+	local ok, Config = pcall(require, ReplicatedStorage.Shared.Config)
+	local A = ok and Config.ANIM
+	if not A then
+		return IDLE
 	end
+	local pack = A.packs[(modelName and A.model[modelName]) or A.skill[skillId or ""] or ""]
+	return pack and pack.idle or IDLE
+end
+
+return function(model, skillId, modelName)
 	local hum = model:FindFirstChildWhichIsA("Humanoid", true)
 	if not hum then
 		return
 	end
+	local tPose = armsOut(model)
 	-- the body hangs from its root, as it does in the game, so the joints can move
 	for _, d in ipairs(model:GetDescendants()) do
 		if d:IsA("BasePart") then
@@ -52,10 +68,8 @@ return function(model)
 		animator.Parent = hum
 	end
 	local anim = Instance.new("Animation")
-	anim.AnimationId = IDLE
+	anim.AnimationId = "rbxassetid://" .. idleFor(skillId, modelName or model.Name)
 	local track = animator:LoadAnimation(anim)
 	track.Looped = true
-	-- 85% of the way down: the arms hang a little out from the body, which
-	-- keeps the shoulders from bunching (the arms look their full length)
-	track:Play(0, 0.85)
+	track:Play(0, tPose and 0.85 or 1)
 end

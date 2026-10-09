@@ -1405,7 +1405,7 @@ local function showModel(sk)
 	if src then
 		shown = src:Clone()
 		shown.Parent = viewWorld
-		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown) -- a T-pose plays the idle (arms down)
+		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, modelName) -- the character's own idle
 		shownFor = modelName
 		noModel.Visible = false
 	else

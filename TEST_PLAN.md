@@ -36,6 +36,7 @@ Animation packs (Config.ANIM - ask Claude to swap any):
 - [ ] Kids: Tinker robot, Shadow ninja, Brainy mage, Muscle superhero, Glow bubbly, Patch cartoony, Echo stylish, Bramble toy; Muscle Mummy zombie. Walk, run, stand still, jump - each looks like its own (video or photos)
 - [ ] Hosts: Pumpkin zombie, Gummy Bear Man werewolf, Robot robot, Caretaker elder, Clown Bear toy, Anglerfish Keeper levitation; they stand in an idle pose when still (not frozen)
 - [ ] Nobody's legs sink into the floor or float with the new packs (photo if they do)
+- [ ] Lobby -> Characters and the game's character select: each 3D preview stands in its own pack's idle (Shadow ninja, Muscle superhero, Muscle Mummy zombie...) and still turns when you drag it; no preview squashed or stretched (photo of two or three)
 Names and bears:
 - [ ] Rooms say Parlor, Elevator Lobby, Cafeteria (Hospital), Storage Room (Attic), Coal Room (Basement), Sugar Room (Candy Factory), Lab Storage, Medicine Closet, Staff Lounge (Hospital), Teachers' Lounge (School)
 - [ ] Gummy Bounce House, Bear Gallery: three big gummy bears (face, ears, belly) on white stands, facing into the room (photo)
