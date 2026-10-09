@@ -365,47 +365,102 @@ remotes.PartyInvite.OnClientEvent:Connect(function(info)
 	end)
 end)
 
--- ---------- main menu (left) ----------
-local menu = frame(gui, { Size = UDim2.fromOffset(330, 600), Position = UDim2.new(0, 24, 0.5, -300) })
-corner(menu, 18)
-local menuStroke = Instance.new("UIStroke")
-menuStroke.Color, menuStroke.Transparency = PUMP, 0.6
-menuStroke.Parent = menu
-local menuPad = Instance.new("UIPadding")
-menuPad.PaddingTop, menuPad.PaddingBottom = UDim.new(0, 16), UDim.new(0, 16)
-menuPad.Parent = menu
-list(menu, 10)
-label(menu, { Size = UDim2.new(0.9, 0, 0, 20), Text = "THE PARTY AT THE END OF THE LANE", TextColor3 = Color3.fromRGB(255, 217, 168), LayoutOrder = 1 })
-label(menu, { Size = UDim2.new(0.9, 0, 0, 48), Text = "ESCAPE CREW", TextColor3 = PUMP, LayoutOrder = 2 })
-button(menu, "\u{26A1} Quick Play", { Size = UDim2.new(0.86, 0, 0, 46), BackgroundColor3 = Color3.fromRGB(70, 209, 96), TextColor3 = NIGHT, LayoutOrder = 3 }, function()
+-- ---------- main menu: big picture tiles, one word each ----------
+-- (the look Brent picked 9 Oct: art/ui-mockups/lobby-v2.png). The left has
+-- the play tiles, the right a bar of smaller ones. A tile shows its picture
+-- from Config.UI_ICONS once uploaded, its emoji until then.
+local menu = frame(gui, { Size = UDim2.fromOffset(310, 590), Position = UDim2.fromOffset(20, 134), BackgroundTransparency = 1 })
+local rightBar = frame(gui, { Size = UDim2.fromOffset(104, 520), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 196), BackgroundTransparency = 1 })
+label(menu, { Size = UDim2.fromOffset(310, 40), Position = UDim2.fromOffset(0, -46), Text = "ESCAPE CREW", TextColor3 = PUMP })
+do
+	-- small screens: the tiles shrink to fit
+	local fitL, fitR = Instance.new("UIScale"), Instance.new("UIScale")
+	fitL.Parent, fitR.Parent = menu, rightBar
+	local function refit()
+		local cam = workspace.CurrentCamera
+		local vy = cam and cam.ViewportSize.Y or 900
+		fitL.Scale = math.clamp((vy - 134 - 70) / 590, 0.45, 1)
+		fitR.Scale = math.clamp((vy - 196 - 60) / 520, 0.45, 1)
+	end
+	refit()
+	if workspace.CurrentCamera then
+		workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(refit)
+	end
+end
+-- a tile: a picture (or emoji) and one word, a cream border, a red dot for news
+local function tileBtn(parent, key, emoji, word, props, onClick)
+	local b = Instance.new("TextButton")
+	b.Text = ""
+	b.BackgroundColor3 = PLUM
+	b.TextColor3 = CREAM
+	for k, v in pairs(props) do
+		b[k] = v
+	end
+	corner(b, 18)
+	local stroke = Instance.new("UIStroke")
+	stroke.Color, stroke.Thickness, stroke.ApplyStrokeMode = CREAM, 3, Enum.ApplyStrokeMode.Border
+	stroke.Parent = b
+	local wide = b.Size.X.Offset > b.Size.Y.Offset * 1.6
+	local iconSize = wide and UDim2.new(0.28, 0, 0.8, 0) or UDim2.new(0.7, 0, 0.56, 0)
+	local iconAt = wide and UDim2.new(0.04, 0, 0.1, 0) or UDim2.new(0.15, 0, 0.06, 0)
+	local id = Config.UI_ICONS and Config.UI_ICONS[key] or 0
+	if id > 0 then
+		local pic = Instance.new("ImageLabel")
+		pic.BackgroundTransparency = 1
+		pic.Image = "rbxassetid://" .. id
+		pic.ScaleType = Enum.ScaleType.Fit
+		pic.Size, pic.Position = iconSize, iconAt
+		pic.Parent = b
+	else
+		label(b, { Name = "Emoji", Size = iconSize, Position = iconAt, Text = emoji })
+	end
+	label(b, { Name = "Word", Size = wide and UDim2.new(0.62, 0, 0.7, 0) or UDim2.new(0.92, 0, 0.26, 0), Position = wide and UDim2.new(0.34, 0, 0.15, 0) or UDim2.new(0.04, 0, 0.68, 0),
+		Text = word, TextColor3 = b.TextColor3, TextXAlignment = wide and Enum.TextXAlignment.Left or Enum.TextXAlignment.Center })
+	local dot = frame(b, { Name = "Badge", Size = UDim2.fromOffset(34, 34), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -8, 0, 8), BackgroundColor3 = Color3.fromRGB(232, 60, 70), BackgroundTransparency = 0, Visible = false, ZIndex = 3 })
+	corner(dot, 17)
+	label(dot, { Name = "Count", Size = UDim2.fromScale(0.8, 0.8), Position = UDim2.fromScale(0.1, 0.1), Text = "!", ZIndex = 4 })
+	b.Parent = parent
+	if onClick then
+		b.Activated:Connect(onClick)
+	end
+	return b
+end
+-- the red dot on a tile: a number or "!", or nil to hide it
+local function setBadge(b, text)
+	local dot = b and b:FindFirstChild("Badge")
+	if dot then
+		dot.Visible = text ~= nil and text ~= ""
+		dot.Count.Text = text or ""
+	end
+end
+local quick = tileBtn(menu, "quick", "\u{26A1}", "Quick Play", { Size = UDim2.fromOffset(310, 100), BackgroundColor3 = Color3.fromRGB(70, 209, 96), TextColor3 = NIGHT }, function()
 	remotes.QuickPlay:FireServer()
 end)
-button(menu, "\u{25B6} Play solo", { Size = UDim2.new(0.86, 0, 0, 46), BackgroundColor3 = PUMP, TextColor3 = NIGHT, LayoutOrder = 4 }, function()
+tileBtn(menu, "solo", "\u{25B6}", "Solo", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(0, 112) }, function()
 	remotes.CreateParty:FireServer(true)
 end)
-button(menu, "\u{1F465} Create a party", { Size = UDim2.new(0.86, 0, 0, 44), LayoutOrder = 5 }, function()
+tileBtn(menu, "party", "\u{1F388}", "Party", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(162, 112) }, function()
 	remotes.CreateParty:FireServer(false)
 end)
-button(menu, "\u{2709} Invite friends", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 6 }, invite)
-local shopBtn = button(menu, "\u{1F6D2} Shop", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 7 })
-local charsBtn = button(menu, "\u{1F9D1}\u{200D}\u{1F91D}\u{200D}\u{1F9D1} Characters", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 8 })
-local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 10 })
--- Quests and the Plushie Book share a row
-local questsRow = frame(menu, { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 9, BackgroundTransparency = 1 })
-local questsBtn = button(questsRow, "\u{1F4DC} Quests", { Size = UDim2.new(0.5, -4, 1, 0), BackgroundColor3 = Color3.fromRGB(110, 70, 150) })
+local charsBtn = tileBtn(menu, "characters", "\u{1F9D2}", "Characters", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(0, 268) })
+local shopBtn = tileBtn(menu, "shop", "\u{1F6D2}", "Shop", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(162, 268) })
+local questsBtn = tileBtn(menu, "quests", "\u{1F4DC}", "Quests", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(0, 424) })
+-- (Plushies is the sixth tile, made with the Plushie Book below)
+tileBtn(rightBar, "invite", "\u{2709}", "Invite", { Size = UDim2.fromOffset(104, 96), Position = UDim2.fromOffset(0, 0) }, invite)
+local joinBox -- the friends' parties list (made below); the Join tile opens it
+local joinOpen = false
+local joinBtn = tileBtn(rightBar, "join", "\u{1F389}", "Join", { Size = UDim2.fromOffset(104, 96), Position = UDim2.fromOffset(0, 104) }, function()
+	joinOpen = not joinOpen
+	if joinBox then
+		joinBox.Visible = joinOpen and menu.Visible
+	end
+end)
+local helpBtn = tileBtn(rightBar, "help", "\u{2753}", "Help", { Size = UDim2.fromOffset(104, 96), Position = UDim2.fromOffset(0, 416) })
 -- controller: Up jumps into the menu (or your party's buttons)
 do
-	local quick
-	for _, c in ipairs(menu:GetChildren()) do
-		if c:IsA("TextButton") and c.LayoutOrder == 3 then
-			quick = c
-		end
-	end
-	if quick then
-		Gamepad.hint(quick, "Up")
-	end
+	Gamepad.hint(quick, "Up")
 	Gamepad.bind(Enum.KeyCode.DPadUp, function()
-		if menu.Visible and quick then
+		if menu.Visible then
 			Gamepad.select(quick)
 		end
 	end)
@@ -569,7 +624,7 @@ end
 
 -- ---------- parties you can join (right) ----------
 -- below the points, sound and music buttons (top right)
-local joinBox = frame(gui, { Size = UDim2.fromOffset(330, 400), Position = UDim2.new(1, -354, 0, 168) })
+joinBox = frame(gui, { Size = UDim2.fromOffset(330, 400), Position = UDim2.new(1, -470, 0, 196), Visible = false })
 corner(joinBox, 18)
 label(joinBox, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "Friends' parties", TextColor3 = PUMP })
 local joinList = frame(joinBox, { Size = UDim2.new(1, -20, 1, -64), Position = UDim2.fromOffset(10, 56), BackgroundTransparency = 1 })
@@ -733,7 +788,8 @@ local function paintParty(p)
 	inParty = p ~= nil
 	partyBox.Visible = p ~= nil
 	menu.Visible = p == nil
-	joinBox.Visible = p == nil
+	rightBar.Visible = p == nil
+	joinBox.Visible = p == nil and joinOpen
 	if not p then
 		return
 	end
@@ -843,12 +899,22 @@ remotes.PartyList.OnClientEvent:Connect(function(parties, myId)
 		end
 	end
 	joinEmpty.Visible = shown == 0
+	setBadge(joinBtn, shown > 0 and tostring(shown) or nil) -- how many parties you could join
 	paintParty(mine)
 end)
 
 -- ---------- my profile (points, bag, characters) ----------
 local profile = { points = 0, inv = {}, loadout = {}, xp = {}, picks = {}, unlocked = {} }
-local pointsLabel = label(gui, { Size = UDim2.fromOffset(240, 36), Position = UDim2.new(1, -260, 0, 64), Text = "\u{2B50} 0 points", TextXAlignment = Enum.TextXAlignment.Right })
+local pointsLabel = label(gui, { Size = UDim2.fromOffset(200, 50), Position = UDim2.fromOffset(20, 64), Text = "\u{2B50} 0", BackgroundColor3 = NIGHT, BackgroundTransparency = 0.1 })
+do
+	corner(pointsLabel, 25)
+	local ring = Instance.new("UIStroke")
+	ring.Color, ring.Thickness, ring.ApplyStrokeMode = CREAM, 3, Enum.ApplyStrokeMode.Border
+	ring.Parent = pointsLabel
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 8), UDim.new(0, 8)
+	pad.Parent = pointsLabel
+end
 local repaintShop, repaintChars
 
 local function readProfile()
@@ -861,7 +927,7 @@ local function readProfile()
 			profile = data
 		end
 	end
-	pointsLabel.Text = "\u{2B50} " .. tostring(profile.points or 0) .. " points"
+	pointsLabel.Text = "\u{2B50} " .. tostring(profile.points or 0)
 	if repaintShop then
 		repaintShop()
 	end
@@ -872,18 +938,16 @@ end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
 do
 	-- emotes in the Lobby too (G / the right stick), under the points
-	-- a row of the menu, under How to play (they sat on the sound buttons before)
-	local row = frame(menu, { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 11, BackgroundTransparency = 1 })
-	local emoteBtn = button(row, (UserInputService.KeyboardEnabled and not UserInputService.TouchEnabled) and "\u{1F604} Emote (G)" or "\u{1F604} Emote", { Size = UDim2.new(0.5, -4, 1, 0) })
+	local emoteBtn = tileBtn(rightBar, "emote", "\u{1F604}", "Emote", { Size = UDim2.fromOffset(104, 96), Position = UDim2.fromOffset(0, 208) })
 	require(ReplicatedStorage.Shared.Emotes).mount(gui, emoteBtn, UDim2.new(0.5, -218, 1, -260))
 	-- the escape photo setting (the only way back on once it is Off)
 	local MODES = { every = "Every escape", daily = "Daily", off = "Off" }
 	local NEXT = { every = "daily", daily = "off", off = "every" }
-	local photoBtn = button(row, "", { Size = UDim2.new(0.5, -4, 1, 0), Position = UDim2.new(0.5, 4, 0, 0) }, function()
+	local photoBtn = tileBtn(rightBar, "photo", "\u{1F4F8}", "Photo", { Size = UDim2.fromOffset(104, 96), Position = UDim2.fromOffset(0, 312) }, function()
 		remotes:WaitForChild("SetPhoto"):FireServer(NEXT[player:GetAttribute("PhotoMode") or "daily"])
 	end)
 	local function paintPhoto()
-		photoBtn.Text = "\u{1F4F8} Photo: " .. (MODES[player:GetAttribute("PhotoMode") or "daily"] or "Daily")
+		photoBtn.Word.Text = "Photo: " .. (MODES[player:GetAttribute("PhotoMode") or "daily"] or "Daily")
 	end
 	player:GetAttributeChangedSignal("PhotoMode"):Connect(paintPhoto)
 	paintPhoto()
@@ -986,7 +1050,7 @@ do
 	button(book, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -56), ZIndex = 22 }, function()
 		book.Visible = false
 	end)
-	local bookBtn = button(questsRow, "\u{1F9F8} Plushies", { Size = UDim2.new(0.5, -4, 1, 0), Position = UDim2.new(0.5, 4, 0, 0), BackgroundColor3 = Color3.fromRGB(150, 80, 120) })
+	local bookBtn = tileBtn(menu, "plushies", "\u{1F9F8}", "Plushies", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(162, 424) })
 	bookBtn.Activated:Connect(function()
 		paint()
 		book.Visible = not book.Visible
@@ -1906,7 +1970,7 @@ do
 		local wleft = (week + 1) * 7 * 86400 - 3 * 86400 - os.time()
 		weekResets.Text = "Bigger goals, more points and a boost each. New on Monday (in " .. math.floor(wleft / 86400) .. "d " .. math.floor(wleft % 86400 / 3600) .. "h)"
 		-- daily and weekly together: how many are done of how many there are
-		questsBtn.Text = "\u{1F4DC} Quests  " .. doneCount .. " of " .. total
+		setBadge(questsBtn, total > doneCount and tostring(total - doneCount) or nil) -- quests still to do
 	end
 	player:GetAttributeChangedSignal("ProfileJson"):Connect(function()
 		task.defer(paint)

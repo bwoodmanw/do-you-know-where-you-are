@@ -12,6 +12,8 @@ Config.GRACE = 20 -- seconds before the host comes out (Giggly)
 Config.GRACE_SPOOKY = 12
 
 Config.WALK = 12
+-- the Lobby's tile pictures (uploaded images; 0 = the emoji until then)
+Config.UI_ICONS = { quick = 0, solo = 0, party = 0, characters = 0, shop = 0, quests = 0, plushies = 0, invite = 0, join = 0, emote = 0, photo = 0, help = 0 }
 -- trying a remade character in Studio only (STYLE_UPGRADE.md part B): the
 -- plain character uses this model instead when it is in ServerStorage/Characters,
 -- e.g. { Tinker = "TinkerToon" }. Live players never see it.

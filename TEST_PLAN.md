@@ -17,6 +17,15 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 49 (9 Oct) - the new Lobby screen (art/ui-mockups/lobby-v2.png)
+- [ ] Left: "ESCAPE CREW", a big green Quick Play tile, then Solo, Party, Characters, Shop, Quests, Plushies tiles (emoji for now) - each does what its old button did
+- [ ] Right: Invite, Join, Emote, Photo (shows Daily / Every escape / Off; tap cycles), Help; Join opens the friends' parties list beside it and shows a red number when there are parties to join
+- [ ] Quests shows a red number of quests still to do; points in a chip at the top left (no "points" word)
+- [ ] The music / sound buttons top right are not covered; the candy banner still at the bottom
+- [ ] Phone: the tiles shrink to fit; nothing off screen (photo)
+- [ ] In a party: the tiles and bar hide, your party panel shows; leaving brings them back
+- [ ] Controller: Up selects Quick Play; you can move round the tiles
+
 ## Round 48 (9 Oct) - the look: lighting and color
 - [ ] Every building: brighter, cleaner, more colorful than before (less haze); each has its own light (Party House warm, Gummy pink, Hospital cool green, School paper-warm, Carnival warm red, Aquarium blue); lamps and neon softly glow (photos of two or three floors)
 - [ ] Spooky game: clearly darker than Giggly

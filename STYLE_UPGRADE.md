@@ -8,6 +8,43 @@ or layout. Everything players see must have no logos and no known characters.
 
 ---
 
+## Part C - our own pictures for the Lobby tiles
+
+The new Lobby (built 9 Oct) shows an emoji on each tile until its own
+picture is in - the same idea as the Candy Corn boost picture. One sheet
+makes all twelve.
+
+### 1. The sheet (ChatGPT, landscape)
+
+> A sheet of 12 separate game button icons for a spooky-cute kids' game, in a
+> 4 x 3 grid with wide empty gaps, each icon centred in its own equal square
+> cell. Same style for all: glossy cartoon, chunky simple shapes, bright
+> candy colors with purple and orange accents, a thick dark outline, a soft
+> highlight, no circle or frame behind them. Transparent background. No text,
+> no letters, no logos, no famous characters. In this order, left to right,
+> top to bottom:
+> 1 a lightning bolt with speed lines, 2 a single flashlight shining a beam,
+> 3 a bunch of three balloons, 4 a cheerful cartoon kid's face with round
+> glasses and a propeller beanie, 5 a striped shopping bag full of candy,
+> 6 a rolled scroll with a gold check-mark seal, 7 a teddy bear plushie with a
+> stitched heart, 8 an envelope with a heart seal, 9 an open door glowing
+> with warm light and party streamers, 10 a waving cartoon hand, 11 an
+> instant camera with a flash spark, 12 a big purple question mark with
+> sparkles.
+
+Save it as `art/ui-icons/sheet.png` and **send it to Claude**: Claude checks
+it, then cuts it (`python tools/cut_icon_sheet.py art/ui-icons/sheet.png`)
+into `art/ui-icons/quick.png`, `solo.png`, ... `help.png`.
+
+### 2. Uploading
+
+Same as the posters below: Creator Hub -> Development Items -> Images ->
+Upload Asset, one per icon (name them "Icon quick", "Icon solo", ...), copy
+each **Asset ID**, send Claude the twelve ids. They go in
+`Config.UI_ICONS` and the tiles switch from emoji to pictures by themselves.
+
+---
+
 ## Part A - posters for the walls (step 2)
 
 Flat 2D pictures are where AI art looks best. Twelve posters, two per
