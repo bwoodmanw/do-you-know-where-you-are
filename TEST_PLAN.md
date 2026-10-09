@@ -17,6 +17,13 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 36 (9 Oct) - Brent's first live-test fixes
+- [ ] Echo with Sound Wave (level 20): throw a noise close to the host - he is stunned 1 s, then still walks to the noise (and ignores kids on the way, as a normal noise)
+- [ ] Caught: in the cage you can walk slowly round inside it (no jumping); slipping out puts you back in; freeing still works
+- [ ] Map on a floor with a loft (Gummy Bounce Hall's Slide Tower, Party House Bedrooms' Gallery, Carnival, Aquarium Main Hall): "⬆ Loft" sits at the foot of the stairs, not on any room name (photo)
+- [ ] A non-Bramble at the big plant: with a Bramble in the crew, "bring <name> here!"; without one, "nobody in your crew is Bramble. Pop the balloons"
+- [ ] Glow's Flare / Beacon, Echo's burst, Patch's Group Hug, a Second Wind boost: a line floats up over the boost row ("💚 +6% stamina", "⚡ +5% speed for 3 s"); the ⚡ slot shows "+5%" above its seconds - for every player who gets it
+
 ## Round 35 (8 Oct) - skill and boost timers
 - [ ] Each skill's button counts down while it works (orange), then the recharge (gray): Shadow "Sneaking 14s", Glow "Flare 8s", Bramble "Vines 6s", Echo "Burst 3s", Muscle "Barricade 10s", Brainy "Thinking 15s"; Tinker "Toolkit ready!" until the next pick; Patch goes straight to the recharge
 - [ ] A speed burst (Echo, Glow's Flare, Beacon) shows a lightning slot in the boost row with its seconds, and the extra speed stops when it reaches 0

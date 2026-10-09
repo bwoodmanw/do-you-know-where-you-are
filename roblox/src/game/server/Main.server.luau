@@ -978,7 +978,12 @@ local function wirePrompts()
 		elseif def.kind == "plant" then
 			entry.prompt.Triggered:Connect(function(plr)
 				if plr:GetAttribute("Skill") ~= "bramble" then
-					return need(plr, "bramble", "This plant looks like it knows something... Bramble could ask it!")
+					for _, p in ipairs(Players:GetPlayers()) do
+						if p:GetAttribute("Skill") == "bramble" and not p:GetAttribute("Escaped") then
+							return need(plr, "bramble", "This plant knows the code, but it only talks to Bramble - bring " .. p.DisplayName .. " here!")
+						end
+					end
+					return say("info", "This plant only talks to Bramble, and nobody in your crew is Bramble. Pop the balloons to find the code!", nil, plr)
 				end
 				entry.prompt.Enabled = false
 				Effects.burst(entry.part.Position + Vector3.new(0, 3, 0), "plant")
@@ -2040,7 +2045,8 @@ function round.hostHit(_, plr)
 	end)
 end
 
--- put a caged player in the cage, seen by everyone, unable to walk
+-- put a caged player in the cage, seen by everyone; they can shuffle round
+-- inside it but not jump (the keeper puts anyone who slips out back in)
 local function intoCage(plr)
 	local h = hrpOf(plr)
 	if h then
@@ -2048,7 +2054,11 @@ local function intoCage(plr)
 	end
 	setVisible(plr, true)
 	teleport(plr, world.objects.cage.inside)
-	setSpeed(plr, 0)
+	setSpeed(plr, Config.CAGE_WALK)
+	local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+	if hum then
+		hum.JumpPower = 0
+	end
 	world.objects.cage.prompt.Enabled = true
 end
 
@@ -3827,16 +3837,13 @@ Players.PlayerAdded:Connect(function(plr)
 				teleport(plr, world.gardenSpot)
 			elseif back.caged then
 				plr:SetAttribute("Caged", true)
-				teleport(plr, world.objects.cage.inside)
-				setSpeed(plr, 0)
-				world.objects.cage.prompt.Enabled = true
+				intoCage(plr)
 			else
 				teleport(plr, at(HouseMap.start[1][1], HouseMap.start[1][2], 0))
 			end
 			say("info", plr.DisplayName .. " is back in the game!")
 		elseif plr:GetAttribute("Caged") then
-			teleport(plr, world.objects.cage.inside)
-			setSpeed(plr, 0)
+			intoCage(plr)
 		elseif plr:GetAttribute("Escaped") then
 			teleport(plr, world.gardenSpot)
 		elseif host and host.model then

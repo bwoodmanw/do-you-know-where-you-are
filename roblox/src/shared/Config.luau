@@ -12,6 +12,7 @@ Config.GRACE = 20 -- seconds before the host comes out (Giggly)
 Config.GRACE_SPOOKY = 12
 
 Config.WALK = 12
+Config.CAGE_WALK = 5 -- a caged kid can shuffle round inside the cage (no jumping)
 Config.RUN = 20
 Config.STAMINA_DRAIN = 22 -- per second while running
 Config.STAMINA_REGEN = 15 -- per second otherwise

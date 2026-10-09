@@ -1297,13 +1297,24 @@ local function buildView()
 		local L = HouseMap.loft
 		loftView = mapRect(L.x0, L.y0, L.x1, L.y1, Color3.fromRGB(190, 150, 90), 3)
 		loftView.BackgroundTransparency = 0.8
-		local loftName = label(loftView, { Size = UDim2.new(1, -6, 1, -2), Position = UDim2.fromOffset(2, 0), Text = "Loft", TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Bottom, TextColor3 = Color3.fromRGB(255, 240, 200), ZIndex = 4 })
-		local loftCap = Instance.new("UITextSizeConstraint")
-		loftCap.MaxTextSize = 14
-		loftCap.Parent = loftName
 		local name = floorOf(L.x0, L.y0)
 		if name then
 			table.insert(roomTiles[name], loftView)
+		end
+		-- "Loft" goes at the foot of its stairs, below the room names (over
+		-- the loft itself it sat on top of the next room's name)
+		if L.stairX and L.stairY1 then
+			local right = L.stairX > (L.x0 + L.x1) / 2
+			local tag = mapRect(L.stairX, L.stairY1, L.stairX, L.stairY1, Color3.new(0, 0, 0), 5)
+			tag.BackgroundTransparency = 1
+			local loftName = label(tag, { Size = UDim2.fromOffset(6 * PX, 12), AnchorPoint = Vector2.new(right and 1 or 0, 1), Position = UDim2.fromScale(right and 1 or 0, 1), Text = "\u{2B06} Loft", TextXAlignment = right and Enum.TextXAlignment.Right or Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 240, 200), TextStrokeTransparency = 0.3, ZIndex = 5 })
+			local loftCap = Instance.new("UITextSizeConstraint")
+			loftCap.MaxTextSize = 12
+			loftCap.Parent = loftName
+			local stairRoom = floorOf(L.stairX, L.stairY1)
+			if stairRoom then
+				table.insert(roomTiles[stairRoom], tag)
+			end
 		end
 	end
 	-- the way out, once you have seen the room it is in
@@ -1590,6 +1601,49 @@ local shieldSlot, shieldText = activeSlot("shield", "\u{1F6E1}")
 local candySlot, candyText = activeSlot("candy", "\u{1F36C}")
 local freezeSlot, freezeText = activeSlot("freeze", "\u{1F9CA}")
 local speedSlot, speedText = activeSlot("speed", "\u{26A1}") -- a burst of speed (it always runs out)
+do
+	-- the speed slot says how much faster ("+5%") above its seconds
+	local pct = label(speedSlot, { Name = "Pct", Size = UDim2.new(1, 0, 0, 14), Position = UDim2.fromOffset(0, -2), Text = "", TextColor3 = Color3.fromRGB(255, 230, 120), TextStrokeTransparency = 0.2, ZIndex = 3 })
+	-- a line floats up over the boost row whenever a skill or boost gives you
+	-- something: "+6% stamina", "+5% speed for 3 s"
+	local floatAt = TOUCH and UDim2.new(1, -310, 1, -452) or UDim2.new(1, -310, 1, -312)
+	local floating = 0
+	local function float(text, color)
+		floating += 1
+		local n = floating
+		local l = label(gui, { Size = UDim2.fromOffset(300, 30), Position = floatAt - UDim2.fromOffset(0, ((n - 1) % 3) * 30), Text = text, TextXAlignment = Enum.TextXAlignment.Right, TextColor3 = color, TextStrokeTransparency = 0.1, ZIndex = 20 })
+		TweenService:Create(l, TweenInfo.new(2.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = l.Position - UDim2.fromOffset(0, 40), TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		task.delay(2.3, function()
+			l:Destroy()
+			if floating == n then
+				floating = 0
+			end
+		end)
+	end
+	local GREEN, GOLD = Color3.fromRGB(123, 227, 107), Color3.fromRGB(255, 230, 120)
+	remotes.Boost.OnClientEvent:Connect(function(kind, amount)
+		if kind == "plus" and tonumber(amount) then
+			float("\u{1F49A} +" .. math.floor(tonumber(amount) + 0.5) .. "% stamina", GREEN)
+		elseif kind == "half" then
+			float("\u{1F49A} +50% stamina", GREEN)
+		elseif kind == "stamina" then
+			float("\u{1F49A} Full stamina!", GREEN)
+		elseif kind == "candy" then
+			float("\u{1F36C} No tiring for 20 s", GREEN)
+		end
+	end)
+	player:GetAttributeChangedSignal("TeamBurstUntil"):Connect(function()
+		local left = (player:GetAttribute("TeamBurstUntil") or 0) - workspace:GetServerTimeNow()
+		local mult = player:GetAttribute("TeamBurstMult") or 1
+		if left > 0.5 and mult > 1 then
+			float("\u{26A1} +" .. math.floor((mult - 1) * 100 + 0.5) .. "% speed for " .. math.floor(left + 0.5) .. " s", GOLD)
+		end
+	end)
+	RunService.Heartbeat:Connect(function()
+		local mult = player:GetAttribute("TeamBurstMult") or 1
+		pct.Text = speedSlot.Visible and mult > 1 and ("+" .. math.floor((mult - 1) * 100 + 0.5) .. "%") or ""
+	end)
+end
 
 -- ---------- running and stamina ----------
 local stamina, tired, candyUntil = 100, false, 0

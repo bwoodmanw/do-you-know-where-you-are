@@ -605,7 +605,13 @@ end
 
 function Host:stun(seconds)
 	self.pause = seconds
-	self.mode = "patrol"
+	-- stunned while going to Echo's noise (Sound Wave): he still goes to look
+	-- afterwards, for the whole lure
+	if os.clock() < (self.lureUntil or 0) then
+		self.lureUntil += seconds
+	else
+		self.mode = "patrol"
+	end
 end
 
 return Host
