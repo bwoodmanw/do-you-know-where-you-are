@@ -1219,11 +1219,12 @@ charGrid.CellPadding = UDim2.fromOffset(6, 0)
 charGrid.Parent = charRow
 local selected = Config.SKILLS[1].id
 -- the owner's test buttons: jump the shown character to a level (only you see them)
-if game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId then
+if (game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId) or game:GetService("RunService"):IsStudio() then
 	local testRow = frame(chars, { Size = UDim2.fromOffset(240, 34), Position = UDim2.fromOffset(10, 514), BackgroundTransparency = 1, ZIndex = 11 })
 	label(testRow, { Size = UDim2.fromOffset(54, 30), Position = UDim2.fromOffset(0, 2), Text = "\u{1F9EA} Lv", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 12 })
 	for i, lv in ipairs({ 1, 5, 10, 15, 20 }) do
 		button(testRow, tostring(lv), { Size = UDim2.fromOffset(34, 30), Position = UDim2.fromOffset(56 + (i - 1) * 37, 2), BackgroundColor3 = Color3.fromRGB(110, 70, 30), ZIndex = 12 }, function()
+			notice("\u{1F9EA} Setting " .. selected .. " to level " .. lv .. "...")
 			remotes:WaitForChild("OwnerSetLevel"):FireServer(selected, lv)
 		end)
 	end

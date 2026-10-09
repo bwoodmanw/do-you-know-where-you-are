@@ -334,7 +334,7 @@ paintCode()
 
 -- ---------- bars ----------
 local bars = frame(gui, { Size = UDim2.fromOffset(250, 84), Position = TOUCH and UDim2.fromOffset(10, 60) or UDim2.new(0, 10, 1, -94), BackgroundTransparency = 0.3 })
-roomName = label(bars, { Size = UDim2.new(1, -16, 0, 20), Position = UDim2.fromOffset(8, 58), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
+roomName = label(bars, { Size = UDim2.new(1, -16, 0, 32), Position = UDim2.fromOffset(8, 54), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
 do
 -- the team's items, as icons above the active boosts: a key for each locked
 -- door still shut, and the Confetti Cannons (they stay through a cage)
@@ -480,15 +480,26 @@ end
 
 -- hold-to-use prompts (pick, shove, read, free...) go faster with ladder upgrades
 local ProximityPromptService = game:GetService("ProximityPromptService")
-ProximityPromptService.PromptShown:Connect(function(prompt)
+local function fitHold(prompt)
 	local base = prompt:GetAttribute("BaseHold")
 	if base == nil then
 		base = prompt.HoldDuration
 		prompt:SetAttribute("BaseHold", base)
 	end
-	-- Tinker's Toolkit: the next pick is instant
-	local toolkit = prompt:GetAttribute("Only") == "tinker" and player:GetAttribute("ToolkitReady") == true
-	prompt.HoldDuration = toolkit and 0 or base * (player:GetAttribute("HoldMult") or 1)
+	local only = prompt:GetAttribute("Only")
+	-- Tinker's Toolkit: the next pick is instant; Muscle's Bulldozer: every shove is
+	local instant = (only == "tinker" and player:GetAttribute("ToolkitReady") == true)
+		or (only == "muscle" and player:GetAttribute("Power20") == "bulldozer")
+	prompt.HoldDuration = instant and 0 or base * (player:GetAttribute("HoldMult") or 1)
+end
+ProximityPromptService.PromptShown:Connect(fitHold)
+-- pressing Toolkit while already standing at the lock: change it straight away
+player:GetAttributeChangedSignal("ToolkitReady"):Connect(function()
+	for _, d in ipairs(workspace:GetDescendants()) do
+		if d:IsA("ProximityPrompt") and d:GetAttribute("Only") == "tinker" then
+			fitHold(d)
+		end
+	end
 end)
 -- mouse look (computers): the camera turns as the mouse moves, no button held
 local mouseLook = false
@@ -1167,10 +1178,14 @@ end)
 -- A small map in the corner, north up, the exit door at the top. Rooms appear
 -- as you walk into them; you are the arrow, teammates are dots (red = caged).
 -- N or the Map button opens and closes it.
-local MAP_W = 196
+local MAP_W = TOUCH and 240 or 300
 local PX = MAP_W / HouseMap.w
 local MAP_H = math.floor(PX * HouseMap.h + 0.5)
-local mapAt = TOUCH and UDim2.fromOffset(10, 152) or UDim2.new(0, 10, 1, -94 - MAP_H - 40)
+-- computers: the map in the bottom-left corner with the bars above it;
+-- touch screens: the bars at the top left with the map under them
+local BARS_H = 92
+local mapAt = TOUCH and UDim2.fromOffset(10, 60 + BARS_H + 6) or UDim2.new(0, 10, 1, -(MAP_H + 32) - 10)
+bars.Size = UDim2.fromOffset(MAP_W + 8, BARS_H)
 local mapBox = frame(gui, { Size = UDim2.fromOffset(MAP_W + 8, MAP_H + 32), Position = mapAt, BackgroundTransparency = 0.25 })
 corner(mapBox, 10)
 local mapArea = frame(mapBox, { Size = UDim2.fromOffset(MAP_W, MAP_H), Position = UDim2.fromOffset(4, 28), BackgroundColor3 = Color3.fromRGB(10, 6, 16), BackgroundTransparency = 0, ClipsDescendants = true })
@@ -1179,7 +1194,13 @@ local mapOpenBtn = button(gui, "\u{1F5FA} Map" .. (TOUCH and "" or " (N)"), { Si
 local function showMap(open)
 	mapBox.Visible = open
 	mapOpenBtn.Visible = not open
+	if not TOUCH then
+		-- the bars sit on top of the map, or on top of the Map button when it is closed
+		mapOpenBtn.Position = UDim2.new(0, 10, 1, -46)
+		bars.Position = open and UDim2.new(0, 10, 1, -(MAP_H + 32) - 10 - BARS_H - 6) or UDim2.new(0, 10, 1, -46 - BARS_H - 6)
+	end
 end
+showMap(mapBox.Visible)
 button(mapBox, "X", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(28, 22), Position = UDim2.new(1, -32, 0, 3), BackgroundColor3 = Color3.fromRGB(150, 60, 70) }, function()
 	showMap(false)
 end)
@@ -1224,7 +1245,11 @@ local function buildView()
 	loftView = nil
 	for _, f in ipairs(HouseMap.floors) do
 		local r = mapRect(f.x0, f.y0, f.x1, f.y1, ROOM_COLOR)
-		label(r, { Size = UDim2.new(1, -4, 0, 12), Position = UDim2.fromOffset(2, 2), Text = f.name, TextColor3 = Color3.fromRGB(230, 215, 245), ZIndex = 3 })
+		-- the room's name fills its tile (wrapped, up to 18 px) so it can be read
+		local nm = label(r, { Size = UDim2.new(1, -4, 1, -4), Position = UDim2.fromOffset(2, 2), Text = f.name, TextWrapped = true, TextYAlignment = Enum.TextYAlignment.Top, TextColor3 = Color3.fromRGB(240, 228, 250), TextStrokeTransparency = 0.4, ZIndex = 3 })
+		local cap = Instance.new("UITextSizeConstraint")
+		cap.MaxTextSize = 18
+		cap.Parent = nm
 		-- Brainy's Key Finder: a key in rooms that hide one
 		label(r, { Name = "KeyMark", Size = UDim2.fromOffset(16, 16), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.6), Text = "\u{1F511}", ZIndex = 4, Visible = string.find("," .. (RoundState:GetAttribute("KeyRooms") or "") .. ",", "," .. f.name .. ",", 1, true) ~= nil })
 		roomTiles[f.name] = { r }
@@ -1975,7 +2000,13 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 	elseif kind == "quest" and data and data.userId == player.UserId then
 		popUp("\u{1F4DC}", "Quest done! +" .. tostring(data.points or 0))
 	elseif (kind == "boost" or kind == "pop") and data and data.userId == player.UserId then
-		popUp(data.icon or "\u{2B50}", data.item or "")
+		local pic
+		for id, b in pairs(Progress.BOOSTS) do
+			if b.name == data.item then
+				pic = Config.BOOST_IMAGES and Config.BOOST_IMAGES[id]
+			end
+		end
+		popUp((pic and pic > 0) and pic or (data.icon or "\u{2B50}"), data.item or "")
 	elseif (kind == "sneak" or kind == "heal" or kind == "lure") and data and data.userId == player.UserId then
 		popUp(skillIcon(player:GetAttribute("Skill")), kind == "sneak" and "Sneaking!" or kind == "heal" and "Shields up!" or "Noise!")
 	elseif kind == "start" then

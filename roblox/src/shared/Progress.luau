@@ -341,7 +341,7 @@ local SPECIAL = {
 			{ id = "build19", name = "Master Builder", say = "Your button recharges 20% faster", mods = { cooldownMult = 0.8 } },
 		},
 		[20] = {
-			{ id = "bulldozer20", name = "Bulldozer", say = "Shove and hold everything twice as fast", mods = { holdMult = 0.5 } },
+			{ id = "bulldozer20", name = "Bulldozer", say = "Shove junk out of doorways instantly - no holding", mods = { p20 = "bulldozer" } },
 			{ id = "fortress20", name = "Fortress", say = "Your button recharges twice as fast - barricade after barricade", mods = { cooldownMult = 0.5 } },
 		},
 	},

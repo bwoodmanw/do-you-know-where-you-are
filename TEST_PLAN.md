@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,14 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 30 (8 Oct) - fixes: Toolkit, map, pop-ups, level buttons
+- [ ] Tinker: stand at a lock (or the Store Room), press Toolkit, then F: it opens at once (the prompt's ring is gone)
+- [ ] Muscle level 20 Bulldozer: shoving junk is instant
+- [ ] Opening a crate / present that gives Candy Corn: the pop-up in the middle shows the candy-corn picture (no peppermint); other boosts show their pictures
+- [ ] Computer: the map is bigger, in the bottom-left corner; above it: stamina, points, and the room you're in in big orange letters (it changes as you walk into a room); room names in the map are readable; closing the map (N) moves the bars down to the Map button
+- [ ] Phone / tablet: bars at the top left, the bigger map under them
+- [ ] Lobby -> Characters -> Lv buttons: "Setting ... to level n..." then "Test: ... is now level n" (or a message saying why not) - send a photo if not
 
 ## Round 29 (8 Oct) - test levels, American English
 - [ ] Lobby -> Characters (only you): bottom left "Lv 1 5 10 15 20"; tap one: "Test: <character> is now level n"; the ladder opens to that level; pick the level-10 / level-20 powers and try them in a game

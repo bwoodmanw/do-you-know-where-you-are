@@ -1012,8 +1012,10 @@ end
 do
 	local OwnerSetLevel = remote("OwnerSetLevel") -- (skill, level)
 	OwnerSetLevel.OnServerEvent:Connect(function(plr, skill, level)
-		if not (game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId) then
-			return
+		local owner = game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId
+		if not owner and not game:GetService("RunService"):IsStudio() then
+			warn("OwnerSetLevel refused: " .. plr.UserId .. " is not the owner (" .. tostring(game.CreatorId) .. ")")
+			return Notice:FireClient(plr, "Only the game's owner can set levels.")
 		end
 		local data = Profile.get(plr)
 		local known = false
@@ -1022,8 +1024,11 @@ do
 				known = true
 			end
 		end
-		if not data or not known or typeof(level) ~= "number" or level % 1 ~= 0 or level < 1 or level > Progress.MAX_LEVEL then
-			return
+		if not data then
+			return Notice:FireClient(plr, "Test: your profile hasn't loaded yet - try again in a moment.")
+		end
+		if not known or typeof(level) ~= "number" or level % 1 ~= 0 or level < 1 or level > Progress.MAX_LEVEL then
+			return Notice:FireClient(plr, "Test: can't set " .. tostring(skill) .. " to level " .. tostring(level) .. ".")
 		end
 		data.xp[skill] = Progress.LEVEL_XP[level]
 		Profile.publish(plr)
