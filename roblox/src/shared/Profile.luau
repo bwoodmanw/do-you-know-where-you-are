@@ -31,6 +31,7 @@ local function fresh()
 		unlocked = { partyhouse = true },
 		stats = { games = 0, escapes = 0, rescues = 0, earned = 0, corn = 0, cornSpent = 0, cornGift = 0 }, -- earned: every point ever won, spent or not; corn: candy corns found (Halloween)
 		best = {}, -- best["partyhouse_normal"] = seconds
+		plush = {}, -- the Plushie Book: plush[mapId] = true once found
 	}
 end
 

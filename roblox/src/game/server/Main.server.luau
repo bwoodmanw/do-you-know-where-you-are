@@ -25,6 +25,7 @@ local HouseMap = MapGen.make(Plans.partyhouse[1])
 local House = require(script.Parent.House)
 local Host = require(script.Parent.Host)
 local Effects = require(script.Parent.Effects)
+local Plushies = require(script.Parent.Plushies)
 local Characters = require(script.Parent.Characters)
 local Props = require(script.Parent.Props)
 
@@ -1889,6 +1890,101 @@ function round.hostFakeGift(_, pos, hostModel)
 	return true
 end
 
+-- the collectibles book: this floor's lost plushie sits on a free spot
+-- away from the starting room (behind the locks too). Each player who has
+-- not found it yet adds it to their Plushie Book by walking up to it.
+function round.placePlushie()
+	local mapId = RoundState:GetAttribute("Map") or "partyhouse"
+	local def
+	for _, p in ipairs(Config.PLUSHIES or {}) do
+		if p.map == mapId then
+			def = p
+		end
+	end
+	if not def then
+		return
+	end
+	local map = HouseMap
+	local function roomAt(x, y)
+		for _, f in ipairs(map.floors) do
+			if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
+				return f.name
+			end
+		end
+		return nil
+	end
+	local startRoom = map.start and map.start[1] and roomAt(map.start[1][1], map.start[1][2])
+	local taken = {}
+	for _, o in pairs(world.objects) do
+		if o.def and o.def.x then
+			table.insert(taken, { o.def.x, o.def.y })
+		end
+	end
+	for _, t in ipairs(state.extraTaken or {}) do
+		table.insert(taken, t)
+	end
+	for _, p in ipairs(map.pads or {}) do
+		table.insert(taken, p)
+	end
+	table.insert(taken, map.cake)
+	local pool = {}
+	for _, sl in ipairs(map.floorSlots or {}) do
+		local ok = not nearDoorway(sl[1], sl[2]) and roomAt(sl[1], sl[2]) ~= startRoom
+		for _, t in ipairs(taken) do
+			if t and math.abs(t[1] - sl[1]) <= 1 and math.abs(t[2] - sl[2]) <= 1 then
+				ok = false
+			end
+		end
+		if ok then
+			table.insert(pool, sl)
+		end
+	end
+	if #pool == 0 then
+		return
+	end
+	local sl = pool[math.random(1, #pool)]
+	table.insert(state.extraTaken, { sl[1], sl[2] })
+	local pos = House.at(sl[1], sl[2], 0)
+	local m = Plushies.build(def, CFrame.new(pos) * CFrame.Angles(0, math.random() * math.pi * 2, 0))
+	m.Parent = world.root
+	local myState, myWorld = state, world
+	local told = {}
+	task.spawn(function()
+		while state == myState and world == myWorld and state.status == "playing" and m.Parent do
+			task.wait(0.25)
+			for _, plr in ipairs(Players:GetPlayers()) do
+				local h = hrpOf(plr)
+				if h and not told[plr] and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped") and (h.Position - pos).Magnitude < 5 then
+					told[plr] = true
+					local data = Profile.get(plr)
+					if data then
+						data.plush = data.plush or {}
+						if data.plush[mapId] then
+							say("info", "\u{1F9F8} " .. def.name .. " is already in your Plushie Book.", nil, plr)
+						else
+							data.plush[mapId] = true
+							local n = 0
+							for _ in pairs(data.plush) do
+								n += 1
+							end
+							addPoints(plr, Config.PLUSHIE_POINTS, true)
+							Profile.publish(plr)
+							Effects.burst(pos + Vector3.new(0, 1.5, 0), "rescue")
+							Effects.icon(plr, Config.PLUSHIE_ICON[def.animal] or "\u{1F9F8}", 2)
+							say("info", "\u{1F9F8} " .. plr.DisplayName .. " found " .. def.name .. "! (" .. n .. " / " .. #Config.PLUSHIES .. " in their Plushie Book)")
+							if n >= #Config.PLUSHIES and (Config.BADGES.plushies or 0) > 0 then
+								task.spawn(pcall, function()
+									game:GetService("BadgeService"):AwardBadge(plr.UserId, Config.BADGES.plushies)
+								end)
+							end
+						end
+					end
+				end
+			end
+		end
+	end)
+end
+
 -- the Halloween Candy Corn Hunt: a few candy corns on random free checked
 -- spots of every floor (behind the locks too) until Config.EVENT.ends.
 -- Walk into one to pick it up: points, and the count towards the badge.
@@ -3563,6 +3659,7 @@ function round.start()
 		round.placeJackBoxes()
 	end
 	round.placeCandyCorn()
+	round.placePlushie()
 	RoundState:SetAttribute("Blackout", "")
 	RoundState:SetAttribute("DarkRooms", "")
 	RoundState:SetAttribute("KeyRooms", "")

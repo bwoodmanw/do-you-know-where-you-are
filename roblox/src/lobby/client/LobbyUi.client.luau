@@ -387,7 +387,9 @@ button(menu, "\u{2709} Invite friends", { Size = UDim2.new(0.86, 0, 0, 40), Layo
 local shopBtn = button(menu, "\u{1F6D2} Shop", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 7 })
 local charsBtn = button(menu, "\u{1F9D1}\u{200D}\u{1F91D}\u{200D}\u{1F9D1} Characters", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 8 })
 local helpBtn = button(menu, "\u{2753} How to play", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 10 })
-local questsBtn = button(menu, "\u{1F4DC} Quests", { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 9, BackgroundColor3 = Color3.fromRGB(110, 70, 150) })
+-- Quests and the Plushie Book share a row
+local questsRow = frame(menu, { Size = UDim2.new(0.86, 0, 0, 40), LayoutOrder = 9, BackgroundTransparency = 1 })
+local questsBtn = button(questsRow, "\u{1F4DC} Quests", { Size = UDim2.new(0.5, -4, 1, 0), BackgroundColor3 = Color3.fromRGB(110, 70, 150) })
 -- controller: Up jumps into the menu (or your party's buttons)
 do
 	local quick
@@ -865,6 +867,79 @@ local function readProfile()
 	end
 end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
+do
+	-- the Plushie Book: a page for every floor's lost plushie - found ones
+	-- show their animal and name, missing ones say which floor hides them
+	local book = frame(gui, { Size = UDim2.fromOffset(820, 540), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Visible = false, ZIndex = 20 })
+	corner(book, 18)
+	local fit = Instance.new("UIScale")
+	fit.Parent = book
+	local function refit()
+		local cam = workspace.CurrentCamera
+		local vp = cam and cam.ViewportSize or Vector2.new(1280, 720)
+		fit.Scale = math.min(1, (vp.X - 20) / 820, (vp.Y - 20) / 540)
+	end
+	refit()
+	if workspace.CurrentCamera then
+		workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(refit)
+	end
+	local title = label(book, { Size = UDim2.new(1, -40, 0, 40), Position = UDim2.fromOffset(20, 12), Text = "\u{1F9F8} Plushie Book", TextColor3 = PUMP, ZIndex = 21 })
+	local sub = label(book, { Size = UDim2.new(1, -40, 0, 22), Position = UDim2.fromOffset(20, 54), Text = "", ZIndex = 21 })
+	local grid = Instance.new("ScrollingFrame")
+	grid.Size = UDim2.new(1, -40, 1, -150)
+	grid.Position = UDim2.fromOffset(20, 84)
+	grid.BackgroundTransparency = 1
+	grid.BorderSizePixel = 0
+	grid.ScrollBarThickness = 8
+	grid.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	grid.CanvasSize = UDim2.new()
+	grid.ZIndex = 21
+	grid.Parent = book
+	local layout = Instance.new("UIGridLayout")
+	layout.CellSize = UDim2.fromOffset(150, 120)
+	layout.CellPadding = UDim2.fromOffset(8, 8)
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Parent = grid
+	local floorName = {}
+	for _, m in ipairs(Progress.MAPS) do
+		floorName[m.id] = m.name
+	end
+	local function paint()
+		for _, c in ipairs(grid:GetChildren()) do
+			if c:IsA("GuiObject") then
+				c:Destroy()
+			end
+		end
+		local found = 0
+		local have = profile.plush or {}
+		for i, p in ipairs(Config.PLUSHIES) do
+			local got = have[p.map] == true
+			if got then
+				found += 1
+			end
+			local card = frame(grid, { LayoutOrder = i, BackgroundColor3 = got and Color3.fromRGB(70, 50, 100) or Color3.fromRGB(40, 30, 55), ZIndex = 22 })
+			corner(card, 12)
+			label(card, { Size = UDim2.new(1, 0, 0, 52), Position = UDim2.fromOffset(0, 6), Text = got and (Config.PLUSHIE_ICON[p.animal] or "\u{1F9F8}") or "\u{2753}", ZIndex = 23 })
+			label(card, { Size = UDim2.new(1, -10, 0, 34), Position = UDim2.fromOffset(5, 58), Text = got and p.name or "Lost somewhere in", TextWrapped = true, TextColor3 = got and CREAM or Color3.fromRGB(180, 170, 195), ZIndex = 23 })
+			label(card, { Size = UDim2.new(1, -10, 0, 20), Position = UDim2.fromOffset(5, 94), Text = floorName[p.map] or p.map, TextColor3 = got and Color3.fromRGB(255, 210, 63) or Color3.fromRGB(150, 140, 170), ZIndex = 23 })
+		end
+		sub.Text = found .. " of " .. #Config.PLUSHIES .. " found" .. (found == #Config.PLUSHIES and " - you found them all!" or " - one is hidden on every floor. Look closely for a little sparkle!")
+	end
+	local _ = title
+	button(book, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -56), ZIndex = 22 }, function()
+		book.Visible = false
+	end)
+	local bookBtn = button(questsRow, "\u{1F9F8} Plushies", { Size = UDim2.new(0.5, -4, 1, 0), Position = UDim2.new(0.5, 4, 0, 0), BackgroundColor3 = Color3.fromRGB(150, 80, 120) })
+	bookBtn.Activated:Connect(function()
+		paint()
+		book.Visible = not book.Visible
+	end)
+	player:GetAttributeChangedSignal("ProfileJson"):Connect(function()
+		if book.Visible then
+			task.defer(paint)
+		end
+	end)
+end
 do
 	-- the Halloween Candy Corn Hunt: a banner at the bottom that opens the
 	-- Candy Shop (laid out like the Boost Shop: boosts and the event skin for

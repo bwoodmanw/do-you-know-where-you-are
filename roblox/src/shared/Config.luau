@@ -150,7 +150,35 @@ Config.BADGES = {
 	rescuer = 4200883843590712, -- Hero of the Crew: freed 10 friends from the cage
 	untouched = 1991556459225776, -- Untouchable: escaped without being caught
 	nightmare = 1282994468042939, -- Nightmare Escaper: escaped on Nightmare
+	plushies = 0, -- Plushie Collector: found every lost plushie (make it in Creator Hub, put its id here)
 }
+
+-- the collectibles book: one lost plushie hidden on every floor (by map id).
+-- Each player finds their own; found ones fill the Lobby's Plushie Book.
+Config.PLUSHIE_POINTS = 25
+Config.PLUSHIES = {
+	{ map = "partyhouse", name = "Sprinkles the Party Bunny", animal = "bunny", color = Color3.fromRGB(255, 160, 200) },
+	{ map = "partyhouse_2", name = "Snooze the Pajama Bear", animal = "bear", color = Color3.fromRGB(140, 190, 240) },
+	{ map = "partyhouse_3", name = "Dusty the Attic Mouse", animal = "mouse", color = Color3.fromRGB(170, 165, 175) },
+	{ map = "partyhouse_b", name = "Glimmer the Basement Owl", animal = "owl", color = Color3.fromRGB(150, 110, 200) },
+	{ map = "gummy", name = "Bouncy the Gummy Bear", animal = "bear", color = Color3.fromRGB(240, 80, 90) },
+	{ map = "gummy_2", name = "Fudge the Candy Pig", animal = "pig", color = Color3.fromRGB(250, 170, 190) },
+	{ map = "gummy_3", name = "Wobble the Jelly Frog", animal = "frog", color = Color3.fromRGB(150, 220, 70) },
+	{ map = "hospital", name = "Sunny the Get-Well Bear", animal = "bear", color = Color3.fromRGB(255, 220, 100) },
+	{ map = "hospital_2", name = "Nibbles the Nurse Bunny", animal = "bunny", color = Color3.fromRGB(170, 230, 210) },
+	{ map = "hospital_3", name = "Beaker the Lab Mouse", animal = "mouse", color = Color3.fromRGB(245, 245, 245) },
+	{ map = "school", name = "Scribbles the Class Cat", animal = "cat", color = Color3.fromRGB(245, 160, 70) },
+	{ map = "school_2", name = "Professor Hoot", animal = "owl", color = Color3.fromRGB(160, 115, 75) },
+	{ map = "school_3", name = "Tick-Tock the Clock Cat", animal = "cat", color = Color3.fromRGB(70, 65, 80) },
+	{ map = "carnival", name = "Ringo the Ring-Toss Pup", animal = "dog", color = Color3.fromRGB(215, 175, 120) },
+	{ map = "carnival_2", name = "Juggles the Circus Penguin", animal = "penguin", color = Color3.fromRGB(50, 55, 75) },
+	{ map = "carnival_3", name = "Giggles the Funhouse Duck", animal = "duck", color = Color3.fromRGB(255, 215, 60) },
+	{ map = "aquarium", name = "Bubbles the Octopus", animal = "octopus", color = Color3.fromRGB(190, 120, 230) },
+	{ map = "aquarium_2", name = "Inky the Deep Sea Octopus", animal = "octopus", color = Color3.fromRGB(60, 110, 200) },
+	{ map = "aquarium_3", name = "Splash the Pool Penguin", animal = "penguin", color = Color3.fromRGB(40, 90, 130) },
+}
+Config.PLUSHIE_ICON = { bear = "\u{1F9F8}", bunny = "\u{1F430}", mouse = "\u{1F42D}", owl = "\u{1F989}", pig = "\u{1F437}", frog = "\u{1F438}",
+	cat = "\u{1F431}", dog = "\u{1F436}", penguin = "\u{1F427}", duck = "\u{1F986}", octopus = "\u{1F419}" }
 
 Config.SKILLS = {
 	{ id = "tinker", name = "Tinker", icon = "\u{1F527}", say = "Picks locks", color = Color3.fromRGB(242, 140, 40) },

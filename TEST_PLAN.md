@@ -17,6 +17,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 38 (9 Oct) - the Plushie Book (collectibles)
+- [ ] Every floor: one small fabric plushie sits on the floor somewhere outside the starting room (a faint sparkle); a different animal per floor (Config.PLUSHIES)
+- [ ] Walk up to it: a pop of sparkles, its animal over your head, "+25", and for everyone "<you> found Sprinkles the Party Bunny! (1 / 19 ...)"; a second visit says "already in your Plushie Book"; a friend can still find it after you
+- [ ] Lobby: the Quests button is half width, with "🧸 Plushies" beside it; the book shows 19 cards - found ones with the animal and name, the rest "❓ Lost somewhere in <floor>"; "n of 19 found"; Close (photo; also on a phone)
+- [ ] Live, once its id is in: finding all 19 gives the Plushie Collector badge
+
 ## Round 37 (9 Oct) - effects, level bonuses, animation packs, American room names, gummy bears
 Effects (everyone sees them):
 - [ ] Shadow's Sneak: purple smoke trails him while it lasts
