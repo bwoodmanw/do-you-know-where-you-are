@@ -29,14 +29,44 @@ def clear_background(im):
     return im
 
 
+def drop_specks(im, keep=0.01):
+    """Make loose bits smaller than `keep` of the drawing transparent."""
+    w, h = im.size
+    px = im.load()
+    seen = bytearray(w * h)
+    blobs = []
+    for y in range(h):
+        for x in range(w):
+            if px[x, y][3] > 30 and not seen[y * w + x]:
+                stack, blob = [(x, y)], []
+                seen[y * w + x] = 1
+                while stack:
+                    cx, cy = stack.pop()
+                    blob.append((cx, cy))
+                    for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                        if 0 <= nx < w and 0 <= ny < h and not seen[ny * w + nx] and px[nx, ny][3] > 30:
+                            seen[ny * w + nx] = 1
+                            stack.append((nx, ny))
+                blobs.append(blob)
+    total = sum(len(b) for b in blobs)
+    for b in blobs:
+        if len(b) < total * keep:
+            for x, y in b:
+                r, g, bl, _ = px[x, y]
+                px[x, y] = (r, g, bl, 0)
+    return im
+
+
 def cut(sheet_path):
     sheet = Image.open(sheet_path).convert("RGBA")
     w, h = sheet.size
     out_dir = os.path.dirname(sheet_path) or "."
     for i, name in enumerate(NAMES):
         c, r = i % COLS, i // COLS
-        cell = sheet.crop((c * w // COLS, r * h // ROWS, (c + 1) * w // COLS, (r + 1) * h // ROWS))
-        cell = clear_background(cell)
+        # a little in from the cell's edges, so bits of a neighbor stay out
+        mx, my = w // COLS // 40, h // ROWS // 40
+        cell = sheet.crop((c * w // COLS + mx, r * h // ROWS + my, (c + 1) * w // COLS - mx, (r + 1) * h // ROWS - my))
+        cell = drop_specks(clear_background(cell))
         box = cell.getbbox()
         if box:
             cell = cell.crop(box)
