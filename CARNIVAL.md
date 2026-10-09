@@ -45,10 +45,10 @@ Style line for every prompt (the other cards' look):
 
 | Picture (I make it from the card picture) | Name | Description | Config |
 |---|---|---|---|
-| `badge-basement.png` (made, cropped to the stairs: no bottles) | **Down in the Dark** | Escaped the Party House's Secret Basement. | `BADGES.basement` |
+| `badge-basement.png` (made, cropped to the stairs: no bottles) | **Down in the Dark** | Escaped the Party House's Secret Basement. | `BADGES.basement` = 3470854860514085 |
 | `badge-tower.png` (made) | **Tower Climber** | Reached the top of a building in one Tower Run. | `BADGES.tower` = 2702531171107423 |
-| `badge-carnival.png` (made, from the Funhouse card) | **Star of the Show** | Escaped the Carnival's Funhouse. | `BADGES.carnival` |
-| `badge-aquarium.png` (when the Aquarium is built) | **Making a Splash** | Escaped the Aquarium's Rooftop Pools. | `BADGES.aquarium` |
+| `badge-carnival.png` (made, from the Funhouse card; uploaded) | **Star of the Show** | Escaped the Carnival's Funhouse. | `BADGES.carnival` = 1457721020150782 |
+| `badge-aquarium.png` (when the Aquarium is built) | **Making a Splash** | Escaped the Aquarium's Rooftop Pools. | `BADGES.aquarium` = 2071235778459400 |
 
 The code already awards all four once their ids are in (the Basement used
 to give the Party House's Attic badge by mistake - fixed).

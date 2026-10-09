@@ -1,19 +1,19 @@
 # Escape Crew - session handoff
 
-Last updated: 8 Oct 2026, end of the fourth session (very long: everything
-in IMPROVEMENTS.md except B8 analytics, then play-test fixes, Brainy's new
-ladder, weekly quests, the secret Basement, Tower Run, building 4 (the
-Midnight School), 8 character skins on sale as Game Passes). Latest commits
-on `main`; the **live game still runs Brent's last publish** - nothing
-since then is live until both places are published.
+Last updated: 9 Oct 2026, end of the fifth session (very long: School map
+cards and its host, buildings 5 and 6, three new hosts, the Halloween
+event, skills version 2 with levels to 20, many play-test fixes). Latest
+commits on `main`. **Both places were published 8 Oct (late) with
+everything up to commit 38a5814**; later commits (the room name in the top
+bar, the last four badge ids) need one more publish of both places.
 
 ## What it is
 
 **Escape Crew** is a co-operative horror-escape game on **Roblox** for ages 8+.
 A party of 1-6 kids picks characters with skills and escapes one floor of a
 haunted building before a host catches them. Each escape unlocks the next
-floor. Design: `GAME_DESIGN.md` (sections 0 and 0b); the agreed build plan
-and what is done: `ROADMAP.md`; floor-plan rules: `MAP_PLAN.md`.
+floor. Design: `GAME_DESIGN.md` (sections 0 and 0b); the build plan and what
+is done: `ROADMAP.md`; floor-plan rules: `MAP_PLAN.md`.
 
 - **Experience:** "Escape Crew", owner **Bwoodmanw**, universe 10769485212.
   - **Escape Crew** = the start place = the **Lobby** (place 115501124890066).
@@ -21,41 +21,61 @@ and what is done: `ROADMAP.md`; floor-plan rules: `MAP_PLAN.md`.
   - **Party House** = the game place (place 110069561824739). The name must
     stay exactly `Party House`.
 - **Access:** Public, "Ages 16+ and trusted friends" while Roblox's review
-  runs (opens after about 250 highly engaged players in 60 days). Do **not**
-  pay the 50,000 Robux expedited review. **Console** (Xbox / PlayStation)
-  ticked 8 Oct (File -> Experience Settings -> Basic Info -> Playable Devices).
+  runs. Do **not** pay the 50,000 Robux expedited review. Console ticked.
+  **Private servers on (100 Robux - changing the price cancels
+  subscriptions); automatic translation on; notifications set up** (8 Oct).
 - **Repo:** https://github.com/bwoodmanw/do-you-know-where-you-are (public:
   no recognisable film/cartoon/game characters or brand logos, even in AI art).
+- **American English** in everything players read (color, gray, closet...).
 - **Parked:** the web version (`src/`, `public/`, Cloudflare Worker),
   Experience Subscriptions, B8 analytics.
 
 ## The game today
 
-- **4 buildings, 12 floors + a secret one.** Party House (Ground, Bedrooms,
-  Attic, + the **Secret Basement**, floor 0, unlocked by the Attic), Gummy
-  Bounce House (Bounce Hall, Candy Factory, Jelly Vault), Abandoned Hospital
-  (Ground, Wards, Labs), **Midnight School** (Ground Floor, Classrooms, Clock
-  Tower; unlocked by Hospital: Wards). Escaping floor 2 of a building opens
-  the next building. Each floor has 2 plans (a mirror); each passes 2,000
-  random fills in `tools/make_housemap.py`.
-- **Tower Run:** the leader switches it on in the Lobby map screen (once
-  they have reached the building's top floor): one game climbs floors 1-3,
-  one clock (2.5 x), the same host, points carried, +25% at the top.
-- **8 characters** with skills and a 10-level ladder (`Progress.luau`);
-  Brainy's ladder rebuilt 8 Oct (`BRAINY_LADDER.md`). Code-colour upgrades:
-  one colour a game, none on Nightmare.
-- **3 hosts** (Pumpkin, Gummy Bear Man, Robot), random each floor.
-- **Rooms that do things:** signs, sounds, effects, light switches, noisy
-  TVs / drums / bell, conveyor belts, chocolate river (wading is slow,
-  footbridges), laundry chute (Bedrooms, Hospital Ground, Wards, Basement),
-  the Jelly Vault's vault door with treasure, moonlit windows.
-- **Engagement:** daily login reward, daily quests (3) and weekly quests (3,
-  with a boost), friends bonus (+10%), badges, favourites prompt, Quick
-  Play, rejoin after a drop (while friends are still in the game), clue log
-  (every clue this game), controller / Xbox support.
+- **6 buildings, 18 floors + a secret one** (each unlocked by escaping floor
+  2 of the one before): Party House (Ground, Bedrooms, Attic, + the Secret
+  Basement), Gummy Bounce House, Abandoned Hospital, Midnight School
+  (`SCHOOL.md`), **Creepy Carnival** (Midway, Big Top, Funhouse;
+  `CARNIVAL.md`), **Sunken Aquarium** (Main Hall, Deep Sea, Rooftop Pools;
+  `AQUARIUM.md`). Each floor has 2 plans (a mirror), each checked with
+  2,000 random fills (39 plans). The Aquarium is built on the Carnival's
+  room grids with its own rooms and look.
+- **6 hosts**, each a building's own (half the time) and visiting the
+  others: Pumpkin (throw), Gummy Bear Man (sticky puddles), Robot
+  (blackout), **the Caretaker** (School; Lock-up: padlocks a doorway ahead
+  of a kid, Tinker picks it), **the Clown Bear** (Carnival;
+  Jack-in-the-Box: boxes on random spots spring when a kid comes near),
+  **the Anglerfish Keeper** (Aquarium; Fake Treasure: fake presents,
+  Brainy / Glow pop them; the game adds his glowing lure).
+- **Set pieces:** carousel and spinning floor (carry you round), mirror
+  maze, human cannon / twisty slide / water pipe (the chute, one per
+  floor), bounce pads, glass Shark Tunnel, great tank with a shark, dark
+  Deep Sea rooms, wading water and chocolate, whirlpool.
+- **8 characters, skills version 2** (`SKILLS_V2.md`): every character has
+  a button (R on a computer): Tinker Toolkit, Shadow Sneak, Brainy Think!,
+  Muscle Barricade / Ground Pound, Glow Flare (lifts friends near her),
+  Patch Shield, Echo Noise (+ her own burst), Bramble Vines. **Levels 1-20**
+  (XP to 78,500); big powers at 10 and 20; guard rails on stuns
+  (`Config.SKILL_STUN`). Each button counts down while it works, then its
+  recharge (Shadow's recharge starts after the sneak).
+  `tools/check_ladder.luau` and `tools/check_ladder_repeats.luau` check the
+  ladders (no repeated picks).
+- **Halloween:** Candy Corn Hunt (6 corns a floor until 1 Nov, badge at 50
+  found), **Candy Shop** in the Lobby (boosts for corns, open until 8 Nov),
+  **Muscle Mummy** skin bought for 100 corns on hand.
+- **Screens:** bigger map (bottom left) with icons (locks, junk, cage,
+  exit), stamina / points / building above it, the room you're in at the
+  top left; countdown effects at 1:00 / 0:30 / 0:10; FRENZY at 0:00 (all
+  building lights red, "TIME'S UP"); quick chat with pins (T); Invisicam
+  camera that stops at walls.
+- **Engagement:** daily reward (boost pictures), daily + weekly quests,
+  friends bonus, 14 badges (all ids in), favorites prompt, Quick Play,
+  rejoin, clue log, controller support, notifications.
 - **Money:** boosts and Skill Reset (Developer Products), 8 skins (Game
-  Passes, 99 Robux, `PASSES.md`); the owner wears every skin free. DevEx
-  notes in `PASSES.md`.
+  Passes, 99 Robux), private servers. The owner wears every skin free.
+- **Owner-only test tools** (live: only Bwoodmanw): Lobby -> Characters ->
+  🧪 Lv 1/5/10/15/20 (sets a character's XP - set it back after testing),
+  🎁 Gift (corns / points to players in the Lobby).
 
 ## Where things are
 
@@ -64,155 +84,116 @@ roblox/
   game.project.json   -> Party House (Rojo port 34872, servePlaceIds locked)
   lobby.project.json  -> Escape Crew / Lobby (Rojo port 34873, locked)
   src/shared/
-    Config.luau       every number and id (hosts, skills, products, CHARACTER_ASSETS,
-                      SKINS + pass ids, MAP_IMAGES, QUESTS / WEEKLY_QUESTS, TOWER,
-                      WADE, CHUTE, VAULT, NOTIFY, BADGES, STUDIO_MAP / STUDIO_HOST /
-                      STUDIO_TOWER - what Studio Play builds)
+    Config.luau       every number and id (HOSTS / HOST_SKILLS, BUILDING_HOST,
+                      COOLDOWN, GLOW_FLARE, ECHO_BURST, VINES, CLONE, SKILL_STUN,
+                      CHARACTER_ASSETS, SKINS, MAP_IMAGES, BADGES, EVENT (hunt +
+                      shop + gifts), MUSIC, NOTIFY, STUDIO_MAP / STUDIO_HOST)
     HouseMap.luau     GENERATED by tools/make_housemap.py - never edit by hand
-    MapGen.luau       each game: picks a plan, scatters balloons, presents,
-                      search spots, hides, posters
-    Progress.luau     MAPS (building, floor, ready, secret, unlockAfter),
-                      BUILDINGS, unlocks, boosts, levels, the skill ladder
-    Profile.luau      saved profile (save lock), leaderboards
-    Quests.luau       daily + weekly quests
-    Gamepad.luau      controller support for both screens
-    ModelBounds.luau  the 3D views fit the camera to the visible parts
-    PreviewPose.luau  T-posed models play the idle animation in the 3D views
-    CharacterAssets.luau, MusicPlayer.luau, Sfx.luau, Places.luau, BalanceLog.luau
+    MapGen.luau       each game: picks a plan, scatters objects (floorSlots too)
+    Progress.luau     MAPS, BUILDINGS, boosts, LEVEL_XP (20), the skill ladders
+    Profile.luau      saved profile (stats.corn / cornSpent / cornGift,
+                      skinsEarned), leaderboards
+    Quests, Gamepad, ModelBounds, PreviewPose, CharacterAssets, MusicPlayer, ...
   src/game/server/
-    Main.server.luau  the referee: rounds, prompts, skills, clues (clueSteps,
-                      Mastermind route), quests, friends bonus, rejoin, Tower
-                      Run, skins (modelFor), chute / vault rewards, results
-    House.luau        builds the floor (themes party / gummy / hospital /
-                      school; chocolate river; school furniture)
-    Rooms.luau        dresses every room by name (LOOKS, PIECES), vault door,
-                      laundry chute, windows, doorway signs, sounds, effects
-    Host.luau         host AI (wades slowly, walks round chocolate)
-    Characters.luau, Effects.luau, Props.luau
-  src/game/client/Hud.client.luau  every game screen (top level ~132 locals:
-                      wrap new code in do ... end)
-  src/lobby/server/Lobby.server.luau  parties, map screen, Tower Run switch,
-                      shop, skins (EquipSkin, OwnedSkins), daily reward,
-                      quests, rejoin offer, reminders (notifications), boards
-  src/lobby/server/LobbyScene.luau, src/lobby/client/LobbyUi.client.luau
-tools/make_housemap.py    floor plans + 2,000-game check per plan (takes minutes:
-                          run it in the background)
-tools/check_rooms.luau    vault / chute / window placement on every plan
-tools/count_locals.py     top-level locals of a script (Studio stops at 200)
-tools/make_pass_icons.py  the 512 x 512 Game Pass pictures from the skin art
-tools/repaint_shoes.py    paints marks off a model's shoes (Muscle)
-tools/preview_glb.py, face_render.py, face_boost.py   look at / sharpen Meshy models
-tools/studio-plugins/SoftenPatch.lua  Studio plugin (installed in
-                          %LOCALAPPDATA%\Roblox\Plugins as EscapeCrew-SoftenPatch.lua):
-                          Plugins -> Escape Crew -> Soften Patch / Fix Muscle Shoes
-art/roblox-store/         icon, badges/, maps/ (card pictures), passes/ (pass pictures)
-art/model-input/<name>/a-pose-front.png   the pictures each model was made from
-art/models/               Meshy downloads (.glb)
+    Main.server.luau  the referee: rounds, skills (skillV2 / skillAfter,
+                      skillStun), host powers (Lock-up, Jack-in-the-Box, Fake
+                      Treasure), candy corns, Frenzy, votes, rejoin, badges
+    House.luau        builds the floor (themes party/gummy/hospital/school/
+                      carnival/aquarium; carousel/spinner/whirlpool spin())
+    Rooms.luau        dresses rooms by name (LOOKS, PIECES), chutes, windows
+    Host.luau         host AI (vines, wading, stuck hop that never crosses doors)
+  src/game/client/Hud.client.luau  game screens (top level ~138 locals: wrap
+                      new code in do ... end); camera keeper at the end
+  src/lobby/server/Lobby.server.luau  parties, Quick Play, shops (points, Candy
+                      Shop), skins, owner tools, daily reward, notifications
+  src/lobby/client/LobbyUi.client.luau
+tools/  make_housemap.py (plans; run in the background), check_rooms.luau,
+        check_ladder.luau, check_ladder_repeats.luau, count_locals.py,
+        make_badge.py, make_corn_badge.py, make_pass_icons.py, preview_glb.py,
+        face_render.py, face_boost.py
+art/roblox-store/  badges/, maps/, passes/, portraits/
+art/model-input/<name>/a-pose-front.png   art/models/  (Meshy .glb)
 ```
 
-Docs: `SKINS.md` (skins: art, models, ids, fixes), `PASSES.md` (Game
-Passes, pricing, DevEx), `SCHOOL.md` (building 4, the Caretaker host),
-`CARNIVAL.md` (building 5, the Clown Bear, the Aquarium's Anglerfish), `BRAINY_LADDER.md`,
-`NOTIFICATIONS.md`, `MESHY_GUIDE.md`, `FURNITURE.md`, `TEST_PLAN.md`
-(rounds 12-16 at the top are untested), `IMPROVEMENTS.md`, `ROADMAP.md`.
+Docs: `SKILLS_V2.md`, `CARNIVAL.md`, `AQUARIUM.md`, `SCHOOL.md`, `SKINS.md`,
+`PASSES.md`, `NOTIFICATIONS.md`, `MESHY_GUIDE.md`, `TEST_PLAN.md` (rounds
+12-35, newest first, none fully play-tested yet), `ROADMAP.md`,
+`NEXT_SESSION_PROMPT.md`.
 
 ## What Brent has in Roblox (not in the repo)
 
-- **Party House ServerStorage/Characters:** the 8 characters and 3 hosts
-  (Meshy -> Import 3D -> Avatar Setup), plus some skins. Saved-to-Roblox ids
-  in `Config.CHARACTER_ASSETS` (8 Oct: Muscle 95343724720766 with clean
-  shoes, Echo 102616480883822 with the remade face; skins TinkerPumpkin,
-  ShadowGhost, GlowCandy, BrainySpace, MuscleSnow, EchoStar 78905373095211,
-  BrambleAutumn, PatchHalloween). **The Party House uses its own
-  ServerStorage copy first, the saved copy only if there is none; the Lobby
-  always loads the saved copy.** (Space Cadet Brainy's Party House copy was
-  broken - moved out 8 Oct, the saved copy works.)
-- **ServerStorage/Props** furniture; **Lobby ServerStorage/LobbyProps/House**.
-- Developer Products (`Config.ROBUX_PRODUCTS`), 8 skin Game Passes
-  (`Config.SKINS`), badges (`Config.BADGES`), uploaded images (boosts, map
-  cards, portraits, pass pictures), songs.
+- **Party House ServerStorage/Characters:** characters, skins and hosts
+  (Host, HostGummy, HostRobot, HostCaretaker, HostClownBear,
+  HostAnglerfish). Saved ids in `Config.CHARACTER_ASSETS` (new 8 Oct:
+  ShadowGhost and Echo remade in A-pose, MuscleMummy, the three hosts).
+  The Party House uses its own ServerStorage copy first; the Lobby always
+  loads the saved copy. Old `EchoOld` / `ShadowGhostOld` copies can go.
+- ServerStorage/Props (the Generator's bad Sound deleted 8 Oct),
+  Lobby ServerStorage/LobbyProps/House.
+- Developer Products, 8 skin Game Passes, 14 badges, uploaded images (boosts,
+  map cards for all 6 buildings + the Basement, portraits, pass pictures,
+  the Muscle Mummy icon), songs (2 added 8 Oct), notification string,
+  Open Cloud key + Secret `notifications`.
 - **Never publish a .rbxlx over a live place** - it wipes all of the above.
   Code goes in with Rojo; publish from Studio (File -> Publish to Roblox).
 
 ## Verified
 
 - Every change: `luau-compile --null -g2`, `luau-analyze` (no new
-  warnings), both places build; floor plans with `make_housemap.py` (2,000
-  fills each, 27 plans) and `tools/check_rooms.luau`.
-- Ids checked on Roblox's public API: every model id and all 8 Game Passes
-  (99 Robux, for sale, Bwoodmanw).
-- Brent's Studio tests this session: Muscle's clean shoes (plugin) worked;
-  the idle pose brings Shadow's T-posed arms down; Space Cadet Brainy works
-  from the saved copy; skins are selectable in the Lobby (free in Studio);
-  the Soften Patch plugin worked on Patch. **The controller, quests, the
-  Basement, Tower Run and the School are not yet play-tested** (TEST_PLAN
-  rounds 12-16).
-- Nothing since Brent's last publish is live.
+  warnings), both places build; plans: 39 x 2,000 fills and
+  `check_rooms.luau`; ladders: `check_ladder.luau` (two choices at every
+  level, inside the caps) and `check_ladder_repeats.luau` (no repeats).
+- Every id on Roblox's public API (models, images, badges, songs).
+- Brent's Studio / live tests this session: the notifications prompt shows;
+  shops, skins, map cards; fixes made after his reports (Toolkit, map,
+  camera twice, vote, peppermint icons, swings, host through junk).
+  **Not yet play-tested:** most of TEST_PLAN rounds 12-35, especially the
+  new hosts' powers, skills version 2, Frenzy and the countdown.
 
 ## Open items and decisions waiting on Brent
 
-1. **Published both places again 8 Oct (late)**: everything up to commit
-   38a5814 is live (TEST_PLAN rounds 12-35 to check live). The owner-only
-   test tools (Lobby: 🧪 Lv buttons in Characters, 🎁 Gift) show only for
-   Bwoodmanw live (and for anyone in Studio for Lv). Before that: **Publish both places** (Rojo connected -> File -> Publish to Roblox, the
-   Party House window then the Lobby window) - **before 29 Oct**. Then check
-   live: Space Cadet Brainy, skins on sale, the School unlocking.
-2. **Skins:** Brent closed the Starlight Echo and Halloween Nurse Patch
-   fixes (8 Oct). **Mummy Muscle** (event skin, bought for 100 candy corns on hand in the Candy Shop; picture checked): Meshy ->
-   Meshy -> MuscleMummy -> id (SKINS.md prompt 10); then Claude sets
-   `hidden = false`. Candy Shop in the Lobby until 8 Nov. Private servers
-   (100 Robux) and automatic translation on (8 Oct).
-3. **Midnight School:** 4 map-card pictures (prompts in `SCHOOL.md`) and
-   their ids; a "Top of the Class" badge (id into `Config.BADGES.school`);
-   decide on a school host (ghostly caretaker - after Halloween).
-4. **Notifications:** message id in (8 Oct); NOTIFICATIONS.md steps 2-4
-   (API key, Secret, HTTP requests) must be done for it to send.
-5. **Badges:** Hero of the Crew, Untouchable, Nightmare Escaper still to make
-   (art in `art/roblox-store/badges/`; ids into `Config.BADGES`).
-6. **Seasonal icon:** from 1 Nov upload the normal `icon-512.png` again
-   (Creator Hub -> Icon).
-7. **Play test** TEST_PLAN rounds 12-16 (controller, quests, Basement, Tower
-   Run, School, clue log, rejoin with two players live).
-8. **Host balance:** after a week live, read the 📊 Balance table and tune
-   toward 70 / 50 / 35 / 20% wins on Easy / Normal / Hard / Nightmare.
-9. **Building 5, the Creepy Carnival** - built 8 Oct (CARNIVAL.md, test
-   round 18): 4 card pictures + the Basement's to make; the Clown Bear's
-   power to pick (Jack-in-the-Box recommended) and his model
-   (HostClownBear). Badge ids still to come: Down in the Dark, Tower
-   Climber, Star of the Show (Making a Splash with the Aquarium).
-   **Building 6, the Sunken Aquarium** built 8 Oct (AQUARIUM.md, round 22):
-   4 card pictures and the Making a Splash badge to make. **Halloween Candy
-   Corn Hunt** until 1 Nov (round 23): badge "Candy Corn Collector" to make
-   (`art/roblox-store/badges/badge-corn.png`, id into `Config.BADGES.corn`).
-   The Caretaker (School host, Lock-up) is in: model 97512217825851.
-10. F9 "asset 11490522280 refused": a Sound inside ServerStorage.Props.Generator
-    (MovingCylinder) - Brent deletes it (8 Oct); props' own sounds are now
-    stripped when copied into rooms.
+1. **Publish both places once more** (the top-bar room name and the last 4
+   badge ids came after the 8 Oct publish).
+2. **Play-test live** TEST_PLAN rounds 12-35 (photos + F9 Client/Server).
+   Two-player checks: Back to lobby (only you leave), Glow's Flare / Beacon,
+   quick-chat pins, rejoin. Does the daily-reward notification arrive?
+3. **Seasonal:** from 1 Nov upload the normal `icon-512.png` again (Creator
+   Hub -> Icon). The hunt and the Candy Shop end by themselves (1 Nov /
+   8 Nov).
+4. **Host balance:** after a week live, read the 📊 Balance table and tune
+   toward 70 / 50 / 35 / 20% wins on Easy / Normal / Hard / Nightmare (Glow's
+   Beacon is the strongest new power to watch).
+5. **Decisions still open:** Lantern (Glow level 17: keep Warm Glow -
+   recommended); the Aquarium's room grids (keep - recommended).
+6. **Next builds (Brent's ideas):** Thanksgiving and Christmas events (a
+   secret seasonal floor; a community-wide goal); the collectibles book;
+   the community group bonus; translation fixes after a week of data.
 
 ## Lessons (keep)
 
-- Don't rename the start place. Teleports, invites and Game Pass purchases
-  only work live.
-- Rojo: Lobby = 34873, Party House = 34872; locked to their place ids (F9
-  says "WRONG PLACE" otherwise). Rojo started from Claude's shell dies after
-  a few hours (exit code 4): restart it and reconnect the Studio plugin.
-- Studio loads plugins when a window opens: after installing or updating
-  the plugin, close and reopen that Studio window.
+- Don't rename the start place. Teleports, invites, Game Pass purchases and
+  private servers only work live.
+- Rojo: Lobby = 34873, Party House = 34872; locked to their place ids.
+  Rojo started from Claude's shell dies after a few hours (exit code 4):
+  restart it and reconnect the Studio plugin.
 - **Patch scripts:** write them with the Write tool (a bash heredoc eats
-  `\u{...}` and `\\`), assert every anchor (tabs count - most "anchor not
-  found" failures were two tabs vs three), `.tmp` + `os.replace`, so a
-  failed anchor writes nothing.
-- Studio compiles at debug level 2: `luau-compile --null -g2` (Hud once hit
-  the 200-locals limit and every button vanished). `tools/count_locals.py`.
-- **Imported (skinned) characters:** never move their parts by hand to
-  re-pose them (it squashed the arms); play an animation instead
-  (`PreviewPose.luau`). In Avatar Setup avoid "Platform Avatar". Meshy faces
-  get squashed by big goggles / hats on the forehead: keep them small and
-  high in the picture. T-pose only for loose clothes that hang from the arms.
-- Owning a game does not mean owning its Game Passes (the owner rule
-  `Config.SKINS_FREE_FOR_OWNER`).
-- Look at every picture and model before using it (AI art: logos, known
-  characters - a red-and-gold striped scarf, a swoosh on trainers).
-- FredokaOne lacks some symbols: use "X" in GothamBlack, words for
-  controller hints ("Up", "RB").
-- Other players only see a character run if the server makes its Animator.
+  `\u{...}` and regex backslashes), assert every anchor, `.tmp` +
+  `os.replace`, normalize paths (one file listed twice broke a patch).
+  Player text is American now - anchors must say "color", not "colour".
+- A local used inside a function must be declared above it (twice a new
+  block went above `clueSteps` / `selected`).
+- Studio compiles at debug level 2: `luau-compile --null -g2`;
+  `tools/count_locals.py` (Studio stops at 200 top-level locals).
+- **Imported characters:** never move their parts by hand; play an
+  animation. **Make every model in an A-pose** (T-posed ones look
+  short-armed in Roblox). Headphones round the neck broke Avatar Setup
+  (remesh in Meshy fixed it). Keep faces clear of big hats and goggles.
+- The word filter hides some asset names ("####") - harmless.
+- There is no candy-corn emoji (Unicode's "candy" is a wrapped sweet): use
+  the Candy Corn boost picture.
+- Look at every picture and model before using it (logos, known
+  characters; AI added wine bottles once).
+- Ladder "hold" picks reach the 0.5 cap early: big powers must do something
+  new (instant, a stun, a lift), not "x2 hold".
+- A skill's recharge must start when its effect ends if the effect can be
+  longer than the recharge (Shadow could stay hidden forever).

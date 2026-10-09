@@ -49,5 +49,5 @@ Style line for every prompt:
 
 ## Badge
 
-**Making a Splash** - "Escaped the Aquarium's Rooftop Pools." (`Config.BADGES.aquarium`).
+**Making a Splash** - "Escaped the Aquarium's Rooftop Pools." (`Config.BADGES.aquarium` = 2071235778459400).
 Picture: `art/roblox-store/badges/badge-aquarium.png` (made from the Rooftop card).

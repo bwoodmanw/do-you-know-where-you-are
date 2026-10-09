@@ -173,12 +173,19 @@ only when everyone presses Play.
   (`AQUARIUM.md`) with the Anglerfish Keeper (Fake Treasure); the
   **Halloween Candy Corn Hunt** until 1 Nov.
 
+- 8-9 Oct (end of session 5): skills version 2 (a button for everyone,
+  levels to 20, level-10/20 powers, guard rails; `SKILLS_V2.md`), Candy Shop
+  and Muscle Mummy, owner test tools, American English, Invisicam camera
+  that stops at walls, bigger map with icons, countdown and Frenzy
+  effects, private servers / translation / notifications live, all 14
+  badges in. Both places published 8 Oct (late).
+
 ## Next
-1. Brent: publish both places before 29 Oct; play-test rounds 12-23.
-2. Creator Hub: private servers and automatic translation (steps in chat 8 Oct).
-3. Aquarium map pictures and "Making a Splash"; badges Star of the Show,
-   Down in the Dark, Candy Corn Collector (Brent, from 9 Oct).
-4. Host balance per difficulty from the 📊 Balance table after a week live.
+1. Brent: publish both places once more; play-test live (TEST_PLAN 12-35).
+2. Host balance per difficulty from the 📊 Balance table after a week live.
+3. Thanksgiving event (after Halloween ends 1 Nov), then Christmas: a
+   secret seasonal floor and / or a community-wide goal (Brent's picks).
+4. Ideas: collectibles book, community group bonus, translation fixes.
 5. Later: B8 analytics, subscriptions (parked).
 
 ## Ideas from top Roblox adventure / horror games (8 Oct, Brent to pick)

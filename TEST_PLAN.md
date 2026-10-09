@@ -1,10 +1,10 @@
-# Escape Crew - test plan (updated 8 Oct 2026)
+# Escape Crew - test plan (updated 9 Oct 2026)
 
-**Start with rounds 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
-Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
-Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
+**Rounds 35 down to 12 (top): built 7-9 Oct, live since the 8 Oct publish, not yet fully play-tested.**
+Studio Play builds `Config.STUDIO_MAP` (now `aquarium`, the Aquarium's
+Main Hall); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
-`hospital_2`, `hospital_3`, `school`, `school_2`, `school_3`, `carnival_2`, `carnival_3`) or `Config.STUDIO_TOWER` for a
+`hospital_2`, `hospital_3`, `school`, `school_2`, `school_3`, `carnival`, `carnival_2`, `carnival_3`, `aquarium_2`, `aquarium_3`) or `Config.STUDIO_TOWER` for a
 Tower Run.
 
 Everything below was built today and has only been checked in code (it

@@ -8,36 +8,42 @@ Open the session in `C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Wh
 We're continuing **Escape Crew**, my Roblox co-op horror-escape game for kids
 (Lobby "Escape Crew" + game place "Party House", built with Rojo from
 `roblox/`). Read `CLAUDE.md`, then `SESSION_HANDOFF.md` (the source of truth),
-then `ROADMAP.md`, `TEST_PLAN.md` (rounds 12-16 at the top are what I'm
-testing), `SKINS.md`, `PASSES.md` and `SCHOOL.md`.
+then `ROADMAP.md`, `TEST_PLAN.md` (rounds 12-35, newest first), `SKILLS_V2.md`,
+`CARNIVAL.md`, `AQUARIUM.md` and `SKINS.md`.
 
 First, start both Rojo servers in the background (Party House
 `roblox/game.project.json` on port 34872, Lobby `roblox/lobby.project.json`
-on port 34873) so I can sync. Then ask me for my test results (screenshots
-and F9 errors, Client and Server tabs) and whether I've published both
-places yet, and fix what I found first.
+on port 34873) so I can sync. Then ask me for my live test results
+(screenshots and F9 errors, Client and Server tabs) and whether I've
+published both places since the last session, and fix what I found first.
 
 Then, telling me before each:
-1. Anything I've sent for the Midnight School (map-card pictures to check,
-   their image ids, the "Top of the Class" badge id) and for notifications
-   (the message id from `NOTIFICATIONS.md`).
-2. Skin follow-ups: check any new pictures or model ids I send.
-3. **Building 5, with 3 floors.** Before building, give me 3-4 theme ideas
-   (each with its three floors, its rooms, what makes it play differently
-   and which host fits), with your recommendation, and wait for my pick.
-   Build it like the Midnight School: plans in `tools/make_housemap.py`
-   (each passing 2,000 fills, run in the background), its own theme and set
-   pieces in House/Rooms, unlocked after building 4's floor 2, map-card
-   picture prompts and a badge for its top floor.
-4. Host balance from the 📊 Balance table, if the game has been live a week.
+1. Anything from my live tests: the new hosts' powers (Lock-up,
+   Jack-in-the-Box, Fake Treasure), skills version 2 (every button, levels
+   10 and 20 - I test them with the 🧪 Lv buttons), the camera, the map,
+   the countdown and Frenzy, the Candy Shop and Muscle Mummy.
+2. Host balance from the 📊 Balance table, if the game has been live a week
+   (Glow's Beacon is the strongest new power to watch).
+3. **Thanksgiving event** (it starts after Halloween ends on 1 Nov): give me
+   3-4 ideas built on what I liked - a secret seasonal floor and a
+   community-wide goal everyone works towards - with what players collect,
+   the reward, and how long it runs; your recommendation; wait for my pick.
+   Then sketch the Christmas event the same way.
+4. Ideas still on the list: the collectibles book (a hidden plushie on
+   every floor), the community group bonus, translation fixes after a week
+   of data. Tell me if any is worth doing before the events.
 
-Rules from last time: check every Luau file with `luau-compile --null -g2`
-(Studio's debug level), keep Hud.client.luau's top level well under 200
-locals (wrap new HUD code in `do ... end`), write patch scripts with the
-Write tool (never through a bash heredoc - it eats `\u{...}`), assert every
-anchor (watch the tabs), and never move an imported character's parts by
-hand (play an animation instead). Look at every picture and model before
-using it (logos, known characters).
+Rules: check every Luau file with `luau-compile --null -g2` (Studio's debug
+level), keep Hud.client.luau's top level well under 200 locals (wrap new HUD
+code in `do ... end`), write patch scripts with the Write tool (never through
+a bash heredoc - it eats `\u{...}` and backslashes), assert every anchor,
+and never move an imported character's parts by hand (play an animation
+instead). New floor plans go in `tools/make_housemap.py` and must pass 2,000
+fills (run it in the background), then `tools/check_rooms.luau`; ladder
+changes must pass `tools/check_ladder.luau` and
+`tools/check_ladder_repeats.luau`. Look at every picture and model before
+using it (logos, known characters, anything not for kids). Use American
+English in everything players read.
 
 Give me numbered, click-by-click steps for anything I do in Studio or
 Creator Hub, surface every gap as a build / fix / close decision with your
