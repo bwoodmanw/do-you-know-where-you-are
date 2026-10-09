@@ -17,6 +17,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 41 (9 Oct) - invite reward (live only: needs a second account that has never played)
+- [ ] Lobby -> Invite friends: Roblox's invite shows "Come and escape with me! New players who join from my invite get a Party Shield - and so do I."
+- [ ] A brand-new account joins from the invite: it sees "Welcome! You came with a friend's invite - here's a Party Shield and 100 points!"; you (in the Lobby) see "<name> joined from your invite! ..." and your Party Shields go up by 1
+- [ ] If you had left before they arrived: on your next Lobby visit the same message comes and the shield is added
+- [ ] An account that has played before gets nothing (no farming); at most 10 friends reward you
+
 ## Round 40 (9 Oct) - the escape photo (best tried live; Studio may not take pictures)
 - [ ] Escape: about 2 s after you land in the garden your character cheers, the camera swings round in front of you, the buttons vanish for a blink, then a card "📸 Escape photo!" shows the picture with Save / Share / No thanks
 - [ ] Save: Roblox asks to save it to your captures (photo of the prompt); Share: Roblox's share screen; No thanks closes it; it closes itself after 25 s

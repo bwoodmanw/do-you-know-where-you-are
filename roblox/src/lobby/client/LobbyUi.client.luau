@@ -116,6 +116,9 @@ local function robloxInvite(userId)
 			if userId then
 				options.InviteUser = userId
 			end
+			-- who invited them: both get a Party Shield when a new friend arrives
+			options.LaunchData = "inv:" .. player.UserId
+			options.PromptMessage = 'Come and escape with me! New players who join from my invite get a Party Shield - and so do I.'
 			SocialService:PromptGameInvite(player, options)
 		end)
 	else

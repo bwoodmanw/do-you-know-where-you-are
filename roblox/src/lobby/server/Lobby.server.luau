@@ -1517,9 +1517,97 @@ local function dailyReward(plr, data)
 	plr:SetAttribute("DailyShow", game:GetService("HttpService"):JSONEncode({ streak = data.daily.streak, day = day, points = pts, boost = r.boost, premium = premium }))
 end
 
+-- ---------- invite a friend: both get a Party Shield and points ----------
+local InviteStore = game:GetService("DataStoreService"):GetDataStore("EscapeCrewInvites")
+local function inviterOf(plr)
+	local ok, jd = pcall(function()
+		return plr:GetJoinData()
+	end)
+	if not ok or type(jd) ~= "table" then
+		return nil
+	end
+	local id = tonumber(jd.ReferredByPlayerId)
+	if (not id or id == 0) and type(jd.LaunchData) == "string" then
+		id = tonumber(string.match(jd.LaunchData, "^inv:(%d+)$"))
+	end
+	if id and id > 0 and id ~= plr.UserId then
+		return id
+	end
+	return nil
+end
+local function inviteGift(plr, data, text)
+	local r = Config.INVITE_REWARD
+	data.points += r.points
+	data.stats.earned = (data.stats.earned or 0) + r.points
+	data.inv[r.boost] = (data.inv[r.boost] or 0) + 1
+	Profile.publish(plr)
+	Profile.save(plr)
+	Notice:FireClient(plr, text)
+end
+-- the inviter's side: once per new friend, up to the cap
+local function thankInviter(inviter, data, friendName)
+	data.inviteRewards = data.inviteRewards or 0
+	if data.inviteRewards >= Config.INVITE_REWARD.max then
+		return
+	end
+	data.inviteRewards += 1
+	inviteGift(inviter, data, "\u{1F389} " .. friendName .. " joined from your invite! You got a Party Shield and " .. Config.INVITE_REWARD.points .. " points.")
+end
+-- gifts waiting from friends who arrived while this player was away
+local function claimInvites(plr, data)
+	local waiting = {}
+	local ok = pcall(function()
+		InviteStore:UpdateAsync("u" .. plr.UserId, function(old)
+			waiting = type(old) == "table" and old or {}
+			if #waiting == 0 then
+				return nil
+			end
+			return {}
+		end)
+	end)
+	if ok then
+		for _, w in ipairs(waiting) do
+			thankInviter(plr, data, type(w) == "table" and tostring(w.name or "A friend") or "A friend")
+		end
+	end
+end
+-- the new player's side: only a brand-new player counts, once
+local function checkInvite(plr, data)
+	if data.invitedBy or (data.stats.games or 0) > 0 then
+		return
+	end
+	local from = inviterOf(plr)
+	if not from then
+		return
+	end
+	data.invitedBy = from
+	inviteGift(plr, data, "\u{1F389} Welcome! You came with a friend's invite - here's a Party Shield and " .. Config.INVITE_REWARD.points .. " points!")
+	local inviter = Players:GetPlayerByUserId(from)
+	local idata = inviter and Profile.get(inviter)
+	if idata then
+		thankInviter(inviter, idata, plr.DisplayName)
+	else
+		pcall(function()
+			InviteStore:UpdateAsync("u" .. from, function(old)
+				local list = type(old) == "table" and old or {}
+				if #list < Config.INVITE_REWARD.max then
+					table.insert(list, { name = plr.DisplayName, t = os.time() })
+				end
+				return list
+			end)
+		end)
+	end
+end
+
 Players.PlayerAdded:Connect(function(plr)
 	local data = Profile.load(plr)
 	dailyReward(plr, data)
+	if data then
+		task.spawn(function()
+			checkInvite(plr, data)
+			claimInvites(plr, data)
+		end)
+	end
 	if data then
 		Quests.ensure(data, plr.UserId)
 		Profile.publish(plr)

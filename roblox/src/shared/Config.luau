@@ -156,6 +156,11 @@ Config.BADGES = {
 -- the collectibles book: one lost plushie hidden on every floor (by map id).
 -- Each player finds their own; found ones fill the Lobby's Plushie Book.
 Config.PLUSHIE_POINTS = 25
+
+-- invite a friend: when a brand-new player arrives through your invite you
+-- both get this (an inviter who is away gets it on their next visit), for
+-- up to `max` friends each
+Config.INVITE_REWARD = { points = 100, boost = "shield", max = 10 }
 Config.PLUSHIES = {
 	{ map = "partyhouse", name = "Sprinkles the Party Bunny", animal = "bunny", color = Color3.fromRGB(255, 160, 200) },
 	{ map = "partyhouse_2", name = "Snooze the Pajama Bear", animal = "bear", color = Color3.fromRGB(140, 190, 240) },
