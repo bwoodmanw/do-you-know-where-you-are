@@ -186,6 +186,7 @@ Docs: `SKILLS_V2.md`, `CARNIVAL.md`, `AQUARIUM.md`, `SCHOOL.md`, `SKINS.md`,
   `\u{...}` and regex backslashes), assert every anchor, `.tmp` +
   `os.replace`, normalize paths (one file listed twice broke a patch).
   Player text is American now - anchors must say "color", not "colour".
+- Don't blindly drop every "Unknown global" from luau-analyze: list the names and check none is ours (9 Oct: `Config` used in Characters.luau without a top-level require).
 - A local used inside a function must be declared above it (twice a new
   block went above `clueSteps` / `selected`).
 - Studio compiles at debug level 2: `luau-compile --null -g2`;
