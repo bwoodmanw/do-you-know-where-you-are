@@ -178,7 +178,7 @@ local SPECIAL = {
 		},
 		[10] = {
 			{ id = "mouse10", name = "Wind-up Mouse", say = "Toolkit also lets a squeaky toy mouse run off - the host chases it for 5 s", mods = { p10 = "mouse" } },
-			{ id = "skeleton10", name = "Skeleton Key", say = "Once a game, Toolkit opens every locked door on the floor at once", mods = { p10 = "skeleton" } },
+			{ id = "skeleton10", name = "Skeleton Key", say = "The first lock you pick each game opens every locked door on the floor", mods = { p10 = "skeleton" } },
 		},
 		[11] = {
 			{ id = "tk11", name = "Quick Toolkit", say = "Toolkit recharges 15% faster", mods = { cooldownMult = 0.85 } },

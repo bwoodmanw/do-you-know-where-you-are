@@ -1272,8 +1272,11 @@ local function buildView()
 				-- locked doors show gold (the blocked passage red) until they open
 				for _, o in ipairs(HouseMap.objects) do
 					if o.kind == "lock" and o.x == tx and o.y == ty then
+						local icon = label(d, { Size = UDim2.fromOffset(18, 18), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Text = o.blocked and "\u{1F6A7}" or "\u{1F512}", TextStrokeTransparency = 0.3, ZIndex = 6 })
 						local function paint()
-							d.BackgroundColor3 = RoundState:GetAttribute("Lock_" .. o.id) and ROOM_COLOR or (o.blocked and Color3.fromRGB(232, 80, 91) or Color3.fromRGB(255, 210, 63))
+							local open = RoundState:GetAttribute("Lock_" .. o.id)
+							d.BackgroundColor3 = open and ROOM_COLOR or (o.blocked and Color3.fromRGB(232, 80, 91) or Color3.fromRGB(255, 210, 63))
+							icon.Visible = not open
 						end
 						table.insert(lockConns, RoundState:GetAttributeChangedSignal("Lock_" .. o.id):Connect(paint))
 						paint()
@@ -1292,7 +1295,10 @@ local function buildView()
 		local L = HouseMap.loft
 		loftView = mapRect(L.x0, L.y0, L.x1, L.y1, Color3.fromRGB(190, 150, 90), 3)
 		loftView.BackgroundTransparency = 0.8
-		label(loftView, { Size = UDim2.new(1, -4, 1, 0), Position = UDim2.fromOffset(2, 0), Text = "Loft", TextColor3 = Color3.fromRGB(255, 240, 200), ZIndex = 4 })
+		local loftName = label(loftView, { Size = UDim2.new(1, -6, 1, -2), Position = UDim2.fromOffset(2, 0), Text = "Loft", TextXAlignment = Enum.TextXAlignment.Right, TextYAlignment = Enum.TextYAlignment.Bottom, TextColor3 = Color3.fromRGB(255, 240, 200), ZIndex = 4 })
+		local loftCap = Instance.new("UITextSizeConstraint")
+		loftCap.MaxTextSize = 14
+		loftCap.Parent = loftName
 		local name = floorOf(L.x0, L.y0)
 		if name then
 			table.insert(roomTiles[name], loftView)
@@ -1303,8 +1309,18 @@ local function buildView()
 		if o.kind == "door" then
 			local name = floorOf(o.x, o.y + 1)
 			local door = mapRect(o.x - 0.5, o.y, o.x + 0.5, o.y, PUMP, 4)
+			label(door, { Size = UDim2.fromOffset(18, 18), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Text = "\u{1F6AA}", TextStrokeTransparency = 0.3, ZIndex = 6 })
 			if name then
 				table.insert(roomTiles[name], door)
+			end
+		elseif o.kind == "cage" then
+			-- the cage, where a caught friend waits to be freed
+			local name = floorOf(o.x, o.y)
+			local cage = mapRect(o.x, o.y, o.x, o.y, Color3.fromRGB(150, 60, 70), 4)
+			cage.BackgroundTransparency = 0.3
+			label(cage, { Size = UDim2.fromOffset(18, 18), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Text = "\u{26D3}", TextStrokeTransparency = 0.3, ZIndex = 6 })
+			if name then
+				table.insert(roomTiles[name], cage)
 			end
 		end
 	end

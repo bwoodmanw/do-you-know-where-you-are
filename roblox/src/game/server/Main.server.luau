@@ -1154,6 +1154,21 @@ local function wirePrompts()
 				openLock(plr, id, "pick")
 				plr:SetAttribute("ToolkitReady", false)
 				quest(plr, "skill")
+				-- Skeleton Key: the first lock Tinker picks each game opens every other one too
+				state.oncePerGame = state.oncePerGame or {}
+				if plr:GetAttribute("Power10") == "skeleton" and not state.oncePerGame["skel" .. plr.UserId] then
+					state.oncePerGame["skel" .. plr.UserId] = true
+					local n = 0
+					for other, e in pairs(world.objects) do
+						if e.def and e.def.kind == "lock" and not world.unlocked[other] then
+							openLock(plr, other, "pick")
+							n += 1
+						end
+					end
+					if n > 0 then
+						say("info", "\u{1F5DD} " .. plr.DisplayName .. "'s Skeleton Key opened " .. n .. " more " .. (n == 1 and "door!" or "doors!"))
+					end
+				end
 			end)
 		elseif def.kind == "search" then
 			entry.prompt.Triggered:Connect(function(plr)
@@ -2472,19 +2487,6 @@ do
 		state.oncePerGame = state.oncePerGame or {}
 		local once = state.oncePerGame
 		if skill == "tinker" then
-			if p10 == "skeleton" and not once["skel" .. plr.UserId] then
-				-- Skeleton Key: every locked door on the floor, once a game
-				once["skel" .. plr.UserId] = true
-				local n = 0
-				for id, e in pairs(world.objects) do
-					if e.def and e.def.kind == "lock" and not world.unlocked[id] then
-						openLock(plr, id, "pick")
-						n += 1
-					end
-				end
-				say("info", "\u{1F5DD} " .. plr.DisplayName .. "'s Skeleton Key opened " .. n .. (n == 1 and " door!" or " doors!"))
-				return true
-			end
 			plr:SetAttribute("ToolkitReady", true)
 			say("info", "\u{1F527} Toolkit ready: your next lock or keypad picks in an instant.", nil, plr)
 			if p10 == "mouse" then
