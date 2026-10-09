@@ -2560,6 +2560,22 @@ do
 				local stam = plr:GetAttribute("FlareStamina") or f.stamina
 				local got = {}
 				local myState = state
+				if plr:GetAttribute("Power20") == "beacon" then
+					-- Beacon: the whole team, wherever they are, gets the big lift at once
+					local bc = f.beacon
+					for _, p in ipairs(Players:GetPlayers()) do
+						if hrpOf(p) and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
+							got[p] = true
+							p:SetAttribute("TeamBurstMult", bc.speed)
+							p:SetAttribute("TeamBurstUntil", workspace:GetServerTimeNow() + bc.speedTime)
+							Boost:FireClient(p, "plus", bc.stamina)
+							Effects.at(p, "light")
+							if p ~= plr then
+								say("info", "\u{2728} Glow's Beacon! +" .. bc.stamina .. "% stamina and 5% faster for " .. bc.speedTime .. " s.", nil, p)
+							end
+						end
+					end
+				end
 				task.spawn(function()
 					local stopAt = os.clock() + seconds
 					while os.clock() < stopAt and state == myState and state.status == "playing" do

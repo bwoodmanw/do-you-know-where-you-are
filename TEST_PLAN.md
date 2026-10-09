@@ -19,7 +19,7 @@ either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 
 ## Round 31 (8 Oct) - Glow's Flare lifts the team, vines, the Shark Tunnel, your own name tag
 - [ ] Glow presses Flare: for the 8 s it lasts, she and any friend who comes within 16 studs get +6% stamina and run 5% faster for 3 s (once each); friends see "Glow's Flare!"
-- [ ] Glow's ladder 11-20: the lift grows (20-32 studs, 8-10% stamina, longer Flare)
+- [ ] Glow's ladder 11-19: the lift grows (20-28 studs, 8-10% stamina, longer Flare; still 5% faster for 3 s). Level 20 Beacon: everyone on the floor, wherever they are, gets +25% stamina and 5% faster for 5 s the moment she flares, and shows through walls
 - [ ] Echo: after a noise only Echo runs 5% faster for 3 s (as before)
 - [ ] Bramble's vines slow the host a little more than before
 - [ ] Aquarium Main Hall, Shark Tunnel: the glass walls show water with sand, weed, big bright fish and a blue glow (not empty)

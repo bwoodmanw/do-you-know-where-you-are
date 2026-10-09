@@ -143,7 +143,9 @@ Config.SKILL_STUN = { max = 2, nightmare = 1, gap = 8 }
 -- Glow's Flare: her light reaches `mult` times as far (at most 60 studs) for
 -- `seconds`. While it lasts, Glow and every friend who comes within `range`
 -- studs get `stamina`% stamina back and run `speed` faster for `speedTime` s (once each)
-Config.GLOW_FLARE = { seconds = 8, mult = 2.2, range = 16, stamina = 6, speed = 1.05, speedTime = 3 }
+Config.GLOW_FLARE = { seconds = 8, mult = 2.2, range = 16, stamina = 6, speed = 1.05, speedTime = 3,
+	-- level 20 Beacon: the whole team, anywhere on the floor, at the moment she flares
+	beacon = { stamina = 25, speed = 1.05, speedTime = 5 } }
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)

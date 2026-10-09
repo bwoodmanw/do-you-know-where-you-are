@@ -388,7 +388,7 @@ local SPECIAL = {
 		},
 		[20] = {
 			{ id = "sun20", name = "Little Sun", say = "Your light fills a whole room, all the time", mods = { glowRange = 50 } },
-			{ id = "beacon20", name = "Beacon", say = "Flare shows every teammate through walls and reaches friends 32 studs away", mods = { p20 = "beacon", flareRange = 32 } },
+			{ id = "beacon20", name = "Beacon", say = "Flare reaches the whole team, anywhere: 25% stamina and 5% faster for 5 s, and shows everyone through walls", mods = { p20 = "beacon" } },
 		},
 	},
 	patch = {
