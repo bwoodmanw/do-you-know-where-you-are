@@ -12,6 +12,10 @@ Config.GRACE = 20 -- seconds before the host comes out (Giggly)
 Config.GRACE_SPOOKY = 12
 
 Config.WALK = 12
+-- trying a remade character in Studio only (STYLE_UPGRADE.md part B): the
+-- plain character uses this model instead when it is in ServerStorage/Characters,
+-- e.g. { Tinker = "TinkerToon" }. Live players never see it.
+Config.STUDIO_TRY_MODEL = { Tinker = "TinkerToon" }
 -- the look of each building: base light (ambient), a color tint, and for
 -- everyone richer colors, a soft glow on lights and a light haze. A Spooky
 -- game keeps `spooky` of the ambient light (darker). Tune freely.
