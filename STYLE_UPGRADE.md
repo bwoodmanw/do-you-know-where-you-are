@@ -107,16 +107,26 @@ at a time (and their skins later).
 
 ### 1. A new picture (ChatGPT, portrait)
 
-Attach `art/sheets/char-tinker.png` and paste:
+Attach `art/model-input/tinker/a-pose-front.png` (his current picture) and
+paste:
 
-> Use the attached character as the exact reference: same kid, same face,
-> same hair, same outfit and colors. One full-body image, front view,
-> standing in an A-pose (arms angled down and away from the body, legs
-> slightly apart), centred and filling the whole height. Clean cartoon
-> style: flat solid colors with no texture, no fabric pattern, no shading
-> painted on, simple smooth shapes, big clear eyes, thin dark outlines.
-> Plain flat light-grey background, even light with no shadows. No text, no
-> logos, no other characters.
+> Use the attached character as the exact reference: the same boy with the
+> same face, messy brown hair, brown eyes, backwards blue cap with brass
+> goggles on top, orange T-shirt, blue overalls with rolled-up cuffs, a
+> brown tool belt with a wrench and a screwdriver, and blue high-top
+> sneakers. Redraw him in a clean, simple 3D cartoon toy style: every area
+> one smooth flat color, no texture at all - no denim grain, no stitching, no
+> dirt, no stains, no scuffs, no freckles, no fabric folds painted on, no
+> shading or shadows painted on. Simple rounded shapes, slightly chunky
+> proportions, big clear eyes, the goggles and belt buckle as simple solid
+> shapes. One full-body image, front view, standing in an A-pose (arms
+> angled down and away from the body, legs slightly apart), centred and
+> filling the whole height. Plain flat light-grey background, even light.
+> No text, no logos, no other characters.
+
+(The current picture shows why we're doing this: the denim grain, dirt,
+scuffs and freckles all get painted into the 3D model's texture and turn
+blotchy in the game's light.)
 
 Save it as `art/model-input/tinker/front-toon.png` and **send it to Claude
 to check** before Meshy.
