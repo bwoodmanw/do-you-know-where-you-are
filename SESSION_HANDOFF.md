@@ -186,6 +186,7 @@ Docs: `SKILLS_V2.md`, `CARNIVAL.md`, `AQUARIUM.md`, `SCHOOL.md`, `SKINS.md`,
   `\u{...}` and regex backslashes), assert every anchor, `.tmp` +
   `os.replace`, normalize paths (one file listed twice broke a patch).
   Player text is American now - anchors must say "color", not "colour".
+- **Roblox shapes:** a Ball part is always a sphere (a stretched size is squashed round) - use `Shapes.fix` (block + sphere mesh) for eggs and ovals; a Cylinder's Y and Z (the round sides) are forced equal, and its height is X (upright with `rot = UP`: size = (height, diameter, diameter)).
 - Don't blindly drop every "Unknown global" from luau-analyze: list the names and check none is ours (9 Oct: `Config` used in Characters.luau without a top-level require).
 - A local used inside a function must be declared above it (twice a new
   block went above `clueSteps` / `selected`).
