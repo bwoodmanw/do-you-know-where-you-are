@@ -103,7 +103,9 @@ local function car(position, yaw, color)
 	end
 	for _, x in ipairs({ -3.2, 3.2 }) do
 		for _, z in ipairs({ -4.3, 4.3 }) do
-			part(m, { Name = "Wheel", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.2, 2.6, 2.6), CFrame = at(x, 1.3, z) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(25, 25, 28), Material = Enum.Material.Rubber })
+			-- a cylinder's axis is X already: the wheel stands on its edge
+			part(m, { Name = "Wheel", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.2, 2.6, 2.6), CFrame = at(x, 1.3, z), Color = Color3.fromRGB(25, 25, 28), Material = Enum.Material.Rubber })
+			part(m, { Name = "Hubcap", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.3, 1.1, 1.1), CFrame = at(x, 1.3, z), Color = Color3.fromRGB(200, 200, 205), Material = Enum.Material.Metal })
 		end
 	end
 	for _, x in ipairs({ -2.4, 2.4 }) do
@@ -544,7 +546,7 @@ function Scene.fun()
 	local wood = Color3.fromRGB(110, 70, 40)
 	for _, z in ipairs({ sz - 6, sz + 6 }) do
 		for _, dx in ipairs({ -2.5, 2.5 }) do
-			part(folder, { Name = "SwingLeg", Size = Vector3.new(0.6, 11, 0.6), CFrame = CFrame.new(sx + dx / 2, 5.3, z) * CFrame.Angles(0, 0, math.rad(dx > 0 and -12 or 12)), Color = wood, Material = Enum.Material.Wood })
+			part(folder, { Name = "SwingLeg", Size = Vector3.new(0.6, 11, 0.6), CFrame = CFrame.new(sx + dx / 2, 5.3, z) * CFrame.Angles(0, 0, math.rad(dx > 0 and 12 or -12)), Color = wood, Material = Enum.Material.Wood })
 		end
 	end
 	part(folder, { Name = "SwingBar", Size = Vector3.new(0.6, 0.6, 13), Position = Vector3.new(sx, 10.6, sz), Color = wood, Material = Enum.Material.Wood })

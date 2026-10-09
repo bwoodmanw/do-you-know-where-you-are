@@ -476,8 +476,22 @@ end }
 PIECES.JellyTank = { size = Vector3.new(4, 8, 2), build = function(f, b)
 	add(f, b, { size = Vector3.new(3.6, 7, 1.6), at = Vector3.new(0, 4, T / 2 - 0.85), color = C(30, 40, 90), mat = GLASS, alpha = 0.35 })
 	for i = 1, 3 do
-		local jelly = add(f, b, { size = Vector3.new(1, 0.7, 1), at = Vector3.new((i - 2) * 1, 2.4 + i * 1.4, T / 2 - 0.85), shape = Enum.PartType.Ball, color = ({ C(255, 140, 220), C(160, 140, 255), C(120, 230, 255) })[i], mat = NEON, alpha = 0.3 })
-		TweenService:Create(jelly, TweenInfo.new(2.6 + i * 0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = jelly.CFrame * CFrame.new(0, 1, 0) }):Play()
+		-- a round bell with four trailing tentacles,
+		-- welded to it so they drift together (inside the tank)
+		local col = ({ C(255, 140, 220), C(160, 140, 255), C(120, 230, 255) })[i]
+		local jelly = add(f, b, { size = Vector3.new(1.1, 0.8, 1.1), at = Vector3.new((i - 2) * 1, 2.2 + i * 1.2, T / 2 - 0.85), shape = Enum.PartType.Ball, color = col, mat = NEON, alpha = 0.3 })
+		local function hang(size, off, shape)
+			local p = add(f, b, { size = size, at = Vector3.new((i - 2) * 1, 2.2 + i * 1.2, T / 2 - 0.85) + off, shape = shape, color = col, mat = NEON, alpha = 0.35 })
+			p.Anchored, p.Massless = false, true
+			local w = Instance.new("WeldConstraint")
+			w.Part0, w.Part1 = jelly, p
+			w.Parent = p
+		end
+		for k = 0, 3 do
+			local a = k * math.pi / 2 + 0.4
+			hang(Vector3.new(0.08, 1, 0.08), Vector3.new(math.cos(a) * 0.3, -0.75, math.sin(a) * 0.3))
+		end
+		TweenService:Create(jelly, TweenInfo.new(2.6 + i * 0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = jelly.CFrame * CFrame.new(0, 0.9, 0) }):Play()
 		glow(jelly, C(200, 150, 255), 6, 0.5)
 	end
 end }
@@ -508,9 +522,27 @@ end }
 
 PIECES.Penguins = { size = Vector3.new(6, 3, 3), build = function(f, b)
 	for i = -1, 1 do
-		local body = add(f, b, { size = Vector3.new(1.4, 2.2, 1.2), at = Vector3.new(i * 1.9, 1.1, 1), shape = Enum.PartType.Ball, color = C(30, 30, 35) })
-		add(f, b, { size = Vector3.new(1, 1.6, 0.4), at = Vector3.new(i * 1.9, 1, 0.45), shape = Enum.PartType.Ball, color = C(245, 245, 240) })
-		add(f, b, { size = Vector3.new(0.4, 0.25, 0.5), at = Vector3.new(i * 1.9, 1.9, 0.35), color = C(255, 170, 40) })
+		-- a penguin: black body and head, white belly and face, eyes, an orange
+		-- beak and feet, flippers - all welded to the body so it waddles as one
+		local px = i * 1.9
+		local body = add(f, b, { size = Vector3.new(1.4, 2, 1.2), at = Vector3.new(px, 1.05, 1), shape = Enum.PartType.Ball, color = C(30, 30, 35) })
+		local function on(size, at, col, shape, rot)
+			local p = add(f, b, { size = size, at = at, shape = shape or Enum.PartType.Ball, color = col, rot = rot })
+			p.Anchored, p.Massless = false, true
+			local w = Instance.new("WeldConstraint")
+			w.Part0, w.Part1 = body, p
+			w.Parent = p
+		end
+		on(Vector3.new(1.05, 1.5, 0.3), Vector3.new(px, 0.95, 0.45), C(245, 245, 240))
+		on(Vector3.new(1, 0.95, 0.95), Vector3.new(px, 2.3, 1), C(30, 30, 35))
+		on(Vector3.new(0.7, 0.55, 0.25), Vector3.new(px, 2.25, 0.62), C(245, 245, 240))
+		on(Vector3.new(0.13, 0.13, 0.1), Vector3.new(px - 0.17, 2.4, 0.5), C(20, 20, 25))
+		on(Vector3.new(0.13, 0.13, 0.1), Vector3.new(px + 0.17, 2.4, 0.5), C(20, 20, 25))
+		on(Vector3.new(0.24, 0.16, 0.42), Vector3.new(px, 2.18, 0.38), C(255, 170, 40), Enum.PartType.Block)
+		on(Vector3.new(0.2, 1.1, 0.55), Vector3.new(px - 0.75, 1.2, 1), C(25, 25, 30), nil, CFrame.Angles(0, 0, math.rad(-15)))
+		on(Vector3.new(0.2, 1.1, 0.55), Vector3.new(px + 0.75, 1.2, 1), C(25, 25, 30), nil, CFrame.Angles(0, 0, math.rad(15)))
+		on(Vector3.new(0.4, 0.15, 0.55), Vector3.new(px - 0.3, 0.08, 0.75), C(255, 170, 40))
+		on(Vector3.new(0.4, 0.15, 0.55), Vector3.new(px + 0.3, 0.08, 0.75), C(255, 170, 40))
 		TweenService:Create(body, TweenInfo.new(0.9 + (i + 1) * 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = body.CFrame * CFrame.Angles(0, 0, math.rad(8)) }):Play()
 	end
 end }

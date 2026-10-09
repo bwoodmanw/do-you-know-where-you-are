@@ -1389,28 +1389,38 @@ function round.hostGummy(_, pos, hostModel)
 	-- a sticky heap of gummy bears on the goo (they go when the puddle does)
 	do
 		local cols = { Color3.fromRGB(230, 40, 80), Color3.fromRGB(255, 160, 40), Color3.fromRGB(80, 200, 90), Color3.fromRGB(255, 220, 60), Color3.fromRGB(150, 80, 220) }
-		local function bit(size, at, col, shape)
+		local function bit(size, cf, col, alpha)
 			local b = Instance.new("Part")
 			b.Anchored, b.CanCollide, b.CanQuery, b.CanTouch, b.CastShadow = true, false, false, false, false
-			b.Shape = shape or Enum.PartType.Ball
+			b.Shape = Enum.PartType.Ball
 			b.Size = size
-			b.Position = at
+			b.CFrame = cf
 			b.Color = col
-			b.Material = Enum.Material.Glass
-			b.Transparency = 0.2
+			b.Material = Enum.Material.SmoothPlastic
+			b.Reflectance = 0.12
+			b.Transparency = alpha or 0.1
 			b.Parent = g
 		end
 		local base = Vector3.new(pos.X, floorY, pos.Z)
-		bit(Vector3.new(4.2, 1.4, 4.2), base + Vector3.new(0, 0.35, 0), Color3.fromRGB(230, 40, 80))
-		for i = 1, 6 do
-			local a = i / 6 * math.pi * 2
-			local r = (i % 2 == 0) and 1.3 or 0.6
-			local p = base + Vector3.new(math.cos(a) * r, 0.9 + (i % 3) * 0.45, math.sin(a) * r)
+		bit(Vector3.new(4.2, 1.4, 4.2), CFrame.new(base + Vector3.new(0, 0.35, 0)), Color3.fromRGB(230, 40, 80), 0.25)
+		-- five little gummy bears sitting round the goo, facing out: body,
+		-- paler belly and muzzle, head, round ears, dark eyes and nose
+		local DARK = Color3.fromRGB(40, 25, 35)
+		for i = 1, 5 do
+			local a = i / 5 * math.pi * 2
+			local p = base + Vector3.new(math.cos(a) * 1.2, 0.9, math.sin(a) * 1.2)
+			local cf = CFrame.lookAt(p, p + Vector3.new(math.cos(a), 0, math.sin(a)))
 			local col = cols[i % #cols + 1]
-			bit(Vector3.new(0.8, 1, 0.7), p, col)
-			bit(Vector3.new(0.65, 0.6, 0.6), p + Vector3.new(0, 0.7, 0), col)
-			bit(Vector3.new(0.25, 0.25, 0.2), p + Vector3.new(-0.22, 1, 0), col)
-			bit(Vector3.new(0.25, 0.25, 0.2), p + Vector3.new(0.22, 1, 0), col)
+			local pale = col:Lerp(Color3.new(1, 1, 1), 0.45)
+			bit(Vector3.new(0.9, 1.05, 0.8), cf, col)
+			bit(Vector3.new(0.55, 0.6, 0.2), cf * CFrame.new(0, -0.05, -0.35), pale, 0)
+			bit(Vector3.new(0.82, 0.74, 0.72), cf * CFrame.new(0, 0.78, 0), col)
+			bit(Vector3.new(0.3, 0.3, 0.2), cf * CFrame.new(-0.28, 1.12, 0), col)
+			bit(Vector3.new(0.3, 0.3, 0.2), cf * CFrame.new(0.28, 1.12, 0), col)
+			bit(Vector3.new(0.36, 0.26, 0.16), cf * CFrame.new(0, 0.68, -0.33), pale, 0)
+			bit(Vector3.new(0.13, 0.1, 0.1), cf * CFrame.new(0, 0.74, -0.42), DARK, 0)
+			bit(Vector3.new(0.1, 0.12, 0.08), cf * CFrame.new(-0.16, 0.9, -0.33), DARK, 0)
+			bit(Vector3.new(0.1, 0.12, 0.08), cf * CFrame.new(0.16, 0.9, -0.33), DARK, 0)
 		end
 	end
 	table.insert(state.gummies, g)
@@ -1436,6 +1446,11 @@ function round.hostGummy(_, pos, hostModel)
 	task.delay(s.melt, function()
 		if g.Parent then
 			TweenService:Create(g, TweenInfo.new(1.5), { Transparency = 1 }):Play()
+			for _, d in ipairs(g:GetDescendants()) do
+				if d:IsA("BasePart") then
+					TweenService:Create(d, TweenInfo.new(1.5), { Transparency = 1 }):Play()
+				end
+			end
 			task.delay(1.6, function()
 				g:Destroy()
 			end)

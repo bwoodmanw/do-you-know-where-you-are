@@ -463,9 +463,21 @@ local function carnivalFurniture(root, kind, x, y, map)
 		part(root, { Name = "PondRim", Size = Vector3.new(T, 2.4, T), Position = at(x, y, 1.2), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(60, 110, 200) })
 		local water = part(root, { Name = "PondWater", Size = Vector3.new(T - 1, 0.2, T - 1), Position = at(x, y, 2.45), Material = Enum.Material.Glass, Color = Color3.fromRGB(90, 190, 230), Transparency = 0.2, CanCollide = false })
 		local _ = water
-		local duck = part(root, { Name = "Duck", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.2, 1.4), Position = at(x, y, 3) + Vector3.new((x % 3 - 1) * 1.5, 0, (y % 2) * 1.5 - 0.7), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 215, 50), CanCollide = false })
-		part(root, { Name = "DuckHead", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.8, 0.8), Position = duck.Position + Vector3.new(0, 0.7, 0.4), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 215, 50), CanCollide = false })
-		TweenService:Create(duck, TweenInfo.new(1.4 + (x % 3) * 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = duck.Position + Vector3.new(0, 0.25, 0) }):Play()
+		local YEL = Color3.fromRGB(255, 215, 50)
+		local duck = part(root, { Name = "Duck", Shape = Enum.PartType.Ball, Size = Vector3.new(1.3, 1.1, 1.6), CFrame = CFrame.new(at(x, y, 3) + Vector3.new((x % 3 - 1) * 1.5, 0, (y % 2) * 1.5 - 0.7)) * CFrame.Angles(0, math.rad((x * 47 + y * 31) % 360), 0), Material = Enum.Material.SmoothPlastic, Color = YEL, CanCollide = false })
+		-- head, beak, eyes and tail welded on, so the whole duck bobs together
+		local function stuck(size, off, col, shape)
+			local p = part(root, { Name = "DuckBit", Shape = shape or Enum.PartType.Ball, Size = size, CFrame = duck.CFrame * CFrame.new(off), Material = Enum.Material.SmoothPlastic, Color = col, CanCollide = false, CanQuery = false, Anchored = false, Massless = true })
+			local w = Instance.new("WeldConstraint")
+			w.Part0, w.Part1 = duck, p
+			w.Parent = p
+		end
+		stuck(Vector3.new(0.85, 0.85, 0.85), Vector3.new(0, 0.7, -0.55), YEL)
+		stuck(Vector3.new(0.45, 0.16, 0.45), Vector3.new(0, 0.62, -1.05), Color3.fromRGB(255, 140, 30), Enum.PartType.Block)
+		stuck(Vector3.new(0.14, 0.14, 0.14), Vector3.new(-0.25, 0.85, -0.9), Color3.fromRGB(20, 20, 25))
+		stuck(Vector3.new(0.14, 0.14, 0.14), Vector3.new(0.25, 0.85, -0.9), Color3.fromRGB(20, 20, 25))
+		stuck(Vector3.new(0.5, 0.35, 0.5), Vector3.new(0, 0.3, 0.75), YEL)
+		TweenService:Create(duck, TweenInfo.new(1.4 + (x % 3) * 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = duck.CFrame + Vector3.new(0, 0.25, 0) }):Play()
 		return true
 	elseif kind == "car" then
 		-- the clown car: tiny, bright, with huge wheels
@@ -547,7 +559,18 @@ local function aquariumFurniture(root, kind, x, y, map)
 		-- a touch pool / rock pool: a low rocky rim, water, starfish
 		part(root, { Name = "PoolRim", Size = Vector3.new(T, 2.2, T), Position = at(x, y, 1.1), Material = Enum.Material.Slate, Color = Color3.fromRGB(95, 100, 110) })
 		part(root, { Name = "PoolWater", Size = Vector3.new(T - 1, 0.2, T - 1), Position = at(x, y, 2.25), Material = Enum.Material.Glass, Color = WATER, Transparency = 0.25, CanCollide = false })
-		part(root, { Name = "Starfish", Size = Vector3.new(1.4, 0.2, 1.4), CFrame = CFrame.new(at(x, y, 2.4) + Vector3.new((x % 3 - 1) * 1.5, 0, (y % 2) * 1.4 - 0.7)) * CFrame.Angles(0, math.rad(45), 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(255, 120, 70), CanCollide = false })
+		do
+			-- a starfish: five rounded arms round a middle
+			local sc = at(x, y, 2.42) + Vector3.new((x % 3 - 1) * 1.5, 0, (y % 2) * 1.4 - 0.7)
+			local spinY = math.rad((x * 29 + y * 13) % 72)
+			local STAR = Color3.fromRGB(255, 120, 70)
+			part(root, { Name = "Starfish", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.22, 0.8, 0.8), CFrame = CFrame.new(sc) * CFrame.Angles(0, 0, math.rad(90)), Material = Enum.Material.SmoothPlastic, Color = STAR, CanCollide = false })
+			for k = 0, 4 do
+				local a = spinY + k * math.rad(72)
+				local dir = Vector3.new(math.cos(a), 0, math.sin(a))
+				part(root, { Name = "StarArm", Shape = Enum.PartType.Ball, Size = Vector3.new(0.42, 0.2, 1.1), CFrame = CFrame.lookAt(sc + dir * 0.6, sc + dir * 2), Material = Enum.Material.SmoothPlastic, Color = STAR, CanCollide = false })
+			end
+		end
 		return true
 	elseif kind == "bigtank" or kind == "whirlpool" then
 		if not f or x ~= f.x0 or y ~= f.y0 then
@@ -567,13 +590,31 @@ local function aquariumFurniture(root, kind, x, y, map)
 				table.insert(swim, b)
 				return b
 			end
+			-- the shark (nose to -Z, the way it circles): a long rounded body, a
+			-- pointed snout, a swept-back fin, a crescent tail, side fins, a
+			-- white belly, eyes and gill slits
 			local sp = centre + Vector3.new(r * 0.6, 6.5, 0)
-			local body = bit({ Name = "Shark", Size = Vector3.new(1.6, 1.4, 5), Position = sp, Color = Color3.fromRGB(120, 135, 150), Material = Enum.Material.SmoothPlastic })
-			bit({ Name = "SharkFin", Size = Vector3.new(0.3, 1.4, 1.2), Position = sp + Vector3.new(0, 1.2, 0.3), Color = Color3.fromRGB(110, 125, 140), Material = Enum.Material.SmoothPlastic })
-			bit({ Name = "SharkTail", Size = Vector3.new(0.3, 1.8, 1), Position = sp + Vector3.new(0, 0.2, 2.9), Color = Color3.fromRGB(110, 125, 140), Material = Enum.Material.SmoothPlastic })
-			bit({ Name = "SharkBelly", Size = Vector3.new(1.4, 0.5, 4.4), Position = sp + Vector3.new(0, -0.6, -0.2), Color = Color3.fromRGB(235, 235, 230), Material = Enum.Material.SmoothPlastic })
+			local GREY, DARKG, PALE = Color3.fromRGB(120, 135, 150), Color3.fromRGB(100, 115, 130), Color3.fromRGB(235, 235, 230)
+			local SM = Enum.Material.SmoothPlastic
+			local function sb(name, size, off, col, shape, rot)
+				return bit({ Name = name, Shape = shape or Enum.PartType.Block, Size = size, CFrame = CFrame.new(sp) * CFrame.new(off) * (rot or CFrame.new()), Color = col, Material = SM })
+			end
+			local BALL = Enum.PartType.Ball
+			local body = sb("Shark", Vector3.new(1.8, 1.7, 6), Vector3.new(0, 0, 0), GREY, BALL)
+			sb("SharkSnout", Vector3.new(1.3, 1.1, 2.2), Vector3.new(0, -0.05, -2.8), GREY, BALL)
+			sb("SharkBelly", Vector3.new(1.5, 0.8, 5), Vector3.new(0, -0.5, -0.3), PALE, BALL)
+			sb("SharkStalk", Vector3.new(0.7, 0.9, 2.2), Vector3.new(0, 0.1, 3.1), GREY, BALL)
+			sb("SharkTailTop", Vector3.new(0.22, 2.2, 0.9), Vector3.new(0, 1.0, 4.1), DARKG, nil, CFrame.Angles(math.rad(35), 0, 0))
+			sb("SharkTailLow", Vector3.new(0.22, 1.4, 0.8), Vector3.new(0, -0.6, 3.9), DARKG, nil, CFrame.Angles(math.rad(-35), 0, 0))
+			sb("SharkFin", Vector3.new(0.22, 1.6, 1.2), Vector3.new(0, 1.3, -0.1), DARKG, nil, CFrame.Angles(math.rad(25), 0, 0))
+			sb("SharkFinR", Vector3.new(1.6, 0.18, 0.9), Vector3.new(1.1, -0.45, -0.9), DARKG, nil, CFrame.Angles(0, 0, math.rad(-20)))
+			sb("SharkFinL", Vector3.new(1.6, 0.18, 0.9), Vector3.new(-1.1, -0.45, -0.9), DARKG, nil, CFrame.Angles(0, 0, math.rad(20)))
+			sb("SharkMouth", Vector3.new(0.8, 0.08, 0.5), Vector3.new(0, -0.48, -3.05), Color3.fromRGB(40, 30, 40))
 			for i = -1, 1, 2 do
-				bit({ Name = "SharkEye", Shape = Enum.PartType.Ball, Size = Vector3.new(0.3, 0.3, 0.3), Position = sp + Vector3.new(i * 0.75, 0.3, -2), Color = Color3.fromRGB(20, 20, 25), Material = Enum.Material.SmoothPlastic })
+				sb("SharkEye", Vector3.new(0.3, 0.3, 0.3), Vector3.new(i * 0.6, 0.22, -2.6), Color3.fromRGB(20, 20, 25), BALL)
+				for g = 0, 2 do
+					sb("SharkGill", Vector3.new(0.06, 0.6, 0.08), Vector3.new(i * 0.82, 0.05, -1.6 + g * 0.25), Color3.fromRGB(80, 90, 105))
+				end
 			end
 			spin(swim, centre, 0.4, body)
 			fishIn(root, centre + Vector3.new(0, 4, 0), Vector3.new(r * 0.5, 2, r * 0.5), 6, x)
@@ -609,11 +650,52 @@ local function aquariumFurniture(root, kind, x, y, map)
 		part(root, { Name = "SubBlock", Size = Vector3.new(T, 5, T), Position = at(x, y, 2.5), Transparency = 1 })
 		return true
 	elseif kind == "bones" then
-		-- a whale's skeleton laid out on a plinth: a backbone and arching ribs
+		-- a whale's skeleton on a plinth: the backbone held up on posts, ribs
+		-- arching down each side, a skull at one end and tail flukes at the other
+		local BONE = Color3.fromRGB(235, 228, 210)
+		local c = at(x, y, 0)
 		part(root, { Name = "Plinth", Size = Vector3.new(T, 1.2, T), Position = at(x, y, 0.6), Material = Enum.Material.Slate, Color = Color3.fromRGB(70, 75, 85) })
-		part(root, { Name = "Backbone", Size = Vector3.new(T, 1.2, 1.2), Position = at(x, y, 1.8), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(235, 228, 210) })
-		for i = -1, 1, 2 do
-			part(root, { Name = "Rib", Size = Vector3.new(0.5, 4, 0.5), CFrame = CFrame.new(at(x, y, 3.2) + Vector3.new(0, 0, i * 1.4)) * CFrame.Angles(math.rad(i * 30), 0, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(235, 228, 210), CanCollide = false })
+		-- the skeleton runs along the furniture's long side
+		local alongX = not f or (f.x1 - f.x0) >= (f.y1 - f.y0)
+		local L = alongX and Vector3.new(1, 0, 0) or Vector3.new(0, 0, 1)
+		local S = alongX and Vector3.new(0, 0, 1) or Vector3.new(1, 0, 0)
+		local first = not f or (alongX and x == f.x0) or (not alongX and y == f.y0)
+		local last = not f or (alongX and x == f.x1) or (not alongX and y == f.y1)
+		local function bone(a, b2, thick)
+			local mid = (a + b2) / 2
+			part(root, { Name = "Bone", Size = Vector3.new(thick, thick, (b2 - a).Magnitude + thick * 0.5), CFrame = CFrame.lookAt(mid, b2), Material = Enum.Material.SmoothPlastic, Color = BONE, CanCollide = false })
+		end
+		local spineY = 5.3
+		bone(c - L * (T / 2) + Vector3.new(0, spineY, 0), c + L * (T / 2) + Vector3.new(0, spineY, 0), 1)
+		part(root, { Name = "BonePost", Size = Vector3.new(0.5, spineY - 1.2, 0.5), Position = c + Vector3.new(0, 1.2 + (spineY - 1.2) / 2, 0), Material = Enum.Material.Metal, Color = Color3.fromRGB(60, 60, 65) })
+		for k = -1, 1 do
+			local o = c + L * (k * 2.4)
+			part(root, { Name = "Vertebra", Size = Vector3.new(0.5, 0.7, 0.5), Position = o + Vector3.new(0, spineY + 0.7, 0), Material = Enum.Material.SmoothPlastic, Color = BONE, CanCollide = false })
+			for _, s in ipairs({ -1, 1 }) do
+				local top = o + Vector3.new(0, spineY - 0.2, 0)
+				local elbow = o + S * (s * 2) + Vector3.new(0, spineY - 1.4, 0)
+				local foot = o + S * (s * 1.7) + Vector3.new(0, 2.3, 0)
+				bone(top, elbow, 0.35)
+				bone(elbow, foot, 0.3)
+			end
+		end
+		if first then
+			-- the skull and its long lower jaw, pointing out of the end
+			local head = c - L * (T / 2 - 1.8) + Vector3.new(0, spineY - 0.3, 0)
+			part(root, { Name = "Skull", Size = Vector3.new(2.6, 1.8, 3.6), CFrame = CFrame.lookAt(head, head - L), Material = Enum.Material.SmoothPlastic, Color = BONE, CanCollide = false })
+			part(root, { Name = "Jaw", Size = Vector3.new(2.2, 0.45, 3.4), CFrame = CFrame.lookAt(head + Vector3.new(0, -1.4, 0) - L * 0.3, head + Vector3.new(0, -1.6, 0) - L * 2), Material = Enum.Material.SmoothPlastic, Color = BONE, CanCollide = false })
+			for _, s in ipairs({ -1, 1 }) do
+				part(root, { Name = "EyeSocket", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.6, 0.6), Position = head + S * (s * 1.15) + Vector3.new(0, 0.3, 0) + L * 0.4, Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(40, 35, 35), CanCollide = false })
+			end
+		end
+		if last then
+			-- the tail flukes, spread flat
+			local tail = c + L * (T / 2 - 1.4) + Vector3.new(0, spineY, 0)
+			for _, s in ipairs({ -1, 1 }) do
+				local tip = tail + L * 1.2 + S * (s * 2)
+				bone(tail, tip, 0.25)
+				part(root, { Name = "Fluke", Size = Vector3.new(0.15, 0.9, 2.2), CFrame = CFrame.lookAt((tail + tip) / 2, tip) * CFrame.Angles(0, 0, math.rad(90)), Material = Enum.Material.SmoothPlastic, Color = BONE, CanCollide = false })
+			end
 		end
 		return true
 	elseif kind == "coral" then
