@@ -17,6 +17,11 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 40 (9 Oct) - the escape photo (best tried live; Studio may not take pictures)
+- [ ] Escape: about 2 s after you land in the garden your character cheers, the camera swings round in front of you, the buttons vanish for a blink, then a card "📸 Escape photo!" shows the picture with Save / Share / No thanks
+- [ ] Save: Roblox asks to save it to your captures (photo of the prompt); Share: Roblox's share screen; No thanks closes it; it closes itself after 25 s
+- [ ] The camera goes back to normal after the picture (spectating still works)
+
 ## Round 39 (9 Oct) - emotes and rumble
 - [ ] Game: "😄 Emote (G)" with the action buttons; Lobby: "😄 Emote (G)" top right under your points. G, the button, or the right-stick click opens 8 choices: Wave, Point, Cheer, Laugh, Dance 1-3, Stop
 - [ ] Each plays on your character (the imported ones too) and the other player sees it (2-player test); walking or jumping stops a dance; Stop stops it

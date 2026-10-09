@@ -2067,6 +2067,92 @@ local function paintSpectate()
 end
 player:GetAttributeChangedSignal("Caged"):Connect(paintSpectate)
 player:GetAttributeChangedSignal("Escaped"):Connect(paintSpectate)
+do
+	-- the escape photo: the moment you get out, you cheer in the garden (with
+	-- any friends already there), the camera turns to face you, the game's
+	-- buttons hide and Roblox takes a picture; a card then offers to save it
+	-- to your Roblox captures or share it
+	local okCS, CaptureService = pcall(game.GetService, game, "CaptureService")
+	local Emotes = require(ReplicatedStorage.Shared.Emotes)
+	local card = frame(gui, { Size = UDim2.fromOffset(300, 250), AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -170), Visible = false, ZIndex = 40 })
+	corner(card, 14)
+	label(card, { Size = UDim2.new(1, -20, 0, 26), Position = UDim2.fromOffset(10, 6), Text = "\u{1F4F8} Escape photo!", TextColor3 = PUMP, ZIndex = 41 })
+	local pic = Instance.new("ImageLabel")
+	pic.Size = UDim2.fromOffset(280, 158)
+	pic.Position = UDim2.fromOffset(10, 36)
+	pic.BackgroundTransparency = 1
+	pic.ScaleType = Enum.ScaleType.Fit
+	pic.ZIndex = 41
+	pic.Parent = card
+	local shot -- the picture's content id
+	local function close()
+		card.Visible = false
+	end
+	button(card, "\u{1F4BE} Save", { Size = UDim2.fromOffset(88, 40), Position = UDim2.fromOffset(10, 202), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 41 }, function()
+		if shot then
+			pcall(function()
+				CaptureService:PromptSaveCapturesToGallery({ shot }, function() end)
+			end)
+		end
+		close()
+	end)
+	button(card, "\u{1F4E4} Share", { Size = UDim2.fromOffset(88, 40), Position = UDim2.fromOffset(106, 202), BackgroundColor3 = Color3.fromRGB(61, 110, 200), ZIndex = 41 }, function()
+		if shot then
+			pcall(function()
+				CaptureService:PromptShareCapture(shot, "", function() end, function() end)
+			end)
+		end
+		close()
+	end)
+	button(card, "\u{2716} No thanks", { Size = UDim2.fromOffset(88, 40), Position = UDim2.fromOffset(202, 202), ZIndex = 41 }, close)
+	Gamepad.panel(card)
+	local busy = false
+	local function takePhoto()
+		local char = player.Character
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		if busy or not okCS or not CaptureService or not hrp then
+			return
+		end
+		busy = true
+		task.wait(1.2) -- land in the garden first
+		Emotes.play("cheer")
+		task.wait(0.6)
+		local cam = workspace.CurrentCamera
+		local look = hrp.Position + Vector3.new(0, 1.2, 0)
+		cam.CameraType = Enum.CameraType.Scriptable
+		cam.CFrame = CFrame.lookAt(look + hrp.CFrame.LookVector * 11 + Vector3.new(0, 2.5, 0), look)
+		local wasOn = gui.Enabled
+		gui.Enabled = false
+		task.wait(0.15)
+		local done = false
+		pcall(function()
+			CaptureService:CaptureScreenshot(function(id)
+				shot = id
+				done = true
+			end)
+		end)
+		local t0 = os.clock()
+		while not done and os.clock() - t0 < 3 do
+			task.wait(0.05)
+		end
+		gui.Enabled = wasOn
+		cam.CameraType = Enum.CameraType.Custom
+		busy = false
+		if shot then
+			pic.Image = shot
+			card.Visible = true
+			task.delay(25, function()
+				card.Visible = false
+			end)
+		end
+	end
+	player:GetAttributeChangedSignal("Escaped"):Connect(function()
+		if player:GetAttribute("Escaped") then
+			shot = nil
+			task.spawn(takePhoto)
+		end
+	end)
+end
 player.CharacterAdded:Connect(function()
 	task.defer(paintSpectate)
 end)
