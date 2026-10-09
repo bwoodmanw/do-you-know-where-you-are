@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,13 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 32 (8 Oct) - camera at walls, no repeated skills, the countdown, the host and blocked doorways
+- [ ] Back up against a wall (or a big table by a wall): the camera stops in front of the wall - never black, never the next room; shelves and tables in the way fade
+- [ ] Ladders: no two choices do the same thing (Tinker / Muscle 15, Glow 11 and 15, Patch 10, Shadow 15 and 19, Bramble 15 and 20 changed)
+- [ ] Timer: at 1:00 it flashes yellow/red and grows for 2 s; from 0:30 it is bigger and shakes; from 0:10 a big red number counts down in the middle; at 0:00 "FRENZY"
+- [ ] The host stuck at a blocked (junk) doorway or a locked door no longer ends up on the other side
+- [ ] The skill button keeps "(R)" after it recharges
 
 ## Round 31 (8 Oct) - Glow's Flare lifts the team, vines, the Shark Tunnel, your own name tag
 - [ ] Glow presses Flare: for the 8 s it lasts, she and any friend who comes within 16 studs get +6% stamina and run 5% faster for 3 s (once each); friends see "Glow's Flare!"

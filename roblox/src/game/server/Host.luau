@@ -326,12 +326,28 @@ function Host:step(dt)
 		local T = Config.TILE
 		local tx, ty = math.floor(self.root.Position.X / T), math.floor(self.root.Position.Z / T)
 		local best
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.RespectCanCollide = true -- only solid things block (doors, junk, walls)
+		local skip = { self.model }
+		for _, plr in ipairs(Players:GetPlayers()) do
+			if plr.Character then
+				table.insert(skip, plr.Character)
+			end
+		end
+		params.FilterDescendantsInstances = skip
+		local here = self.root.Position
 		for r = 0, 3 do
 			for dy = -r, r do
 				for dx = -r, r do
 					local row = map.map[ty + dy + 1]
 					if not best and row and string.sub(row, tx + dx + 2, tx + dx + 2) ~= "" and string.sub(row, tx + dx + 1, tx + dx + 1) == "." then
-						best = { tx + dx, ty + dy }
+						-- only if nothing solid is in the way (never hop through a locked door or junk)
+						local c = require(script.Parent.House).at(tx + dx, ty + dy, here.Y)
+						local hit = (c - here).Magnitude > 0.5 and workspace:Raycast(here, c - here, params)
+						if not hit then
+							best = { tx + dx, ty + dy }
+						end
 					end
 				end
 			end

@@ -303,6 +303,12 @@ for i = 1, 5 do
 	steps[i] = label(top, { Position = UDim2.new(0.02 + (i - 1) * 0.065, 0, 0.2, 0), Size = UDim2.new(0.065, 0, 0.6, 0), Text = "\u{1F463}", TextTransparency = 0.8, Visible = false })
 end
 local timerLabel = label(top, { Size = UDim2.new(0.26, 0, 0.7, 0), Position = UDim2.fromScale(0.36, 0.15), Text = "\u{23F1} --:--" })
+-- the countdown: a flash at 1:00, bigger and shaking from 0:30, big red numbers from 0:10
+local countdown = { scale = Instance.new("UIScale"), last = nil, flashUntil = 0 }
+countdown.scale.Parent = timerLabel
+countdown.big = label(gui, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.36), Size = UDim2.fromOffset(240, 180), Text = "", TextColor3 = Color3.fromRGB(255, 50, 60), TextStrokeTransparency = 0.1, Font = Enum.Font.GothamBlack, Visible = false, ZIndex = 30 })
+countdown.bigScale = Instance.new("UIScale")
+countdown.bigScale.Parent = countdown.big
 local codeLabel = label(top, { Size = UDim2.new(0.36, 0, 0.7, 0), Position = UDim2.fromScale(0.62, 0.15), RichText = true, Text = "Code: ? ? ?" })
 local clueBtn -- lives with the action buttons below
 local function askClue()
@@ -490,6 +496,8 @@ local function fitHold(prompt)
 	-- Tinker's Toolkit: the next pick is instant; Muscle's Bulldozer: every shove is
 	local instant = (only == "tinker" and player:GetAttribute("ToolkitReady") == true)
 		or (only == "muscle" and player:GetAttribute("Power20") == "bulldozer")
+		-- Bramble's Forest Friend: the big plant answers at once
+		or (prompt.ObjectText == "Big plant - Bramble" and player:GetAttribute("Power20") == "forest")
 	prompt.HoldDuration = instant and 0 or base * (player:GetAttribute("HoldMult") or 1)
 end
 ProximityPromptService.PromptShown:Connect(fitHold)
@@ -1691,21 +1699,46 @@ RunService.RenderStepped:Connect(function(dt)
 			skillBtn.Text = SKILL_TEXT[skill] .. " " .. math.ceil(cool) .. "s"
 			skillBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 		else
-			skillBtn.Text = SKILL_TEXT[skill]
+			skillBtn.Text = SKILL_TEXT[skill] .. (KEYS and " (R)" or "")
 			skillBtn.BackgroundColor3 = Color3.fromRGB(47, 107, 58)
 		end
 	end
 
 	-- escape timer
 	local ends = RoundState:GetAttribute("EndsAt")
+	local scale, rot, bigOn = 1, 0, false
 	if RoundState:GetAttribute("Frenzy") then
 		timerLabel.Text = "\u{1F525} FRENZY"
 		timerLabel.TextColor3 = Color3.fromRGB(255, 77, 94)
+		countdown.last = nil
 	elseif ends and RoundState:GetAttribute("Status") == "playing" then
-		local left = math.max(0, math.floor(ends - serverNow))
+		local exact = math.max(0, ends - serverNow)
+		local left = math.floor(exact)
 		timerLabel.Text = string.format("\u{23F1} %d:%02d", math.floor(left / 60), left % 60)
 		timerLabel.TextColor3 = left < 60 and Color3.fromRGB(255, 77, 94) or CREAM
+		local t = os.clock()
+		if countdown.last and countdown.last > 60 and left <= 60 then
+			countdown.flashUntil = t + 2.5 -- one minute left: flash
+		end
+		countdown.last = left
+		if t < countdown.flashUntil then
+			scale = 1.35 + 0.15 * math.sin(t * 12)
+			timerLabel.TextColor3 = (math.floor(t * 6) % 2 == 0) and Color3.fromRGB(255, 210, 63) or Color3.fromRGB(255, 77, 94)
+		elseif left <= 30 and left > 0 then
+			-- the last half minute: bigger, and shaking
+			scale = left <= 10 and 1.25 or 1.15
+			rot = math.sin(t * 35) * (left <= 10 and 5 or 3)
+		end
+		if left <= 10 and exact > 0 then
+			-- the last ten seconds: a big red number in the middle, pulsing each second
+			bigOn = true
+			countdown.big.Text = tostring(math.min(10, math.ceil(exact)))
+			countdown.bigScale.Scale = 1 + 0.45 * (exact % 1)
+		end
 	end
+	countdown.scale.Scale = scale
+	timerLabel.Rotation = rot
+	countdown.big.Visible = bigOn
 
 	-- where am I, and how close is the host?
 	local r = roomAt(hrp.Position)
@@ -2155,3 +2188,47 @@ RunService.RenderStepped:Connect(function()
 	lookBtn.Text = mouseLook and "\u{1F5B1} Look: on (M)" or "\u{1F5B1} Look (M)"
 	lookBtn.BackgroundColor3 = mouseLook and PUMP or Color3.fromRGB(75, 58, 102)
 end)
+
+-- ---------- the camera: never inside or behind a wall ----------
+-- Invisicam fades furniture between the camera and you (shelves, tables);
+-- walls, ceilings and door frames instead stop the camera in front of them,
+-- so backing up to a wall never shows the next room or the black outside.
+do
+	local RS = game:GetService("RunService")
+	local STOP = { Wall = true, MirrorWall = true, TunnelGlass = true, Ceiling = true, Lintel = true, TallLintel = true, HostDoor = true }
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	RS:BindToRenderStep("EscapeCrewCameraWalls", Enum.RenderPriority.Camera.Value + 1, function()
+		local cam = workspace.CurrentCamera
+		local char = player.Character
+		local head = char and char:FindFirstChild("Head")
+		if not cam or not head or cam.CameraType ~= Enum.CameraType.Custom then
+			return
+		end
+		local from = head.Position
+		local to = cam.CFrame.Position
+		local dir = to - from
+		local dist = dir.Magnitude
+		if dist < 1 then
+			return
+		end
+		local unit = dir.Unit
+		params.FilterDescendantsInstances = { char }
+		local origin = from
+		for _ = 1, 8 do
+			local hit = workspace:Raycast(origin, to - origin, params)
+			if not hit then
+				return
+			end
+			if STOP[hit.Instance.Name] then
+				local stopAt = hit.Position - unit * 0.6
+				if (stopAt - from).Magnitude < 0.6 then
+					stopAt = from - unit * 0.1
+				end
+				cam.CFrame = CFrame.new(stopAt) * cam.CFrame.Rotation
+				return
+			end
+			origin = hit.Position + unit * 0.05 -- furniture: look past it (Invisicam fades it)
+		end
+	end)
+end

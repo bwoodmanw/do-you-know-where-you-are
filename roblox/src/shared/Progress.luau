@@ -190,7 +190,7 @@ local SPECIAL = {
 		},
 		[15] = {
 			{ id = "tk15", name = "Oiled Toolkit", say = "Toolkit recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "shield15", name = "Pocket Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+			{ id = "steady15", name = "Steady Hands", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[17] = {
 			{ id = "hands17", name = "Steady Fingers", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
@@ -236,7 +236,7 @@ local SPECIAL = {
 		},
 		[15] = {
 			{ id = "clone15", name = "Deep Shadow", say = "Your clone fools the host for 6 s", mods = { cloneTime = 6 } },
-			{ id = "sneak15", name = "Long Shade", say = "Sneak lasts 12 seconds", mods = { sneakTime = 12 } },
+			{ id = "sneak15", name = "Long Shade", say = "Sneak lasts 16 seconds", mods = { sneakTime = 16 } },
 		},
 		[17] = {
 			{ id = "rest17", name = "Swift Rest", say = "Sneak recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -244,7 +244,7 @@ local SPECIAL = {
 		},
 		[19] = {
 			{ id = "clone19", name = "Living Shadow", say = "Your clone fools the host for 7 s", mods = { cloneTime = 7 } },
-			{ id = "sneak19", name = "Vanish", say = "Sneak lasts 15 seconds", mods = { sneakTime = 15 } },
+			{ id = "sneak19", name = "Vanish", say = "Sneak lasts 18 seconds", mods = { sneakTime = 18 } },
 		},
 		[20] = {
 			{ id = "nightwalker20", name = "Night Walker", say = "In a dark room the host never sees you", mods = { p20 = "nightwalker" } },
@@ -330,7 +330,7 @@ local SPECIAL = {
 		},
 		[15] = {
 			{ id = "build15", name = "Quick Builder", say = "Your button recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "tough15", name = "Tough", say = "Start every game with a Party Shield", mods = { shield = true } },
+			{ id = "stride15", name = "Long Stride", say = "Run 5% faster", mods = { runMult = 1.05 } },
 		},
 		[17] = {
 			{ id = "hold17", name = "Rock Barricade", say = "The host is stuck at your barricade 4 s longer", mods = { barricadeHold = 8 } },
@@ -368,7 +368,7 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "flare11", name = "Long Flare", say = "Flare lasts 10 s and lifts friends 20 studs away", mods = { flareTime = 10, flareRange = 20 } },
-			{ id = "bulb11", name = "Bigger Bulb", say = "Your light reaches further", mods = { glowRange = 34 } },
+			{ id = "bulb11", name = "Searchlight", say = "Your light reaches very far", mods = { glowRange = 46 } },
 		},
 		[13] = {
 			{ id = "quick13", name = "Quick Spark", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -376,7 +376,7 @@ local SPECIAL = {
 		},
 		[15] = {
 			{ id = "flare15", name = "Longer Flare", say = "Flare lasts 12 s, gives 8% stamina, reaches 24 studs", mods = { flareTime = 12, flareRange = 24, flareStamina = 8 } },
-			{ id = "secret15", name = "Secret Seeker", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
+			{ id = "worm15", name = "Glow Worm", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
 		},
 		[17] = {
 			{ id = "quick17", name = "Bright Spark", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -410,7 +410,7 @@ local SPECIAL = {
 		},
 		[10] = {
 			{ id = "hug10", name = "Group Hug", say = "Shield also gives every friend within 20 studs all their stamina back", mods = { p10 = "hug" } },
-			{ id = "allshields10", name = "Shields for All", say = "Shield gives a Party Shield to every friend near you", mods = { healShield = true } },
+			{ id = "guardian10", name = "Guardian Angel", say = "Shield recharges twice as fast", mods = { cooldownMult = 0.5 } },
 		},
 		[11] = {
 			{ id = "care11", name = "Kind Heart", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -514,7 +514,7 @@ local SPECIAL = {
 		},
 		[15] = {
 			{ id = "vine15", name = "Bramble Wall", say = "Vines last 10 s", mods = { vineTime = 10 } },
-			{ id = "bloom15", name = "Bloom", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
+			{ id = "breath15", name = "Deep Breath", say = "10% more stamina", mods = { staminaMult = 1.1 } },
 		},
 		[17] = {
 			{ id = "quick17", name = "Spring Growth", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
@@ -525,7 +525,7 @@ local SPECIAL = {
 			{ id = "thicket19", name = "Thicket", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
 		},
 		[20] = {
-			{ id = "forest20", name = "Forest Friend", say = "Your team starts knowing one color of the code, and the big plant answers twice as fast", mods = { revealOne = true, holdMult = 0.5 } },
+			{ id = "forest20", name = "Forest Friend", say = "The big plant answers you instantly, and +1 free clue for the team", mods = { p20 = "forest", clues = 1 } },
 			{ id = "overgrowth20", name = "Overgrowth", say = "Vines grow across two doorways at once", mods = { p20 = "overgrowth" } },
 		},
 	},
