@@ -151,8 +151,10 @@ Passes, pricing, DevEx), `SCHOOL.md` (building 4, the Caretaker host),
 
 ## Open items and decisions waiting on Brent
 
-1. **Published both places 8 Oct ~18:45** (everything up to the Candy Shop
-   rebuild is live; later commits need another publish). Before that: **Publish both places** (Rojo connected -> File -> Publish to Roblox, the
+1. **Published both places again 8 Oct (late)**: everything up to commit
+   38a5814 is live (TEST_PLAN rounds 12-35 to check live). The owner-only
+   test tools (Lobby: 🧪 Lv buttons in Characters, 🎁 Gift) show only for
+   Bwoodmanw live (and for anyone in Studio for Lv). Before that: **Publish both places** (Rojo connected -> File -> Publish to Roblox, the
    Party House window then the Lobby window) - **before 29 Oct**. Then check
    live: Space Cadet Brainy, skins on sale, the School unlocking.
 2. **Skins:** Brent closed the Starlight Echo and Halloween Nurse Patch
