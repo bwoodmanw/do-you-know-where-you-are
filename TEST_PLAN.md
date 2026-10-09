@@ -17,6 +17,10 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 50 (9 Oct) - posters and tile icons
+- [ ] Every floor: up to 4 framed posters high on inside walls (never the outside walls with windows, never over furniture against the wall, not beside the invitation or painted wall), the building's own two (photo of a few)
+- [ ] Lobby tiles show their own pictures (lightning, flashlight, balloons, Brainy-like face, shop bag, scroll, teddy, envelope, door, hand, camera, question mark)
+
 ## Round 49 (9 Oct) - the new Lobby screen (art/ui-mockups/lobby-v2.png)
 - [ ] Left: "ESCAPE CREW", a big green Quick Play tile, then Solo, Party, Characters, Shop, Quests, Plushies tiles (emoji for now) - each does what its old button did
 - [ ] Right: Invite, Join, Emote, Photo (shows Daily / Every escape / Off; tap cycles), Help; Join opens the friends' parties list beside it and shows a red number when there are parties to join

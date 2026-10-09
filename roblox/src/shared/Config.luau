@@ -13,11 +13,13 @@ Config.GRACE_SPOOKY = 12
 
 Config.WALK = 12
 -- framed posters on the inside walls (art/posters/game/<building>-1/-2.png,
--- uploaded as images; 0 = not uploaded yet, so none hang)
+-- uploaded as images)
 Config.POSTERS = {
 	perFloor = 4,
-	party = { 0, 0 }, gummy = { 0, 0 }, hospital = { 0, 0 },
-	school = { 0, 0 }, carnival = { 0, 0 }, aquarium = { 0, 0 },
+	-- ids checked on Roblox's API, 9 Oct
+	party = { 111553083684562, 119424732995004 }, gummy = { 115568376298735, 82815502789449 },
+	hospital = { 72475844112277, 79143848642024 }, school = { 100386883839957, 72873164572941 },
+	carnival = { 70766362873938, 107865265809184 }, aquarium = { 133479300783870, 83278498617999 },
 }
 -- the Lobby's tile pictures (uploaded images; 0 = the emoji until then)
 Config.UI_ICONS = { -- art/ui-icons/*.png (ids checked on Roblox's API, 9 Oct)
