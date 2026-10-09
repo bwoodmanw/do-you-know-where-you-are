@@ -460,9 +460,15 @@ PIECES.FishTank = { size = Vector3.new(7, 7, 2), build = function(f, b)
 	add(f, b, { size = Vector3.new(7.3, 0.4, 1.8), at = Vector3.new(0, 7.1, T / 2 - 0.85), color = C(40, 40, 45), mat = METAL })
 	add(f, b, { size = Vector3.new(6.8, 0.5, 1.4), at = Vector3.new(0, 1.35, T / 2 - 0.85), color = C(230, 205, 150), mat = Enum.Material.Sand })
 	local cols = { C(255, 140, 40), C(255, 220, 60), C(255, 90, 140), C(120, 230, 160) }
+	local Fish = require(script.Parent.Fish)
 	for i = 1, 4 do
-		local fish = add(f, b, { size = Vector3.new(0.9, 0.5, 0.25), at = Vector3.new(-2.6 + i * 1.1, 2.6 + (i % 3) * 1.2, T / 2 - 0.85), color = cols[i] })
-		TweenService:Create(fish, TweenInfo.new(2 + i * 0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { CFrame = fish.CFrame * CFrame.new(1.4, 0.3, 0) }):Play()
+		-- real little fish swimming along the tank, turning at each end
+		local y = 2.6 + (i % 3) * 1.2
+		local a = (b * CFrame.new(-2.6, y, T / 2 - 0.85)).Position
+		local z = (b * CFrame.new(2.6, y + 0.3, T / 2 - 0.85)).Position
+		local start = a:Lerp(z, i / 5)
+		local body = Fish.make(f, CFrame.new(start), cols[i], 0.9)
+		Fish.swim(body, i % 2 == 0 and a or z, i % 2 == 0 and z or a, 2.4 + i * 0.5)
 	end
 	glow(add(f, b, { size = Vector3.new(0.3, 0.3, 0.3), at = Vector3.new(0, 6.6, T / 2 - 0.85), color = C(170, 220, 255), mat = NEON }), C(140, 200, 255), 10, 0.8)
 end }

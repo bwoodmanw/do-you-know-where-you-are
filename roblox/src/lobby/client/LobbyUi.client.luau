@@ -1539,8 +1539,10 @@ local function showModel(sk)
 		shown.Parent = viewWorld
 		shown:PivotTo(CFrame.Angles(0, math.pi, 0))
 		do
-			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown, true) -- the body only
-			shown:SetAttribute("FitH", standing.Y)
+			-- shoulders to feet (a hood or a big head is left out, so a skin is
+			-- the same size as its plain character), as a whole height
+			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown, "nohead")
+			shown:SetAttribute("FitH", standing.Y / 0.72)
 		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, modelName) -- the character's own idle
 		shownFor = modelName

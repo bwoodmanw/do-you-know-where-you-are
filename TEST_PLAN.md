@@ -17,6 +17,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 44 (9 Oct) - real fish, bigger plushies, the found card, preview sizes (3rd try)
+- [ ] Aquarium Shark Tunnel (and every fish tank): little fish with round bodies, a fanned tail, a top fin and eyes (orange ones are white-striped clownfish), swimming end to end and turning round - no loose blocks (photo)
+- [ ] A plushie in the game is about knee-to-waist high, its animal easy to tell (photo)
+- [ ] Picking it up: a card slides in on the LEFT with the plushie turning in 3D, "You found ...!" and "n of 19 in your Plushie Book", for 5 s; nothing floats over your head; others get the usual message
+- [ ] Characters: Shadow and Ghostly Shadow the same size (now measured shoulders to feet)
+
 ## Round 43 (9 Oct) - plushies you can see, runs, the intro scare, preview sizes again
 - [ ] Studio Play: Output prints "[Plushie] <name> is in the <room>", and 6 s in a message says the same; go there: a small fabric animal on the floor with a stronger sparkle and a soft glow (photo)
 - [ ] Lobby -> Plushies: each card shows its plushie in 3D, gently turning; ones you haven't found are a black shape with ❓ (photo)

@@ -765,8 +765,10 @@ local function showChar()
 		shown.Parent = viewWorld
 		shown:PivotTo(CFrame.Angles(0, math.pi, 0))
 		do
-			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown, true) -- the body only
-			shown:SetAttribute("FitH", standing.Y)
+			-- shoulders to feet (a hood or a big head is left out, so a skin is
+			-- the same size as its plain character), as a whole height
+			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown, "nohead")
+			shown:SetAttribute("FitH", standing.Y / 0.72)
 		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, src.Name) -- the character's own idle
 		noModel.Visible = false
@@ -2345,6 +2347,56 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 			hl.Parent = h
 			game:GetService("Debris"):AddItem(hl, data and data.seconds or 5)
 		end
+	elseif kind == "plushie" and type(data) == "table" then
+		-- a card on the left: the plushie turning in 3D, its name, your count
+		local def
+		for _, p in ipairs(Config.PLUSHIES or {}) do
+			if p.map == data.map then
+				def = p
+			end
+		end
+		if def then
+			local card = frame(gui, { Size = UDim2.fromOffset(240, 250), Position = UDim2.new(0, -260, 0.5, -125), ZIndex = 45 })
+			corner(card, 16)
+			local vf = Instance.new("ViewportFrame")
+			vf.Size = UDim2.new(1, -20, 0, 150)
+			vf.Position = UDim2.fromOffset(10, 10)
+			vf.BackgroundTransparency = 1
+			vf.Ambient = Color3.fromRGB(170, 160, 180)
+			vf.LightDirection = Vector3.new(-0.4, -1, -0.6)
+			vf.ZIndex = 46
+			vf.Parent = card
+			local vcam = Instance.new("Camera")
+			vcam.FieldOfView = 30
+			vcam.Parent = vf
+			vf.CurrentCamera = vcam
+			vcam.CFrame = CFrame.lookAt(Vector3.new(0, 1.6, -8.5), Vector3.new(0, 1.3, 0))
+			local okP, plush = pcall(function()
+				return require(ReplicatedStorage.Shared.Plushies).build(def, CFrame.new(), true)
+			end)
+			if okP and plush then
+				plush.Parent = vf
+				local t0 = os.clock()
+				local conn
+				conn = RunService.RenderStepped:Connect(function()
+					if not plush.Parent then
+						conn:Disconnect()
+						return
+					end
+					plush:PivotTo(CFrame.Angles(0, math.pi + (os.clock() - t0) * 2, 0))
+				end)
+			end
+			label(card, { Size = UDim2.new(1, -20, 0, 46), Position = UDim2.fromOffset(10, 162), Text = "You found " .. def.name .. "!", TextWrapped = true, TextColor3 = PUMP, ZIndex = 46 })
+			label(card, { Size = UDim2.new(1, -20, 0, 26), Position = UDim2.fromOffset(10, 212), Text = "\u{1F9F8} " .. tostring(data.n or "?") .. " of " .. tostring(data.total or #Config.PLUSHIES) .. " in your Plushie Book", ZIndex = 46 })
+			TweenService:Create(card, TweenInfo.new(0.4, Enum.EasingStyle.Back), { Position = UDim2.new(0, 16, 0.5, -125) }):Play()
+			task.delay(5, function()
+				TweenService:Create(card, TweenInfo.new(0.3), { Position = UDim2.new(0, -260, 0.5, -125) }):Play()
+				task.delay(0.35, function()
+					card:Destroy()
+				end)
+			end)
+		end
+		return
 	elseif kind == "corn" and data and data.userId == player.UserId then
 		local pic = Config.BOOST_IMAGES and Config.BOOST_IMAGES.candy or 0
 		popUp(pic > 0 and pic or "\u{1F383}", tostring(data.found or "") .. " candy corns")

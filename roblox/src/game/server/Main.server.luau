@@ -1949,6 +1949,12 @@ function round.placePlushie()
 	table.insert(state.extraTaken, { sl[1], sl[2] })
 	local pos = House.at(sl[1], sl[2], 0)
 	local m = Plushies.build(def, CFrame.new(pos) * CFrame.Angles(0, math.random() * math.pi * 2, 0))
+	-- big enough to see what animal it is (built 2.4 studs tall), feet on the floor
+	m:ScaleTo(1.6)
+	do
+		local bcf, bsize = m:GetBoundingBox()
+		m:PivotTo(m:GetPivot() + Vector3.new(pos.X - bcf.Position.X, pos.Y + bsize.Y / 2 - bcf.Position.Y, pos.Z - bcf.Position.Z))
+	end
 	m.Parent = world.root
 	if RunService:IsStudio() then
 		print("[Plushie] " .. def.name .. " is in the " .. tostring(roomAt(sl[1], sl[2])))
@@ -1978,9 +1984,16 @@ function round.placePlushie()
 							end
 							addPoints(plr, Config.PLUSHIE_POINTS, true)
 							Profile.publish(plr)
-							Effects.burst(pos + Vector3.new(0, 1.5, 0), "rescue")
-							Effects.icon(plr, Config.PLUSHIE_ICON[def.animal] or "\u{1F9F8}", 2)
-							say("info", "\u{1F9F8} " .. plr.DisplayName .. " found " .. def.name .. "! (" .. n .. " / " .. #Config.PLUSHIES .. " in their Plushie Book)")
+							Effects.burst(pos + Vector3.new(0, 2.5, 0), "rescue")
+							-- the finder gets a card with the plushie in 3D (on the
+							-- side, so it hides nothing); everyone else a message
+							for _, p in ipairs(Players:GetPlayers()) do
+								if p == plr then
+									say("plushie", "\u{1F9F8} You found " .. def.name .. "!", { userId = plr.UserId, map = mapId, n = n, total = #Config.PLUSHIES }, p)
+								else
+									say("info", "\u{1F9F8} " .. plr.DisplayName .. " found " .. def.name .. "! (" .. n .. " / " .. #Config.PLUSHIES .. " in their Plushie Book)", nil, p)
+								end
+							end
 							if n >= #Config.PLUSHIES and (Config.BADGES.plushies or 0) > 0 then
 								task.spawn(pcall, function()
 									game:GetService("BadgeService"):AwardBadge(plr.UserId, Config.BADGES.plushies)

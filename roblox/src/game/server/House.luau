@@ -507,13 +507,14 @@ end
 local FISH = { Color3.fromRGB(255, 140, 40), Color3.fromRGB(255, 220, 60), Color3.fromRGB(80, 170, 255), Color3.fromRGB(255, 90, 140), Color3.fromRGB(120, 230, 160) }
 local WATER = Color3.fromRGB(60, 150, 210)
 local function fishIn(root, centre, spread, n, seed, scale)
-	scale = scale or 1
+	-- real little fish (Fish.luau) swimming to and fro, each its own way
+	local Fish = require(script.Parent.Fish)
 	for i = 1, n do
 		local col = FISH[(seed + i) % #FISH + 1]
-		local p0 = centre + Vector3.new(math.cos(i * 2.3 + seed) * spread.X, math.sin(i * 1.7) * spread.Y, math.sin(i * 2.3 + seed) * spread.Z)
-		local fish = part(root, { Name = "Fish", Size = Vector3.new(0.9, 0.5, 0.25) * scale, Position = p0, Color = col, Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CastShadow = false })
-		part(root, { Name = "FishTail", Size = Vector3.new(0.3, 0.4, 0.1) * scale, Position = p0 - Vector3.new(0.55 * scale, 0, 0), Color = col, Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CastShadow = false }).Parent = fish
-		TweenService:Create(fish, TweenInfo.new(2.4 + (i % 3) * 0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = p0 + Vector3.new(spread.X * 0.8, 0.2, 0) }):Play()
+		local p0 = centre + Vector3.new(math.cos(i * 2.3 + seed) * spread.X * 0.5, math.sin(i * 1.7) * spread.Y, math.sin(i * 2.3 + seed) * spread.Z * 0.5)
+		local dir = (i % 2 == 0) and Vector3.new(spread.X * 0.8, 0.2, 0) or Vector3.new(0, -0.2, spread.Z * 0.8)
+		local body = Fish.make(root, CFrame.new(p0), col, scale or 1)
+		Fish.swim(body, p0 - dir, p0 + dir, 2.6 + (i % 3) * 0.8)
 	end
 end
 local function aquariumFurniture(root, kind, x, y, map)
