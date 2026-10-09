@@ -1566,13 +1566,15 @@ local freezeSlot, freezeText = activeSlot("freeze", "\u{1F9CA}")
 
 -- ---------- running and stamina ----------
 local stamina, tired, candyUntil = 100, false, 0
-remotes.Boost.OnClientEvent:Connect(function(kind)
+remotes.Boost.OnClientEvent:Connect(function(kind, amount)
 	if kind == "candy" then
 		candyUntil = os.clock() + 20
 	elseif kind == "stamina" then
 		stamina, tired = 100, false
 	elseif kind == "half" then
 		stamina = math.min(100, stamina + 50)
+	elseif kind == "plus" then
+		stamina = math.min(100, stamina + (tonumber(amount) or 0))
 		if stamina >= 25 then
 			tired = false
 		end
@@ -1632,8 +1634,8 @@ RunService.RenderStepped:Connect(function(dt)
 		local candy = os.clock() < candyUntil
 		-- Echo's burst after a noise, Patch's Medic Run
 		local bonus = player:GetAttribute("RunBonus") or 1
-		if (player:GetAttribute("BurstUntil") or 0) > workspace:GetServerTimeNow() then
-			bonus *= player:GetAttribute("BurstMult") or 1
+		if (player:GetAttribute("TeamBurstUntil") or 0) > workspace:GetServerTimeNow() then
+			bonus *= player:GetAttribute("TeamBurstMult") or 1
 		end
 		if wantRun and moving and not tired then
 			hum.WalkSpeed = Config.RUN * (player:GetAttribute("RunMult") or 1) * bonus

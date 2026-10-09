@@ -131,7 +131,9 @@ Config.SKILLS = {
 
 Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30 }
 -- skills version 2 (SKILLS_V2.md): every character has a button
-Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise
+-- Echo's burst after a noise: she and every friend who comes within `range`
+-- studs during it run `mult` faster for `seconds` and get `stamina`% back (once each)
+Config.ECHO_BURST = { mult = 1.05, seconds = 3, range = 16, stamina = 6 }
 Config.VINES = { seconds = 6, slow = 0.35, reach = 2 } -- Bramble: the host wades through them (kids don't)
 Config.CLONE = { seconds = 4, run = 28 } -- Shadow's clone: how long the host chases it, how far it runs
 Config.MOUSE = { seconds = 5, run = 30 } -- Tinker's wind-up mouse
@@ -172,7 +174,7 @@ Config.SKILL_INFO = {
 	muscle = { about = "Shoves away junk heaped in blocked doorways (and the Junk Closet's bonus present), quietly. Barricade: slides a \u{1F4AA} crate into a doorway - friends squeeze through, the host has to smash it.", how = "Hold E at blocked doorways. Press Barricade next to a \u{1F4AA} crate." },
 	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code. Flare: her light reaches more than twice as far for 8 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
 	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). Her Shield button gives a friend a Party Shield. She frees every caged friend at once, faster than anyone.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
-	echo = { about = "Hears the host coming from further away, and throws a noise that sends the host to look somewhere else. After each noise Echo runs 5% faster for 3 seconds.", how = "Press Noise, then tap where to throw it." },
+	echo = { about = "Hears the host coming from further away, and throws a noise that sends the host to look somewhere else. After each noise, Echo and friends near her run 5% faster for 3 seconds and get a little stamina back.", how = "Press Noise, then tap where to throw it." },
 	bramble = { about = "Talks to plants: the big plant whispers the door code to Bramble. Vines: grows vines across a doorway - the host wades through them slowly, kids walk straight through.", how = "Find the big plant (in a room open from the start) and press E. Stand in a doorway and press Vines (R)." },
 }
 

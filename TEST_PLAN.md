@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,12 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 31 (8 Oct) - Echo's team burst, the Shark Tunnel, your own name tag
+- [ ] Echo throws a noise: she and any friend within 16 studs during the next 3 s run 5% faster for 3 s and get +6% stamina (once each); friends see "Echo's burst!"
+- [ ] Echo's ladder 11-20: the burst grows (range 20-32 studs, stamina 8-10%, faster, longer)
+- [ ] Aquarium Main Hall, Shark Tunnel: the glass walls show water with sand, weed, big bright fish and a blue glow (not empty)
+- [ ] Your own skill tag ("Shadow" etc.) no longer floats over your head for you (others still see it)
 
 ## Round 30 (8 Oct) - fixes: Toolkit, map, pop-ups, level buttons
 - [ ] Tinker: stand at a lock (or the Store Room), press Toolkit, then F: it opens at once (the prompt's ring is gone)

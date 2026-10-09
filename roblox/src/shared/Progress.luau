@@ -459,7 +459,7 @@ local SPECIAL = {
 			{ id = "echomap10", name = "Echo Map", say = "After a noise you see the host through walls for 5 s", mods = { p10 = "echomap" } },
 		},
 		[11] = {
-			{ id = "burst11", name = "Bigger Burst", say = "Your burst: 8% faster for 4 s", mods = { burstMult = 1.08, burstTime = 4 } },
+			{ id = "burst11", name = "Bigger Burst", say = "Burst: 8% faster for 4 s, reaching friends 20 studs away", mods = { burstMult = 1.08, burstTime = 4, burstRange = 20 } },
 			{ id = "throw11", name = "Long Arm", say = "Throw a noise further", mods = { echoRange = 120 } },
 		},
 		[13] = {
@@ -467,20 +467,20 @@ local SPECIAL = {
 			{ id = "ears13", name = "Sharp Ears", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
 		},
 		[15] = {
-			{ id = "burst15", name = "Strong Burst", say = "Your burst: 10% faster for 5 s", mods = { burstMult = 1.1, burstTime = 5 } },
+			{ id = "burst15", name = "Strong Burst", say = "Burst: 10% faster for 5 s and 8% stamina back, 24 studs", mods = { burstMult = 1.1, burstTime = 5, burstRange = 24, burstStamina = 8 } },
 			{ id = "throw15", name = "Far Shout", say = "Throw a noise even further", mods = { echoRange = 130 } },
 		},
 		[17] = {
 			{ id = "quick17", name = "Fast Echo", say = "Noise recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "lungs17", name = "Singer's Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "lungs17", name = "Encore", say = "Burst gives 10% stamina back", mods = { burstStamina = 10 } },
 		},
 		[19] = {
-			{ id = "burst19", name = "Rush", say = "Your burst: 12% faster for 5 s", mods = { burstMult = 1.12, burstTime = 5 } },
+			{ id = "burst19", name = "Rush", say = "Burst: 12% faster for 5 s, reaching friends 28 studs away", mods = { burstMult = 1.12, burstTime = 5, burstRange = 28 } },
 			{ id = "quick19", name = "Rapid Echo", say = "Noise recharges 20% faster", mods = { cooldownMult = 0.8 } },
 		},
 		[20] = {
 			{ id = "soundwave20", name = "Sound Wave", say = "A noise landing near the host stuns him 1 s", mods = { p20 = "soundwave" } },
-			{ id = "superburst20", name = "Super Burst", say = "Your burst: 15% faster for 6 s", mods = { burstMult = 1.15, burstTime = 6 } },
+			{ id = "superburst20", name = "Super Burst", say = "Burst: 15% faster for 6 s and 10% stamina, 32 studs", mods = { burstMult = 1.15, burstTime = 6, burstRange = 32, burstStamina = 10 } },
 		},
 	},
 	bramble = {
@@ -560,7 +560,8 @@ function Progress.mods(skill, picks, xp)
 						elseif k == "energyStart" or k == "clues" then
 							m[k] += v
 						elseif k == "glowRange" or k == "healAmount" or k == "echoRange" or k == "sneakTime" or k == "barricadeHold"
-						or k == "burstMult" or k == "burstTime" or k == "flareTime" or k == "vineTime" or k == "cloneTime" then
+						or k == "burstMult" or k == "burstTime" or k == "flareTime" or k == "vineTime" or k == "cloneTime"
+						or k == "burstRange" or k == "burstStamina" then
 							m[k] = math.max(m[k] or 0, v)
 						else
 							m[k] = v

@@ -506,12 +506,13 @@ end
 -- whirlpool you can stand on (it turns), rock pools
 local FISH = { Color3.fromRGB(255, 140, 40), Color3.fromRGB(255, 220, 60), Color3.fromRGB(80, 170, 255), Color3.fromRGB(255, 90, 140), Color3.fromRGB(120, 230, 160) }
 local WATER = Color3.fromRGB(60, 150, 210)
-local function fishIn(root, centre, spread, n, seed)
+local function fishIn(root, centre, spread, n, seed, scale)
+	scale = scale or 1
 	for i = 1, n do
 		local col = FISH[(seed + i) % #FISH + 1]
 		local p0 = centre + Vector3.new(math.cos(i * 2.3 + seed) * spread.X, math.sin(i * 1.7) * spread.Y, math.sin(i * 2.3 + seed) * spread.Z)
-		local fish = part(root, { Name = "Fish", Size = Vector3.new(0.9, 0.5, 0.25), Position = p0, Color = col, Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CastShadow = false })
-		part(root, { Name = "FishTail", Size = Vector3.new(0.3, 0.4, 0.1), Position = p0 - Vector3.new(0.55, 0, 0), Color = col, Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CastShadow = false }).Parent = fish
+		local fish = part(root, { Name = "Fish", Size = Vector3.new(0.9, 0.5, 0.25) * scale, Position = p0, Color = col, Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CastShadow = false })
+		part(root, { Name = "FishTail", Size = Vector3.new(0.3, 0.4, 0.1) * scale, Position = p0 - Vector3.new(0.55 * scale, 0, 0), Color = col, Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CastShadow = false }).Parent = fish
 		TweenService:Create(fish, TweenInfo.new(2.4 + (i % 3) * 0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Position = p0 + Vector3.new(spread.X * 0.8, 0.2, 0) }):Play()
 	end
 end
@@ -721,12 +722,21 @@ function House.build(map)
 					Size = Vector3.new(T, tallAt(map, x, y, true) and HT or H, T),
 					Position = at(x, y, (tallAt(map, x, y, true) and HT or H) / 2),
 					Material = (mirror or tunnel) and Enum.Material.Glass or Enum.Material.Plaster,
-					Color = mirror and Color3.fromRGB(200, 222, 238) or tunnel and Color3.fromRGB(50, 130, 190) or wallColor,
-					Reflectance = mirror and 0.55 or tunnel and 0.1 or 0,
-					Transparency = tunnel and 0.35 or 0,
+					Color = mirror and Color3.fromRGB(200, 222, 238) or tunnel and Color3.fromRGB(70, 165, 225) or wallColor,
+					Reflectance = mirror and 0.55 or tunnel and 0.05 or 0,
+					Transparency = tunnel and 0.55 or 0,
 				})
 				if tunnel then
-					fishIn(root, at(x, y, 7), Vector3.new(2.5, 3, 2.5), 2, x * 7 + y)
+					-- a lit tank of water: big bright fish, weed and sand at the bottom, a blue glow
+					fishIn(root, at(x, y, 7), Vector3.new(2.6, 3.5, 2.6), 4, x * 7 + y, 1.7)
+					part(root, { Name = "TankSand", Size = Vector3.new(T - 0.4, 0.6, T - 0.4), Position = at(x, y, 0.3), Color = Color3.fromRGB(230, 205, 150), Material = Enum.Material.Sand, CanCollide = false, CanQuery = false })
+					for k = 1, 3 do
+						part(root, { Name = "Weed", Size = Vector3.new(0.4, 3 + k, 0.4), Position = at(x, y, (3 + k) / 2 + 0.5) + Vector3.new((k - 2) * 2.2, 0, ((x + k) % 3 - 1) * 1.8), Color = Color3.fromRGB(60, 170 - k * 15, 80), Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CastShadow = false })
+					end
+					local glowPart = part(root, { Name = "TankGlow", Size = Vector3.new(0.5, 0.5, 0.5), Position = at(x, y, H - 1), Transparency = 1, CanCollide = false, CanQuery = false })
+					local l = Instance.new("PointLight")
+					l.Color, l.Range, l.Brightness, l.Shadows = Color3.fromRGB(120, 200, 255), 14, 1.2, false
+					l.Parent = glowPart
 				end
 				if c == "C" then
 					local side = cell(map, x + 1, y) == "." and 1 or -1
