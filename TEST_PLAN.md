@@ -17,6 +17,13 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 43 (9 Oct) - plushies you can see, runs, the intro scare, preview sizes again
+- [ ] Studio Play: Output prints "[Plushie] <name> is in the <room>", and 6 s in a message says the same; go there: a small fabric animal on the floor with a stronger sparkle and a soft glow (photo)
+- [ ] Lobby -> Plushies: each card shows its plushie in 3D, gently turning; ones you haven't found are a black shape with ❓ (photo)
+- [ ] Shadow and Brainy run with Roblox's plain run (arms pumping), the rest with their pack's; walk / idle unchanged - watch each character and host run and tell Claude any that look odd (Config.ANIM.plainRun takes a character or host id)
+- [ ] Spooky game (leader picks 👻 Spooky): when the host comes out, a roar and his face rushes at you - try each host (Config.STUDIO_HOST = "pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); never a plain black screen
+- [ ] Characters: Shadow and Ghostly Shadow the same size (measured on the body only now)
+
 ## Round 42 (9 Oct) - Lobby buttons, preview sizes
 - [ ] Lobby: "😄 Emote (G)" and "📸 Photo: Daily" are a row in the left menu under How to play; nothing sits on the sound / music buttons top right; the menu's buttons all fit (photo)
 - [ ] Characters (Lobby and the game's select): Shadow and Ghostly Shadow (and every other skin) are about the same size on screen

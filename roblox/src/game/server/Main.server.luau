@@ -25,7 +25,7 @@ local HouseMap = MapGen.make(Plans.partyhouse[1])
 local House = require(script.Parent.House)
 local Host = require(script.Parent.Host)
 local Effects = require(script.Parent.Effects)
-local Plushies = require(script.Parent.Plushies)
+local Plushies = require(ReplicatedStorage.Shared.Plushies)
 local Characters = require(script.Parent.Characters)
 local Props = require(script.Parent.Props)
 
@@ -1950,6 +1950,12 @@ function round.placePlushie()
 	local pos = House.at(sl[1], sl[2], 0)
 	local m = Plushies.build(def, CFrame.new(pos) * CFrame.Angles(0, math.random() * math.pi * 2, 0))
 	m.Parent = world.root
+	if RunService:IsStudio() then
+		print("[Plushie] " .. def.name .. " is in the " .. tostring(roomAt(sl[1], sl[2])))
+		task.delay(6, function()
+			say("info", "(Studio test) " .. def.name .. " is in the " .. tostring(roomAt(sl[1], sl[2])) .. ".")
+		end)
+	end
 	local myState, myWorld = state, world
 	local told = {}
 	task.spawn(function()

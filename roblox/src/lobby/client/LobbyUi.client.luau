@@ -925,12 +925,24 @@ do
 	for _, m in ipairs(Progress.MAPS) do
 		floorName[m.id] = m.name
 	end
+	local spinning = {} -- [viewport] = plushie model, turned slowly while the book is open
+	RunService.RenderStepped:Connect(function()
+		if book.Visible then
+			local a = os.clock() * 0.8
+			for _, m in pairs(spinning) do
+				if m.Parent then
+					m:PivotTo(CFrame.Angles(0, math.pi + math.sin(a) * 0.9, 0))
+				end
+			end
+		end
+	end)
 	local function paint()
 		for _, c in ipairs(grid:GetChildren()) do
 			if c:IsA("GuiObject") then
 				c:Destroy()
 			end
 		end
+		table.clear(spinning)
 		local found = 0
 		local have = profile.plush or {}
 		for i, p in ipairs(Config.PLUSHIES) do
@@ -940,7 +952,31 @@ do
 			end
 			local card = frame(grid, { LayoutOrder = i, BackgroundColor3 = got and Color3.fromRGB(70, 50, 100) or Color3.fromRGB(40, 30, 55), ZIndex = 22 })
 			corner(card, 12)
-			label(card, { Size = UDim2.new(1, 0, 0, 52), Position = UDim2.fromOffset(0, 6), Text = got and (Config.PLUSHIE_ICON[p.animal] or "\u{1F9F8}") or "\u{2753}", ZIndex = 23 })
+			-- the plushie itself, turning slowly (a dark shape until found)
+			local vf = Instance.new("ViewportFrame")
+			vf.Size = UDim2.new(1, 0, 0, 56)
+			vf.Position = UDim2.fromOffset(0, 2)
+			vf.BackgroundTransparency = 1
+			vf.Ambient = Color3.fromRGB(170, 160, 180)
+			vf.LightDirection = Vector3.new(-0.4, -1, -0.6)
+			vf.ImageColor3 = got and Color3.new(1, 1, 1) or Color3.new(0, 0, 0)
+			vf.ZIndex = 23
+			vf.Parent = card
+			local vcam = Instance.new("Camera")
+			vcam.FieldOfView = 30
+			vcam.Parent = vf
+			vf.CurrentCamera = vcam
+			local okP, plush = pcall(function()
+				return require(ReplicatedStorage.Shared.Plushies).build(p, CFrame.new(), true)
+			end)
+			if okP and plush then
+				plush.Parent = vf
+				spinning[vf] = plush
+				vcam.CFrame = CFrame.lookAt(Vector3.new(0, 1.6, -9.5), Vector3.new(0, 1.35, 0))
+			end
+			if not got then
+				label(card, { Size = UDim2.fromOffset(30, 30), Position = UDim2.new(0.5, -15, 0, 14), Text = "\u{2753}", ZIndex = 24 })
+			end
 			label(card, { Size = UDim2.new(1, -10, 0, 34), Position = UDim2.fromOffset(5, 58), Text = got and p.name or "Lost somewhere in", TextWrapped = true, TextColor3 = got and CREAM or Color3.fromRGB(180, 170, 195), ZIndex = 23 })
 			label(card, { Size = UDim2.new(1, -10, 0, 20), Position = UDim2.fromOffset(5, 94), Text = floorName[p.map] or p.map, TextColor3 = got and Color3.fromRGB(255, 210, 63) or Color3.fromRGB(150, 140, 170), ZIndex = 23 })
 		end
@@ -1503,7 +1539,7 @@ local function showModel(sk)
 		shown.Parent = viewWorld
 		shown:PivotTo(CFrame.Angles(0, math.pi, 0))
 		do
-			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown)
+			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown, true) -- the body only
 			shown:SetAttribute("FitH", standing.Y)
 		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, modelName) -- the character's own idle

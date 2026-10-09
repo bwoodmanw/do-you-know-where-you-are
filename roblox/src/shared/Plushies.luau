@@ -27,7 +27,7 @@ end
 
 -- a plushie for Config.PLUSHIES entry `def`, sitting on the floor at `base`
 -- (a CFrame on the floor, facing -Z)
-function Plushies.build(def, base)
+function Plushies.build(def, base, noGlow)
 	local m = Instance.new("Model")
 	m.Name = "Plushie"
 	local col = def.color
@@ -116,13 +116,18 @@ function Plushies.build(def, base)
 	local pe = Instance.new("ParticleEmitter")
 	pe.Texture = "rbxasset://textures/particles/sparkles_main.dds"
 	pe.Color = ColorSequence.new(Color3.fromRGB(255, 240, 180))
-	pe.Rate = 3
-	pe.Lifetime = NumberRange.new(0.8, 1.2)
+	pe.Rate = 8
+	pe.Lifetime = NumberRange.new(0.8, 1.4)
 	pe.Speed = NumberRange.new(0.5, 1.2)
 	pe.SpreadAngle = Vector2.new(180, 180)
 	pe.Size = NumberSequence.new(0.35, 0)
 	pe.LightEmission = 0.7
 	pe.Parent = att
+	if not noGlow then
+		local glow = Instance.new("PointLight")
+		glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 230, 170), 7, 0.8
+		glow.Parent = att
+	end
 	return m
 end
 

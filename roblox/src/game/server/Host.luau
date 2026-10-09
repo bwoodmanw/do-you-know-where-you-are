@@ -128,7 +128,8 @@ function Host:spawn(diff)
 		end
 		local A = Config.ANIM
 		local pack = A and A.packs[A.host[self.kind or "pumpkin"] or ""] or { walk = 507777826, run = 507767714, idle = 507766388 }
-		local walk, run, idle = track(pack.walk), track(pack.run), track(pack.idle)
+		local runId = A and A.plainRun[self.kind or "pumpkin"] and A.run or pack.run
+		local walk, run, idle = track(pack.walk), track(runId), track(pack.idle)
 		idle.Looped = true
 		idle:Play()
 		self.hum.Running:Connect(function(speed)

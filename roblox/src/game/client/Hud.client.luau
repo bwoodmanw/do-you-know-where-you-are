@@ -168,14 +168,22 @@ scareCam.Parent = scareView
 scareView.CurrentCamera = scareCam
 local scareFace -- head, direction and size, while a scare is on
 local function jumpscare()
+	-- the host's model may still be on its way to this device when the
+	-- message arrives: wait for it (up to 2 s), then the scare and a roar
+	local host = workspace:FindFirstChild("PartyHost")
+	local waitUntil = os.clock() + 2
+	while not (host and (host:FindFirstChild("Head") or host.PrimaryPart)) and os.clock() < waitUntil do
+		task.wait(0.05)
+		host = workspace:FindFirstChild("PartyHost")
+	end
 	scare.Visible = true
 	scareFace = nil
+	playLocal("roar", 1)
 	for _, c in ipairs(scareView:GetChildren()) do
 		if c ~= scareCam then
 			c:Destroy()
 		end
 	end
-	local host = workspace:FindFirstChild("PartyHost")
 	local ok, copy = pcall(function()
 		return host and host:Clone()
 	end)
@@ -270,7 +278,7 @@ local function hostCloseUp(intense)
 			cam.FieldOfView = fov
 			cam.CameraType = Enum.CameraType.Custom
 			if intense then
-				jumpscare()
+				task.spawn(jumpscare)
 			end
 			return
 		end
@@ -757,7 +765,7 @@ local function showChar()
 		shown.Parent = viewWorld
 		shown:PivotTo(CFrame.Angles(0, math.pi, 0))
 		do
-			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown)
+			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown, true) -- the body only
 			shown:SetAttribute("FitH", standing.Y)
 		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, src.Name) -- the character's own idle
@@ -2303,7 +2311,7 @@ end)
 remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 	local spooky = RoundState:GetAttribute("Spook") == "spooky"
 	if kind == "appear" and spooky then
-		jumpscare()
+		task.spawn(jumpscare)
 	elseif kind == "caught" and data and data.userId == player.UserId then
 		hostCloseUp(spooky)
 	elseif kind == "spotted" and data and data.userId == player.UserId then

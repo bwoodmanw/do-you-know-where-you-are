@@ -6,6 +6,7 @@
 ]]
 
 local ServerStorage = game:GetService("ServerStorage")
+local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
 
 local Characters = {}
 
@@ -69,7 +70,6 @@ end
 -- their own faces), and with FLAT_CHARACTER_SKIN their skin uses only its
 -- colour picture, without the bumpy normal map. Both are tried safely.
 local function soften(model)
-	local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
 	local skipped = 0
 	for _, d in ipairs(model:GetDescendants()) do
 		if d:IsA("BasePart") then
@@ -112,7 +112,6 @@ end
 
 -- the animation pack for a character's model ("Glow", or a skin's model name)
 local function packFor(name)
-	local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
 	local A = Config.ANIM
 	if not A then
 		return nil
@@ -134,7 +133,7 @@ local function packFor(name)
 end
 
 -- put a pack's animations into a copy of Roblox's R15 Animate script
-local function setPack(animate, pack, plain)
+local function setPack(animate, pack, plain, plainRun)
 	if not pack then
 		return
 	end
@@ -148,7 +147,7 @@ local function setPack(animate, pack, plain)
 	set("idle", "Animation1", plain and plain.idle or pack.idle)
 	set("idle", "Animation2", plain and plain.idle2 or pack.idle2)
 	set("walk", "WalkAnim", pack.walk)
-	set("run", "RunAnim", pack.run)
+	set("run", "RunAnim", plainRun or pack.run)
 	set("jump", "JumpAnim", pack.jump)
 	set("fall", "FallAnim", pack.fall)
 	set("climb", "ClimbAnim", pack.climb)
@@ -207,7 +206,19 @@ function Characters.apply(plr, name)
 	if animate then
 		animate = animate:Clone()
 		local A = require(game:GetService("ReplicatedStorage").Shared.Config).ANIM
-		setPack(animate, packFor(name), A and A.plainIdle[name] and A.plain or nil)
+		-- the skill this model belongs to (a skin's too), for the plain run
+		local skillId
+		for _, s in ipairs(Config.SKILLS) do
+			if s.name == name then
+				skillId = s.id
+			end
+		end
+		for _, skin in ipairs(Config.SKINS or {}) do
+			if skin.model == name then
+				skillId = skin.skill
+			end
+		end
+		setPack(animate, packFor(name), A and A.plainIdle[name] and A.plain or nil, A and skillId and A.plainRun[skillId] and A.run or nil)
 		animate.Parent = m
 	end
 	-- an Animator made here on the server lets everyone else see this
