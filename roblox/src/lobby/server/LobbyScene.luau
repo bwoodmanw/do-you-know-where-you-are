@@ -570,7 +570,8 @@ function Scene.fun()
 		local angle, t = 0, 0
 		local function place(a)
 			local swingCF = pivot * CFrame.Angles(0, 0, a)
-			swing.CFrame = swingCF * CFrame.new(0, -7.6, 0)
+			-- turned a quarter: you face the way the swing goes, not along the bar
+			swing.CFrame = swingCF * CFrame.new(0, -7.6, 0) * CFrame.Angles(0, math.rad(90), 0)
 			ropeL.CFrame = swingCF * CFrame.new(0, -3.7, -0.9)
 			ropeR.CFrame = swingCF * CFrame.new(0, -3.7, 0.9)
 		end

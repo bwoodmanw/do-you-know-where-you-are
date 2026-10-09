@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 8 Oct 2026)
 
-**Start with rounds 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
+**Start with rounds 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12 (top): built 7-8 Oct, not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `carnival`, the Carnival's
 Midway); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,11 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 33 (8 Oct) - swings, Frenzy, (R)
+- [ ] Lobby swings: you sit facing the way the swing goes (not sideways)
+- [ ] At 0:00: a big red shaking "TIME'S UP! The host knows where you are - get out!" in the middle for about 4 s; every light in the building (lamps, tanks, bulbs, windows) goes dim and red; Glow's own bulb stays
+- [ ] The skill button shows "(R)" all the time on a computer, also while sneaking and while recharging
 
 ## Round 32 (8 Oct) - camera at walls, no repeated skills, the countdown, the host and blocked doorways
 - [ ] Back up against a wall (or a big table by a wall): the camera stops in front of the wall - never black, never the next room; shelves and tables in the way fade

@@ -3707,6 +3707,13 @@ RunService.Heartbeat:Connect(function(dt)
 			l.Brightness = 0.15
 			l.Color = Color3.fromRGB(255, 60, 40)
 		end
+		-- every other light in the building too: lamps, tanks, bulbs, windows
+		for _, d in ipairs(world.root:GetDescendants()) do
+			if d:IsA("PointLight") or d:IsA("SpotLight") or d:IsA("SurfaceLight") then
+				d.Color = Color3.fromRGB(255, 60, 40)
+				d.Brightness = math.min(d.Brightness, 0.3)
+			end
+		end
 		if host then
 			host.frenzy = true
 		end

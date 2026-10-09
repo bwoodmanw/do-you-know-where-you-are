@@ -1693,10 +1693,10 @@ RunService.RenderStepped:Connect(function(dt)
 		local active = (player:GetAttribute("SneakUntil") or 0) - serverNow
 		local cool = (player:GetAttribute("CoolUntil") or 0) - serverNow
 		if skill == "shadow" and active > 0 then
-			skillBtn.Text = "\u{1F319} Sneaking " .. math.ceil(active) .. "s"
+			skillBtn.Text = "\u{1F319} Sneaking " .. math.ceil(active) .. "s" .. (KEYS and " (R)" or "")
 			skillBtn.BackgroundColor3 = PUMP
 		elseif cool > 0 then
-			skillBtn.Text = SKILL_TEXT[skill] .. " " .. math.ceil(cool) .. "s"
+			skillBtn.Text = SKILL_TEXT[skill] .. " " .. math.ceil(cool) .. "s" .. (KEYS and " (R)" or "")
 			skillBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
 		else
 			skillBtn.Text = SKILL_TEXT[skill] .. (KEYS and " (R)" or "")
@@ -2019,6 +2019,20 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 				cam.CFrame = cam.CFrame * CFrame.Angles(0, 0, (math.random() - 0.5) * 0.06)
 			end)
 		end
+	elseif kind == "frenzy" then
+		local big = label(gui, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.38), Size = UDim2.fromOffset(620, 170), Text = "\u{1F525} TIME'S UP! \u{1F525}\nThe host knows where you are - get out!", TextColor3 = Color3.fromRGB(255, 60, 60), TextStrokeTransparency = 0.1, Font = Enum.Font.GothamBlack, ZIndex = 31 })
+		local t0 = os.clock()
+		local conn
+		conn = RunService.RenderStepped:Connect(function()
+			local t = os.clock() - t0
+			if t > 4.5 or not big.Parent then
+				conn:Disconnect()
+				big:Destroy()
+				return
+			end
+			big.Rotation = math.sin(t * 30) * 3
+			big.TextTransparency = t > 3.8 and (t - 3.8) / 0.7 or 0
+		end)
 	elseif kind == "hostmap" then
 		-- Echo Map: the host shows through walls for a few seconds
 		local h = workspace:FindFirstChild("PartyHost")
