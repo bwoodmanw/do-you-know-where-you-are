@@ -12,6 +12,9 @@ Config.GRACE = 20 -- seconds before the host comes out (Giggly)
 Config.GRACE_SPOOKY = 12
 
 Config.WALK = 12
+-- the 3D character previews: a model that still looks too small or too big
+-- next to its plain character gets a size here (1.15 = 15% bigger)
+Config.PREVIEW_SCALE = { ShadowGhost = 1.15 }
 -- Roblox's own animation packs (free for any game; every id checked on
 -- Roblox's public API 9 Oct). Each character and host walks, runs, idles,
 -- jumps and climbs in its own style. Swap a name below to try another pack.

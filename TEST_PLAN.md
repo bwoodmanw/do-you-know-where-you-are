@@ -17,6 +17,10 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 45 (9 Oct) - Ghostly Shadow size, the scare on every host (after publishing)
+- [ ] Characters: Ghostly Shadow now 15% bigger in the preview (Config.PREVIEW_SCALE) - the same size as plain Shadow? (photo; tell Claude a number if not)
+- [ ] Spooky game with the Gummy Bear Man (and each other host): a roar and his face rushes at you when he comes out - never only a black flash
+
 ## Round 44 (9 Oct) - real fish, bigger plushies, the found card, preview sizes (3rd try)
 - [ ] Aquarium Shark Tunnel (and every fish tank): little fish with round bodies, a fanned tail, a top fin and eyes (orange ones are white-striped clownfish), swimming end to end and turning round - no loose blocks (photo)
 - [ ] A plushie in the game is about knee-to-waist high, its animal easy to tell (photo)

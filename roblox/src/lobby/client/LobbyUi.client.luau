@@ -1542,7 +1542,7 @@ local function showModel(sk)
 			-- shoulders to feet (a hood or a big head is left out, so a skin is
 			-- the same size as its plain character), as a whole height
 			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown, "nohead")
-			shown:SetAttribute("FitH", standing.Y / 0.72)
+			shown:SetAttribute("FitH", standing.Y / 0.72 / ((Config.PREVIEW_SCALE or {})[shown.Name] or 1))
 		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, modelName) -- the character's own idle
 		shownFor = modelName

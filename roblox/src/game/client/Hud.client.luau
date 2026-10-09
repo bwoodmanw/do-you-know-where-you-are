@@ -172,7 +172,7 @@ local function jumpscare()
 	-- message arrives: wait for it (up to 2 s), then the scare and a roar
 	local host = workspace:FindFirstChild("PartyHost")
 	local waitUntil = os.clock() + 2
-	while not (host and (host:FindFirstChild("Head") or host.PrimaryPart)) and os.clock() < waitUntil do
+	while not (host and host:FindFirstChild("Head", true)) and os.clock() < waitUntil do
 		task.wait(0.05)
 		host = workspace:FindFirstChild("PartyHost")
 	end
@@ -194,14 +194,18 @@ local function jumpscare()
 			end
 		end
 		copy.Parent = scareView
-		local head = copy:FindFirstChild("Head") or copy.PrimaryPart
-		local root = copy:FindFirstChild("HumanoidRootPart") or head
-		if head then
-			local look = root.CFrame.LookVector
-			local dir = Vector3.new(look.X, 0, look.Z)
-			dir = dir.Magnitude > 0.1 and dir.Unit or Vector3.new(0, 0, -1)
-			scareFace = { head = head, dir = dir, r = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2 }
+		-- the head (searched right through the model, an imported rig can
+		-- sit one level down); without one, the top of the model
+		local head = copy:FindFirstChild("Head", true)
+		if not (head and head:IsA("BasePart")) then
+			local bcf, bsize = copy:GetBoundingBox()
+			head = { Position = bcf.Position + Vector3.new(0, bsize.Y * 0.35, 0), Size = Vector3.new(bsize.X * 0.45, bsize.Y * 0.3, bsize.X * 0.45) }
 		end
+		local root = copy:FindFirstChild("HumanoidRootPart", true) or copy.PrimaryPart
+		local look = root and root.CFrame.LookVector or Vector3.new(0, 0, -1)
+		local dir = Vector3.new(look.X, 0, look.Z)
+		dir = dir.Magnitude > 0.1 and dir.Unit or Vector3.new(0, 0, -1)
+		scareFace = { head = head, dir = dir, r = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2 }
 	end
 	scareView.Visible = scareFace ~= nil
 	local cam = workspace.CurrentCamera
@@ -248,7 +252,7 @@ end
 local scareBusyUntil = 0 -- the results wait for the close-up to finish
 local function hostCloseUp(intense)
 	local host = workspace:FindFirstChild("PartyHost")
-	local head = host and (host:FindFirstChild("Head") or host.PrimaryPart)
+	local head = host and (host:FindFirstChild("Head", true) or host.PrimaryPart)
 	if not head then
 		return
 	end
@@ -768,7 +772,7 @@ local function showChar()
 			-- shoulders to feet (a hood or a big head is left out, so a skin is
 			-- the same size as its plain character), as a whole height
 			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown, "nohead")
-			shown:SetAttribute("FitH", standing.Y / 0.72)
+			shown:SetAttribute("FitH", standing.Y / 0.72 / ((Config.PREVIEW_SCALE or {})[shown.Name] or 1))
 		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, src.Name) -- the character's own idle
 		noModel.Visible = false
