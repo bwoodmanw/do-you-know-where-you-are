@@ -99,8 +99,13 @@ def paint(name):
     # texel position of each vertex (glTF images start at the top)
     uvpx = np.stack([uv[:, 0] * TW, (1 - uv[:, 1]) * TH], axis=1)
 
-    out = tex.copy()
-    best = np.zeros((TH, TW), np.float32)  # the strongest view painted so far
+    # 10 Oct (Patch's face came out smeared): the FRONT keeps Stable Fast 3D's
+    # own colors - it built the shape from that very picture, so its face lines
+    # up exactly - and only has its colors corrected (learned from the front
+    # picture); the BACK, which it guessed, is painted from the back picture.
+    painted = np.zeros((TH, TW, 3), np.float32)  # the back picture's colors
+    best = np.zeros((TH, TW), np.float32)  # how much of each texel they cover
+    pairs_tex, pairs_pic = [], []  # front: Stable Fast 3D's color -> the picture's
     # Stable Fast 3D's models face -Z (checked on Tinker and Shadow, 10 Oct)
     for view, sign in (("front", -1.0), ("back", 1.0)):
         img = np.asarray(Image.open(pics[view]).convert("RGB"))
@@ -138,22 +143,27 @@ def paint(name):
                 continue
             w = min(1.0, (facing[f] - FACING_MIN) / (FACING_FULL - FACING_MIN))
             tx, ty = pts[seen, 0], pts[seen, 1]
+            col = img[iy[seen], ix[seen]].astype(np.float32)
+            if view == "front":
+                if w >= 0.99:  # squarely facing: a good sample for the color fit
+                    pairs_tex.append(tex[ty, tx])
+                    pairs_pic.append(col)
+                continue
             keep = w > best[ty, tx]
-            tx, ty = tx[keep], ty[keep]
-            col = img[iy[seen][keep], ix[seen][keep]].astype(np.float32)
-            out[ty, tx] = tex[ty, tx] * (1 - w) + col * w
-            best[ty, tx] = w
-    # the sides (painted by neither picture) keep Stable Fast 3D's washed-out
-    # colors: learn how it shifted colors where both are known (fully painted
-    # texels) and undo that shift everywhere it left its own colors
-    full = best >= 0.99
-    if full.sum() > 500:
-        X = np.concatenate([tex[full], np.ones((int(full.sum()), 1), np.float32)], axis=1)
-        M, *_ = np.linalg.lstsq(X, out[full], rcond=None)
+            painted[ty[keep], tx[keep]] = col[keep]
+            best[ty[keep], tx[keep]] = w
+    # how Stable Fast 3D shifted the colors (washed out), from the front, undone
+    # everywhere; then the back picture laid over its guessed back
+    out = tex.copy()
+    if pairs_tex and sum(len(p) for p in pairs_tex) > 500:
+        A = np.concatenate(pairs_tex)
+        B = np.concatenate(pairs_pic)
+        X = np.concatenate([A, np.ones((len(A), 1), np.float32)], axis=1)
+        M, *_ = np.linalg.lstsq(X, B, rcond=None)
         allX = np.concatenate([tex.reshape(-1, 3), np.ones((TH * TW, 1), np.float32)], axis=1)
-        corrected = (allX @ M).reshape(TH, TW, 3)
-        out = out + (corrected - tex) * (1 - best)[..., None]
-    print(f"{name}: painted {int((best > 0).sum() * 100 / (TH * TW))}% of the texture from the pictures, colors matched elsewhere")
+        out = (allX @ M).reshape(TH, TW, 3)
+    out = out * (1 - best)[..., None] + painted * best[..., None]
+    print(f"{name}: front colors corrected, back painted from the back picture ({int((best > 0).sum() * 100 / (TH * TW))}% of the texture)")
 
     material = trimesh.visual.material.PBRMaterial(
         baseColorTexture=Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)),

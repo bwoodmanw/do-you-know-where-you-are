@@ -54,7 +54,7 @@ Config.TRY_MODEL_FOR_OWNER = true
 -- models that get Brainy's spinning beanie propeller built on (Propeller.luau):
 -- the toon model lost its thin one. After the switch-over (BrainyToon renamed
 -- Brainy) this becomes { Brainy = true }. lift: up or down, in head widths.
-Config.PROPELLER = { BrainyToon = true }
+Config.PROPELLER = { Brainy = true, BrainyToon = true } -- (the old Brainy has none either - 10 Oct photo)
 Config.PROPELLER_LIFT = 0
 -- the look of each building: base light (ambient), a color tint, and for
 -- everyone richer colors, a soft glow on lights and a light haze. A Spooky
