@@ -75,6 +75,38 @@ def raster(tri, w, h):
     return pts[inside].astype(int), bc[inside]
 
 
+def pad_islands(img, uvpx, F, grow=24):
+    """the texture is cut into islands; the empty space between them shows up
+    as dark lines along the seams once Studio shrinks the texture (Patch's face,
+    10 Oct). Fill the space next to every island with its own edge colors."""
+    H, W = img.shape[:2]
+    used = np.zeros((H, W), bool)
+    for f in F:
+        pts, _ = raster(uvpx[f], W, H)
+        if pts is not None and len(pts):
+            used[pts[:, 1], pts[:, 0]] = True
+    # 1 texel of slack round each triangle (they are rasterized at centers)
+    grown = used.copy()
+    for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+        grown |= np.roll(np.roll(used, dy, 0), dx, 1)
+    used = grown
+    out = img.copy()
+    for _ in range(grow):
+        total = np.zeros_like(out)
+        count = np.zeros((H, W), np.float32)
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1)):
+            m = np.roll(np.roll(used, dy, 0), dx, 1)
+            c = np.roll(np.roll(out, dy, 0), dx, 1)
+            total += c * m[..., None]
+            count += m
+        edge = (~used) & (count > 0)
+        if not edge.any():
+            break
+        out[edge] = total[edge] / count[edge][:, None]
+        used = used | edge
+    return out
+
+
 def paint(name):
     glb = MODELS / f"{name}-toon.glb"
     raw = MODELS / f"{name}-toon-raw.glb"
@@ -163,6 +195,7 @@ def paint(name):
         allX = np.concatenate([tex.reshape(-1, 3), np.ones((TH * TW, 1), np.float32)], axis=1)
         out = (allX @ M).reshape(TH, TW, 3)
     out = out * (1 - best)[..., None] + painted * best[..., None]
+    out = pad_islands(out, uvpx, F)
     print(f"{name}: front colors corrected, back painted from the back picture ({int((best > 0).sum() * 100 / (TH * TW))}% of the texture)")
 
     material = trimesh.visual.material.PBRMaterial(
