@@ -218,22 +218,26 @@ local function applyMods(plr)
 	-- Patch frees caged friends (and holds everything) twice as fast
 	plr:SetAttribute("HoldMult", m.holdMult * (skill == "patch" and 0.5 or 1))
 	plr:SetAttribute("CooldownMult", m.cooldownMult)
-	plr:SetAttribute("SneakTime", m.sneakTime or 6)
-	plr:SetAttribute("GlowRange", m.glowRange or 24)
+	-- ladder steps (Progress.ADDS) are added to each base value
+	plr:SetAttribute("SneakTime", 6 + (m.sneakTime or 0))
+	plr:SetAttribute("GlowRange", 24 + (m.glowRange or 0))
 	plr:SetAttribute("HealAmount", m.healAmount or 40)
 	plr:SetAttribute("HealShield", m.healShield == true)
-	plr:SetAttribute("EchoRange", m.echoRange or 70)
-	plr:SetAttribute("BarricadeHold", m.barricadeHold or Config.BARRICADE.hold)
+	plr:SetAttribute("EchoRange", 70 + (m.echoRange or 0))
+	plr:SetAttribute("BarricadeHold", Config.BARRICADE.hold + (m.barricadeHold or 0))
 	-- skills version 2: the level-10 / level-20 powers and the new buttons' numbers
 	plr:SetAttribute("Power10", m.p10 or "")
 	plr:SetAttribute("Power20", m.p20 or "")
-	plr:SetAttribute("BurstMult", m.burstMult or Config.ECHO_BURST.mult)
-	plr:SetAttribute("BurstTime", m.burstTime or Config.ECHO_BURST.seconds)
-	plr:SetAttribute("FlareRange", m.flareRange or Config.GLOW_FLARE.range)
-	plr:SetAttribute("FlareStamina", m.flareStamina or Config.GLOW_FLARE.stamina)
-	plr:SetAttribute("FlareTime", m.flareTime or Config.GLOW_FLARE.seconds)
-	plr:SetAttribute("VineTime", m.vineTime or Config.VINES.seconds)
-	plr:SetAttribute("CloneTime", m.cloneTime or Config.CLONE.seconds)
+	plr:SetAttribute("BurstMult", Config.ECHO_BURST.mult + (m.burstMult or 0))
+	plr:SetAttribute("BurstTime", Config.ECHO_BURST.seconds + (m.burstTime or 0))
+	plr:SetAttribute("FlareRange", Config.GLOW_FLARE.range + (m.flareRange or 0))
+	plr:SetAttribute("FlareStamina", Config.GLOW_FLARE.stamina + (m.flareStamina or 0))
+	plr:SetAttribute("FlareTime", Config.GLOW_FLARE.seconds + (m.flareTime or 0))
+	plr:SetAttribute("VineTime", Config.VINES.seconds + (m.vineTime or 0))
+	plr:SetAttribute("CloneTime", Config.CLONE.seconds + (m.cloneTime or 0))
+	plr:SetAttribute("ThinkTime", Config.THINK_SECONDS + (m.thinkTime or 0))
+	-- Muscle's Iron Lungs: stamina refills twice as fast
+	plr:SetAttribute("RegenMult", m.p10 == "ironlungs" and Config.IRON_LUNGS_REGEN or 1)
 	plr:SetAttribute("ToolkitReady", false)
 	plr:SetAttribute("RunBonus", 1)
 	return m
@@ -2788,7 +2792,7 @@ do
 				end
 			end
 			say("clue", text)
-			plr:SetAttribute("ThinkUntil", workspace:GetServerTimeNow() + 15) -- the lit-up step stays 15 s
+			plr:SetAttribute("ThinkUntil", workspace:GetServerTimeNow() + (plr:GetAttribute("ThinkTime") or Config.THINK_SECONDS)) -- the lit-up step stays (15 s + ladder steps)
 			if p20 == "photo" and not once["photo" .. plr.UserId] then
 				once["photo" .. plr.UserId] = true
 				local k = revealAColour()
@@ -3199,6 +3203,14 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 	local v2 = round.skillV2(plr, skill, hrp, pos)
 	if v2 ~= nil then
 		if v2 then
+			-- Tinker's Rocket Boots: a rocket run after each Toolkit
+			if skill == "tinker" and plr:GetAttribute("Power20") == "boots" then
+				local rb = Config.ROCKET_BOOTS
+				plr:SetAttribute("TeamBurstMult", rb.mult)
+				plr:SetAttribute("TeamBurstUntil", now + rb.seconds)
+				Effects.aura(plr, "speed", rb.seconds)
+				say("info", "\u{1F680} Rocket Boots! Run!", nil, plr)
+			end
 			plr:SetAttribute("CoolUntil", now + cd * (plr:GetAttribute("CooldownMult") or 1))
 			quest(plr, "skill")
 		end
@@ -3306,13 +3318,18 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		say("lure", "Echo threw a noise - the host has gone to look!", { pos = pos, userId = plr.UserId })
 	end
 	round.skillAfter(plr, skill, hrp, pos)
-	-- Echo's Double Throw: the first of two throws doesn't start the recharge
-	if skill == "echo" and plr:GetAttribute("Power10") == "double" and not plr:GetAttribute("EchoSecond") then
-		plr:SetAttribute("EchoSecond", true)
+	-- two goes before the recharge: Echo's Double Throw, Muscle's Fortress,
+	-- Patch's Guardian Angel (the first go doesn't start the recharge)
+	local p10, p20 = plr:GetAttribute("Power10"), plr:GetAttribute("Power20")
+	local twoGoes = (skill == "echo" and p10 == "double") or (skill == "muscle" and p20 == "fortress")
+		or (skill == "patch" and p10 == "twoshields")
+	if twoGoes and not plr:GetAttribute("SkillSecond") then
+		plr:SetAttribute("SkillSecond", true)
 		quest(plr, "skill")
-		return say("info", "\u{1F3A7} One more noise to throw!", nil, plr)
+		local again = { echo = "\u{1F3A7} One more noise to throw!", muscle = "\u{1F4AA} One more barricade to build!", patch = "\u{1F6E1} One more shield to give!" }
+		return say("info", again[skill], nil, plr)
 	end
-	plr:SetAttribute("EchoSecond", false)
+	plr:SetAttribute("SkillSecond", false)
 	-- Shadow's recharge starts when the sneak ends (never hidden all the time)
 	local after = skill == "shadow" and (plr:GetAttribute("SneakTime") or 6) or 0
 	plr:SetAttribute("CoolUntil", now + after + cd * (plr:GetAttribute("CooldownMult") or 1))

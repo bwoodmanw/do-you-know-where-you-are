@@ -488,7 +488,7 @@ PIECES.LiftDoors = { size = Vector3.new(6, 9, 1), build = function(f, b)
 end }
 
 -- ---- the Sunken Aquarium
-PIECES.FishTank = { size = Vector3.new(7, 7, 2), build = function(f, b)
+PIECES.FishTank = { size = Vector3.new(7, 7, 2), solid = true, build = function(f, b)
 	add(f, b, { size = Vector3.new(7, 6, 1.6), at = Vector3.new(0, 4, T / 2 - 0.85), color = C(60, 150, 210), mat = GLASS, alpha = 0.45 })
 	add(f, b, { size = Vector3.new(7.3, 0.4, 1.8), at = Vector3.new(0, 0.9, T / 2 - 0.85), color = C(40, 40, 45), mat = METAL })
 	add(f, b, { size = Vector3.new(7.3, 0.4, 1.8), at = Vector3.new(0, 7.1, T / 2 - 0.85), color = C(40, 40, 45), mat = METAL })
@@ -507,7 +507,7 @@ PIECES.FishTank = { size = Vector3.new(7, 7, 2), build = function(f, b)
 	glow(add(f, b, { size = Vector3.new(0.3, 0.3, 0.3), at = Vector3.new(0, 6.6, T / 2 - 0.85), color = C(170, 220, 255), mat = NEON }), C(140, 200, 255), 10, 0.8)
 end }
 
-PIECES.JellyTank = { size = Vector3.new(4, 8, 2), build = function(f, b)
+PIECES.JellyTank = { size = Vector3.new(4, 8, 2), solid = true, build = function(f, b)
 	add(f, b, { size = Vector3.new(3.6, 7, 1.6), at = Vector3.new(0, 4, T / 2 - 0.85), color = C(30, 40, 90), mat = GLASS, alpha = 0.35 })
 	for i = 1, 3 do
 		-- a round bell with four trailing tentacles,
@@ -2123,6 +2123,12 @@ function Rooms.dress(world)
 					local sub = Instance.new("Model")
 					sub.Name = name
 					sub.Parent = folder
+					-- a glass tank on the wall looks solid, so it is (only against a
+					-- wall: it can never block the middle of a room)
+					if piece.solid and bestDir and cell(map, best[1] + bestDir[1], best[2] + bestDir[2]) == "#" then
+						local wall = add(sub, base, { name = "TankWall", size = piece.size, at = Vector3.new(0, piece.size.Y / 2, T / 2 - piece.size.Z / 2), alpha = 1 })
+						wall.CanCollide = true
+					end
 					if not imported(name, base, piece.size, sub) then
 						local ok, err = pcall(piece.build, sub, base)
 						if not ok then

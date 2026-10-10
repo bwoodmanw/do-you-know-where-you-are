@@ -1,4 +1,8 @@
-# Ladder fix: no wasted picks (proposed 9 Oct, waiting for Brent's OK)
+# Ladder fix: no wasted picks (Brent: yes to A, then B, then C)
+
+**A built 10 Oct** (causes 1 and 2, as in the tables below; Guardian Angel's id
+stays `guardian10`, its power is `twoshields`). Wasted picks: 154 -> 110, and
+none is wasted every time any more; the 110 left are all cause 3 (limits) = B.
 
 Brent spotted it on Muscle: pick **Master Builder** (recharge 20% faster) at
 level 19, then **Fortress** (recharge twice as fast) at 20, and level 19 does

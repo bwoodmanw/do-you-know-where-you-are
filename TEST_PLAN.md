@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 10 Oct 2026)
 
-**Rounds 54 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
+**Rounds 55 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `aquarium`, the Aquarium's
 Main Hall); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,18 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 55 (9-10 Oct) - TinkerToon, tiles, wall tanks, ladder fix A
+- [ ] Play as Tinker (you, Studio and live): the new cartoon Tinker, with the robot walk; a broken test model would play the old Tinker and say why in F9
+- [ ] Action tiles: words on one line under the picture ("Clue 10 (3)", "Toolkit (R)" not cut off)
+- [ ] Aquarium: the fish tanks and jelly tanks on the walls are solid (you can't walk into them)
+- [ ] Characters screen (use the Lv 20 tool): Shadow's sneak picks say "+2 s longer", Glow's light "+4 studs", Echo's throw "studs further", Bramble's vines "+2 s"; Muscle's shove picks say "Shove, free friends and search"
+- [ ] Muscle Fortress (Lv 20): barricade, then "One more barricade to build!", a second barricade, then the recharge
+- [ ] Muscle Iron Lungs (Lv 10): after running out, stamina fills about twice as fast as before
+- [ ] Patch Guardian Angel (Lv 10): two shields before the recharge ("One more shield to give!")
+- [ ] Tinker Rocket Boots (Lv 20): after pressing Toolkit you run faster for 5 s (gold streak, "Rocket Boots! Run!")
+- [ ] Brainy Long Think / Deep Think (Lv 11 / 17): the Think! arrow stays 20 s / 25 s
+- [ ] Echo Double Throw still gives two noises
 
 ## Round 54 (10 Oct) - the party arrives together; one press plants the cannon
 - [ ] Live, a party of 2-3: whoever arrives first waits on the character screen until everyone is in (at most 45 s), then the game starts with all of you - nobody sent to the garden

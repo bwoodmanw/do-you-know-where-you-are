@@ -5,7 +5,9 @@
 local Progress = require("../roblox/src/shared/Progress")
 local skills = { "tinker", "shadow", "brainy", "muscle", "glow", "patch", "echo", "bramble" }
 local FLAGS = { shield = true, revealOne = true, trickSight = true, twoStep = true, keyMap = true, longRead = true, healShield = true, mastermind = true, freeAll = true }
-local MAXES = { glowRange = true, healAmount = true, echoRange = true, sneakTime = true, barricadeHold = true, burstMult = true, burstTime = true, flareTime = true, vineTime = true, cloneTime = true, flareRange = true, flareStamina = true }
+-- (since 9 Oct the timed / distance values add up - Progress.ADDS - so only
+-- healAmount is still "biggest wins")
+local MAXES = { healAmount = true }
 local total = 0
 for _, sk in ipairs(skills) do
 	local flagAt, best = {}, {}

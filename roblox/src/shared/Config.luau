@@ -263,6 +263,9 @@ Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, 
 Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise
 Config.VINES = { seconds = 6, slow = 0.28, reach = 2 } -- Bramble: the host wades through them (kids don't)
 Config.CLONE = { seconds = 4, run = 28 } -- Shadow's clone: how long the host chases it, how far it runs
+Config.THINK_SECONDS = 15 -- Brainy's Think!: how long the lit-up step stays (ladder steps add to it)
+Config.ROCKET_BOOTS = { mult = 1.2, seconds = 5 } -- Tinker's level-20 Rocket Boots: a run after each Toolkit
+Config.IRON_LUNGS_REGEN = 2 -- Muscle's level-10 Iron Lungs: stamina refills this many times as fast
 Config.MOUSE = { seconds = 5, run = 30 } -- Tinker's wind-up mouse
 Config.POUND = { range = 10, stun = 2 } -- Muscle's Ground Pound
 Config.NIGHT_LIGHT = { seconds = 60, range = 30 } -- Glow's lamp

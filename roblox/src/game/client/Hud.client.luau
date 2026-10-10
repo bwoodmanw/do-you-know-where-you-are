@@ -1943,7 +1943,7 @@ RunService.RenderStepped:Connect(function(dt)
 			end
 		else
 			hum.WalkSpeed = Config.WALK * bonus
-			stamina = math.min(100, stamina + Config.STAMINA_REGEN * dt)
+			stamina = math.min(100, stamina + Config.STAMINA_REGEN * (player:GetAttribute("RegenMult") or 1) * dt)
 			if tired and stamina >= 25 then
 				tired = false
 			end
