@@ -325,6 +325,7 @@ local function ownsSkin(plr, skin)
 	end
 	return passCache[key]
 end
+local triedWarned = {} -- a broken test model is reported once
 local function modelFor(plr, s)
 	local data = Profile.get(plr)
 	local skinId = data and data.skins and data.skins[s.id]
@@ -338,7 +339,14 @@ local function modelFor(plr, s)
 		or (Config.TRY_MODEL_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId)
 	local try = tester and Config.STUDIO_TRY_MODEL and Config.STUDIO_TRY_MODEL[s.name]
 	if try and Characters.has(try) then
-		return try
+		local problem = Characters.problem(try)
+		if not problem then
+			return try
+		end
+		if not triedWarned[try] then
+			triedWarned[try] = true
+			warn("Test model " .. try .. " not used - " .. problem .. ". Playing the old " .. s.name .. ".")
+		end
 	end
 	return s.name
 end

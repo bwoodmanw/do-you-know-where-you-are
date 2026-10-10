@@ -110,6 +110,67 @@ function Characters.has(name)
 	return template(name) ~= nil
 end
 
+-- what is wrong with an imported model that would kill the player (no head,
+-- parts not joined to the root, so they fall out of the world), or nil if
+-- it is fine. The original imported copy (one mesh, before Avatar Setup)
+-- fails here.
+function Characters.problem(name)
+	local t = template(name)
+	if not t then
+		return "not in ServerStorage/Characters"
+	end
+	local hum = t:FindFirstChildOfClass("Humanoid")
+	local hrp = t:FindFirstChild("HumanoidRootPart")
+	if not hum or not hrp then
+		return "no Humanoid / HumanoidRootPart (is it the copy Avatar Setup made?)"
+	end
+	if hum.Health <= 0 then
+		return "its Humanoid's Health is 0"
+	end
+	if not t:FindFirstChild("Head") then
+		return "no part named Head"
+	end
+	-- every part must hang off the root through joints
+	local links, parts = {}, {}
+	local function link(a, b)
+		if a and b then
+			links[a] = links[a] or {}
+			links[b] = links[b] or {}
+			table.insert(links[a], b)
+			table.insert(links[b], a)
+		end
+	end
+	for _, d in ipairs(t:GetDescendants()) do
+		if d:IsA("BasePart") then
+			table.insert(parts, d)
+		elseif d:IsA("JointInstance") then
+			link(d.Part0, d.Part1)
+		elseif d:IsA("WeldConstraint") then
+			link(d.Part0, d.Part1)
+		end
+	end
+	local reached, todo = { [hrp] = true }, { hrp }
+	while #todo > 0 do
+		local p = table.remove(todo)
+		for _, q in ipairs(links[p] or {}) do
+			if not reached[q] then
+				reached[q] = true
+				table.insert(todo, q)
+			end
+		end
+	end
+	local loose = {}
+	for _, p in ipairs(parts) do
+		if not reached[p] then
+			table.insert(loose, p.Name)
+		end
+	end
+	if #loose > 0 then
+		return #loose .. " of " .. #parts .. " parts are not joined to the body (" .. table.concat(loose, ", ", 1, math.min(#loose, 6)) .. ")"
+	end
+	return nil
+end
+
 -- the animation pack for a character's model ("Glow", or a skin's model name)
 local function packFor(name)
 	local A = Config.ANIM
@@ -176,6 +237,17 @@ function Characters.apply(plr, name)
 	if not hum or not hrp then
 		warn("Characters/" .. name .. " needs a Humanoid and a HumanoidRootPart - run Avatar Setup on it in Studio")
 		return false
+	end
+	-- the head is joined (Characters.problem checked), but if its joint is not
+	-- called Neck the Humanoid would think it lost its head and die
+	local neck = false
+	for _, d in ipairs(m:GetDescendants()) do
+		if d:IsA("JointInstance") and d.Name == "Neck" then
+			neck = true
+		end
+	end
+	if not neck then
+		hum.RequiresNeck = false
 	end
 	m.Name = plr.Name
 	m.PrimaryPart = hrp
