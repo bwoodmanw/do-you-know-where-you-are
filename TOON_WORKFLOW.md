@@ -79,6 +79,8 @@ and the colors are not washed out (Shadow's black pants). It keeps the
 unpainted model as `<name>-toon-raw.glb`. To repaint one:
 `<sf3d-venv python> tools\paint_toon.py tinker`.
 
+**The face gets its own sharp corner of the texture** (10 Oct): Stable Fast 3D gave each face only ~50 x 50 texture pixels (blurry eyes in Roblox). paint_toon now gives the front of the head a 256 x 256 corner filled straight from the approved picture, lined up with the model's own face by best match; the rest of the texture is shrunk to the other 3/4. The models also face forward for Roblox (no World Forward change).
+
 **Stable Fast 3D builds the SHAPE from ONE picture - the front.** The back pictures are
 checked but not used; Claude renders every model from behind, and any back
 that comes out wrong gets fixed (see the end of this section).

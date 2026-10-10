@@ -108,6 +108,151 @@ def pad_islands(img, uvpx, F, grow=24):
     return out
 
 
+def render_front(V, F, uv, T, px_h=900):
+    """the model seen from the front (it faces -Z), colored from texture T"""
+    lo, hi = V.min(axis=0), V.max(axis=0)
+    scale = px_h / (hi[1] - lo[1])
+    W, H = int((hi[0] - lo[0]) * scale) + 2, px_h + 2
+    P = np.stack([(hi[0] - V[:, 0]) * scale, (hi[1] - V[:, 1]) * scale], axis=1)  # viewer's right is -X
+    near = -V[:, 2]
+    TH, TW = T.shape[:2]
+    img = np.zeros((H, W, 3), np.float32)
+    depth = np.full((H, W), -np.inf, np.float32)
+    for f in range(len(F)):
+        pts, bc = raster(P[F[f]], W, H)
+        if pts is None or len(pts) == 0:
+            continue
+        z = bc @ near[F[f]]
+        nearer = z > depth[pts[:, 1], pts[:, 0]]
+        if not nearer.any():
+            continue
+        pts, bc, z = pts[nearer], bc[nearer], z[nearer]
+        u = bc @ uv[F[f]]
+        tx = np.clip((u[:, 0] * TW).astype(int), 0, TW - 1)
+        ty = np.clip(((1 - u[:, 1]) * TH).astype(int), 0, TH - 1)
+        img[pts[:, 1], pts[:, 0]] = T[ty, tx]
+        depth[pts[:, 1], pts[:, 0]] = z
+    return img, scale, lo, hi
+
+
+def _gray(a):
+    return a[..., :3].astype(np.float32) @ np.array([0.3, 0.59, 0.11], np.float32)
+
+
+def _ncc(a, b):
+    a = a - a.mean()
+    b = b - b.mean()
+    d = np.sqrt((a * a).sum() * (b * b).sum())
+    return float((a * b).sum() / d) if d > 0 else -1.0
+
+
+FACE_SHARE = 0.25  # the face's corner: a quarter of the texture's width and height
+
+
+def face_corner(name, V, F, uv, fn, tex, pic):
+    """Stable Fast 3D gives a toon's face ~50 x 50 texture pixels (blurry eyes in
+    Roblox, 10 Oct). The front of the head gets its own corner of the texture
+    (256 x 256 of 1024), filled straight from the approved picture, lined up
+    with the model's own face by best match; everything else is shrunk to the
+    other 3/4 of the texture. Returns new vertices, triangles, UVs, texture."""
+    TH, TW = tex.shape[:2]
+    render, scale, lo, hi = render_front(V, F, uv, tex)
+    RH, RW = render.shape[:2]
+    h = hi[1] - lo[1]
+    cx = (lo[0] + hi[0]) / 2
+    # line the picture up with the model's own (blurry) face
+    _, (bx0, bx1, by0, by1) = outline(pic)
+    fy0, fy1 = int(0.085 * RH), int(0.245 * RH)
+    rcx = (hi[0] - cx) * scale
+    fw = int(0.15 * RH)
+    model_face = _gray(render[fy0:fy1, int(rcx - fw / 2):int(rcx + fw / 2)])
+    pg = _gray(pic)
+    s0 = (by1 - by0) / RH
+    best = (-2.0, (s0, 0, 0))
+    for ds in np.linspace(0.9, 1.1, 21):
+        s = s0 * ds
+        for dy in range(-30, 31, 3):
+            for dx in range(-30, 31, 3):
+                x0 = bx0 + (rcx - fw / 2) * s + dx
+                y0 = by0 + fy0 * s + dy
+                x1, y1 = x0 + fw * s, y0 + (fy1 - fy0) * s
+                if x0 < 0 or y0 < 0 or x1 >= pic.shape[1] or y1 >= pic.shape[0]:
+                    continue
+                crop = Image.fromarray(pg[int(y0):int(y1), int(x0):int(x1)].astype(np.uint8))
+                crop = np.asarray(crop.resize(model_face.shape[::-1]), np.float32)
+                score = _ncc(crop, model_face)
+                if score > best[0]:
+                    best = (score, (s, dx, dy))
+    score, (s, dx, dy) = best
+    # the front of the head: facing forward, from the top down to the chin
+    c = V[F].mean(axis=1)
+    sel = (-fn[:, 2] > 0.55) & (c[:, 1] > hi[1] - 0.27 * h) & (np.abs(c[:, 0] - cx) < 0.13 * h)
+    if sel.sum() < 20 or score < 0.2:
+        print(f"{name}: face corner skipped (face match {score:.2f}, {int(sel.sum())} triangles)")
+        return V, F, uv, tex
+    used = np.unique(F[sel])
+    x0b, x1b = V[used, 0].min(), V[used, 0].max()
+    y0b, y1b = V[used, 1].min(), V[used, 1].max()
+    side = max(x1b - x0b, y1b - y0b) * 1.04
+    mx, my = (x0b + x1b) / 2, (y0b + y1b) / 2
+    xmax, ymin = mx + side / 2, my - side / 2
+    # everything else: 3/4 size in the texture's lower-left
+    k = 1 - FACE_SHARE
+    uv2 = uv * k
+    new_tex = np.zeros_like(tex)
+    small = np.asarray(Image.fromarray(np.clip(tex, 0, 255).astype(np.uint8)).resize(
+        (int(TW * k), int(TH * k)), Image.LANCZOS), np.float32)
+    new_tex[TH - small.shape[0]:, :small.shape[1]] = small
+    # the face triangles get their own copies of their corners, mapped flat
+    # (as seen from the front) into the upper-right corner
+    remap = {}
+    V2, uvl, F2 = [V], [uv2], F.copy()
+    extra_v, extra_uv = [], []
+    for f in np.nonzero(sel)[0]:
+        for j in range(3):
+            vi = F[f, j]
+            if vi not in remap:
+                remap[vi] = len(V) + len(extra_v)
+                extra_v.append(V[vi])
+                u = k + FACE_SHARE * (xmax - V[vi, 0]) / side
+                v = k + FACE_SHARE * (V[vi, 1] - ymin) / side
+                extra_uv.append([u, v])
+            F2[f, j] = remap[vi]
+    V2 = np.concatenate([V, np.array(extra_v)])
+    uv2 = np.concatenate([uv2, np.array(extra_uv)])
+    # fill the corner from the picture: corner pixel -> the model -> the picture
+    cw, ch = int(TW * FACE_SHARE), int(TH * FACE_SHARE)
+    xs, ys = np.meshgrid(np.arange(cw), np.arange(ch))
+    ul = (xs + 0.5) / cw
+    vl = 1 - (ys + 0.5) / ch
+    mxp = xmax - ul * side
+    myp = ymin + vl * side
+    rx = (hi[0] - mxp) * scale
+    ry = (hi[1] - myp) * scale
+    px = np.clip(bx0 + rx * s + dx, 0, pic.shape[1] - 1).astype(int)
+    py = np.clip(by0 + ry * s + dy, 0, pic.shape[0] - 1).astype(int)
+    corner = pic[py, px].astype(np.float32)
+    # where the picture shows its gray background (just past the hair or the
+    # jaw), use the nearest color of the character instead (Echo's hairline)
+    fg_mask, _ = outline(pic)
+    known = fg_mask[py, px].copy()
+    for _ in range(60):
+        if known.all():
+            break
+        total = np.zeros_like(corner)
+        count = np.zeros(known.shape, np.float32)
+        for oy, ox in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            m = np.roll(np.roll(known, oy, 0), ox, 1)
+            total += np.roll(np.roll(corner, oy, 0), ox, 1) * m[..., None]
+            count += m
+        grow = (~known) & (count > 0)
+        corner[grow] = total[grow] / count[grow][:, None]
+        known |= grow
+    new_tex[0:ch, TW - cw:TW] = corner
+    print(f"{name}: face corner from the picture (match {score:.2f}, {int(sel.sum())} triangles, {cw}x{ch} pixels for the face)")
+    return V2, F2, uv2, new_tex
+
+
 def paint(name):
     glb = MODELS / f"{name}-toon.glb"
     raw = MODELS / f"{name}-toon-raw.glb"
@@ -196,13 +341,19 @@ def paint(name):
         allX = np.concatenate([tex.reshape(-1, 3), np.ones((TH * TW, 1), np.float32)], axis=1)
         out = (allX @ M).reshape(TH, TW, 3)
     out = out * (1 - best)[..., None] + painted * best[..., None]
-    out = pad_islands(out, uvpx, F)
     print(f"{name}: front colors corrected, back painted from the back picture ({int((best > 0).sum() * 100 / (TH * TW))}% of the texture)")
+    # the face gets its own sharp corner of the texture, from the picture
+    front_pic = np.asarray(Image.open(pics["front"]).convert("RGB"))
+    V2, F2, uv2, out = face_corner(name, V, F, uv, fn, out, front_pic)
+    uvpx2 = np.stack([uv2[:, 0] * TW, (1 - uv2[:, 1]) * TH], axis=1)
+    out = pad_islands(out, uvpx2, F2)
 
     material = trimesh.visual.material.PBRMaterial(
         baseColorTexture=Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)),
         metallicFactor=0.0, roughnessFactor=1.0)
-    mesh.visual = trimesh.visual.TextureVisuals(uv=uv, material=material)
+    mesh = trimesh.Trimesh(vertices=V2, faces=F2, process=False)
+    mesh.visual = trimesh.visual.TextureVisuals(uv=uv2, material=material)
+    F = F2
     # Stable Fast 3D's models face -Z; Roblox's Import 3D shows them back to
     # front (Brent had to set World Forward each time). Turned round here, they
     # import facing forward with the default settings.

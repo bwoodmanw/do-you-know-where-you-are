@@ -72,7 +72,11 @@ Config.PROPELLER_LIFT = 0
 local echoFace = { id = 135489459825461, top = 0.1641, left = 0, size = 0.5363 } -- art/faces/echo-face.png
 -- (only the toon names for now: "Echo" in Party House is still the OLD model
 -- until the switch-over, and the face landed on its head - 10 Oct)
-Config.FACES = { EchoToon = echoFace }
+-- (10 Oct: off - a face laid ON the head is hidden by the imported head's
+-- SurfaceAppearance; the sharp face now lives IN each model's texture,
+-- tools/paint_toon.py face_corner. Kept for reference, unused.)
+Config.FACES = {}
+local _ = echoFace
 -- if a face lands mirrored left-right or upside-down on the head, flip these
 Config.FACE_FLIP_U = false
 Config.FACE_FLIP_V = false
