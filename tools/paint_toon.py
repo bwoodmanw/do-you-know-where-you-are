@@ -148,6 +148,7 @@ def _ncc(a, b):
 
 
 FACE_SHARE = 0.25  # the face's corner: a quarter of the texture's width and height
+FACE_MARGIN = 16  # pixels of border inside the corner, clear of the texture's edges
 
 
 def face_corner(name, V, F, uv, fn, tex, pic):
@@ -190,7 +191,7 @@ def face_corner(name, V, F, uv, fn, tex, pic):
     sel = (-fn[:, 2] > 0.55) & (c[:, 1] > hi[1] - 0.27 * h) & (np.abs(c[:, 0] - cx) < 0.13 * h)
     if sel.sum() < 20 or score < 0.2:
         print(f"{name}: face corner skipped (face match {score:.2f}, {int(sel.sum())} triangles)")
-        return V, F, uv, tex
+        return V, F, uv, tex, np.arange(len(V))
     # Also repaint the head's front in the ORIGINAL texture from the picture,
     # lined up the same way (10 Oct: in Roblox some face triangles still showed
     # Stable Fast 3D's brownish old face - Avatar Setup can merge the face's
@@ -230,26 +231,31 @@ def face_corner(name, V, F, uv, fn, tex, pic):
     new_tex[TH - small.shape[0]:, :small.shape[1]] = small
     # the face triangles get their own copies of their corners, mapped flat
     # (as seen from the front) into the upper-right corner
+    cw, ch = int(TW * FACE_SHARE), int(TH * FACE_SHARE)
     remap = {}
     V2, uvl, F2 = [V], [uv2], F.copy()
-    extra_v, extra_uv = [], []
+    extra_v, extra_uv, extra_src = [], [], []
     for f in np.nonzero(sel)[0]:
         for j in range(3):
             vi = F[f, j]
             if vi not in remap:
                 remap[vi] = len(V) + len(extra_v)
                 extra_v.append(V[vi])
-                u = k + FACE_SHARE * (xmax - V[vi, 0]) / side
-                v = k + FACE_SHARE * (V[vi, 1] - ymin) / side
+                extra_src.append(vi)
+                # inside the corner, a border of FACE_MARGIN pixels clear of
+                # the texture's edges (Avatar Setup re-samples the texture
+                # and blended the far edge in as a dark line, 10 Oct)
+                u = (TW - cw + FACE_MARGIN + (xmax - V[vi, 0]) / side * (cw - 2 * FACE_MARGIN)) / TW
+                v = 1 - (FACE_MARGIN + (1 - (V[vi, 1] - ymin) / side) * (ch - 2 * FACE_MARGIN)) / TH
                 extra_uv.append([u, v])
             F2[f, j] = remap[vi]
     V2 = np.concatenate([V, np.array(extra_v)])
     uv2 = np.concatenate([uv2, np.array(extra_uv)])
     # fill the corner from the picture: corner pixel -> the model -> the picture
-    cw, ch = int(TW * FACE_SHARE), int(TH * FACE_SHARE)
     xs, ys = np.meshgrid(np.arange(cw), np.arange(ch))
-    ul = (xs + 0.5) / cw
-    vl = 1 - (ys + 0.5) / ch
+    # the border repeats the face's edge colors (clamped)
+    ul = np.clip((xs + 0.5 - FACE_MARGIN) / (cw - 2 * FACE_MARGIN), 0, 1)
+    vl = 1 - np.clip((ys + 0.5 - FACE_MARGIN) / (ch - 2 * FACE_MARGIN), 0, 1)
     mxp = xmax - ul * side
     myp = ymin + vl * side
     rx = (hi[0] - mxp) * scale
@@ -275,7 +281,7 @@ def face_corner(name, V, F, uv, fn, tex, pic):
         known |= grow
     new_tex[0:ch, TW - cw:TW] = corner
     print(f"{name}: face corner from the picture (match {score:.2f}, {int(sel.sum())} triangles, {cw}x{ch} pixels for the face)")
-    return V2, F2, uv2, new_tex
+    return V2, F2, uv2, new_tex, np.concatenate([np.arange(len(V)), np.array(extra_src, int)])
 
 
 def paint(name):
@@ -292,6 +298,10 @@ def paint(name):
         print(f"skip {name}: expected one mesh, found {len(parts)}")
         return
     mesh = parts[0]
+    # the model's own surface directions (normals): without them in the saved
+    # file Studio works its own out and welds points that share a spot - the
+    # texture seams broke (Patch's face lines, her striped legs, 10 Oct)
+    N0 = np.asarray(mesh.vertex_normals, np.float64).copy()
     V, F = mesh.vertices, mesh.faces
     uv = mesh.visual.uv
     tex = np.asarray(mesh.visual.material.baseColorTexture.convert("RGB")).astype(np.float32)
@@ -370,23 +380,24 @@ def paint(name):
     # the face gets its own sharp corner of the texture, from the picture
     front_pic = np.asarray(Image.open(pics["front"]).convert("RGB"))
     if name.startswith("host"):
-        V2, F2, uv2 = V, F, uv  # hosts: pumpkins, lamps and fish heads - no face corner
+        V2, F2, uv2, src = V, F, uv, np.arange(len(V))  # hosts: pumpkins, lamps and fish heads - no face corner
     else:
-        V2, F2, uv2, out = face_corner(name, V, F, uv, fn, out, front_pic)
+        V2, F2, uv2, out, src = face_corner(name, V, F, uv, fn, out, front_pic)
     uvpx2 = np.stack([uv2[:, 0] * TW, (1 - uv2[:, 1]) * TH], axis=1)
     out = pad_islands(out, uvpx2, F2)
 
     material = trimesh.visual.material.PBRMaterial(
         baseColorTexture=Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)),
         metallicFactor=0.0, roughnessFactor=1.0)
-    mesh = trimesh.Trimesh(vertices=V2, faces=F2, process=False)
+    mesh = trimesh.Trimesh(vertices=V2, faces=F2, vertex_normals=N0[src], process=False)
     mesh.visual = trimesh.visual.TextureVisuals(uv=uv2, material=material)
     F = F2
     # Stable Fast 3D's models face -Z; Roblox's Import 3D shows them back to
     # front (Brent had to set World Forward each time). Turned round here, they
     # import facing forward with the default settings.
     mesh.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [0, 1, 0]))
-    mesh.export(glb)
+    mesh.vertex_normals = N0[src] * np.array([-1.0, 1.0, -1.0])  # turned round with the model
+    mesh.export(glb, include_normals=True)
     print(f"{name}: wrote {glb.name} ({len(F)} triangles, no normal map)")
 
 

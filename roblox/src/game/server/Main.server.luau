@@ -358,6 +358,9 @@ end
 local function modelFor(plr, s)
 	local data = Profile.get(plr)
 	local skinId = data and data.skins and data.skins[s.id]
+	if RunService:IsStudio() and Config.STUDIO_NO_SKINS then
+		skinId = nil -- Studio: the plain character (Config.STUDIO_NO_SKINS)
+	end
 	for _, skin in ipairs(Config.SKINS or {}) do
 		if skin.id == skinId and skin.skill == s.id and Characters.has(skin.model) and ownsSkin(plr, skin) then
 			return tryModel(plr, skin.model)

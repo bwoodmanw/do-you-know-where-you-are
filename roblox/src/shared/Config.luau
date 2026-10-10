@@ -67,6 +67,9 @@ Config.STUDIO_TRY_MODEL = {
 	HostAnglerfish = "HostAnglerfishToon",
 }
 Config.TRY_MODEL_FOR_OWNER = true
+-- Studio testing: play the plain characters whatever skin your save wears
+-- (Brent's Patch kept coming up as the Halloween Nurse, 10 Oct)
+Config.STUDIO_NO_SKINS = true
 -- models that get Brainy's spinning beanie propeller built on (Propeller.luau):
 -- the toon model lost its thin one. After the switch-over (BrainyToon renamed
 -- Brainy) this becomes { Brainy = true }. lift: up or down, in head widths.
