@@ -1185,11 +1185,11 @@ do
 		bannerHolder.Parent = gui
 		cornPic(bannerHolder, 38, UDim2.fromOffset(0, 0), 6)
 		local banner = button(bannerHolder, "", { Position = UDim2.fromOffset(42, 0), Size = UDim2.new(1, -42, 1, 0), BackgroundColor3 = Color3.fromRGB(40, 22, 62), TextColor3 = Color3.fromRGB(255, 180, 70), ZIndex = 5 })
-		local cshop = frame(gui, { Size = UDim2.fromOffset(620, 620), Position = UDim2.new(0.5, -310, 0.5, -310), Visible = false, ZIndex = 10 })
+		local cshop = frame(gui, { Size = UDim2.fromOffset(620, 676), Position = UDim2.new(0.5, -310, 0.5, -338), Visible = false, ZIndex = 10 })
 		corner(cshop, 18)
 		cornPic(cshop, 46, UDim2.fromOffset(16, 6), 11)
 		local title = label(cshop, { Size = UDim2.new(1, -90, 0, 40), Position = UDim2.fromOffset(70, 10), TextColor3 = PUMP, ZIndex = 11 })
-		label(cshop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 52), Text = "Spend candy corns from the games. The Candy Corn Collector badge counts every corn you find.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+		label(cshop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 52), Text = "Pick how many with - and +, then Buy. Boosts go to your Boost Shop - tap Equip there.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 		local rows, skinRows = {}, {}
 		local function row(i, picId, iconText, name, say)
 			local r = frame(cshop, { Size = UDim2.new(1, -24, 0, 64), Position = UDim2.fromOffset(12, 80 + (i - 1) * 70), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 11 })
@@ -1205,13 +1205,13 @@ do
 			else
 				label(r, { Size = UDim2.fromOffset(46, 46), Position = UDim2.fromOffset(8, 9), Text = iconText, ZIndex = 12 })
 			end
-			label(r, { Size = UDim2.fromOffset(250, 26), Position = UDim2.fromOffset(64, 6), Text = name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
-			label(r, { Size = UDim2.fromOffset(300, 22), Position = UDim2.fromOffset(64, 34), Text = say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
-			local owned = label(r, { Size = UDim2.fromOffset(100, 20), Position = UDim2.fromOffset(372, 22), Text = "", ZIndex = 12 })
+			label(r, { Size = UDim2.fromOffset(230, 26), Position = UDim2.fromOffset(64, 6), Text = name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+			label(r, { Size = UDim2.fromOffset(230, 22), Position = UDim2.fromOffset(64, 34), Text = say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
+			local owned = label(r, { Size = UDim2.fromOffset(64, 40), Position = UDim2.fromOffset(298, 12), Text = "", ZIndex = 12 })
 			return r, owned
 		end
 		local function buyButton(r, price, onClick)
-			local b = button(r, "Buy " .. price, { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(476, 12), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, onClick)
+			local b = button(r, "Buy " .. price, { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(474, 12), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, onClick)
 			local pic = cornPic(r, 30, UDim2.fromOffset(562, 17), 12)
 			if pic then
 				b:GetPropertyChangedSignal("Visible"):Connect(function()
@@ -1227,9 +1227,28 @@ do
 			if price and boost then
 				i += 1
 				local r, owned = row(i, Config.BOOST_IMAGES and Config.BOOST_IMAGES[id], boost.icon, boost.name, boost.say)
-				buyButton(r, price, function()
-					remotes:WaitForChild("CornShop"):FireServer(id)
+				-- 10 Oct (Brent): like the Boost Shop - how many, then Buy
+				local count = 1
+				local qty = label(r, { Size = UDim2.fromOffset(30, 40), Position = UDim2.fromOffset(402, 12), Text = "1", ZIndex = 12 })
+				local buy
+				local function show()
+					qty.Text = tostring(count)
+					buy.Text = "Buy " .. price * count
+				end
+				button(r, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(34, 40), Position = UDim2.fromOffset(366, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
+					count = math.max(1, count - 1)
+					show()
 				end)
+				button(r, "+", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(34, 40), Position = UDim2.fromOffset(434, 12), BackgroundColor3 = Color3.fromRGB(47, 140, 70), ZIndex = 12 }, function()
+					count = math.min(10, count + 1)
+					show()
+				end)
+				buy = buyButton(r, price, function()
+					remotes:WaitForChild("CornShop"):FireServer(id, count)
+					count = 1
+					show()
+				end)
+				show()
 				rows[id] = owned
 			end
 		end
@@ -1246,6 +1265,26 @@ do
 		button(cshop, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -54), ZIndex = 11 }, function()
 			cshop.Visible = false
 		end)
+		-- what you just bought, and where it went (10 Oct, Brent)
+		local receipt = frame(cshop, { Size = UDim2.new(1, -24, 0, 44), Position = UDim2.new(0, 12, 1, -106), BackgroundColor3 = Color3.fromRGB(47, 107, 58), BackgroundTransparency = 0.2, Visible = false, ZIndex = 11 })
+		corner(receipt, 12)
+		local receiptText = label(receipt, { Size = UDim2.new(1, -20, 1, -8), Position = UDim2.fromOffset(10, 4), ZIndex = 12 })
+		local receiptAt = 0
+		remotes:WaitForChild("CornBought").OnClientEvent:Connect(function(icon, name, count, total, isSkin)
+			if isSkin then
+				receiptText.Text = "\u{2705} Bought " .. name .. " (" .. total .. " corns) - it's yours! Pick it in Characters."
+			else
+				receiptText.Text = "\u{2705} Bought " .. icon .. " " .. count .. " x " .. name .. " (" .. total .. " corns). In your \u{1F6D2} Boost Shop - tap Equip there."
+			end
+			receipt.Visible = true
+			receiptAt += 1
+			local mine = receiptAt
+			task.delay(10, function()
+				if receiptAt == mine then
+					receipt.Visible = false
+				end
+			end)
+		end)
 		banner.Activated:Connect(function()
 			cshop.Visible = not cshop.Visible
 		end)
@@ -1260,7 +1299,7 @@ do
 			local earned = data.skinsEarned or {}
 			local inv = data.inv or {}
 			for id, owned in pairs(rows) do
-				owned.Text = "You have " .. (inv[id] or 0)
+				owned.Text = "Have\n" .. (inv[id] or 0)
 			end
 			local skinGoal
 			for skin, r in pairs(skinRows) do

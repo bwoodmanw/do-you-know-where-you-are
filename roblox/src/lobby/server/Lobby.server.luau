@@ -1012,8 +1012,12 @@ end)
 
 -- the Candy Shop (Halloween): boosts for candy corns found in the games
 do
-	local CornShop = remote("CornShop") -- (boostId)
-	CornShop.OnServerEvent:Connect(function(plr, id)
+	local CornShop = remote("CornShop") -- (boostId or "skin:<id>", count 1-10)
+	-- what was bought, for the shop's receipt line (10 Oct, Brent: it was
+	-- unclear that bought boosts land in the Boost Shop)
+	local CornBought = remote("CornBought") -- (icon, name, count, corns spent, isSkin)
+	CornShop.OnServerEvent:Connect(function(plr, id, count)
+		count = (typeof(count) == "number" and count == count) and math.clamp(math.floor(count), 1, 10) or 1
 		local e = Config.EVENT
 		local data = Profile.get(plr)
 		if not e or not data or typeof(id) ~= "string" or os.time() >= (e.shopUntil or 0) then
@@ -1036,6 +1040,7 @@ do
 				data.skins[skin.skill] = skin.id -- wear it straight away
 				Profile.publish(plr)
 				Profile.save(plr)
+				CornBought:FireClient(plr, "\u{2728}", skin.name, 1, skin.corn, true)
 				return Notice:FireClient(plr, "\u{2728} " .. skin.name .. " is yours! Wearing it next game.")
 			end
 		end
@@ -1044,14 +1049,16 @@ do
 		if not boost then
 			return
 		end
-		if have < price then
-			return Notice:FireClient(plr, "You need " .. price .. " candy corns for " .. boost.name .. " (you have " .. have .. ").")
+		local total = price * count
+		if have < total then
+			return Notice:FireClient(plr, "You need " .. total .. " candy corns for " .. count .. " " .. boost.name .. " (you have " .. have .. ").")
 		end
-		data.stats.cornSpent = (data.stats.cornSpent or 0) + price
-		data.inv[id] = (data.inv[id] or 0) + 1 -- not "paid": it doesn't sell back for points
+		data.stats.cornSpent = (data.stats.cornSpent or 0) + total
+		data.inv[id] = (data.inv[id] or 0) + count -- not "paid": it doesn't sell back for points
 		Profile.publish(plr)
 		Profile.save(plr)
-		Notice:FireClient(plr, boost.icon .. " " .. boost.name .. " for " .. price .. " candy corns!")
+		CornBought:FireClient(plr, boost.icon, boost.name, count, total, false)
+		Notice:FireClient(plr, boost.icon .. " " .. count .. " x " .. boost.name .. " for " .. total .. " candy corns!")
 	end)
 end
 
