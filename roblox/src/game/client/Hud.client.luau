@@ -851,11 +851,24 @@ local function showChar()
 			end
 		end
 	end
+	do
+		-- the owner testing a remade toon (Config.STUDIO_TRY_MODEL) sees it on the
+		-- card too, as in the game (the server copies every imported model here)
+		local tester = game:GetService("RunService"):IsStudio()
+			or (Config.TRY_MODEL_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId)
+		local try = tester and src and Config.STUDIO_TRY_MODEL and Config.STUDIO_TRY_MODEL[src.Name]
+		if try and previews:FindFirstChild(try) then
+			src = previews:FindFirstChild(try)
+		end
+	end
 	spin = 0
 	if src then
 		shown = src:Clone()
 		shown.Parent = viewWorld
 		shown:PivotTo(CFrame.Angles(0, math.pi, 0))
+		if Config.PROPELLER and Config.PROPELLER[src.Name] then
+			pcall(require(ReplicatedStorage.Shared.Propeller).add, shown, Config.PROPELLER_LIFT)
+		end
 		do
 			-- shoulders to feet (a hood or a big head is left out, so a skin is
 			-- the same size as its plain character), as a whole height

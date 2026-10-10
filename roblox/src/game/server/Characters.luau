@@ -28,16 +28,28 @@ local function rigged(m)
 	return m
 end
 
+local dupWarned = {} -- names already reported as used by two models
 local function template(name)
 	local folder = ServerStorage:FindFirstChild("Characters")
 	if not folder then
 		return nil
 	end
 	local want = string.lower(name)
+	local found, count = nil, 0
 	for _, c in ipairs(folder:GetChildren()) do
 		if c:IsA("Model") and string.lower(c.Name) == want then
-			return rigged(c)
+			found = found or c
+			count += 1
 		end
+	end
+	if count > 1 and not dupWarned[want] then
+		-- two models with one name: the game can't tell which is meant
+		dupWarned[want] = true
+		warn("ServerStorage/Characters has " .. count .. " models named " .. name
+			.. " - using the first; delete or rename the others (10 Oct: an old Halloween Nurse hid behind the new one)")
+	end
+	if found then
+		return rigged(found)
 	end
 	-- a near miss ("Muscle1", "muscle_rig", "Muscle "): use it, and say so
 	for _, c in ipairs(folder:GetChildren()) do
