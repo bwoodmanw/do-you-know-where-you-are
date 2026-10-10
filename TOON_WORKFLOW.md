@@ -62,34 +62,62 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 
 ## Workflow 2 - the 3D models
 
-For the seven core kid characters only, use `CORE_TOON_MODEL_WORKFLOW.md`.
-The full table below also includes Tinker and the Halloween Nurse Patch skin.
+**Updated 10 Oct.** The 3D models are made by **Stable Fast 3D** on Brent's
+PC (his RTX 4050), through `tools/make_toon_models.py`. The first try had the
+workflow write its own script, which pointed Stable Fast 3D straight at the
+OneDrive game folder (a path with spaces) and stalled with nothing made. The
+new script works the way the 7-8 Oct batch did - a copy of the picture in a
+work folder without spaces, outside OneDrive - and only the finished model
+comes back to `art/models/`. All settings are in the script (one 1024 x 1024
+texture, about 8,000 triangles), so the workflow only runs it.
 
-Tinker's row remakes him from both pictures (it replaces the Meshy
-retexture). Run it for one character first (Tinker), check it in the game,
-then the rest. The rows describe the approved pictures (10 Oct): Shadow's
-plain black shoes, Muscle's plain red high-tops, Echo's plain joggers, and
-Patch's new look (blonde, blue eyes, light-blue jeans). The Halloween Nurse
-Patch row uses the two pictures checked on 10 Oct (ready).
+**Stable Fast 3D builds from ONE picture - the front.** The back pictures are
+checked but not used; Claude renders every model from behind, and any back
+that comes out wrong gets fixed (see the end of this section).
 
+**Close Roblox Studio (and games, and browser tabs with video) first.**
+Stable Fast 3D needs all of the graphics card's 6 GB (it peaked at 6.2 GB on
+Brainy, 10 Oct); anything else using the card makes it crash with exit code
+3221225477. The script tries twice, then says so.
+
+Tested 10 Oct on Brainy: about a minute, 6,786 triangles, the back of the lab
+coat, hair and beanie came out right; **thin parts can go missing** (his
+propeller did) - Claude's render check lists anything lost.
+
+Run it one character at a time (about a minute each), Tinker first:
 
 ```
-create new workflow to create 3D models based on the [Model Standard], [Reference] and [Model]. For each model, attach both [Reference] pictures (the front picture and the back picture), then save the model to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\[folder]\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\models\brainy-toon.glb.
-The [Model Standard] will be included with every model prompt. The [Model] prompt is added to [Model Standard] and changes per model. The [Reference] and [file name] are defined per model.
-[Model Standard] = "Use the attached pictures to create a 3D model of the character for a Roblox game: the first picture is the FRONT, the second is the BACK. Copy both pictures exactly - the same character, shapes, colors and accessories; the back of the model must match the back picture (never guess its colors). Art style / texture style: Cartoon (stylized). Every area one flat, solid color in a single base-color (albedo) texture; PBR off - no normal, roughness, metallic or bump maps. Remove lighting / delight on - no lighting, shadows, ambient occlusion or dark creases baked into the colors. Skin on the face, neck, arms, hands and legs in the warm skin tone of the pictures (never pale gray or white). No logos, brand marks, printed words or graphics. Pose: A-pose - arms straight, angled about 45 degrees down and away from the body and not touching it, hands open with the fingers together, legs slightly apart, feet flat; left and right sides symmetrical. Front facing: the face looks straight forward toward the front picture's camera; the character stands upright with the feet at the bottom of the model. One single closed mesh with no separate floating pieces; no skeleton, no rig, no animation; no floor, stand or background. Polycount: the lower option - about 5,000 to 8,000 triangles. One 1024 x 1024 texture embedded in the file. Keep accessories close to the body (no big brims, bags or antennas sticking far out); the face clearly visible, not covered by hair, hats or goggles. Save as a .glb file."
-[folder]="models"
-Table for each [Model], [Reference] and [file name] combination is below:
-[Model] | [Reference] | [file name]
-[Tinker, a boy mechanic: backwards blue cap with brass goggles, orange T-shirt, blue overalls, brown tool belt with a wrench and a screwdriver, blue high-top sneakers.] | [model-input\tinker\front-toon.png, model-input\tinker\back-toon.png] | [tinker-toon.glb]
-[Brainy, a clever boy: round black glasses, red beanie with a small blue propeller, a pencil behind his ear, white lab coat over a light-blue sweater, khaki cargo pants, red sneakers.] | [model-input\brainy\front-toon.png, model-input\brainy\back-toon.png] | [brainy-toon.glb]
-[Shadow, a sneaky boy: purple hoodie with the hood up, black face mask, purple fingerless gloves, black jogger pants, plain black sneakers with purple laces and no stripes.] | [model-input\shadow\front-toon.png, model-input\shadow\back-toon.png] | [shadow-toon.glb]
-[Muscle, a strong, sturdy boy: spiky brown hair, yellow headband and wristbands, red T-shirt, black shorts, white socks, plain solid red high-top sneakers with white soles and white laces and no logo.] | [model-input\muscle\front-toon.png, model-input\muscle\back-toon.png] | [muscle-toon.glb]
-[Glow, a girl with a light: curly hair in a bun, green headband with a short antenna and a round yellow bulb, solid lime-green raincoat, round yellow chest lamp, dark olive pants, green rain boots.] | [model-input\glow\front-toon.png, model-input\glow\back-toon.png] | [glow-toon.glb]
-[Patch, a caring girl: long straight golden-blonde ponytail with a pink scrunchie, blue eyes, small forehead bandage, pink vest over a cream top, pink shoulder bag with a white heart, light-blue jeans, pink-and-cream sneakers.] | [model-input\patch\front-toon.png, model-input\patch\back-toon.png] | [patch-toon.glb]
-[Halloween Nurse Patch (a skin): the same blonde Patch in a dark gray cardigan over a black nurse top with a small orange pumpkin badge, a penlight on a cord, an orange jack-o'-lantern shoulder bag on a brown strap, an orange scrunchie, plain orange jogger pants with no pockets, white sneakers with small orange pumpkin dots.] | [model-input\halloween-nurse-patch\front-toon.png, model-input\halloween-nurse-patch\back-toon.png] | [halloween-nurse-patch-toon.glb]
-[Echo, a girl with headphones: curly hair in a bun, brass goggles on her head, purple headphones around her neck, yellow jacket over a plain purple hoodie, small black backpack, plain purple jogger pants, purple-and-yellow sneakers.] | [model-input\echo\front-toon.png, model-input\echo\back-toon.png] | [echo-toon.glb]
-[Bramble, a nature boy: crown of green leaves with a white flower, green poncho with a zigzag leaf edge, brown strap bag with acorns, brown cargo shorts, green socks, brown boots.] | [model-input\bramble\front-toon.png, model-input\bramble\back-toon.png] | [bramble-toon.glb]
+create new workflow to make the 3D models for [Model] using the [Run Standard]. For each row of the table, in order: run the [Run Standard] command with that row's [Model], wait until it prints "DONE", then tell me that row's [file name], its "triangles" number and whether it printed "FAILED". If a row FAILED, show me the last 20 lines it printed and go on to the next row. Do not change tools\make_toon_models.py, do not write a new script, do not change any settings, and do not edit any other file.
+[Run Standard] = open a terminal in "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are" and run:
+"C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py [Model]
+Table for each [Model] and [file name] combination is below:
+[Model] | [file name]
+[tinker] | [art\models\tinker-toon.glb]
+[brainy] | [art\models\brainy-toon.glb]
+[shadow] | [art\models\shadow-toon.glb]
+[muscle] | [art\models\muscle-toon.glb]
+[glow] | [art\models\glow-toon.glb]
+[patch] | [art\models\patch-toon.glb]
+[echo] | [art\models\echo-toon.glb]
+[bramble] | [art\models\bramble-toon.glb]
+[halloween-nurse-patch] | [art\models\halloween-nurse-patch-toon.glb]
 ```
+
+Or without the workflow: open **PowerShell**, then paste (all nine in one go):
+
+```
+cd "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are"
+& "C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py
+```
+
+Then tell Claude - Claude renders each model (front, back, side) before you
+import anything.
+
+**If a back comes out wrong** (smudges, wrong colors): first re-run just that
+character (each run comes out a little different). If it stays wrong, the fix
+is a multi-view model maker that uses the back picture too (Hunyuan3D-2
+multi-view runs on this PC; Meshy and Tripo do it online) - Claude sets that
+up for those characters only.
 
 ## Step 3 - into Studio (Party House), one character at a time
 

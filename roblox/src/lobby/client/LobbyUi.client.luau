@@ -1748,7 +1748,7 @@ for _, t in ipairs({ skillsTile, skinsTile }) do
 	pic.Name = "Pic"
 	pic.BackgroundTransparency = 1
 	pic.Size = UDim2.fromOffset(84, 84)
-	pic.Position = UDim2.new(0, 2, 0.5, -42)
+	pic.Position = UDim2.new(0, -94, 0.5, -42) -- (the padding below moves it 100 right)
 	pic.ScaleType = Enum.ScaleType.Fit
 	pic.ZIndex = 13
 	pic.Parent = t
