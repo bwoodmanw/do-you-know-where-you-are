@@ -98,3 +98,30 @@ Table for each [Model], [Reference] and [file name] combination is below:
 5. Claude adds it to `Config.STUDIO_TRY_MODEL` so you play it (Studio and
    live, only you); compare photos; if it wins, Claude switches it over
    (both places: the Lobby's Characters screen has its own copy).
+
+## Patch's new look (Brent, 10 Oct): her pictures to remake
+
+Brent kept the new toon Patch: long golden-blonde ponytail, blue eyes,
+light-blue jeans (the rest as before). Everything that shows the old
+brown-haired Patch is remade to match:
+
+| Picture | File | Where it shows |
+|---|---|---|
+| Portrait | `art/roblox-store/portraits/Patch.png` | Lobby portrait buttons and Plain skin tile (`Config.PORTRAITS`), the game's card (`Config.PORTRAITS_GAME`) - uploaded once per place |
+| Skin art | `art/roblox-store/passes/pass-halloween-nurse-patch.png` | the Game Pass picture, and her tile in the Lobby's Skins window |
+| Skin model pictures | `art/model-input/halloween-nurse-patch/front-toon.png`, `back-toon.png` | for remaking the Halloween Nurse Patch 3D skin (workflow 2) |
+
+Unchanged: her skill icon (a heart), the store thumbnail and icons (she is
+not in them). The prompt is in the chat of 10 Oct and below.
+
+```
+create new workflow to create images based on the [Picture Standard], [Reference] and [Picture]. For each picture, attach every [Reference] picture listed, then save to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\[file name]", replacing the file already there. For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\roblox-store\portraits\Patch.png.
+The [Picture Standard] will be included with every picture prompt. The [Picture] prompt is added to [Picture Standard] and changes per prompt. The [Reference] and [file name] are defined per picture. Make the pictures in the order of the table: the back view uses the front view made just before it.
+[Picture Standard] = "The character is Patch, a kind, caring girl of about 9, exactly as in the attached Patch picture (model-input\patch\front-toon.png): long straight golden-blonde hair in a high ponytail with a scrunchie, big blue eyes, a small skin-colored bandage on her forehead, a gentle smile, warm light skin. Clean, simple 3D cartoon toy style: smooth flat colors, soft rounded shapes, big clear eyes, no texture, no dirt, no freckles. No logos, brand marks, printed words or text anywhere. Not a copy of any existing cartoon or game character. Bright, friendly and right for young kids."
+Table for each [Picture], [Reference] and [file name] combination is below:
+[Picture] | [Reference] | [file name]
+[PORTRAIT, square: Patch from the chest up, turned slightly toward the camera, in her pink vest with pockets over a cream long-sleeve top, the brown strap of her shoulder bag across her chest. Behind her a soft glowing pink circle on a deep plum-purple background. In the bottom-right corner a round badge: a cream circle with a pink heart and a small bandage across it. Lay it out exactly like the attached old portrait - same framing, glow and badge - with Patch's new look.] | [model-input\patch\front-toon.png, roblox-store\portraits\Patch.png] | [roblox-store\portraits\Patch.png]
+[SKIN PICTURE, square, for "Halloween Nurse Patch": Patch from the waist up, wearing the Halloween nurse outfit from the attached outfit picture - a dark gray cardigan over a black nurse top with a small orange pumpkin badge, a little penlight on a cord, an orange shoulder bag with a friendly jack-o'-lantern face on a brown strap, an orange scrunchie. Inside a big circle with a glowing orange-to-plum background and a few soft white dots, on a dark background - laid out exactly like the attached old skin picture, with Patch's new look.] | [model-input\patch\front-toon.png, model-input\halloween-nurse-patch\a-pose-front.png, roblox-store\passes\pass-halloween-nurse-patch.png] | [roblox-store\passes\pass-halloween-nurse-patch.png]
+[FRONT view, full body, for the 3D skin: Patch in the Halloween nurse outfit from the attached outfit picture - dark gray cardigan over a black nurse top with a small orange pumpkin badge, a penlight on a cord, an orange jack-o'-lantern shoulder bag on a brown strap, orange cargo jogger pants, white sneakers with small orange pumpkin dots, an orange scrunchie. Every area one flat solid color. Standing in an A-pose: arms straight and angled down and away from the body, hands open, legs slightly apart, feet flat; facing the camera straight on; centered and filling the whole height. Plain flat light-gray background, even soft light, no floor shadow.] | [model-input\patch\front-toon.png, model-input\halloween-nurse-patch\a-pose-front.png] | [model-input\halloween-nurse-patch\front-toon.png]
+[BACK view, full body, for the 3D skin: the same Patch in the same Halloween nurse outfit as the attached front view, seen from directly behind in the same A-pose - the long blonde ponytail with the orange scrunchie, the back of the gray cardigan with the bag strap across it, orange pants, white-and-orange sneakers. Every color the same as the front. Plain flat light-gray background, even soft light.] | [model-input\halloween-nurse-patch\front-toon.png] | [model-input\halloween-nurse-patch\back-toon.png]
+```
