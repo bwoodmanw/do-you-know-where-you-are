@@ -66,8 +66,8 @@ JOBS = {
     "harvest-glow": "harvest-glow-toon.glb",
     "scarecrow-tinker": "scarecrow-tinker-toon.glb",
     "gridiron-muscle": "gridiron-muscle-toon.glb",
-    "parade-echo": "parade-echo-toon.glb",
-    "sunflower-bramble": "sunflower-bramble-toon.glb",
+    "dj-echo": "dj-echo-toon.glb",
+    "acorn-bramble": "acorn-bramble-toon.glb",
     "host-gobbler": "host-gobbler-toon.glb",
     "turkey": "turkey-toon.glb",
 }

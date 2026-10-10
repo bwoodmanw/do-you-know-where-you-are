@@ -13,7 +13,7 @@ yet: Brent picks, then Claude builds.
   on the Harvest Barn floor, the Gobbler host, the Feast Meter, the Turkey
   Wrangler badge, **all 4 skins** (Chef Brainy, Gobble Shadow, Pie Baker
   Patch, Harvest Glow) + every other character too (Scarecrow Tinker,
-  Gridiron Muscle, Parade Echo, Sunflower Bramble - Brent, 10 Oct). Pie
+  Gridiron Muscle, Feast DJ Echo, Acorn Bramble - Brent, 10 Oct). Pie
   Crusty / Grandma's Kitchen kept for 2027.
 - **Thanksgiving starts the moment Halloween ends:** 1 Nov 2026, 12:00 AM
   Eastern, until 1 Dec 12:00 AM Eastern (Christmas starts then). **Event
@@ -25,7 +25,13 @@ yet: Brent picks, then Claude builds.
   **Candy Cane Lane** + (possibly) **Reindeer Stables**. Event page by
   **23 Nov** (starts 1 Dec).
 - **Yearly dates: yes** (build before Thanksgiving). **Yearly badge: no.**
-- Open: decision 6 (paid or earned) and Comet's unlock (above).
+- **Comet's unlock: yes** (escape the Reindeer Stables). **Skins:** earned with
+  feathers or bought as Game Passes; Holly and Miles free.
+- **Feathers for Robux: yes, build it** (Brent, 10 Oct): two Developer
+  Product bundles; bought feathers only spend - they never count toward
+  the Turkey Wrangler badge or the Feast Meter; Comet can never be bought;
+  no pressure pop-ups (the shop shows the end date). Christmas: the same
+  with ornaments.
 
 ## 1. The yearly calendar (the "years" part)
 

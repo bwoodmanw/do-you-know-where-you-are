@@ -34,7 +34,7 @@ INPUT = PROJECT / "art" / "model-input"
 FOLDERS = ["tinker", "brainy", "shadow", "muscle", "glow", "patch", "echo", "bramble", "halloween-nurse-patch",
            "tinker-pumpkin", "ghostly-shadow", "candy-glow", "space-cadet-brainy", "snow-day-muscle", "starlight-echo", "autumn-leaf-bramble", "muscle-mummy",
            "host", "host-gummy", "host-hospital", "host-caretaker", "host-clownbear", "host-anglerfish",
-           "chef-brainy", "gobble-shadow", "pie-baker-patch", "harvest-glow", "scarecrow-tinker", "gridiron-muscle", "parade-echo", "sunflower-bramble", "host-gobbler", "turkey"]
+           "chef-brainy", "gobble-shadow", "pie-baker-patch", "harvest-glow", "scarecrow-tinker", "gridiron-muscle", "dj-echo", "acorn-bramble", "host-gobbler", "turkey"]
 # no sharp face corner: hosts (pumpkins, lamps, fish heads) and the turkey
 def no_face(name):
     return name.startswith("host") or name in ("turkey",)
@@ -161,6 +161,109 @@ FACE_SHARE = 0.25  # the face's corner: a quarter of the texture's width and hei
 FACE_MARGIN = 16  # pixels of border inside the corner, clear of the texture's edges
 
 
+def even_skin(name, V, F, uv, fn, tex, sel, pic, fg_mask, align):
+    """10 Oct: Patch's jaw, chin and neck showed pale and dark patches in Studio
+    (and in our renders from below): those triangles face sideways or down, so
+    the picture repaint barely reaches them and they keep Stable Fast 3D's
+    uneven skin. Only the band from the cheeks down to the neck, front and
+    sides, is touched: a texel there becomes the picture's own skin color when
+    it is much closer to skin than to the hair (both measured in the picture)
+    and - where the front picture can see it - the picture shows skin there too
+    (pink clothes, blonde hair and masks stay as they are)."""
+    bx0, by0, s, dx, dy, scale, hi, h, cx = align
+    TH, TW = tex.shape[:2]
+    uvpx = np.stack([uv[:, 0] * TW, (1 - uv[:, 1]) * TH], axis=1)
+    c = V[F].mean(axis=1)
+
+    def to_pic(p3):
+        ix = np.clip((bx0 + (hi[0] - p3[:, 0]) * scale * s + dx).astype(int), 0, pic.shape[1] - 1)
+        iy = np.clip((by0 + (hi[1] - p3[:, 1]) * scale * s + dy).astype(int), 0, pic.shape[0] - 1)
+        return ix, iy
+
+    def pic_median(mask, near_px=40):
+        ix, iy = to_pic(c[mask])
+        cols = pic[iy, ix][fg_mask[iy, ix]].astype(np.float32)
+        if len(cols) < 10:
+            return None
+        m = np.median(cols, axis=0)
+        for _ in range(3):
+            close = cols[np.linalg.norm(cols - m, axis=1) < near_px]
+            if len(close) < 10:
+                break
+            m = np.median(close, axis=0)
+        return m
+
+    dxc = np.abs(c[:, 0] - cx)
+    facing = -fn[:, 2]
+    # the picture's skin: the cheeks (below the eyes, beside the nose)
+    skin = pic_median(sel & (c[:, 1] < hi[1] - 0.17 * h) & (c[:, 1] > hi[1] - 0.24 * h) & (dxc > 0.03 * h) & (dxc < 0.09 * h))
+    # the picture's hair: the top of the head, facing forward
+    hair = pic_median((facing > 0.3) & (c[:, 1] > hi[1] - 0.05 * h) & (dxc < 0.08 * h))
+    # a mask or a hood over the cheeks (Shadow, Ghostly Shadow): no skin to even out
+    lum = None if skin is None else float(skin @ np.array([0.3, 0.59, 0.11]))
+    if skin is None or not (skin[0] > skin[1] > skin[2] and skin[0] - skin[2] > 40 and lum > 90):
+        print(f"{name}: even skin skipped (the cheeks are not skin in the picture: {None if skin is None else skin.astype(int).tolist()})")
+        return tex
+    region = (~sel & (c[:, 1] < hi[1] - 0.17 * h) & (c[:, 1] > hi[1] - 0.30 * h)
+              & (dxc < 0.15 * h) & (facing > -0.3))
+    tex = tex.copy()
+    changed = 0
+    for f in np.nonzero(region)[0]:
+        pts, bc = raster(uvpx[F[f]], TW, TH)
+        if pts is None or len(pts) == 0:
+            continue
+        col = tex[pts[:, 1], pts[:, 0]]
+        d_s = np.linalg.norm(col - skin, axis=1)
+        d_h = np.linalg.norm(col - hair, axis=1) if hair is not None else np.full(len(col), 1e9)
+        sure = (d_s < 75) & (d_s < 0.5 * d_h)  # clearly skin (the jaw's pale sides)
+        maybe = (d_s < 75) & (d_s < 0.7 * d_h) & ~sure
+        if fn[f, 1] > -0.4:  # not facing down: the front picture sees it - a doubtful texel needs skin there
+            ix, iy = to_pic(bc @ V[F[f]])
+            pc = pic[iy, ix].astype(np.float32)
+            maybe &= fg_mask[iy, ix] & (np.linalg.norm(pc - skin, axis=1) < 45)
+        ok = sure | maybe
+        if not ok.any():
+            continue
+        w = np.clip((75 - d_s[ok]) / 30, 0, 1)[:, None]
+        tx, ty = pts[ok, 0], pts[ok, 1]
+        tex[ty, tx] = col[ok] * (1 - w) + skin * w
+        changed += int(ok.sum())
+    print(f"{name}: even skin on the jaw, chin and neck ({changed} texels, skin {skin.astype(int).tolist()}"
+          + (f", hair {hair.astype(int).tolist()})" if hair is not None else ")"))
+    return tex
+
+
+def picture_chin(pic, fg_mask, nose_x, nose_y):
+    """the picture's chin, column by column: the lowest pixel of the skin region
+    joined to the nose (-1 where the face has no pixel). None when the nose is
+    not skin (a mask: Shadow, Ghostly Shadow)."""
+    from scipy import ndimage
+    H, W = pic.shape[:2]
+    win = pic[max(nose_y - 8, 0):nose_y + 9, max(nose_x - 8, 0):nose_x + 9].reshape(-1, 3).astype(np.float32)
+    skin = np.median(win, axis=0)
+    lum = float(skin @ np.array([0.3, 0.59, 0.11]))
+    if not (skin[0] > skin[1] > skin[2] and skin[0] - skin[2] > 40 and lum > 90):
+        return None
+    is_skin = fg_mask & (np.linalg.norm(pic.astype(np.float32) - skin, axis=2) < 55)
+    lab, _ = ndimage.label(is_skin)
+    near = lab[max(nose_y - 8, 0):nose_y + 9, max(nose_x - 8, 0):nose_x + 9]
+    ids, counts = np.unique(near[near > 0], return_counts=True)
+    if not len(ids):
+        return None
+    face = ndimage.binary_fill_holes(ndimage.binary_closing(lab == ids[np.argmax(counts)], iterations=3))
+    rows = np.where(face.any(axis=0), H - 1 - np.argmax(face[::-1], axis=0), -1)
+    # only the chin's columns: where the face reaches near its lowest point (at
+    # the sides the face's edge climbs past the cheeks and ears)
+    ys = np.nonzero(face.any(axis=1))[0]
+    # a real face: big, and reaching well below the seed (Brainy's seed fell on
+    # his glasses' bridge: a tiny patch there must never cut off his smile)
+    _, (bx0, bx1, by0, by1) = outline(pic)
+    if face.sum() < 0.01 * (bx1 - bx0) * (by1 - by0) or ys.max() - nose_y < 0.03 * (by1 - by0):
+        return None
+    rows[rows < ys.max() - 0.2 * (ys.max() - ys.min())] = -1
+    return rows
+
+
 def face_corner(name, V, F, uv, fn, tex, pic):
     """Stable Fast 3D gives a toon's face ~50 x 50 texture pixels (blurry eyes in
     Roblox, 10 Oct). The front of the head gets its own corner of the texture
@@ -202,6 +305,33 @@ def face_corner(name, V, F, uv, fn, tex, pic):
     if sel.sum() < 20 or score < 0.2:
         print(f"{name}: face corner skipped (face match {score:.2f}, {int(sel.sum())} triangles)")
         return V, F, uv, tex, np.arange(len(V))
+
+    def to_pic(p):
+        ix = np.clip((bx0 + (hi[0] - p[:, 0]) * scale * s + dx).astype(int), 0, pic.shape[1] - 1)
+        iy = np.clip((by0 + (hi[1] - p[:, 1]) * scale * s + dy).astype(int), 0, pic.shape[0] - 1)
+        return ix, iy
+
+    # 10 Oct: keep the sharp face above the picture's chin (Echo's jagged
+    # chin: the corner's bottom copied the neck's shadow and her headphones)
+    # the seed: the middle of the face, 65% of the way down the sharp corner
+    # (the nose / upper lip - the most forward point is often the forehead)
+    ys = V[np.unique(F[sel]), 1]
+    seed = np.array([[cx, ys.max() - 0.65 * (ys.max() - ys.min()), 0.0]])
+    nx, ny = to_pic(seed)
+    nose_py = int(ny[0])
+    chin_rows = picture_chin(pic, outline(pic)[0], int(nx[0]), nose_py)
+
+    def below_chin(ix, iy):
+        if chin_rows is None:
+            return np.zeros(len(ix), bool)
+        r = chin_rows[ix]
+        return (iy > nose_py) & (r >= 0) & (iy > r + 2)
+
+    if chin_rows is not None:
+        out = sel & below_chin(*to_pic(c))
+        if out.any():
+            print(f"{name}: {int(out.sum())} chin triangles below the picture's chin - even skin instead")
+        sel = sel & ~out
     # Also repaint the head's front in the ORIGINAL texture from the picture,
     # lined up the same way (10 Oct: in Roblox some face triangles still showed
     # Stable Fast 3D's brownish old face - Avatar Setup can merge the face's
@@ -229,12 +359,13 @@ def face_corner(name, V, F, uv, fn, tex, pic):
         iy = np.clip((by0 + ry * s + dy).astype(int), 0, pic.shape[0] - 1)
         zf = bc @ -V[F[f], 2]
         dx_, dy_ = np.clip(rx.astype(int), 0, RWd - 1), np.clip(ry.astype(int), 0, RHd - 1)
-        ok = fg_mask0[iy, ix] & (zf >= front_depth[dy_, dx_] - eps_d)
+        ok = fg_mask0[iy, ix] & (zf >= front_depth[dy_, dx_] - eps_d) & ~below_chin(ix, iy)
         # blend in toward the sides, so there is no hard edge to the side hair,
         # and out toward surface facing down (under the chin)
         w = min(1.0, (-fn[f, 2] - 0.2) / 0.3) * min(1.0, max(0.0, (fn[f, 1] + 0.6) / 0.3))
         tx, ty = pts[ok, 0], pts[ok, 1]
         tex[ty, tx] = tex[ty, tx] * (1 - w) + pic[iy[ok], ix[ok]].astype(np.float32) * w
+    tex = even_skin(name, V, F, uv, fn, tex, sel, pic, fg_mask0, (bx0, by0, s, dx, dy, scale, hi, h, cx))
     used = np.unique(F[sel])
     x0b, x1b = V[used, 0].min(), V[used, 0].max()
     y0b, y1b = V[used, 1].min(), V[used, 1].max()
