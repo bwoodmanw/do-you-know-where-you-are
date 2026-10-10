@@ -266,6 +266,10 @@ function Characters.apply(plr, name)
 		end
 	end
 	fitHeight(m, KID_HEIGHT)
+	-- Brainy's beanie propeller, built on (Config.PROPELLER)
+	if Config.PROPELLER and Config.PROPELLER[name] then
+		pcall(require(game:GetService("ReplicatedStorage").Shared.Propeller).add, m, Config.PROPELLER_LIFT)
+	end
 	-- feet exactly on the floor: the hip height from the model itself, and
 	-- only the root collides (limbs scraping the floor made a character shake
 	-- as it ran)

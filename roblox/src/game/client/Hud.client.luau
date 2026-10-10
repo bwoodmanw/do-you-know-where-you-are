@@ -1860,6 +1860,13 @@ do
 end
 
 -- ---------- running and stamina ----------
+do
+	-- every Brainy propeller turns on this screen (Propeller.luau)
+	local Propeller = require(game:GetService("ReplicatedStorage").Shared.Propeller)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		Propeller.spinAll(os.clock())
+	end)
+end
 local stamina, tired, candyUntil = 100, false, 0
 remotes.Boost.OnClientEvent:Connect(function(kind, amount)
 	if kind == "candy" then

@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 10 Oct 2026)
 
-**Rounds 60 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
+**Rounds 61 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `aquarium`, the Aquarium's
 Main Hall); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,11 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 61 (10 Oct) - Brainy's propeller; descriptions one line per button
+- [ ] BrainyToon (once imported): a blue two-blade propeller on a steel stem on top of the beanie, spinning, in the game (you and a friend both see it turn) and on the Lobby Characters screen once BrainyToon is saved to Roblox; not floating above or sunk into the beanie (photo) - if it is, tell Claude (one number, Config.PROPELLER_LIFT)
+- [ ] The old Brainy has no second propeller
+- [ ] Characters screen: each description ends with its button on its own line (Toolkit:, Sneak:, Think!:, Barricade:, Flare:, Shield:, Noise:, Vines:); the Skills / Skins pictures sit left of the words, not on them (photo)
 
 ## Round 60 (10 Oct) - Characters screen layout
 - [ ] The description sits under the level bar, wide, in bigger text; the 3D character on the left is taller

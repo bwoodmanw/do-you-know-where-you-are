@@ -1791,6 +1791,9 @@ local function showModel(sk)
 			local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(shown, "nohead")
 			shown:SetAttribute("FitH", standing.Y / 0.72 / ((Config.PREVIEW_SCALE or {})[shown.Name] or 1))
 		end
+		if Config.PROPELLER and Config.PROPELLER[modelName] then
+			pcall(require(ReplicatedStorage.Shared.Propeller).add, shown, Config.PROPELLER_LIFT)
+		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, modelName) -- the character's own idle
 		shownFor = modelName
 		noModel.Visible = false
@@ -1831,6 +1834,7 @@ UserInputService.InputEnded:Connect(function(input)
 	end
 end)
 RunService.RenderStepped:Connect(function()
+	require(ReplicatedStorage.Shared.Propeller).spinAll(os.clock())
 	if not shown or not chars.Visible then
 		return
 	end
