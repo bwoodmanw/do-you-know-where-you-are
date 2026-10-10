@@ -1223,6 +1223,19 @@ ResetLadder.OnServerEvent:Connect(function(plr, skill, how)
 	if not data.picks[skill] or next(data.picks[skill]) == nil then
 		return Notice:FireClient(plr, "Nothing to reset yet.")
 	end
+	-- the free reset after a ladder change (Config.FREE_RESET), once per character
+	local tag = Config.FREE_RESET
+	if tag then
+		data.freeResets = data.freeResets or {}
+		data.freeResets[tag] = data.freeResets[tag] or {}
+		if not data.freeResets[tag][skill] then
+			data.freeResets[tag][skill] = true
+			resetLadder(data, skill)
+			Profile.publish(plr)
+			Profile.save(plr)
+			return Notice:FireClient(plr, "The upgrades changed, so this reset was free - choose again!")
+		end
+	end
 	if how == "robux" then
 		data.pendingReset = skill
 		return

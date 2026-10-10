@@ -18,7 +18,10 @@ together with the even levels:
 - **Clues:** at most 5 in all (Brainy 2 + Genius 3).
 The extras became clues, a Party Shield (Bramble's Bark Skin), or more of the
 character's own skill (Flare / Vines recharge, Echo's burst).
-Next: **C**, one free Skill Reset per character.
+**C built 10 Oct:** each character's next reset is free, once
+(`Config.FREE_RESET = "ladder-10oct"`, remembered in the save as
+`freeResets[tag][skill]`). After a future ladder change, set a new tag name
+to give everyone another free reset. Shadow's speed: closed (Brent, 10 Oct).
 
 Brent spotted it on Muscle: pick **Master Builder** (recharge 20% faster) at
 level 19, then **Fortress** (recharge twice as fast) at 20, and level 19 does

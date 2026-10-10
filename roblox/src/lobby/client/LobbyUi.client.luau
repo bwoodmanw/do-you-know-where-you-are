@@ -1590,7 +1590,7 @@ button(chars, "\u{25B6}", { Size = UDim2.fromOffset(56, 36), Position = UDim2.fr
 	stepChar(1)
 end)
 -- choices are for keeps; a reset clears this character's whole ladder
-button(right, "\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(92, 448), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 11 }, function()
+button(right, "\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Name = "ResetPoints", Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(92, 448), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 11 }, function()
 	remotes.ResetLadder:FireServer(selected, "points")
 end)
 -- skins: the plain character, then each skin for it (Game Passes)
@@ -1659,7 +1659,7 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(_, _, bought)
 		task.delay(1, refreshOwned)
 	end
 end)
-local resetRobux = button(right, "\u{1F504} Reset upgrades: Robux", { Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(364, 448), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 11, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
+local resetRobux = button(right, "\u{1F504} Reset upgrades: Robux", { Name = "ResetRobux", Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(364, 448), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 11, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
 	remotes.ResetLadder:FireServer(selected, "robux")
 	MarketplaceService:PromptProductPurchase(player, Config.ROBUX_PRODUCTS.reset)
 end)
@@ -1777,6 +1777,21 @@ repaintChars = function()
 	local prev = Progress.LEVEL_XP[lvl]
 	xpFill.Size = UDim2.fromScale(nextNeed and math.clamp((xp - prev) / (nextNeed - prev), 0, 1) or 1, 1)
 	local picks = (profile.picks and profile.picks[selected]) or {}
+	do
+		-- a free reset after a ladder change: the points button says FREE
+		-- (only when there is something to reset) and the Robux one hides
+		local tag = Config.FREE_RESET
+		local used = tag and profile.freeResets and profile.freeResets[tag] and profile.freeResets[tag][selected]
+		local free = tag ~= nil and not used and next(picks) ~= nil
+		local rp, rr = right:FindFirstChild("ResetPoints"), right:FindFirstChild("ResetRobux")
+		if rp then
+			rp.Text = free and "\u{1F504} Reset upgrades: FREE" or ("\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}")
+			rp.BackgroundColor3 = free and Color3.fromRGB(46, 160, 90) or Color3.fromRGB(150, 60, 70)
+		end
+		if rr then
+			rr.Visible = not free and (Config.ROBUX_PRODUCTS.reset or 0) > 0
+		end
+	end
 	for level = 2, Progress.MAX_LEVEL do
 		local options = Progress.choices(selected, level)
 		local row = ladder[level]
