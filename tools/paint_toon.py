@@ -33,7 +33,11 @@ MODELS = PROJECT / "art" / "models"
 INPUT = PROJECT / "art" / "model-input"
 FOLDERS = ["tinker", "brainy", "shadow", "muscle", "glow", "patch", "echo", "bramble", "halloween-nurse-patch",
            "tinker-pumpkin", "ghostly-shadow", "candy-glow", "space-cadet-brainy", "snow-day-muscle", "starlight-echo", "autumn-leaf-bramble", "muscle-mummy",
-           "host", "host-gummy", "host-hospital", "host-caretaker", "host-clownbear", "host-anglerfish"]
+           "host", "host-gummy", "host-hospital", "host-caretaker", "host-clownbear", "host-anglerfish",
+           "chef-brainy", "gobble-shadow", "pie-baker-patch", "harvest-glow", "scarecrow-tinker", "gridiron-muscle", "parade-echo", "sunflower-bramble", "host-gobbler", "turkey"]
+# no sharp face corner: hosts (pumpkins, lamps, fish heads) and the turkey
+def no_face(name):
+    return name.startswith("host") or name in ("turkey",)
 FACING_MIN, FACING_FULL = 0.12, 0.45  # blend from side-on to fully facing
 
 
@@ -457,8 +461,8 @@ def paint(name):
     print(f"{name}: front colors corrected, back painted from the back picture ({int((best > 0).sum() * 100 / (TH * TW))}% of the texture)")
     # the face gets its own sharp corner of the texture, from the picture
     front_pic = np.asarray(Image.open(pics["front"]).convert("RGB"))
-    if name.startswith("host"):
-        V2, F2, uv2, src = V, F, uv, np.arange(len(V))  # hosts: pumpkins, lamps and fish heads - no face corner
+    if no_face(name):
+        V2, F2, uv2, src = V, F, uv, np.arange(len(V))  # hosts and the turkey: no face corner
     else:
         V2, F2, uv2, out, src = face_corner(name, V, F, uv, fn, out, front_pic)
     # the original triangles in the main texture (the face's fallback there)
@@ -484,10 +488,10 @@ def paint(name):
     # the safety check (tools/check_toon_models.py): a model that would break
     # in Roblox stops here - make_toon_models then prints FAILED for it
     from check_toon_models import check
-    problems = check(glb, host=name.startswith("host"))
+    problems = check(glb, host=no_face(name))
     if problems:
         raise RuntimeError(f"{glb.name} failed its check: " + "; ".join(problems))
-    print(f"{name}: checked - normals, texture, size, facing forward" + ("" if name.startswith("host") else ", sharp face") + ": all good")
+    print(f"{name}: checked - normals, texture, size, facing forward" + ("" if no_face(name) else ", sharp face") + ": all good")
 
 
 if __name__ == "__main__":

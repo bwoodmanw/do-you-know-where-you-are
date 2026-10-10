@@ -433,3 +433,58 @@ Send Claude the 12 pictures to check (look-alikes, logos, A-pose, front and
 back matching) before the models. Studio names later: ChefBrainyToon,
 GobbleShadowToon, PieBakerPatchToon, HarvestGlowToon, HostGobblerToon (the
 turkey is not a character: Claude decides how it moves once the model is in).
+
+### Thanksgiving: the 12 pictures checked (10 Oct)
+
+Chef Brainy, Gobble Shadow, Pie Baker Patch, Harvest Glow, the Gobbler and
+the turkey: front and back match, no logos, no look-alikes, kid-safe. Chef
+Brainy's propeller and Harvest Glow's antenna are thin (Stable Fast 3D will
+likely drop them: the game builds Brainy's propeller from parts). The turkey
+pictures had a two-shade background (a darker band): flattened to one gray
+with `tools/flatten_background.py` (originals kept as `*-orig.png`);
+`make_toon_models.py` now does this by itself when a background reaches both
+sides of a picture.
+
+### Thanksgiving workflow 2 - 4 more skins (every character gets one), then all 10 models
+
+Brent (10 Oct): every character gets a Thanksgiving skin, so Tinker, Muscle,
+Echo and Bramble get one too. **Close Roblox Studio first.**
+
+```
+create new workflow to make the Thanksgiving pictures and 3D models in two steps. Do not change tools\make_toon_models.py, tools\paint_toon.py, tools\check_toon_models.py or tools\flatten_background.py, do not write a new script, do not change any settings, and do not edit any other file. Roblox Studio must be closed before STEP 2 (the graphics card needs all its memory); if it is open, stop and tell me.
+STEP 1 - the 4 new skin pictures. For each row of [Picture Table], attach every [Reference] picture listed, in that order, make the picture from the [Picture Standard] plus that row's [Picture], and save it to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]" (create the folder if it does not exist). Make the front first: the back uses it as its reference.
+[Picture Standard] = "This is for a kids' co-op escape game for ages 8 and up: friendly and funny, never scary. For a FRONT view one picture is attached: the character's approved toon look - keep exactly their face, hair, eye color, skin tone, body shape and style, and dress them in the new outfit described in this prompt; anything the prompt does not change stays as in the picture. For a BACK view one picture is attached: the same character in the same outfit, seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no straw texture lines, no dirt, no stains, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, big clear eyes, warm skin tone (never pale or white). Small details as simple solid shapes, close to the body - nothing thin or long sticking out. No logos, brand marks, team colors or emblems, numbers, swooshes, stripes on shoes, printed words or graphics. No pilgrim, Native American or other cultural costumes. Full body standing in an A-pose: arms straight and angled down and away from the body, hands open and empty, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. ONE plain flat light-gray background over the whole picture (no bands, no gradient), even soft light, no floor shadow. One character only, no text."
+[Picture Table]:
+[Picture] | [Reference] | [file name]
+[FRONT view of Scarecrow Tinker: Tinker as a friendly scarecrow - a floppy straw hat over his messy brown hair with his brass goggles on the hat's band, a few short straw tufts poking out at his neck, wrists and ankles, a red-and-cream plaid flannel shirt (big simple checks), his blue overalls with two square patches (one orange, one green), his brown tool belt, plain brown boots.] | [model-input\tinker\front-toon.png] | [scarecrow-tinker\front-toon.png]
+[BACK view of Scarecrow Tinker, matching the reference exactly: the back of the straw hat and the goggle strap, messy brown hair, the overall straps crossing the back of the plaid shirt, a square patch on the seat, the tool belt, brown boots.] | [model-input\scarecrow-tinker\front-toon.png] | [scarecrow-tinker\back-toon.png]
+[FRONT view of Gridiron Muscle: Muscle in plain backyard-football gear with NO team colors, logos, numbers or words - his spiky brown hair and yellow headband, a chocolate-brown jersey with two cream bands around each sleeve over rounded shoulder pads, cream football pants to just below the knee, brown socks, plain white cleats with no stripes, yellow wristbands, hands open and empty.] | [model-input\muscle\front-toon.png] | [gridiron-muscle\front-toon.png]
+[BACK view of Gridiron Muscle, matching the reference exactly: the headband knot, the back of the plain brown jersey (NO number, NO name), the shoulder pads, cream pants, brown socks, white cleats.] | [model-input\gridiron-muscle\front-toon.png] | [gridiron-muscle\back-toon.png]
+[FRONT view of Parade Echo: Echo as a parade drummer - her curly brown hair in a bun under a short purple-and-gold band hat with a small rounded yellow plume close to the hat, her brass goggles on the hat, her purple headphones around her neck, a purple band jacket with gold buttons and gold shoulder cords, a small round purple-and-gold drum on a strap at her hip with two drumsticks tucked into the strap, plain purple jogger pants with NO pockets, purple-and-yellow chunky sneakers.] | [model-input\echo\front-toon.png] | [parade-echo\front-toon.png]
+[BACK view of Parade Echo, matching the reference exactly: the band hat and its small plume, the hair bun, the back of the purple band jacket with the gold cords, the drum strap across her back, plain purple joggers, purple-and-yellow sneakers.] | [model-input\parade-echo\front-toon.png] | [parade-echo\back-toon.png]
+[FRONT view of Sunflower Bramble: Bramble with a crown of small sunflowers, a solid sage-green cape with its hood down over a mustard-yellow sweater, a small woven basket bag at his side with two tiny pumpkins in it, brown cargo shorts like Bramble's own, green socks, clean brown lace-up boots.] | [model-input\bramble\front-toon.png] | [sunflower-bramble\front-toon.png]
+[BACK view of Sunflower Bramble, matching the reference exactly: the sunflower crown, the back of the sage-green cape with the hood down, the basket bag strap, brown shorts, green socks, brown boots.] | [model-input\sunflower-bramble\front-toon.png] | [sunflower-bramble\back-toon.png]
+STEP 2 - make the 10 Thanksgiving models. For each row of [Model Table], in order: open a terminal in "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are" and run:
+"C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py [Model]
+wait until it prints "DONE", then tell me that row's [file name], its "triangles" number, whether it printed a "checked - ... all good" line, whether it printed "flattening it", and whether it printed "FAILED". If a row FAILED, show me the last 20 lines it printed and go on to the next row. If it crashes with code 3221225477, Roblox Studio or another program is using the graphics card: stop and tell me.
+[Model Table]:
+[Model] | [file name]
+[chef-brainy] | [art\models\chef-brainy-toon.glb]
+[gobble-shadow] | [art\models\gobble-shadow-toon.glb]
+[pie-baker-patch] | [art\models\pie-baker-patch-toon.glb]
+[harvest-glow] | [art\models\harvest-glow-toon.glb]
+[scarecrow-tinker] | [art\models\scarecrow-tinker-toon.glb]
+[gridiron-muscle] | [art\models\gridiron-muscle-toon.glb]
+[parade-echo] | [art\models\parade-echo-toon.glb]
+[sunflower-bramble] | [art\models\sunflower-bramble-toon.glb]
+[host-gobbler] | [art\models\host-gobbler-toon.glb]
+[turkey] | [art\models\turkey-toon.glb]
+At the end, list all 10 rows in one table: file name, triangles, checked (yes/no), flattened (yes/no), FAILED (yes/no).
+```
+
+Then tell Claude: Claude checks the 8 new pictures and renders all 10 models
+(any picture that fails gets its row redone). Studio names (once the
+Avatar Setup question is settled): ChefBrainyToon, GobbleShadowToon,
+PieBakerPatchToon, HarvestGlowToon, ScarecrowTinkerToon, GridironMuscleToon,
+ParadeEchoToon, SunflowerBrambleToon, HostGobblerToon; the turkey is a prop
+(Claude decides how it moves).

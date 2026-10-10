@@ -59,6 +59,17 @@ JOBS = {
     "host-caretaker": "host-caretaker-toon.glb",
     "host-clownbear": "host-clownbear-toon.glb",
     "host-anglerfish": "host-anglerfish-toon.glb",
+    # Thanksgiving (10 Oct): 8 skins, the Gobbler host, the runaway turkey
+    "chef-brainy": "chef-brainy-toon.glb",
+    "gobble-shadow": "gobble-shadow-toon.glb",
+    "pie-baker-patch": "pie-baker-patch-toon.glb",
+    "harvest-glow": "harvest-glow-toon.glb",
+    "scarecrow-tinker": "scarecrow-tinker-toon.glb",
+    "gridiron-muscle": "gridiron-muscle-toon.glb",
+    "parade-echo": "parade-echo-toon.glb",
+    "sunflower-bramble": "sunflower-bramble-toon.glb",
+    "host-gobbler": "host-gobbler-toon.glb",
+    "turkey": "turkey-toon.glb",
 }
 TEXTURE = 1024  # one 1024 x 1024 picture: plenty for flat cartoon colors
 VERTICES = 4000  # about 8,000 triangles
@@ -80,6 +91,19 @@ def make(slug):
     for pic in (front, back):
         if not pic.exists():
             raise FileNotFoundError(pic)
+    # a background in two shades (the turkey's band, 10 Oct) makes the
+    # character look as wide as the picture: flatten it to one gray first
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import numpy as np
+    from PIL import Image
+    from paint_toon import outline
+    from flatten_background import flatten
+    for pic in (front, back):
+        a = np.asarray(Image.open(pic).convert("RGB"))
+        _, (x0, x1, _, _) = outline(a)
+        if x0 <= 2 and x1 >= a.shape[1] - 3:
+            print(f"{slug}: {pic.name} background is not one plain gray - flattening it", flush=True)
+            flatten(pic)
     job = WORK / slug
     if job.exists():
         shutil.rmtree(job)

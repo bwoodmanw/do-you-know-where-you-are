@@ -85,7 +85,7 @@ def check(path, host=None):
     path = Path(path)
     name = path.name.replace("-toon.glb", "")
     if host is None:
-        host = name.startswith("host")
+        host = name.startswith("host") or name in ("turkey",)  # no face corner
     problems = []
     try:
         j = gltf_json(path)

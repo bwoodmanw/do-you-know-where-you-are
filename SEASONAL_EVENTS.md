@@ -12,7 +12,9 @@ yet: Brent picks, then Claude builds.
 - **Thanksgiving = D:** golden feathers on every floor + the Turkey Roundup
   on the Harvest Barn floor, the Gobbler host, the Feast Meter, the Turkey
   Wrangler badge, **all 4 skins** (Chef Brainy, Gobble Shadow, Pie Baker
-  Patch, Harvest Glow). Pie Crusty / Grandma's Kitchen kept for 2027.
+  Patch, Harvest Glow) + every other character too (Scarecrow Tinker,
+  Gridiron Muscle, Parade Echo, Sunflower Bramble - Brent, 10 Oct). Pie
+  Crusty / Grandma's Kitchen kept for 2027.
 - **Thanksgiving starts the moment Halloween ends:** 1 Nov 2026, 12:00 AM
   Eastern, until 1 Dec 12:00 AM Eastern (Christmas starts then). **Event
   page created by 24 Oct** (7 full days before; 26 Oct would be too late).
