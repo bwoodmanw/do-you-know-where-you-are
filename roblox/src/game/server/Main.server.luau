@@ -337,6 +337,12 @@ local function tryModel(plr, name)
 	local tester = RunService:IsStudio()
 		or (Config.TRY_MODEL_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId)
 	local try = tester and Config.STUDIO_TRY_MODEL and Config.STUDIO_TRY_MODEL[name]
+	if try and not Characters.has(try) and not triedWarned[try] then
+		-- say so once, with what is there (a name typed a little differently?)
+		triedWarned[try] = true
+		print("[Characters] Test model " .. try .. " is not in ServerStorage/Characters yet, so the old " .. name
+			.. " plays. Characters has: " .. Characters.list())
+	end
 	if try and Characters.has(try) then
 		local problem = Characters.broken[try] and "it died as soon as it went on (see the [Characters] line above)" or Characters.problem(try)
 		if not problem then

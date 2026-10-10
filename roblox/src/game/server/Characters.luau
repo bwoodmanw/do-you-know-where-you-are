@@ -113,6 +113,11 @@ function Characters.has(name)
 	return template(name) ~= nil
 end
 
+-- what ServerStorage/Characters holds, for F9 messages ("A (Model), B (Model)")
+function Characters.list()
+	return contents()
+end
+
 -- what is wrong with an imported model that would kill the player (no head,
 -- parts not joined to the root, so they fall out of the world), or nil if
 -- it is fine. The original imported copy (one mesh, before Avatar Setup)
