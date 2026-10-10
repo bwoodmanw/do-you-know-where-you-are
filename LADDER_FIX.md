@@ -4,6 +4,22 @@
 stays `guardian10`, its power is `twoshields`). Wasted picks: 154 -> 110, and
 none is wasted every time any more; the 110 left are all cause 3 (limits) = B.
 
+**B built 10 Oct: `check_ladder_waste.luau` says "OK: no pick is ever wasted".**
+The limits and the even levels (everyone's) are unchanged, so nobody's best
+build changes. Each character's own picks of one kind now fit under the limit
+together with the even levels:
+- **Run:** the even levels already reach +17% of the +20% limit, so no
+  character has its own "run faster" pick any more (they became stamina,
+  hiding, clues or hand speed).
+- **Hide** (host sees you less far): at most two own picks, 5% and 6%.
+- **Stamina:** at most two own picks of 6% (or one of 10%).
+- **Hand speed:** 8-15% steps, about four at most.
+- **Recharge:** about four picks of 15% (Brainy keeps 15 / 20 / 25%).
+- **Clues:** at most 5 in all (Brainy 2 + Genius 3).
+The extras became clues, a Party Shield (Bramble's Bark Skin), or more of the
+character's own skill (Flare / Vines recharge, Echo's burst).
+Next: **C**, one free Skill Reset per character.
+
 Brent spotted it on Muscle: pick **Master Builder** (recharge 20% faster) at
 level 19, then **Fortress** (recharge twice as fast) at 20, and level 19 does
 nothing any more. Same with **Mighty** (shove 20% faster) then **Bulldozer**

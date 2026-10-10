@@ -163,20 +163,20 @@ local GENERIC = {
 local SPECIAL = {
 	tinker = {
 		[3] = {
-			{ id = "fingers", name = "Quick Fingers", say = "Pick locked doors 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "fingers", name = "Quick Fingers", say = "Pick locks and hold things 8% faster", mods = { holdMult = 0.92 } },
 			{ id = "lucky", name = "Lucky Guess", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[5] = {
-			{ id = "master", name = "Handy", say = "Everything you hold is 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "master", name = "Handy", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
 			{ id = "gadget", name = "Gadget Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[7] = {
-			{ id = "toolbelt", name = "Tool Belt", say = "Everything you hold is 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "toolbelt", name = "Tool Belt", say = "Toolkit recharges 10% faster", mods = { cooldownMult = 0.9 } },
 			{ id = "gizmo", name = "Clue Gizmo", say = "+1 clue for the team", mods = { clues = 1 } },
 		},
 		[9] = {
-			{ id = "expert", name = "Expert Hands", say = "Everything you hold is 20% faster", mods = { holdMult = 0.8 } },
-			{ id = "cloak", name = "Gadget Cloak", say = "The host sees you from 15% less far", mods = { sightMult = 0.85 } },
+			{ id = "expert", name = "Expert Hands", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "cloak", name = "Gadget Cloak", say = "The host sees you from 6% less far", mods = { sightMult = 0.94 } },
 		},
 		[10] = {
 			{ id = "mouse10", name = "Wind-up Mouse", say = "Toolkit also lets a squeaky toy mouse run off - the host chases it for 5 s", mods = { p10 = "mouse" } },
@@ -184,7 +184,7 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "tk11", name = "Quick Toolkit", say = "Toolkit recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "fingers11", name = "Nimble Fingers", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "fingers11", name = "Nimble Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
 		},
 		[13] = {
 			{ id = "spare13", name = "Spare Clue", say = "+1 free clue for the team", mods = { clues = 1 } },
@@ -192,15 +192,15 @@ local SPECIAL = {
 		},
 		[15] = {
 			{ id = "tk15", name = "Oiled Toolkit", say = "Toolkit recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "steady15", name = "Steady Hands", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "steady15", name = "Spare Parts", say = "+1 free clue for the team", mods = { clues = 1 } },
 		},
 		[17] = {
-			{ id = "hands17", name = "Steady Fingers", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
-			{ id = "quiet17", name = "Soft Soles", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
+			{ id = "hands17", name = "Steady Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+			{ id = "quiet17", name = "Soft Soles", say = "The host sees you from 5% less far", mods = { sightMult = 0.95 } },
 		},
 		[19] = {
 			{ id = "tk19", name = "Turbo Toolkit", say = "Toolkit recharges 20% faster", mods = { cooldownMult = 0.8 } },
-			{ id = "dash19", name = "Quick Dash", say = "Run 5% faster", mods = { runMult = 1.05 } },
+			{ id = "dash19", name = "Master Plan", say = "+1 free clue for the team", mods = { clues = 1 } },
 		},
 		[20] = {
 			{ id = "mastertinker20", name = "Master Tinker", say = "Picking the big door's keypad shows the team two colors", mods = { p20 = "mastertinker" } },
@@ -210,19 +210,19 @@ local SPECIAL = {
 	shadow = {
 		[3] = {
 			{ id = "long", name = "Long Sneak", say = "Sneak lasts 2 s longer", mods = { sneakTime = 2 } },
-			{ id = "recharge", name = "Fast Recharge", say = "Sneak recharges 20% faster", mods = { cooldownMult = 0.8 } },
+			{ id = "recharge", name = "Fast Recharge", say = "Sneak recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[5] = {
 			{ id = "ghost", name = "Longer Sneak", say = "Sneak lasts 2 s longer", mods = { sneakTime = 2 } },
-			{ id = "blur", name = "Swift", say = "Run 5% faster", mods = { runMult = 1.05 } },
+			{ id = "blur", name = "Light Feet", say = "6% more stamina", mods = { staminaMult = 1.06 } },
 		},
 		[7] = {
-			{ id = "shade", name = "Shade", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
-			{ id = "rest", name = "Quick Rest", say = "Sneak recharges 20% faster", mods = { cooldownMult = 0.8 } },
+			{ id = "shade", name = "Shade", say = "The host sees you from 6% less far", mods = { sightMult = 0.94 } },
+			{ id = "rest", name = "Quick Rest", say = "Sneak recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[9] = {
 			{ id = "phantom", name = "Phantom", say = "Sneak lasts 2 s longer", mods = { sneakTime = 2 } },
-			{ id = "dash", name = "Dash", say = "Run 8% faster", mods = { runMult = 1.08 } },
+			{ id = "dash", name = "Quick Breath", say = "6% more stamina", mods = { staminaMult = 1.06 } },
 		},
 		[10] = {
 			{ id = "clone10", name = "Shadow Clone", say = "Sneak also sends a dark copy of you running off - the host chases it for 4 s", mods = { p10 = "clone" } },
@@ -230,11 +230,11 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "clone11", name = "Lasting Shadow", say = "Your clone fools the host 1 s longer", mods = { cloneTime = 1 } },
-			{ id = "silent11", name = "Silent", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
+			{ id = "silent11", name = "Silent", say = "The host sees you from 5% less far", mods = { sightMult = 0.95 } },
 		},
 		[13] = {
-			{ id = "rest13", name = "Quick Rest", say = "Sneak recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "dash13", name = "Dart", say = "Run 5% faster", mods = { runMult = 1.05 } },
+			{ id = "rest13", name = "Short Rest", say = "Sneak recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "dash13", name = "Quick Hands", say = "Hold things 15% faster", mods = { holdMult = 0.85 } },
 		},
 		[15] = {
 			{ id = "clone15", name = "Deep Shadow", say = "Your clone fools the host 1 s longer", mods = { cloneTime = 1 } },
@@ -242,7 +242,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "rest17", name = "Swift Rest", say = "Sneak recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "shade17", name = "Shade", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
+			{ id = "shade17", name = "Light Fingers", say = "Hold things 15% faster", mods = { holdMult = 0.85 } },
 		},
 		[19] = {
 			{ id = "clone19", name = "Living Shadow", say = "Your clone fools the host 1 s longer", mods = { cloneTime = 1 } },
@@ -261,7 +261,7 @@ local SPECIAL = {
 			{ id = "trick", name = "Trick Spotter", say = "Trick balloons look gray and droopy to your whole team", mods = { trickSight = true } },
 		},
 		[5] = {
-			{ id = "speedread", name = "Quick Reader", say = "Read and use things 20% faster", mods = { holdMult = 0.8 } },
+			{ id = "speedread", name = "Quick Reader", say = "Read and use things 12% faster", mods = { holdMult = 0.88 } },
 			{ id = "twostep", name = "Two-Step Clue", say = "Clues also light up the step after next", mods = { twoStep = true } },
 		},
 		[7] = {
@@ -269,7 +269,7 @@ local SPECIAL = {
 			{ id = "keyfinder", name = "Key Finder", say = "Rooms hiding a key show a key on your team's map", mods = { keyMap = true } },
 		},
 		[9] = {
-			{ id = "scan", name = "Speed Scan", say = "Read and use things 20% faster", mods = { holdMult = 0.8 } },
+			{ id = "scan", name = "Speed Scan", say = "Read and use things 12% faster", mods = { holdMult = 0.88 } },
 			{ id = "longread", name = "Long Read", say = "Read the invitation from twice as far away", mods = { longRead = true } },
 		},
 		[10] = {
@@ -282,19 +282,19 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "read13", name = "Fast Reader", say = "Read and use things 15% faster", mods = { holdMult = 0.85 } },
-			{ id = "watch13", name = "Watchful", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
+			{ id = "watch13", name = "Watchful", say = "The host sees you from 5% less far", mods = { sightMult = 0.95 } },
 		},
 		[15] = {
 			{ id = "think15", name = "Bright Idea", say = "Think! recharges 20% faster", mods = { cooldownMult = 0.8 } },
-			{ id = "lungs15", name = "Deep Thinker", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "lungs15", name = "Deep Thinker", say = "5% more stamina", mods = { staminaMult = 1.05 } },
 		},
 		[17] = {
 			{ id = "hint17", name = "Deep Think", say = "The Think! arrow stays 5 s longer", mods = { thinkTime = 5 } },
-			{ id = "dash17", name = "Quick Steps", say = "Run 5% faster", mods = { runMult = 1.05 } },
+			{ id = "dash17", name = "Fresh Air", say = "7% more stamina", mods = { staminaMult = 1.07 } },
 		},
 		[19] = {
 			{ id = "think19", name = "Brainwave", say = "Think! recharges 25% faster", mods = { cooldownMult = 0.75 } },
-			{ id = "quiet19", name = "Library Voice", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
+			{ id = "quiet19", name = "Library Voice", say = "The host sees you from 5% less far", mods = { sightMult = 0.95 } },
 		},
 		[20] = {
 			{ id = "photo20", name = "Photographic Memory", say = "Your first Think! each game also shows one color of the door code (not on Nightmare)", mods = { p20 = "photo" } },
@@ -303,40 +303,40 @@ local SPECIAL = {
 	},
 	muscle = {
 		[3] = {
-			{ id = "heave", name = "Big Heave", say = "Shove, free friends and search 20% faster", mods = { holdMult = 0.8 } },
+			{ id = "heave", name = "Big Heave", say = "Shove, free friends and search 10% faster", mods = { holdMult = 0.9 } },
 			{ id = "tough", name = "Tough", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[5] = {
-			{ id = "sprinter", name = "Sprinter", say = "Run 5% faster", mods = { runMult = 1.05 } },
-			{ id = "stamina", name = "Strong Lungs", say = "15% more stamina", mods = { staminaMult = 1.15 } },
+			{ id = "sprinter", name = "Stay Low", say = "The host sees you from 5% less far", mods = { sightMult = 0.95 } },
+			{ id = "stamina", name = "Strong Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
 		},
 		[7] = {
-			{ id = "push", name = "Strong Push", say = "Shove, free friends and search 20% faster", mods = { holdMult = 0.8 } },
+			{ id = "push", name = "Strong Push", say = "Shove, free friends and search 10% faster", mods = { holdMult = 0.9 } },
 			{ id = "sturdy", name = "Sturdy Barricade", say = "The host is stuck at your barricade 2 s longer", mods = { barricadeHold = 2 } },
 		},
 		[9] = {
-			{ id = "power", name = "Power Shove", say = "Shove, free friends and search 30% faster", mods = { holdMult = 0.7 } },
-			{ id = "builder", name = "Quick Builder", say = "Barricade recharges 25% faster", mods = { cooldownMult = 0.75 } },
+			{ id = "power", name = "Power Shove", say = "Shove, free friends and search 12% faster", mods = { holdMult = 0.88 } },
+			{ id = "builder", name = "Quick Builder", say = "Barricade recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[10] = {
 			{ id = "pound10", name = "Ground Pound", say = "With no crate near, your button stamps the floor: the host within 10 studs is stunned 2 s", mods = { p10 = "pound" } },
 			{ id = "ironlungs", name = "Iron Lungs", say = "Your stamina refills twice as fast", mods = { p10 = "ironlungs" } },
 		},
 		[11] = {
-			{ id = "heave11", name = "Heave Ho", say = "Shove, free friends and search 15% faster", mods = { holdMult = 0.85 } },
-			{ id = "build11", name = "Builder", say = "Your button recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "heave11", name = "Heave Ho", say = "Shove, free friends and search 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "build11", name = "Builder", say = "Your button recharges 10% faster", mods = { cooldownMult = 0.9 } },
 		},
 		[13] = {
 			{ id = "hold13", name = "Solid Barricade", say = "The host is stuck at your barricade 1 s longer", mods = { barricadeHold = 1 } },
-			{ id = "lungs13", name = "Big Chest", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "lungs13", name = "Big Chest", say = "6% more stamina", mods = { staminaMult = 1.06 } },
 		},
 		[15] = {
-			{ id = "build15", name = "Quick Builder", say = "Your button recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "stride15", name = "Long Stride", say = "Run 5% faster", mods = { runMult = 1.05 } },
+			{ id = "build15", name = "Fast Builder", say = "Your button recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "stride15", name = "Team Player", say = "+1 free clue for the team", mods = { clues = 1 } },
 		},
 		[17] = {
 			{ id = "hold17", name = "Rock Barricade", say = "The host is stuck at your barricade 1 s longer", mods = { barricadeHold = 1 } },
-			{ id = "sprint17", name = "Sprinter", say = "Run 5% faster", mods = { runMult = 1.05 } },
+			{ id = "sprint17", name = "Crouch", say = "The host sees you from 6% less far", mods = { sightMult = 0.94 } },
 		},
 		[19] = {
 			{ id = "titan19", name = "Mighty", say = "The host is stuck at your barricade 1 s longer", mods = { barricadeHold = 1 } },
@@ -354,15 +354,15 @@ local SPECIAL = {
 		},
 		[5] = {
 			{ id = "sun", name = "Bright Beam", say = "Your light reaches 4 studs further", mods = { glowRange = 4 } },
-			{ id = "dazzle", name = "Twinkle", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
+			{ id = "dazzle", name = "Twinkle", say = "The host sees you from 5% less far", mods = { sightMult = 0.95 } },
 		},
 		[7] = {
 			{ id = "lamp", name = "Big Lamp", say = "Your light reaches 4 studs further", mods = { glowRange = 4 } },
-			{ id = "dim", name = "Dimmer", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
+			{ id = "dim", name = "Flicker", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[9] = {
 			{ id = "flood", name = "Floodlight", say = "Your light reaches 4 studs further", mods = { glowRange = 4 } },
-			{ id = "flash", name = "Flash", say = "The host sees you from 15% less far", mods = { sightMult = 0.85 } },
+			{ id = "flash", name = "Flash", say = "The host sees you from 6% less far", mods = { sightMult = 0.94 } },
 		},
 		[10] = {
 			{ id = "nightlight10", name = "Night Light", say = "Flare also leaves a lamp: the room stays lit for 60 s", mods = { p10 = "nightlight" } },
@@ -374,11 +374,11 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "quick13", name = "Quick Spark", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "dim13", name = "Soft Glow", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
+			{ id = "dim13", name = "Busy Hands", say = "Hold things 15% faster", mods = { holdMult = 0.85 } },
 		},
 		[15] = {
 			{ id = "flare15", name = "Longer Flare", say = "Flare lasts 2 s longer, reaches 4 studs further, +2% stamina", mods = { flareTime = 2, flareRange = 4, flareStamina = 2 } },
-			{ id = "worm15", name = "Glow Worm", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
+			{ id = "worm15", name = "Glow Worm", say = "10% more stamina", mods = { staminaMult = 1.1 } },
 		},
 		[17] = {
 			{ id = "quick17", name = "Bright Spark", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -386,7 +386,7 @@ local SPECIAL = {
 		},
 		[19] = {
 			{ id = "flare19", name = "Blazing Flare", say = "Flare lasts 2 s longer and reaches friends 4 studs further", mods = { flareTime = 2, flareRange = 4 } },
-			{ id = "dim19", name = "Twilight", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
+			{ id = "dim19", name = "Spark Plug", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[20] = {
 			{ id = "sun20", name = "Little Sun", say = "Your light reaches 12 studs further - a whole room", mods = { glowRange = 12 } },
@@ -399,16 +399,16 @@ local SPECIAL = {
 			{ id = "quickheal", name = "Quick Shield", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[5] = {
-			{ id = "guardian", name = "Guardian", say = "Shield recharges 20% faster", mods = { cooldownMult = 0.8 } },
-			{ id = "medic", name = "Helper", say = "Free friends from the cage 20% faster", mods = { holdMult = 0.8 } },
+			{ id = "guardian", name = "Soft Shoes", say = "The host sees you from 5% less far", mods = { sightMult = 0.95 } },
+			{ id = "medic", name = "Helper", say = "Free friends from the cage 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[7] = {
-			{ id = "care", name = "Caring", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "nurse", name = "Nurse", say = "Free friends from the cage 20% faster", mods = { holdMult = 0.8 } },
+			{ id = "care", name = "First Aid Book", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "nurse", name = "Nurse", say = "Free friends from the cage 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[9] = {
-			{ id = "hero", name = "Hero", say = "Shield recharges 25% faster", mods = { cooldownMult = 0.75 } },
-			{ id = "rescuer", name = "Rescuer", say = "Free friends from the cage 30% faster", mods = { holdMult = 0.7 } },
+			{ id = "hero", name = "Hero", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "rescuer", name = "Rescuer", say = "Free friends from the cage 12% faster", mods = { holdMult = 0.88 } },
 		},
 		[10] = {
 			{ id = "hug10", name = "Group Hug", say = "Shield also gives every friend within 20 studs all their stamina back", mods = { p10 = "hug" } },
@@ -416,22 +416,22 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "care11", name = "Kind Heart", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "nurse11", name = "Gentle Hands", say = "Free friends from the cage 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "nurse11", name = "Gentle Hands", say = "Free friends from the cage 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[13] = {
-			{ id = "lungs13", name = "Fresh Air", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "lungs13", name = "Fresh Air", say = "6% more stamina", mods = { staminaMult = 1.06 } },
 			{ id = "shield13", name = "Own Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[15] = {
-			{ id = "care15", name = "Big Heart", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "nurse15", name = "Quick Bandage", say = "Free friends from the cage 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "care15", name = "Big Heart", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "nurse15", name = "Second Wind", say = "6% more stamina", mods = { staminaMult = 1.06 } },
 		},
 		[17] = {
-			{ id = "quiet17", name = "Quiet Shoes", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
-			{ id = "dash17", name = "On Call", say = "Run 5% faster", mods = { runMult = 1.05 } },
+			{ id = "quiet17", name = "Quiet Shoes", say = "The host sees you from 6% less far", mods = { sightMult = 0.94 } },
+			{ id = "dash17", name = "Pocket Notes", say = "+1 free clue for the team", mods = { clues = 1 } },
 		},
 		[19] = {
-			{ id = "care19", name = "Golden Heart", say = "Shield recharges 20% faster", mods = { cooldownMult = 0.8 } },
+			{ id = "care19", name = "Golden Heart", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
 			{ id = "hint19", name = "First Aid Kit", say = "+1 free clue for the team", mods = { clues = 1 } },
 		},
 		[20] = {
@@ -445,16 +445,16 @@ local SPECIAL = {
 			{ id = "echoquick", name = "Quick Echo", say = "Noise recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[5] = {
-			{ id = "radar", name = "Good Ears", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
-			{ id = "echofast", name = "Echo Boost", say = "Noise recharges 20% faster", mods = { cooldownMult = 0.8 } },
+			{ id = "radar", name = "Good Ears", say = "The host sees you from 5% less far", mods = { sightMult = 0.95 } },
+			{ id = "echofast", name = "Quick Burst", say = "Your burst lasts 1 s longer", mods = { burstTime = 1 } },
 		},
 		[7] = {
 			{ id = "far", name = "Far Throw", say = "Throw a noise 10 studs further", mods = { echoRange = 10 } },
-			{ id = "hush", name = "Hush", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
+			{ id = "hush", name = "Hush", say = "The host sees you from 6% less far", mods = { sightMult = 0.94 } },
 		},
 		[9] = {
 			{ id = "boomer", name = "Boomer", say = "Throw a noise 15 studs further", mods = { echoRange = 15 } },
-			{ id = "rapid", name = "Rapid Echo", say = "Noise recharges 25% faster", mods = { cooldownMult = 0.75 } },
+			{ id = "rapid", name = "Rapid Echo", say = "Noise recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[10] = {
 			{ id = "double10", name = "Double Throw", say = "Throw two noises before Noise recharges", mods = { p10 = "double" } },
@@ -466,19 +466,19 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "quick13", name = "Quick Echo", say = "Noise recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "ears13", name = "Sharp Ears", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
+			{ id = "ears13", name = "Nimble", say = "Hold things 15% faster", mods = { holdMult = 0.85 } },
 		},
 		[15] = {
 			{ id = "burst15", name = "Strong Burst", say = "Your burst: 2% faster and 1 s longer", mods = { burstMult = 0.02, burstTime = 1 } },
 			{ id = "throw15", name = "Far Shout", say = "Throw a noise 10 studs further", mods = { echoRange = 10 } },
 		},
 		[17] = {
-			{ id = "quick17", name = "Fast Echo", say = "Noise recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "quick17", name = "Echo Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
 			{ id = "lungs17", name = "Singer's Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
 		},
 		[19] = {
 			{ id = "burst19", name = "Rush", say = "Your burst: 2% faster", mods = { burstMult = 0.02 } },
-			{ id = "quick19", name = "Rapid Echo", say = "Noise recharges 20% faster", mods = { cooldownMult = 0.8 } },
+			{ id = "quick19", name = "Turbo Echo", say = "Noise recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[20] = {
 			{ id = "soundwave20", name = "Sound Wave", say = "A noise landing near the host stuns him 1 s", mods = { p20 = "soundwave" } },
@@ -488,18 +488,18 @@ local SPECIAL = {
 	bramble = {
 		[3] = {
 			{ id = "whisper", name = "Plant Whisperer", say = "Ask the plant 20% faster", mods = { holdMult = 0.8 } },
-			{ id = "roots", name = "Deep Roots", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "roots", name = "Deep Roots", say = "6% more stamina", mods = { staminaMult = 1.06 } },
 		},
 		[5] = {
-			{ id = "camo", name = "Leafy", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
+			{ id = "camo", name = "Leafy", say = "The host sees you from 5% less far", mods = { sightMult = 0.95 } },
 			{ id = "bloom", name = "Bloom", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[7] = {
-			{ id = "listen", name = "Good Listener", say = "Ask the plant 20% faster", mods = { holdMult = 0.8 } },
-			{ id = "vines", name = "Ivy", say = "15% more stamina", mods = { staminaMult = 1.15 } },
+			{ id = "listen", name = "Good Listener", say = "Ask the plant 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "vines", name = "Ivy", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[9] = {
-			{ id = "thicket", name = "Thicket", say = "The host sees you from 15% less far", mods = { sightMult = 0.85 } },
+			{ id = "thicket", name = "Thicket", say = "The host sees you from 6% less far", mods = { sightMult = 0.94 } },
 			{ id = "sprout", name = "Sprout", say = "+1 clue for the team", mods = { clues = 1 } },
 		},
 		[10] = {
@@ -508,15 +508,15 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "vine11", name = "Thick Vines", say = "Vines last 2 s longer", mods = { vineTime = 2 } },
-			{ id = "leafy11", name = "Leafy Coat", say = "The host sees you from 8% less far", mods = { sightMult = 0.92 } },
+			{ id = "leafy11", name = "Seed Map", say = "+1 free clue for the team", mods = { clues = 1 } },
 		},
 		[13] = {
 			{ id = "quick13", name = "Fast Growth", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "roots13", name = "Strong Roots", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "roots13", name = "Strong Roots", say = "6% more stamina", mods = { staminaMult = 1.06 } },
 		},
 		[15] = {
 			{ id = "vine15", name = "Bramble Wall", say = "Vines last 2 s longer", mods = { vineTime = 2 } },
-			{ id = "breath15", name = "Deep Breath", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "breath15", name = "Green Thumb", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[17] = {
 			{ id = "quick17", name = "Spring Growth", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
@@ -524,7 +524,7 @@ local SPECIAL = {
 		},
 		[19] = {
 			{ id = "vine19", name = "Jungle", say = "Vines last 2 s longer", mods = { vineTime = 2 } },
-			{ id = "thicket19", name = "Thicket", say = "The host sees you from 10% less far", mods = { sightMult = 0.9 } },
+			{ id = "thicket19", name = "Bark Skin", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[20] = {
 			{ id = "forest20", name = "Forest Friend", say = "The big plant answers you instantly, and +1 free clue for the team", mods = { p20 = "forest", clues = 1 } },
@@ -533,6 +533,9 @@ local SPECIAL = {
 	},
 }
 
+-- (10 Oct, ladder fix B: each character's own picks of one kind fit under
+-- Progress.CAPS together with the even levels, so no pick is ever swallowed
+-- by a limit - tools/check_ladder_waste.luau must say OK.)
 -- steps that add up (9 Oct, LADDER_FIX.md): each pick adds its number to the
 -- game's base value (Main.server applyMods), so no later pick wipes out an
 -- earlier one. Taking every step gives the old best number (or a little more).

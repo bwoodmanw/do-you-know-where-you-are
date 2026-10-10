@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 10 Oct 2026)
 
-**Rounds 55 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
+**Rounds 56 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `aquarium`, the Aquarium's
 Main Hall); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,10 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 56 (10 Oct) - ladder fix B: no pick swallowed by a limit
+- [ ] Characters screen, each character at Lv 20 (the 🧪 tool): the new pick names and numbers show (e.g. Tinker "Spare Parts +1 free clue" at 15, Shadow "Light Feet 6% more stamina" at 5, Glow "Flicker" at 7, Bramble "Bark Skin" at 19); nothing overlaps or is cut off
+- [ ] The levels line above the map shows the new totals (no "run faster" from a character's own pick)
 
 ## Round 55 (9-10 Oct) - TinkerToon, tiles, wall tanks, ladder fix A
 - [ ] Play as Tinker (you, Studio and live): the new cartoon Tinker, with the robot walk; a broken test model would play the old Tinker and say why in F9

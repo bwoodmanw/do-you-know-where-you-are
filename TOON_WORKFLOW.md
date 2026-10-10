@@ -1,49 +1,40 @@
-# Toon characters - the full workflow (10 Oct)
+# Toon characters - the full workflow (updated 10 Oct)
 
-TinkerToon (9-10 Oct) worked in the game, with two faults that came from
-Meshy *guessing the back*: dark blue smudges across the back of the orange
-shirt, and very pale arms. So every toon now gets **two pictures, front and
-back**, and Meshy builds from both (multi-view). The order after Tinker:
-Brainy, Shadow, Muscle, Glow, Patch, Echo, Bramble.
+Brent makes both the pictures **and** the 3D models with ChatGPT workflows
+(no Meshy). Two workflows, in his format:
+
+1. **Pictures:** a front and a back picture of each character.
+2. **3D models:** a `.glb` built from both pictures.
+
+Send Claude the pictures after workflow 1 (Claude checks logos, look-alikes,
+the A-pose, that front and back match) and the `.glb` files after workflow 2
+(Claude renders each before Studio).
+
+Why the back picture: TinkerToon (9-10 Oct) worked, but his model had dark
+blue smudges across the back of the orange shirt and very pale arms - the 3D
+step had to *guess* the back. With a back picture it copies it instead.
 
 Checked in the old pictures (`art/model-input/<name>/a-pose-front.png`):
-- **Muscle's sneakers have a swoosh logo** - a brand mark; the prompt
-  forbids logos and swooshes.
+- **Muscle's sneakers have a swoosh logo** (a brand mark) - forbidden now.
 - **Echo's hoodie has a printed graphic** - the prompt says plain.
-- **Glow's raincoat is see-through and glowing** - Meshy can't make that;
-  the prompt asks for a solid lime-green raincoat.
+- **Glow's raincoat is see-through and glowing** - a 3D model can't keep
+  that; the prompt asks for a solid lime-green raincoat.
 
-## Step 0 - fix TinkerToon's texture in Meshy (Retexture)
+What the 3D prompt needs (and why), all in the [Model Standard] below:
 
-Names move between Meshy versions; if a screen differs, send Brent's photo.
+| Need | Why |
+|---|---|
+| Copy the front **and back** pictures exactly | no guessed colors on the back (Tinker's smudges) |
+| Every area one flat color in **one base-color texture**; no normal / roughness / metal maps | the "PBR off" setting: bumpy maps look blotchy in the game's light |
+| **No baked lighting, shadows or dark creases** | the "remove lighting" setting: painted shadows look dirty in-game |
+| **Warm tan skin** on face, arms and hands | Tinker's arms came out nearly white |
+| **A-pose**, arms 45 degrees down, not touching the body; legs apart; left and right symmetrical | Roblox's Avatar Setup must find arms and legs to rig them |
+| Face looking straight forward, standing upright, feet flat at the bottom | so it imports facing the right way |
+| **One closed mesh, no skeleton, no animation**, no floor or background | Roblox rigs it itself; extra parts confuse Avatar Setup |
+| **5,000-8,000 triangles**, texture 1024 x 1024 embedded in the .glb | low enough for Avatar Setup and phones; cartoon shapes need no more |
+| Nothing big sticking out (brims, bags, antennas stay close) | big pieces stretch or tear when the character runs |
 
-1. **meshy.ai** -> **My Assets** (or Workspace) -> open the TinkerToon model.
-   If it isn't there: left menu **AI Texturing / Retexture** -> **Upload
-   model** -> `art/models/tinker-toon.glb`.
-2. Click **Retexture** (or **Texture**).
-3. **Reference image:** `art/model-input/tinker/front-toon.png`.
-4. **Text prompt:**
-   > Cartoon boy mechanic in a clean toy style, flat solid colors, no
-   > texture. Warm tan skin on the face, arms and hands. Orange T-shirt,
-   > solid orange all the way round, including the back. Medium-blue
-   > overalls, the straps going over both shoulders on the front and the
-   > back. Brown tool belt with a brass buckle. Blue cap, brown hair, brass
-   > goggles with dark lenses. Blue high-top sneakers with cream soles and
-   > cream laces. No dirt, no stains, no smudges, no painted shadows, no
-   > denim grain, no stitching, no logos.
-5. **Negative prompt** (if there is a box):
-   > dirt, smudges, dark patches, painted shadows, wrinkles, denim texture,
-   > stitching, grime, logos, text, pale white skin
-6. Settings: **Art style: Cartoon** (or Stylized), **PBR: off**, **Remove
-   lighting / Delight: on**, **Keep original UV: on** if offered.
-7. Generate, pick the best (check the **back** and the **arms**),
-   **Download .glb** as `art/models/tinker-toon-2.glb`. Claude renders it
-   before Studio.
-
-## Step 1 - the pictures (one ChatGPT workflow)
-
-Paste into ChatGPT (Brent's workflow format). The back pictures use the
-front picture made just before them as the reference, so they match.
+## Workflow 1 - the pictures
 
 ```
 create new workflow to create images based on the [Picture Standard], [Reference] and [Picture]. For each picture, attach the [Reference] picture, then save to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\[folder]\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\brainy\front-toon.png.
@@ -69,35 +60,40 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 [BACK view of Bramble, matching the reference exactly: the leaf crown, the back of the green poncho with its zigzag edge and the hood down, brown shorts, green socks, brown boots.] | [model-input\bramble\front-toon.png] | [bramble\back-toon.png]
 ```
 
-**Send Claude the pictures before Meshy** - Claude checks for logos,
-likeness to known characters, the A-pose and that front and back match.
+## Workflow 2 - the 3D models
 
-## Step 2 - Meshy, one character at a time (Image to 3D, multi-view)
+Tinker's row remakes him from both pictures (it replaces the Meshy
+retexture). Run it for one character first (Tinker), check it in the game,
+then the rest.
 
-1. **meshy.ai** -> **Image to 3D** -> choose **Multi-view** (or "multiple
-   images") -> upload `front-toon.png` as **Front** and `back-toon.png` as
-   **Back**. (No multi-view? Upload the front only.)
-2. Settings (look under **Advanced**):
-   - **Art style / Texture style:** Cartoon (or Stylized)
-   - **PBR:** off
-   - **Remove lighting / Delight:** on
-   - **Polycount / Topology:** the lower option (about 5,000-8,000)
-   - **Pose:** A-pose
-   - **Symmetry:** on (or Auto)
-   - Do **not** use Auto-Rig, Rigging or Animate (Roblox rigs it)
-3. Generate, then turn each result round: pick the one whose **back** is
-   clean and whose **arms** are skin colored. Check the face looks forward.
-4. **Download .glb** as `art/models/<name>-toon.glb` (e.g.
-   `brainy-toon.glb`). Claude renders it before Studio.
+```
+create new workflow to create 3D models based on the [Model Standard], [Reference] and [Model]. For each model, attach both [Reference] pictures (the front picture and the back picture), then save the model to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\[folder]\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\models\brainy-toon.glb.
+The [Model Standard] will be included with every model prompt. The [Model] prompt is added to [Model Standard] and changes per model. The [Reference] and [file name] are defined per model.
+[Model Standard] = "Use the attached pictures to create a 3D model of the character for a Roblox game: the first picture is the FRONT, the second is the BACK. Copy both pictures exactly - the same character, shapes, colors and accessories; the back of the model must match the back picture (never guess its colors). Art style / texture style: Cartoon (stylized). Every area one flat, solid color in a single base-color (albedo) texture; PBR off - no normal, roughness, metallic or bump maps. Remove lighting / delight on - no lighting, shadows, ambient occlusion or dark creases baked into the colors. Warm tan skin on the face, neck, arms, hands and legs (never pale or white). No logos, brand marks, printed words or graphics. Pose: A-pose - arms straight, angled about 45 degrees down and away from the body and not touching it, hands open with the fingers together, legs slightly apart, feet flat; left and right sides symmetrical. Front facing: the face looks straight forward toward the front picture's camera; the character stands upright with the feet at the bottom of the model. One single closed mesh with no separate floating pieces; no skeleton, no rig, no animation; no floor, stand or background. Polycount: the lower option - about 5,000 to 8,000 triangles. One 1024 x 1024 texture embedded in the file. Keep accessories close to the body (no big brims, bags or antennas sticking far out); the face clearly visible, not covered by hair, hats or goggles. Save as a .glb file."
+[folder]="models"
+Table for each [Model], [Reference] and [file name] combination is below:
+[Model] | [Reference] | [file name]
+[Tinker, a boy mechanic: backwards blue cap with brass goggles, orange T-shirt, blue overalls, brown tool belt with a wrench and a screwdriver, blue high-top sneakers.] | [model-input\tinker\front-toon.png, model-input\tinker\back-toon.png] | [tinker-toon.glb]
+[Brainy, a clever boy: round black glasses, red beanie with a small blue propeller, a pencil behind his ear, white lab coat over a light-blue sweater, khaki cargo pants, red sneakers.] | [model-input\brainy\front-toon.png, model-input\brainy\back-toon.png] | [brainy-toon.glb]
+[Shadow, a sneaky boy: purple hoodie with the hood up, black face mask, purple fingerless gloves, black jogger pants, black sneakers with purple stripes.] | [model-input\shadow\front-toon.png, model-input\shadow\back-toon.png] | [shadow-toon.glb]
+[Muscle, a strong, sturdy boy: spiky brown hair, yellow headband and wristbands, red T-shirt, black shorts, white socks, plain black-and-white sneakers with red panels and no logo.] | [model-input\muscle\front-toon.png, model-input\muscle\back-toon.png] | [muscle-toon.glb]
+[Glow, a girl with a light: curly hair in a bun, green headband with a short antenna and a round yellow bulb, solid lime-green raincoat, round yellow chest lamp, dark olive pants, green rain boots.] | [model-input\glow\front-toon.png, model-input\glow\back-toon.png] | [glow-toon.glb]
+[Patch, a caring girl: long brown ponytail with a pink scrunchie, small forehead bandage, pink vest over a cream top, pink shoulder bag with a white heart, olive cargo pants, pink-and-cream sneakers.] | [model-input\patch\front-toon.png, model-input\patch\back-toon.png] | [patch-toon.glb]
+[Echo, a girl with headphones: curly hair in a bun, brass goggles on her head, purple headphones around her neck, yellow jacket over a plain purple hoodie, small black backpack, purple cargo pants, purple-and-yellow sneakers.] | [model-input\echo\front-toon.png, model-input\echo\back-toon.png] | [echo-toon.glb]
+[Bramble, a nature boy: crown of green leaves with a white flower, green poncho with a zigzag leaf edge, brown strap bag with acorns, brown cargo shorts, green socks, brown boots.] | [model-input\bramble\front-toon.png, model-input\bramble\back-toon.png] | [bramble-toon.glb]
+```
 
-## Step 3 - into Studio (Party House)
+## Step 3 - into Studio (Party House), one character at a time
 
-1. **Avatar** tab -> **Import 3D** -> the `.glb` -> **Import**.
+1. **Avatar** tab -> **Import 3D** -> the `.glb` -> **Import**. If the
+   preview shows the back, change **World Forward** until the face looks at
+   you.
 2. Select it -> **Avatar** tab -> **Avatar Setup** -> **Body** -> finish
    (OK on dynamic-head warnings).
 3. Check the new copy has **Head, UpperTorso...** (about 15 parts); delete
    the single-mesh import.
-4. Rename it `<Name>Toon` (e.g. `BrainyToon`), drag it into
+4. Rename it `<Name>Toon` (e.g. `BrainyToon`; Tinker's new one replaces the
+   old `TinkerToon` - delete the old one first) and drag it into
    **ServerStorage -> Characters**.
 5. Claude adds it to `Config.STUDIO_TRY_MODEL` so you play it (Studio and
    live, only you); compare photos; if it wins, Claude switches it over
