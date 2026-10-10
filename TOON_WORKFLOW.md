@@ -254,17 +254,25 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 
 Send Claude the 16 pictures to check before the models.
 
-### Skins workflow 2 - the models
+### Skins workflow 2 - the models (one run, updated 10 Oct)
 
-The same script as the characters - it makes each model and paints it
-(colors corrected, back from the back picture, seams padded). **Close Roblox
-Studio first** (the graphics card needs all its memory).
+The 16 skin pictures were checked on 10 Oct: 7 skins good; Snow Day Muscle's
+hat had hair both above and through it, so this run first redoes his two
+pictures, then makes and paints all 8 models. **Close Roblox Studio first**
+(the graphics card needs all its memory).
 
 ```
-create new workflow to make the 3D models for [Model] using the [Run Standard]. For each row of the table, in order: run the [Run Standard] command with that row's [Model], wait until it prints "DONE", then tell me that row's [file name], its "triangles" number and whether it printed "FAILED". If a row FAILED, show me the last 20 lines it printed and go on to the next row. Do not change tools\make_toon_models.py or tools\paint_toon.py, do not write a new script, do not change any settings, and do not edit any other file.
-[Run Standard] = open a terminal in "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are" and run:
+create new workflow to make the skin 3D models in two steps. Do not change tools\make_toon_models.py or tools\paint_toon.py, do not write a new script, do not change any settings, and do not edit any other file.
+STEP 1 - redo the two Snow Day Muscle pictures. For each row of [Picture Table], attach every [Reference] picture listed, in that order, make the picture from the [Picture Standard] plus that row's [Picture], and save it to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]", replacing the file already there. Make the front first: the back uses it as its reference.
+[Picture Standard] = "For a FRONT view two pictures are attached: the FIRST is the character's approved toon look - keep exactly his face, eye color, skin tone and style; the SECOND is the outfit. For a BACK view one picture is attached: the same character in the same outfit, seen from directly behind. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, no texture, no shading painted on. Warm skin tone. No logos. Full body in an A-pose: arms straight and angled down and away from the body, hands open, legs slightly apart, feet flat. Centered, filling the whole height. Plain flat light-gray background, even soft light. One character only, no text."
+[Picture Table]:
+[Picture] | [Reference] | [file name]
+[FRONT view of Snow Day Muscle: Muscle wearing a yellow knit winter hat pulled down snugly over his whole head like a real hat - the hat covers the top and sides of his head completely; only a short neat fringe of his brown hair shows across the forehead just under the hat's folded brim; NO hair sticking up above the hat, NO hair poking out through or around the sides; a round yellow pom-pom on top; ear flaps covering both ears, each with a yellow yarn tie and small pom-pom. A puffy red winter jacket over a cream sweater with a simple white snowflake, a red-and-cream striped scarf, yellow mittens, plain dark gray snow pants with NO pockets, plain brown snow boots with cream fur trim.] | [model-input\muscle\front-toon.png, model-input\snow-day-muscle\a-pose-front.png] | [snow-day-muscle\front-toon.png]
+[BACK view of Snow Day Muscle, matching the reference exactly: the back of the yellow knit hat covers the whole back of his head down to the neck - smooth yellow knit, no hair showing above or through it, the ear-flap ties hanging down; the back of the puffy red jacket with the scarf ends, yellow mittens, plain gray snow pants, brown boots.] | [model-input\snow-day-muscle\front-toon.png] | [snow-day-muscle\back-toon.png]
+STEP 2 - make the 8 skin models. For each row of [Model Table], in order: open a terminal in "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are" and run:
 "C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py [Model]
-Table for each [Model] and [file name] combination is below:
+wait until it prints "DONE", then tell me that row's [file name], its "triangles" number and whether it printed "FAILED". If a row FAILED, show me the last 20 lines it printed and go on to the next row.
+[Model Table]:
 [Model] | [file name]
 [tinker-pumpkin] | [art\models\tinker-pumpkin-toon.glb]
 [ghostly-shadow] | [art\models\ghostly-shadow-toon.glb]
@@ -276,15 +284,10 @@ Table for each [Model] and [file name] combination is below:
 [muscle-mummy] | [art\models\muscle-mummy-toon.glb]
 ```
 
-Or without the workflow, in PowerShell (all 8, about 10 minutes):
-
-```
-cd "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are"
-& "C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py tinker-pumpkin ghostly-shadow candy-glow space-cadet-brainy snow-day-muscle starlight-echo autumn-leaf-bramble muscle-mummy
-```
-
-Then Claude renders each model. Into Studio (Party House): Import 3D ->
-Avatar Setup -> ServerStorage -> Characters, named:
+Then tell Claude: Claude checks Snow Day Muscle's two new pictures and
+renders all 8 models (if his hat is still wrong, only his row is redone).
+Into Studio (Party House): Import 3D -> Avatar Setup -> ServerStorage ->
+Characters, named:
 
 | File | Name in Studio |
 |---|---|
@@ -301,4 +304,5 @@ Each is already switched on for Brent (`Config.STUDIO_TRY_MODEL`): wear the
 skin in the Lobby, play it in Party House. When one looks right: move the old
 skin model to ServerStorage -> CharactersOld, rename the toon to the old name
 (e.g. TinkerPumpkinToon -> TinkerPumpkin), right-click -> Save to Roblox, and
-send Claude the id (the Lobby's 3D view loads it).
+send Claude the id (the Lobby's 3D view loads it). Each skin also gets a crisp
+face picture (tools/make_face.py) once Echo's face test passes.
