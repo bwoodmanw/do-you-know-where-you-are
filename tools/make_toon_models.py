@@ -43,6 +43,15 @@ JOBS = {
     "echo": "echo-toon.glb",
     "bramble": "bramble-toon.glb",
     "halloween-nurse-patch": "halloween-nurse-patch-toon.glb",
+    # the skins (10 Oct)
+    "tinker-pumpkin": "tinker-pumpkin-toon.glb",
+    "ghostly-shadow": "ghostly-shadow-toon.glb",
+    "candy-glow": "candy-glow-toon.glb",
+    "space-cadet-brainy": "space-cadet-brainy-toon.glb",
+    "snow-day-muscle": "snow-day-muscle-toon.glb",
+    "starlight-echo": "starlight-echo-toon.glb",
+    "autumn-leaf-bramble": "autumn-leaf-bramble-toon.glb",
+    "muscle-mummy": "muscle-mummy-toon.glb",
 }
 TEXTURE = 1024  # one 1024 x 1024 picture: plenty for flat cartoon colors
 VERTICES = 4000  # about 8,000 triangles

@@ -200,8 +200,12 @@ local function packFor(name)
 	if A.model[name] then
 		return A.packs[A.model[name]]
 	end
-	-- a remade test model ("BrainyToon") walks like its character
+	-- a remade test model ("BrainyToon", "MuscleMummyToon") walks like its
+	-- character or skin
 	name = (string.gsub(name, "Toon$", ""))
+	if A.model[name] then
+		return A.packs[A.model[name]]
+	end
 	if A.model[name] then
 		return A.packs[A.model[name]]
 	end

@@ -207,3 +207,68 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 [FRONT view, full body, for the 3D skin: Patch in the Halloween nurse outfit from the attached outfit picture - dark gray cardigan over a black nurse top with a small orange pumpkin badge, a penlight on a cord, an orange jack-o'-lantern shoulder bag on a brown strap, plain orange jogger pants with no pockets, white sneakers with small orange pumpkin dots, an orange scrunchie. Every area one flat solid color. Standing in an A-pose: arms straight and angled down and away from the body, hands open, legs slightly apart, feet flat; facing the camera straight on; centered and filling the whole height. Plain flat light-gray background, even soft light, no floor shadow.] | [model-input\patch\front-toon.png, model-input\halloween-nurse-patch\a-pose-front.png] | [model-input\halloween-nurse-patch\front-toon.png]
 [BACK view, full body, for the 3D skin: the same Patch in the same Halloween nurse outfit as the attached front view, seen from directly behind in the same A-pose - the long blonde ponytail with the orange scrunchie, the back of the gray cardigan with the bag strap across it, plain orange jogger pants, white-and-orange sneakers. Every color the same as the front. Plain flat light-gray background, even soft light.] | [model-input\halloween-nurse-patch\front-toon.png] | [model-input\halloween-nurse-patch\back-toon.png]
 ```
+
+## The skins (10 Oct): the same two workflows
+
+The 8 skins become toons the same way as the characters. Each skin's FRONT
+picture attaches TWO references: the character's new toon picture (face,
+hair, eyes) and the skin's old picture (the outfit). Checked in the old
+pictures: no logos or look-alikes; Candy Glow's see-through raincoat and
+Ghostly Shadow's glowing hem become solid (3D can't do see-through or glow).
+Space Cadet Brainy loses his thin propeller like Brainy - the built one goes
+on (`Config.PROPELLER`). The model step needs no new prompt: the script
+already paints every model (back from the back picture, colors corrected,
+seams padded).
+
+### Skins workflow 1 - the pictures
+
+```
+create new workflow to create images based on the [Picture Standard], [Reference] and [Picture]. For each picture, attach every [Reference] picture listed, in that order, then save to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\tinker-pumpkin\front-toon.png.
+The [Picture Standard] will be included with every picture prompt. The [Picture] prompt is added to [Picture Standard] and changes per prompt. The [Reference] and [file name] are defined per picture. Make the pictures in the order of the table: each back view uses the front view made just before it as its reference.
+[Picture Standard] = "For a FRONT view two pictures are attached: the FIRST is the character - keep exactly their face, hair, eye color and skin tone; the SECOND is the outfit - dress them in exactly that outfit. For a BACK view one picture is attached: the same character in the same outfit, seen from directly behind. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no dirt, no mud, no stains, no scuffs, no freckles, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, big clear eyes, warm skin tone (never pale or white). Small details as simple solid shapes. No logos, brand marks, swooshes, stripes on shoes, printed words or graphics. Full body standing in an A-pose: arms straight and angled down and away from the body, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text. A FRONT view faces the camera straight on; a BACK view is seen from directly behind, same pose, showing the back of the hair, hat or hood, clothes and shoes, every color the same as the front."
+Table for each [Picture], [Reference] and [file name] combination is below:
+[Picture] | [Reference] | [file name]
+[FRONT view of Pumpkin Patch Tinker: Tinker in an orange knit beanie with a small green pumpkin stem on top and brass goggles, a dark green long-sleeve shirt, orange overalls with one green leaf patch on a knee, a brown tool belt with a wrench and a small smiling jack-o'-lantern charm, green high-top sneakers with cream soles.] | [model-input\tinker\front-toon.png, model-input\tinker-pumpkin\a-pose-front.png] | [tinker-pumpkin\front-toon.png]
+[BACK view of Pumpkin Patch Tinker, matching the reference exactly: the orange beanie and goggle strap, the back of the green shirt with the orange overall straps crossing, the tool belt, green sneakers.] | [model-input\tinker-pumpkin\front-toon.png] | [tinker-pumpkin\back-toon.png]
+[FRONT view of Ghostly Shadow: Shadow in a pale lavender hoodie with the hood up and a wavy, ghost-like bottom edge (solid lavender, not glowing), a plain light gray face mask, gray fingerless gloves, light gray jogger pants, plain white sneakers with lavender laces.] | [model-input\shadow\front-toon.png, model-input\ghostly-shadow\a-pose-front.png] | [ghostly-shadow\front-toon.png]
+[BACK view of Ghostly Shadow, matching the reference exactly: the lavender hood up, the back of the hoodie with its wavy edge, gray pants, white sneakers.] | [model-input\ghostly-shadow\front-toon.png] | [ghostly-shadow\back-toon.png]
+[FRONT view of Candy Glow: Glow with a pink headband and a little pink antenna ending in a swirl lollipop, a solid bubblegum-pink raincoat (not see-through, not glowing) over a mint-and-cream striped sweater, a round swirl-lollipop pendant, lilac jogger pants, pink rain boots.] | [model-input\glow\front-toon.png, model-input\candy-glow\a-pose-front.png] | [candy-glow\front-toon.png]
+[BACK view of Candy Glow, matching the reference exactly: the hair bun and lollipop antenna, the back of the solid pink raincoat with its hood down, lilac pants, pink rain boots.] | [model-input\candy-glow\front-toon.png] | [candy-glow\back-toon.png]
+[FRONT view of Space Cadet Brainy: Brainy with his round black glasses, red beanie with a small blue propeller and pencil, in a white space suit with light-blue panels, orange cuffs and orange knee pads, a round silver badge on the chest, an orange belt with a silver buckle, white-and-gray space boots.] | [model-input\brainy\front-toon.png, model-input\space-cadet-brainy\a-pose-front.png] | [space-cadet-brainy\front-toon.png]
+[BACK view of Space Cadet Brainy, matching the reference exactly: the red beanie and propeller, a small silver air tank on the back of the white space suit, the orange belt, white-and-gray boots.] | [model-input\space-cadet-brainy\front-toon.png] | [space-cadet-brainy\back-toon.png]
+[FRONT view of Snow Day Muscle: Muscle in a yellow knit hat with ear flaps and a pom-pom, a puffy red winter jacket over a cream sweater with a simple white snowflake, a red-and-cream striped scarf, yellow mittens, dark gray cargo pants, brown snow boots with cream fur trim.] | [model-input\muscle\front-toon.png, model-input\snow-day-muscle\a-pose-front.png] | [snow-day-muscle\front-toon.png]
+[BACK view of Snow Day Muscle, matching the reference exactly: the yellow hat and pom-pom, the back of the puffy red jacket with the scarf ends, yellow mittens, gray pants, brown boots.] | [model-input\snow-day-muscle\front-toon.png] | [snow-day-muscle\back-toon.png]
+[FRONT view of Starlight Echo: Echo with her brass goggles and purple headphones, in a navy jacket with small gold stars and a gold zipper over a plain purple hoodie, a small gold crescent-moon bag at her side, plain purple jogger pants, navy sneakers with small gold stars and cream soles.] | [model-input\echo\front-toon.png, model-input\starlight-echo\a-pose-front.png] | [starlight-echo\front-toon.png]
+[BACK view of Starlight Echo, matching the reference exactly: the hair bun and goggle strap, the back of the starry navy jacket, the moon bag, purple pants, starry sneakers.] | [model-input\starlight-echo\front-toon.png] | [starlight-echo\back-toon.png]
+[FRONT view of Autumn Leaf Bramble: Bramble with a crown of orange, red and yellow autumn leaves, a poncho of overlapping orange, red and gold leaves with a brown hood, a brown strap bag with acorns, leaf bracelets, brown shorts, mustard-yellow socks, clean brown lace-up boots.] | [model-input\bramble\front-toon.png, model-input\autumn-leaf-bramble\a-pose-front.png] | [autumn-leaf-bramble\front-toon.png]
+[BACK view of Autumn Leaf Bramble, matching the reference exactly: the leaf crown, the back of the autumn-leaf poncho with the brown hood down, brown shorts, mustard socks, brown boots.] | [model-input\autumn-leaf-bramble\front-toon.png] | [autumn-leaf-bramble\back-toon.png]
+[FRONT view of Muscle Mummy: Muscle as a friendly cartoon mummy - his face uncovered and smiling, a cream bandage headband, his body, arms and legs wrapped in smooth cream bandages with a few small orange and purple patches, yellow wristbands, plain gray sneakers.] | [model-input\muscle\front-toon.png, model-input\Muscle Mummy\a-pose-front.png] | [muscle-mummy\front-toon.png]
+[BACK view of Muscle Mummy, matching the reference exactly: his spiky brown hair and the knot of the bandage headband, the back of the cream bandage wraps with a patch or two, gray sneakers.] | [model-input\muscle-mummy\front-toon.png] | [muscle-mummy\back-toon.png]
+```
+
+Send Claude the 16 pictures to check before the models.
+
+### Skins workflow 2 - the models
+
+The same script as the characters (close Roblox Studio first). In PowerShell:
+
+```
+cd "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are"
+& "C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py tinker-pumpkin ghostly-shadow candy-glow space-cadet-brainy snow-day-muscle starlight-echo autumn-leaf-bramble muscle-mummy
+```
+
+Studio names (import -> Avatar Setup -> ServerStorage -> Characters):
+
+| File | Name in Studio |
+|---|---|
+| tinker-pumpkin-toon.glb | TinkerPumpkinToon |
+| ghostly-shadow-toon.glb | ShadowGhostToon |
+| candy-glow-toon.glb | GlowCandyToon |
+| space-cadet-brainy-toon.glb | BrainySpaceToon |
+| snow-day-muscle-toon.glb | MuscleSnowToon |
+| starlight-echo-toon.glb | EchoStarToon |
+| autumn-leaf-bramble-toon.glb | BrambleAutumnToon |
+| muscle-mummy-toon.glb | MuscleMummyToon |
+
+All of them are already switched on for Brent (`Config.STUDIO_TRY_MODEL`):
+wear the skin in the Lobby, play it in Party House.

@@ -31,7 +31,8 @@ from PIL import Image
 PROJECT = Path(__file__).resolve().parent.parent
 MODELS = PROJECT / "art" / "models"
 INPUT = PROJECT / "art" / "model-input"
-FOLDERS = ["tinker", "brainy", "shadow", "muscle", "glow", "patch", "echo", "bramble", "halloween-nurse-patch"]
+FOLDERS = ["tinker", "brainy", "shadow", "muscle", "glow", "patch", "echo", "bramble", "halloween-nurse-patch",
+           "tinker-pumpkin", "ghostly-shadow", "candy-glow", "space-cadet-brainy", "snow-day-muscle", "starlight-echo", "autumn-leaf-bramble", "muscle-mummy"]
 FACING_MIN, FACING_FULL = 0.12, 0.45  # blend from side-on to fully facing
 
 
