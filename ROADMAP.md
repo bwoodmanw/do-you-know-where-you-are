@@ -202,16 +202,29 @@ only when everyone presses Play.
   game); party fixes (leave, host leaves closes, saves handed off, the game
   waits for the whole party); carousel unicorns; one-press Confetti Cannon.
 
+## Seventh session (9-10 Oct) - built, partly tested (TEST_PLAN 55-61)
+- Skill ladder fixes A / B / C (LADDER_FIX.md): no wasted picks, one free
+  reset per character.
+- Lobby Characters screen: Skills / Skins windows, description lines, X.
+- Sound audit, solid wall tanks, Brainy's built propeller.
+- **Toon models** (TOON_WORKFLOW.md): pictures, Stable Fast 3D models and our
+  painting for 8 characters + 9 skins (hosts: pictures done, models next);
+  switch-over in progress (SESSION_HANDOFF "The toon model upgrade").
+
 ## Next
-1. Brent: publish both places; live-test parties and TEST_PLAN 46-54.
-2. The Tinker cartoon test: import `tinker-toon.glb` as TinkerToon, compare
-   in Studio (`Config.STUDIO_TRY_MODEL`); if better, remake the others.
-3. Host balance from the 📊 Balance table (from about 15 Oct);
-   translation fixes after a week of data.
-4. Thanksgiving event (after 1 Nov; event page 7+ days ahead), then
+1. **Finish the toon switch-over, Patch first:** Brent re-imports Patch
+   (files after commit 3c59e29 keep their normals); photos in Avatar Setup and
+   in game; if clean, re-import all characters and skins, Save to Roblox, ids
+   into `Config.CHARACTER_ASSETS`; Characters cleanup (CharactersRaw).
+2. Hosts: workflow 2 (models), import, test in Studio, switch over (the Robot
+   may need a decision).
+3. Publish both places together; live-test TEST_PLAN 46-61.
+4. Host balance from the 📊 Balance table (from about 15 Oct); translation
+   fixes after a week of data.
+5. Thanksgiving event (after 1 Nov; event page 7+ days ahead), then
    Christmas: a secret seasonal floor and / or a community-wide goal.
-5. Community group bonus (once Brent makes the group).
-6. Later: B8 analytics, subscriptions (parked).
+6. Community group bonus (once Brent makes the group).
+7. Later: B8 analytics, subscriptions (parked).
 
 ## Ideas from top Roblox adventure / horror games (8 Oct, Brent to pick)
 Already have: spectating when caught, game invites, Quick Play, daily and

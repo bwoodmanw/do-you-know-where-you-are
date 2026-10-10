@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 10 Oct 2026)
 
-**Rounds 61 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
+**Rounds 61 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-61 not yet play-tested live (58 and parts of 61 seen in Studio). The toon models are tested by the steps in SESSION_HANDOFF / TOON_WORKFLOW, not here.**
 Studio Play builds `Config.STUDIO_MAP` (now `aquarium`, the Aquarium's
 Main Hall); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,

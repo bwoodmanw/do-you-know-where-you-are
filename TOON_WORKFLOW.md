@@ -81,6 +81,8 @@ unpainted model as `<name>-toon-raw.glb`. To repaint one:
 
 **The face gets its own sharp corner of the texture** (10 Oct): Stable Fast 3D gave each face only ~50 x 50 texture pixels (blurry eyes in Roblox). paint_toon now gives the front of the head a 256 x 256 corner filled straight from the approved picture, lined up with the model's own face by best match; the rest of the texture is shrunk to the other 3/4. The models also face forward for Roblox (no World Forward change).
 
+**Every finished model is checked** (`tools/check_toon_models.py`, run by the painting step on every file; 10 Oct): NORMAL saved and pointing right (without it Studio welds the seams and the texture breaks), one embedded 1024 x 1024 texture, one mesh of 1,000-12,000 triangles, facing forward for Roblox, and - characters and skins - the sharp face corner. A model that fails is reported FAILED and is not finished. Run it by hand on all models: `<sf3d-venv python> tools\check_toon_models.py`.
+
 **Stable Fast 3D builds the SHAPE from ONE picture - the front.** The back pictures are
 checked but not used; Claude renders every model from behind, and any back
 that comes out wrong gets fixed (see the end of this section).

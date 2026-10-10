@@ -399,6 +399,13 @@ def paint(name):
     mesh.vertex_normals = N0[src] * np.array([-1.0, 1.0, -1.0])  # turned round with the model
     mesh.export(glb, include_normals=True)
     print(f"{name}: wrote {glb.name} ({len(F)} triangles, no normal map)")
+    # the safety check (tools/check_toon_models.py): a model that would break
+    # in Roblox stops here - make_toon_models then prints FAILED for it
+    from check_toon_models import check
+    problems = check(glb, host=name.startswith("host"))
+    if problems:
+        raise RuntimeError(f"{glb.name} failed its check: " + "; ".join(problems))
+    print(f"{name}: checked - normals, texture, size, facing forward" + ("" if name.startswith("host") else ", sharp face") + ": all good")
 
 
 if __name__ == "__main__":
