@@ -360,8 +360,30 @@ cd "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are"
 & "C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py host host-gummy host-hospital host-caretaker host-clownbear host-anglerfish
 ```
 
-(or the same as an agent workflow: the skins' workflow 2 STEP 2 with these six
-names). Studio names (Import 3D -> Avatar Setup -> ServerStorage -> Characters):
+or as an agent workflow (updated 11 Oct: the script already keeps the normals,
+turns each model to face forward, pads the seams and runs
+`tools/check_toon_models.py` on every file - hosts get no face corner, so
+the 11 Oct chin fix does not touch them):
+
+```
+create new workflow to make the 6 host 3D models. Do not change tools\make_toon_models.py, tools\paint_toon.py or tools\check_toon_models.py, do not write a new script, do not change any settings, and do not edit any other file. Roblox Studio must be closed first (the graphics card needs all its memory); if it is open, stop and tell me.
+For each row of [Model Table], in order: open a terminal in "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are" and run:
+"C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py [Model]
+wait until it prints "DONE", then tell me that row's [file name], its "triangles" number, whether it printed "checked - normals, texture, size, facing forward: all good", and whether it printed "FAILED". If a row FAILED, show me the last 20 lines it printed and go on to the next row. If it crashes with code 3221225477, Roblox Studio or another program is using the graphics card: stop and tell me.
+[Model Table]:
+[Model] | [file name]
+[host] | [art\models\host-toon.glb]
+[host-gummy] | [art\models\host-gummy-toon.glb]
+[host-hospital] | [art\models\host-hospital-toon.glb]
+[host-caretaker] | [art\models\host-caretaker-toon.glb]
+[host-clownbear] | [art\models\host-clownbear-toon.glb]
+[host-anglerfish] | [art\models\host-anglerfish-toon.glb]
+At the end, list all 6 rows in one table: file name, triangles, checked (yes/no), FAILED (yes/no).
+```
+
+Then tell Claude: Claude renders each host (front, back, side) and runs the
+checker before you import. Studio names (Import 3D -> Avatar Setup ->
+ServerStorage -> Characters):
 
 | File | Name in Studio |
 |---|---|

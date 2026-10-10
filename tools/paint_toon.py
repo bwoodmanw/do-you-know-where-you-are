@@ -133,7 +133,7 @@ def render_front(V, F, uv, T, px_h=900):
         ty = np.clip(((1 - u[:, 1]) * TH).astype(int), 0, TH - 1)
         img[pts[:, 1], pts[:, 0]] = T[ty, tx]
         depth[pts[:, 1], pts[:, 0]] = z
-    return img, scale, lo, hi
+    return img, scale, lo, hi, depth
 
 
 def _gray(a):
@@ -158,7 +158,7 @@ def face_corner(name, V, F, uv, fn, tex, pic):
     with the model's own face by best match; everything else is shrunk to the
     other 3/4 of the texture. Returns new vertices, triangles, UVs, texture."""
     TH, TW = tex.shape[:2]
-    render, scale, lo, hi = render_front(V, F, uv, tex)
+    render, scale, lo, hi, front_depth = render_front(V, F, uv, tex)
     RH, RW = render.shape[:2]
     h = hi[1] - lo[1]
     cx = (lo[0] + hi[0]) / 2
@@ -197,10 +197,16 @@ def face_corner(name, V, F, uv, fn, tex, pic):
     # Stable Fast 3D's brownish old face - Avatar Setup can merge the face's
     # copied corners back; then they fall back here, now with the right
     # colors). Cheeks and jaw just outside the sharp corner get it too.
+    # 11 Oct: only surface the picture really shows - nearest from the front
+    # (depth test) and not facing down: the chin's underside is only a thin
+    # strip at the jaw line in the picture (neck shadow, hair beside it),
+    # which stretched into brown streaks under Patch's chin.
     fg_mask0, _ = outline(pic)
     TH0, TW0 = tex.shape[:2]
     uvpx0 = np.stack([uv[:, 0] * TW0, (1 - uv[:, 1]) * TH0], axis=1)
-    near_face = (-fn[:, 2] > 0.2) & (c[:, 1] > hi[1] - 0.29 * h) & (np.abs(c[:, 0] - cx) < 0.16 * h)
+    near_face = (-fn[:, 2] > 0.2) & (fn[:, 1] > -0.6) & (c[:, 1] > hi[1] - 0.27 * h) & (np.abs(c[:, 0] - cx) < 0.16 * h)  # down to the chin, as the corner (0.29 reached the neck: dark marks, 11 Oct)
+    RHd, RWd = front_depth.shape
+    eps_d = 0.02 * (hi[2] - lo[2]) + 1e-6
     tex = tex.copy()
     for f in np.nonzero(near_face)[0]:
         pts, bc = raster(uvpx0[F[f]], TW0, TH0)
@@ -211,9 +217,12 @@ def face_corner(name, V, F, uv, fn, tex, pic):
         ry = (hi[1] - p3[:, 1]) * scale
         ix = np.clip((bx0 + rx * s + dx).astype(int), 0, pic.shape[1] - 1)
         iy = np.clip((by0 + ry * s + dy).astype(int), 0, pic.shape[0] - 1)
-        ok = fg_mask0[iy, ix]
-        # blend in toward the sides, so there is no hard edge to the side hair
-        w = min(1.0, (-fn[f, 2] - 0.2) / 0.3)
+        zf = bc @ -V[F[f], 2]
+        dx_, dy_ = np.clip(rx.astype(int), 0, RWd - 1), np.clip(ry.astype(int), 0, RHd - 1)
+        ok = fg_mask0[iy, ix] & (zf >= front_depth[dy_, dx_] - eps_d)
+        # blend in toward the sides, so there is no hard edge to the side hair,
+        # and out toward surface facing down (under the chin)
+        w = min(1.0, (-fn[f, 2] - 0.2) / 0.3) * min(1.0, max(0.0, (fn[f, 1] + 0.6) / 0.3))
         tx, ty = pts[ok, 0], pts[ok, 1]
         tex[ty, tx] = tex[ty, tx] * (1 - w) + pic[iy[ok], ix[ok]].astype(np.float32) * w
     used = np.unique(F[sel])
