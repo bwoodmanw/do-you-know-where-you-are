@@ -34,7 +34,7 @@ INPUT = PROJECT / "art" / "model-input"
 FOLDERS = ["tinker", "brainy", "shadow", "muscle", "glow", "patch", "echo", "bramble", "halloween-nurse-patch",
            "tinker-pumpkin", "ghostly-shadow", "candy-glow", "space-cadet-brainy", "snow-day-muscle", "starlight-echo", "autumn-leaf-bramble", "muscle-mummy",
            "host", "host-gummy", "host-hospital", "host-caretaker", "host-clownbear", "host-anglerfish",
-           "chef-brainy", "gobble-shadow", "pie-baker-patch", "harvest-glow", "scarecrow-tinker", "gridiron-muscle", "dj-echo", "acorn-bramble", "host-gobbler", "turkey"]
+           "chef-brainy", "gobble-shadow", "pie-baker-patch", "harvest-glow", "scarecrow-tinker", "gridiron-muscle", "dj-echo", "cocoa-echo", "acorn-bramble", "host-gobbler", "turkey"]
 # no sharp face corner: hosts (pumpkins, lamps, fish heads) and the turkey
 def no_face(name):
     return name.startswith("host") or name in ("turkey",)

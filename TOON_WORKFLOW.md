@@ -448,11 +448,11 @@ sides of a picture.
 ### Thanksgiving workflow 2 - 4 more skins (every character gets one), then all 10 models
 
 Brent (10 Oct): every character gets a Thanksgiving skin, so Tinker, Muscle,
-Echo and Bramble get one too (Echo and Bramble swapped 10 Oct: Feast DJ Echo, Acorn Bramble). **Close Roblox Studio first.**
+Echo and Bramble get one too (Echo and Bramble swapped 10 Oct: Feast DJ Echo and Cozy Cocoa Echo, Acorn Bramble). **Close Roblox Studio first.**
 
 ```
 create new workflow to make the Thanksgiving pictures and 3D models in two steps. Do not change tools\make_toon_models.py, tools\paint_toon.py, tools\check_toon_models.py or tools\flatten_background.py, do not write a new script, do not change any settings, and do not edit any other file. Roblox Studio must be closed before STEP 2 (the graphics card needs all its memory); if it is open, stop and tell me.
-STEP 1 - the 4 new skin pictures. For each row of [Picture Table], attach every [Reference] picture listed, in that order, make the picture from the [Picture Standard] plus that row's [Picture], and save it to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]" (create the folder if it does not exist). Make the front first: the back uses it as its reference.
+STEP 1 - the 5 new skin pictures. For each row of [Picture Table], attach every [Reference] picture listed, in that order, make the picture from the [Picture Standard] plus that row's [Picture], and save it to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]" (create the folder if it does not exist). Make the front first: the back uses it as its reference.
 [Picture Standard] = "This is for a kids' co-op escape game for ages 8 and up: friendly and funny, never scary. For a FRONT view one picture is attached: the character's approved toon look - keep exactly their face, hair, eye color, skin tone, body shape and style, and dress them in the new outfit described in this prompt; anything the prompt does not change stays as in the picture. For a BACK view one picture is attached: the same character in the same outfit, seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no straw texture lines, no dirt, no stains, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, big clear eyes, warm skin tone (never pale or white). Small details as simple solid shapes, close to the body - nothing thin or long sticking out. No logos, brand marks, team colors or emblems, numbers, swooshes, stripes on shoes, printed words or graphics. No pilgrim, Native American or other cultural costumes. Full body standing in an A-pose: arms straight and angled down and away from the body, hands open and empty, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. ONE plain flat light-gray background over the whole picture (no bands, no gradient), even soft light, no floor shadow. One character only, no text."
 [Picture Table]:
 [Picture] | [Reference] | [file name]
@@ -462,9 +462,11 @@ STEP 1 - the 4 new skin pictures. For each row of [Picture Table], attach every 
 [BACK view of Gridiron Muscle, matching the reference exactly: the headband knot, the back of the plain brown jersey (NO number, NO name), the shoulder pads, cream pants, brown socks, white cleats.] | [model-input\gridiron-muscle\front-toon.png] | [gridiron-muscle\back-toon.png]
 [FRONT view of Feast DJ Echo: Echo as the party's DJ - her curly brown hair in a bun, her brass goggles pushed up on her head, her big purple headphones ON her ears, a pumpkin-orange hoodie with a cream front pocket and a small brown turkey-feather shape on the pocket, a small round brown bag shaped like a plain record (no label, no words), plain brown jogger pants with NO pockets, orange-and-cream chunky sneakers.] | [model-input\echo\front-toon.png] | [dj-echo\front-toon.png]
 [BACK view of Feast DJ Echo, matching the reference exactly: the hair bun and goggle strap, the headphone band over her head, the back of the pumpkin-orange hoodie with its hood down, the record bag's strap, brown joggers, orange-and-cream sneakers.] | [model-input\dj-echo\front-toon.png] | [dj-echo\back-toon.png]
+[FRONT view of Cozy Cocoa Echo: Echo all cozy for a fall day - her curly brown hair in a bun, her brass goggles pushed up on her head, her headphones turned into fluffy cream earmuffs over her ears, a big soft cream sweater with a small brown cocoa-mug shape on the front, a red-and-cream plaid scarf wrapped close around her neck (ends short, lying flat), plain brown jogger pants with NO pockets, cozy brown boots with cream fur trim.] | [model-input\echo\front-toon.png] | [cocoa-echo\front-toon.png]
+[BACK view of Cozy Cocoa Echo, matching the reference exactly: the hair bun and goggle strap, the earmuff band over her head, the back of the big cream sweater, the plaid scarf's knot, brown joggers, brown boots with cream fur trim.] | [model-input\cocoa-echo\front-toon.png] | [cocoa-echo\back-toon.png]
 [FRONT view of Acorn Bramble: Bramble wearing a round acorn-cap hat (a brown cap with a short stubby stem on top) over his messy brown hair, a small oak-leaf cape (solid green and gold leaves) over a cream long-sleeve top, a little acorn-shaped bag at his side, brown cargo shorts like Bramble's own, green socks, clean brown lace-up boots.] | [model-input\bramble\front-toon.png] | [acorn-bramble\front-toon.png]
 [BACK view of Acorn Bramble, matching the reference exactly: the back of the acorn-cap hat and its stem, messy brown hair, the back of the oak-leaf cape, the acorn bag's strap, brown shorts, green socks, brown boots.] | [model-input\acorn-bramble\front-toon.png] | [acorn-bramble\back-toon.png]
-STEP 2 - make the 10 Thanksgiving models. For each row of [Model Table], in order: open a terminal in "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are" and run:
+STEP 2 - make the 11 Thanksgiving models. For each row of [Model Table], in order: open a terminal in "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are" and run:
 "C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py [Model]
 wait until it prints "DONE", then tell me that row's [file name], its "triangles" number, whether it printed a "checked - ... all good" line, whether it printed "flattening it", and whether it printed "FAILED". If a row FAILED, show me the last 20 lines it printed and go on to the next row. If it crashes with code 3221225477, Roblox Studio or another program is using the graphics card: stop and tell me.
 [Model Table]:
@@ -476,15 +478,16 @@ wait until it prints "DONE", then tell me that row's [file name], its "triangles
 [scarecrow-tinker] | [art\models\scarecrow-tinker-toon.glb]
 [gridiron-muscle] | [art\models\gridiron-muscle-toon.glb]
 [dj-echo] | [art\models\dj-echo-toon.glb]
+[cocoa-echo] | [art\models\cocoa-echo-toon.glb]
 [acorn-bramble] | [art\models\acorn-bramble-toon.glb]
 [host-gobbler] | [art\models\host-gobbler-toon.glb]
 [turkey] | [art\models\turkey-toon.glb]
-At the end, list all 10 rows in one table: file name, triangles, checked (yes/no), flattened (yes/no), FAILED (yes/no).
+At the end, list all 11 rows in one table: file name, triangles, checked (yes/no), flattened (yes/no), FAILED (yes/no).
 ```
 
 Then tell Claude: Claude checks the 8 new pictures and renders all 10 models
 (any picture that fails gets its row redone). Studio names (once the
 Avatar Setup question is settled): ChefBrainyToon, GobbleShadowToon,
 PieBakerPatchToon, HarvestGlowToon, ScarecrowTinkerToon, GridironMuscleToon,
-DJEchoToon, AcornBrambleToon, HostGobblerToon; the turkey is a prop
+DJEchoToon, CocoaEchoToon, AcornBrambleToon, HostGobblerToon; the turkey is a prop
 (Claude decides how it moves).
