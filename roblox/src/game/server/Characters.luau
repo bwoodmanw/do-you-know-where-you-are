@@ -381,6 +381,17 @@ end
 -- a fresh copy of the imported host, or nil to use the built-from-parts one
 function Characters.host(name)
 	name = name or "Host"
+	-- Studio: a remade toon host (Config.STUDIO_TRY_MODEL), if imported and sound
+	local try = game:GetService("RunService"):IsStudio() and Config.STUDIO_TRY_MODEL and Config.STUDIO_TRY_MODEL[name]
+	if try and template(try) and not Characters.broken[try] then
+		local problem = Characters.problem(try)
+		if problem then
+			warn("Test host " .. try .. " not used - " .. problem .. ". Using " .. name .. ".")
+		else
+			print("[Characters] the host is the test model ServerStorage/Characters/" .. try)
+			name = try
+		end
+	end
 	local t = template(name)
 	if not t then
 		local folder = ServerStorage:FindFirstChild("Characters")

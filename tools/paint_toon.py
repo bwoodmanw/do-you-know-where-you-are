@@ -32,7 +32,8 @@ PROJECT = Path(__file__).resolve().parent.parent
 MODELS = PROJECT / "art" / "models"
 INPUT = PROJECT / "art" / "model-input"
 FOLDERS = ["tinker", "brainy", "shadow", "muscle", "glow", "patch", "echo", "bramble", "halloween-nurse-patch",
-           "tinker-pumpkin", "ghostly-shadow", "candy-glow", "space-cadet-brainy", "snow-day-muscle", "starlight-echo", "autumn-leaf-bramble", "muscle-mummy"]
+           "tinker-pumpkin", "ghostly-shadow", "candy-glow", "space-cadet-brainy", "snow-day-muscle", "starlight-echo", "autumn-leaf-bramble", "muscle-mummy",
+           "host", "host-gummy", "host-hospital", "host-caretaker", "host-clownbear", "host-anglerfish"]
 FACING_MIN, FACING_FULL = 0.12, 0.45  # blend from side-on to fully facing
 
 
@@ -368,7 +369,10 @@ def paint(name):
     print(f"{name}: front colors corrected, back painted from the back picture ({int((best > 0).sum() * 100 / (TH * TW))}% of the texture)")
     # the face gets its own sharp corner of the texture, from the picture
     front_pic = np.asarray(Image.open(pics["front"]).convert("RGB"))
-    V2, F2, uv2, out = face_corner(name, V, F, uv, fn, out, front_pic)
+    if name.startswith("host"):
+        V2, F2, uv2 = V, F, uv  # hosts: pumpkins, lamps and fish heads - no face corner
+    else:
+        V2, F2, uv2, out = face_corner(name, V, F, uv, fn, out, front_pic)
     uvpx2 = np.stack([uv2[:, 0] * TW, (1 - uv2[:, 1]) * TH], axis=1)
     out = pad_islands(out, uvpx2, F2)
 

@@ -58,6 +58,13 @@ Config.STUDIO_TRY_MODEL = {
 	EchoStar = "EchoStarToon",
 	BrambleAutumn = "BrambleAutumnToon",
 	MuscleMummy = "MuscleMummyToon",
+	-- the hosts (10 Oct): in Studio only (a host is shared by the whole server)
+	Host = "HostToon",
+	HostGummy = "HostGummyToon",
+	HostRobot = "HostRobotToon",
+	HostCaretaker = "HostCaretakerToon",
+	HostClownBear = "HostClownBearToon",
+	HostAnglerfish = "HostAnglerfishToon",
 }
 Config.TRY_MODEL_FOR_OWNER = true
 -- models that get Brainy's spinning beanie propeller built on (Propeller.luau):

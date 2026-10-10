@@ -308,3 +308,69 @@ skin model to ServerStorage -> CharactersOld, rename the toon to the old name
 (e.g. TinkerPumpkinToon -> TinkerPumpkin), right-click -> Save to Roblox, and
 send Claude the id (the Lobby's 3D view loads it). Each skin also gets a crisp
 face picture (tools/make_face.py) once Echo's face test passes.
+
+## The hosts (10 Oct): the same two workflows
+
+Six hosts: Pumpkin (`Host`), Gummy Bear Man (`HostGummy`), the hospital
+Robot (`HostRobot`, pictures in `host-hospital`), the Caretaker, the Clown
+Bear and the Anglerfish Keeper. Checked in the old pictures: spooky but kid
+safe, no logos or look-alikes. Gummy Bear Man is see-through jelly and the
+Anglerfish's lure glows - both become solid (3D can't do see-through or
+glow). The models get the same painting (colors corrected, back from the back
+picture, seams padded) but no sharp-face corner (that is tuned for the kids'
+heads). A host toon plays in Studio only (`Config.STUDIO_TRY_MODEL`): the
+host is shared by the whole server, so it can't be switched on for one
+player live.
+
+The Robot has wheels, not legs: Avatar Setup may not rig him. If it refuses,
+keep the old Robot (decision then).
+
+### Hosts workflow 1 - the pictures
+
+```
+create new workflow to create images based on the [Picture Standard], [Reference] and [Picture]. For each picture, attach every [Reference] picture listed, then save to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\host\front-toon.png.
+The [Picture Standard] will be included with every picture prompt. The [Picture] prompt is added to [Picture Standard] and changes per prompt. The [Reference] and [file name] are defined per picture. Make the pictures in the order of the table: each back view uses the front view made just before it as its reference.
+[Picture Standard] = "This is a host (the friendly-spooky chaser) in a kids' horror-escape game for ages 8 and up: spooky and silly, never gory or truly frightening. For a FRONT view one picture is attached: the host's approved look - keep exactly the same character, shape, proportions, colors and costume, redrawn as described. For a BACK view one picture is attached: the same host seen from directly behind. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no rust, no grime, no stains, no scratches, no wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (glowing parts become solid bright colors). Simple rounded shapes, slightly chunky proportions. No logos, brand marks, printed words or graphics. Full body standing in an A-pose: arms straight and angled down and away from the body, hands open, legs (or base) apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text. A FRONT view faces the camera straight on; a BACK view is seen from directly behind, same pose, every color the same as the front."
+Table for each [Picture], [Reference] and [file name] combination is below:
+[Picture] | [Reference] | [file name]
+[FRONT view of the Pumpkin host: a tall thin gentleman with a carved jack-o'-lantern head (a friendly-spooky grinning face, solid orange, the carved eyes and mouth solid yellow-orange, not glowing) wearing a small red-and-cream striped party hat, a long purple tailcoat with ragged tails, a cream waistcoat, a red bow tie, white gloves, dark trousers and black boots.] | [model-input\host\a-pose-front.png] | [host\front-toon.png]
+[BACK view of the Pumpkin host, matching the reference exactly: the back of the pumpkin head and its stem, the party hat, the back of the purple tailcoat with its ragged tails, dark trousers, black boots.] | [model-input\host\front-toon.png] | [host\back-toon.png]
+[FRONT view of Gummy Bear Man: a tall, stretchy gummy-candy ringmaster made of SOLID glossy cherry-red candy (not see-through), a wide grin, a small black top hat, a red ringmaster jacket with gold buttons and gold shoulder fringes, a black bow tie, long bendy red arms with big gummy hands, big round red gummy feet.] | [model-input\host-gummy\a-pose-front.png] | [host-gummy\front-toon.png]
+[BACK view of Gummy Bear Man, matching the reference exactly: the back of the solid red gummy head and the top hat, the back of the ringmaster jacket with its tails and gold fringes, red gummy legs and feet.] | [model-input\host-gummy\front-toon.png] | [host-gummy\back-toon.png]
+[FRONT view of the hospital Robot: a tall thin old hospital robot - a round lamp head with a bright yellow lens (solid, not glowing) in a cream-and-mint-green metal casing, a slim pole body, thin jointed metal arms with three-finger grippers, a few black cables, standing on a three-legged base with three small black wheels. Clean cream and mint-green metal, no rust.] | [model-input\host-hospital\a-pose-front.png] | [host-hospital\front-toon.png]
+[BACK view of the hospital Robot, matching the reference exactly: the back of the lamp head casing, the pole body with its cables, the thin arms, the three-legged wheeled base.] | [model-input\host-hospital\front-toon.png] | [host-hospital\back-toon.png]
+[FRONT view of the Caretaker: a tall, thin, pale-green old caretaker with wild white hair, a big white mustache and round yellow eyes, a dark green flat cap, a green work shirt with rolled sleeves, dark green trousers with rolled cuffs, a brown belt with a ring of big old keys, a mop over one shoulder, black work boots.] | [model-input\host-caretaker\a-pose-front.png] | [host-caretaker\front-toon.png]
+[BACK view of the Caretaker, matching the reference exactly: the back of the flat cap and white hair, the mop handle across his back, the green shirt and trousers, the keys at his belt, black boots.] | [model-input\host-caretaker\front-toon.png] | [host-caretaker\back-toon.png]
+[FRONT view of the Clown Bear: a big patchwork teddy-bear clown - round mint, peach and lavender patchwork bear head with round ears, one button eye and one stitched eye, a red ball nose, a stitched smile, a small striped party hat with a red pom-pom, a white ruffled collar, a baggy orange-and-lavender striped clown suit with patches and three big pom-pom buttons, white gloves, big red clown shoes.] | [model-input\host-clownbear\a-pose-front.png] | [host-clownbear\front-toon.png]
+[BACK view of the Clown Bear, matching the reference exactly: the back of the patchwork bear head with its ears and party hat, the ruffled collar, the back of the striped clown suit with a patch or two, big red clown shoes.] | [model-input\host-clownbear\front-toon.png] | [host-clownbear\back-toon.png]
+[FRONT view of the Anglerfish Keeper: a tall aquarium keeper with a big round blue-gray anglerfish head (big pale blue eyes, a wide friendly-spooky grin), a thin stalk on top ending in a round SOLID yellow bulb (not glowing), small fins at the sides of the head, a yellow rain jacket over a navy sweater, dark trousers, dark green rubber boots, blue-gray webbed hands.] | [model-input\host-anglerfish\a-pose-front.png] | [host-anglerfish\front-toon.png]
+[BACK view of the Anglerfish Keeper, matching the reference exactly: the back of the fish head with its fins and the lure stalk, the back of the yellow rain jacket with its hood down, dark trousers, green boots.] | [model-input\host-anglerfish\front-toon.png] | [host-anglerfish\back-toon.png]
+```
+
+Send Claude the 12 pictures to check before the models.
+
+### Hosts workflow 2 - the models
+
+The same script (close Roblox Studio first). In PowerShell:
+
+```
+cd "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are"
+& "C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py host host-gummy host-hospital host-caretaker host-clownbear host-anglerfish
+```
+
+(or the same as an agent workflow: the skins' workflow 2 STEP 2 with these six
+names). Studio names (Import 3D -> Avatar Setup -> ServerStorage -> Characters):
+
+| File | Name in Studio |
+|---|---|
+| host-toon.glb | HostToon |
+| host-gummy-toon.glb | HostGummyToon |
+| host-hospital-toon.glb | HostRobotToon |
+| host-caretaker-toon.glb | HostCaretakerToon |
+| host-clownbear-toon.glb | HostClownBearToon |
+| host-anglerfish-toon.glb | HostAnglerfishToon |
+
+Test in Studio (Play: the game picks the building's host, and Studio uses the
+toon if it is imported - `Config.STUDIO_HOST` picks a host). When one looks
+right: old host to CharactersOld, rename the toon (HostToon -> Host), Save to
+Roblox, send Claude the id (`Config.CHARACTER_ASSETS`).

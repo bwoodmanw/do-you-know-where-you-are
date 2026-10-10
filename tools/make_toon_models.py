@@ -52,6 +52,13 @@ JOBS = {
     "starlight-echo": "starlight-echo-toon.glb",
     "autumn-leaf-bramble": "autumn-leaf-bramble-toon.glb",
     "muscle-mummy": "muscle-mummy-toon.glb",
+    # the hosts (10 Oct)
+    "host": "host-toon.glb",
+    "host-gummy": "host-gummy-toon.glb",
+    "host-hospital": "host-hospital-toon.glb",
+    "host-caretaker": "host-caretaker-toon.glb",
+    "host-clownbear": "host-clownbear-toon.glb",
+    "host-anglerfish": "host-anglerfish-toon.glb",
 }
 TEXTURE = 1024  # one 1024 x 1024 picture: plenty for flat cartoon colors
 VERTICES = 4000  # about 8,000 triangles
