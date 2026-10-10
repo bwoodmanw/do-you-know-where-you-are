@@ -264,6 +264,9 @@ def picture_chin(pic, fg_mask, nose_x, nose_y):
     return rows
 
 
+EDGE_PX = 10  # picture pixels of the outline's edge kept off the head (1536-tall pictures)
+
+
 def face_corner(name, V, F, uv, fn, tex, pic):
     """Stable Fast 3D gives a toon's face ~50 x 50 texture pixels (blurry eyes in
     Roblox, 10 Oct). The front of the head gets its own corner of the texture
@@ -335,6 +338,15 @@ def face_corner(name, V, F, uv, fn, tex, pic):
         r = chin_rows[ix]
         return (iy > nose_py) & (r >= 0) & (iy > r + 2)
 
+    # 10 Oct: not the picture's outline edge (Echo's pale halo: curls blended
+    # into the gray background) - those triangles keep their hair color
+    from scipy import ndimage
+    core = ndimage.binary_erosion(ndimage.binary_fill_holes(outline(pic)[0]), iterations=EDGE_PX)  # holes (light eye whites) filled first
+    ex, ey = to_pic(c)
+    at_edge = sel & ~core[ey, ex]
+    if at_edge.any():
+        print(f"{name}: {int(at_edge.sum())} triangles at the picture's outline edge left out of the sharp face")
+    sel = sel & ~at_edge
     if chin_rows is not None:
         out = sel & below_chin(*to_pic(c))
         if out.any():
@@ -349,7 +361,7 @@ def face_corner(name, V, F, uv, fn, tex, pic):
     # (depth test) and not facing down: the chin's underside is only a thin
     # strip at the jaw line in the picture (neck shadow, hair beside it),
     # which stretched into brown streaks under Patch's chin.
-    fg_mask0, _ = outline(pic)
+    fg_mask0 = core  # the outline's edge is half background (10 Oct)
     TH0, TW0 = tex.shape[:2]
     uvpx0 = np.stack([uv[:, 0] * TW0, (1 - uv[:, 1]) * TH0], axis=1)
     near_face = (-fn[:, 2] > 0.2) & (fn[:, 1] > -0.6) & (c[:, 1] > hi[1] - 0.27 * h) & (np.abs(c[:, 0] - cx) < 0.16 * h)  # down to the chin, as the corner (0.29 reached the neck: dark marks, 10 Oct)
@@ -523,6 +535,99 @@ def drop_unused(V, F, uv, src):
     return V[used], remap[F], uv[used], src[used]
 
 
+def fit_side(fz, py, mask, sy, box):
+    """where the model's depth (fz, model units from its front or back) lands
+    across a side picture: Stable Fast 3D guessed the depth, so the model's
+    side outline is scaled (0.8 - 1.25) and shifted to cover the picture's
+    outline best (overlap of the two outlines on an 8-pixel grid)."""
+    IH, IW = mask.shape
+    g = 8
+    gh, gw = IH // g + 1, IW // g + 1
+    m = np.zeros((gh, gw), bool)
+    ys, xs = np.nonzero(mask)
+    m[ys // g, xs // g] = True
+    bx0, bx1 = box
+    best = (-1.0, None)
+    span = fz.max() - fz.min()
+    for k in np.linspace(0.8, 1.25, 19):
+        w = span * sy * k
+        for shift in range(-64, 65, 4):
+            x0 = (bx0 + bx1) / 2 - w / 2 + shift
+            px = x0 + (fz - fz.min()) * sy * k
+            gx = np.clip((px // g).astype(int), 0, gw - 1)
+            gy = np.clip((py // g).astype(int), 0, gh - 1)
+            occ = np.zeros((gh, gw), bool)
+            occ[gy, gx] = True
+            occ |= np.roll(occ, 1, 0) | np.roll(occ, -1, 0) | np.roll(occ, 1, 1) | np.roll(occ, -1, 1)
+            iou = (occ & m).sum() / max((occ | m).sum(), 1)
+            if iou > best[0]:
+                best = (iou, px)
+    return best[1], best[0]
+
+
+def paint_view(img, mask, P, near, facing, F, uvpx, TW, TH, eps, painted, best):
+    """lays one picture over the texels of every triangle that faces it and
+    that the picture can see (nearest surface at that pixel)"""
+    IH, IW = img.shape[:2]
+    depth = np.full((IH, IW), -np.inf, np.float32)
+    for f in np.nonzero(facing > 0)[0]:
+        pts, bc = raster(P[F[f]], IW, IH)
+        if pts is None or len(pts) == 0:
+            continue
+        z = bc @ near[F[f]]
+        depth[pts[:, 1], pts[:, 0]] = np.maximum(depth[pts[:, 1], pts[:, 0]], z)
+    for f in np.nonzero(facing > FACING_MIN)[0]:
+        pts, bc = raster(uvpx[F[f]], TW, TH)
+        if pts is None or len(pts) == 0:
+            continue
+        ip = bc @ P[F[f]]
+        ix = np.clip(ip[:, 0].astype(int), 0, IW - 1)
+        iy = np.clip(ip[:, 1].astype(int), 0, IH - 1)
+        z = bc @ near[F[f]]
+        seen = (z >= depth[iy, ix] - eps) & mask[iy, ix]
+        if not seen.any():
+            continue
+        w = min(1.0, (facing[f] - FACING_MIN) / (FACING_FULL - FACING_MIN))
+        tx, ty = pts[seen, 0], pts[seen, 1]
+        keep = w > best[ty, tx]
+        painted[ty[keep], tx[keep]] = img[iy[seen], ix[seen]][keep].astype(np.float32)
+        best[ty[keep], tx[keep]] = w
+
+
+def fill_unseen(V, F, fn, uvpx, out, best, TW, TH, front_bg=None, k=6):
+    """triangles that no picture saw (facing up, grazing edges: Echo's pale hair
+    top) take the average color of the nearest triangles that one did see -
+    the back / sides (painted) or the front (Stable Fast 3D's own front)"""
+    from scipy.spatial import cKDTree
+    n = len(F)
+    cover = np.zeros(n, np.float32)
+    color = np.zeros((n, 3), np.float32)
+    texels = [None] * n
+    for f in range(n):
+        pts, _ = raster(uvpx[F[f]], TW, TH)
+        if pts is None or len(pts) == 0:
+            continue
+        texels[f] = pts
+        cover[f] = best[pts[:, 1], pts[:, 0]].mean()
+        color[f] = out[pts[:, 1], pts[:, 0]].mean(axis=0)
+    front = -fn[:, 2] > FACING_MIN
+    if front_bg is not None:
+        front &= front_bg < 0.5  # lined up with the picture's background: not really seen
+    seen = front | (cover > 0.5)
+    unseen = ~front & (cover < 0.05) & np.array([t is not None for t in texels])
+    if not unseen.any() or seen.sum() < k:
+        return out, 0
+    c = V[F].mean(axis=1)
+    tree = cKDTree(c[seen])
+    _, idx = tree.query(c[unseen], k=k)
+    fill = color[np.nonzero(seen)[0][idx]].mean(axis=1)
+    out = out.copy()
+    for f, col in zip(np.nonzero(unseen)[0], fill):
+        pts = texels[f]
+        out[pts[:, 1], pts[:, 0]] = col
+    return out, int(unseen.sum())
+
+
 def paint(name):
     glb = MODELS / f"{name}-toon.glb"
     raw = MODELS / f"{name}-toon-raw.glb"
@@ -558,6 +663,9 @@ def paint(name):
     painted = np.zeros((TH, TW, 3), np.float32)  # the back picture's colors
     best = np.zeros((TH, TW), np.float32)  # how much of each texel they cover
     pairs_tex, pairs_pic = [], []  # front: Stable Fast 3D's color -> the picture's
+    # 10 Oct: front triangles that line up with the picture's BACKGROUND (the
+    # wispy hair edges: Stable Fast 3D tinted them gray - Echo's pale halo)
+    front_bg = np.zeros(len(F), np.float32)
     # Stable Fast 3D's models face -Z (checked on Tinker and Shadow, 10 Oct)
     for view, sign in (("front", -1.0), ("back", 1.0)):
         img = np.asarray(Image.open(pics[view]).convert("RGB"))
@@ -590,7 +698,10 @@ def paint(name):
             ix = np.clip(ip[:, 0].astype(int), 0, IW - 1)
             iy = np.clip(ip[:, 1].astype(int), 0, IH - 1)
             z = bc @ near[F[f]]
-            seen = (z >= depth[iy, ix] - eps) & mask[iy, ix]
+            vis = z >= depth[iy, ix] - eps
+            if view == "front" and vis.any():
+                front_bg[f] = 1.0 - mask[iy, ix][vis].mean()
+            seen = vis & mask[iy, ix]
             if not seen.any():
                 continue
             w = min(1.0, (facing[f] - FACING_MIN) / (FACING_FULL - FACING_MIN))
@@ -604,6 +715,25 @@ def paint(name):
             keep = w > best[ty, tx]
             painted[ty[keep], tx[keep]] = col[keep]
             best[ty[keep], tx[keep]] = w
+    # 10 Oct: the SIDES - Stable Fast 3D guessed them (pale smears on Echo's
+    # side hair and jaw in Studio). Painted from left / right pictures when
+    # they exist. The left picture is seen from the character's own left (-X
+    # here, models face -Z): it looks toward the picture's left edge, so +Z
+    # runs to the right; the right picture is the mirror.
+    sides = []
+    for view, sign in (("left", -1.0), ("right", 1.0)):
+        path = INPUT / name / f"{view}-toon.png"
+        if not path.exists():
+            continue
+        img = np.asarray(Image.open(path).convert("RGB"))
+        mask, (bx0, bx1, by0, by1) = outline(img)
+        sy = (by1 - by0) / size[1]
+        py = by0 + (hi[1] - V[:, 1]) * sy
+        fz = (V[:, 2] - lo[2]) if sign < 0 else (hi[2] - V[:, 2])
+        px, fit = fit_side(fz, py, mask, sy, (bx0, bx1))
+        paint_view(img, mask, np.stack([px, py], axis=1), sign * V[:, 0], sign * fn[:, 0],
+                   F, uvpx, TW, TH, 0.02 * size[0] + 1e-6, painted, best)
+        sides.append(f"{view} (fit {fit:.2f})")
     # how Stable Fast 3D shifted the colors (washed out), from the front, undone
     # everywhere; then the back picture laid over its guessed back
     out = tex.copy()
@@ -615,7 +745,14 @@ def paint(name):
         allX = np.concatenate([tex.reshape(-1, 3), np.ones((TH * TW, 1), np.float32)], axis=1)
         out = (allX @ M).reshape(TH, TW, 3)
     out = out * (1 - best)[..., None] + painted * best[..., None]
-    print(f"{name}: front colors corrected, back painted from the back picture ({int((best > 0).sum() * 100 / (TH * TW))}% of the texture)")
+    # 10 Oct: what no picture saw (the top of the head, grazing edges) takes
+    # its neighbors' colors instead of Stable Fast 3D's pale guesses
+    out, n_unseen = fill_unseen(V, F, fn, uvpx, out, best, TW, TH, front_bg)
+    if n_unseen:
+        print(f"{name}: {n_unseen} triangles no picture sees took their neighbors' colors")
+    print(f"{name}: front colors corrected, back painted from the back picture"
+          + (f", sides from {' and '.join(sides)}" if sides else ", no side pictures")
+          + f" ({int((best > 0).sum() * 100 / (TH * TW))}% of the texture)")
     # the face gets its own sharp corner of the texture, from the picture
     front_pic = np.asarray(Image.open(pics["front"]).convert("RGB"))
     if no_face(name):
