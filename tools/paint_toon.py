@@ -301,7 +301,15 @@ def face_corner(name, V, F, uv, fn, tex, pic):
     score, (s, dx, dy) = best
     # the front of the head: facing forward, from the top down to the chin
     c = V[F].mean(axis=1)
-    sel = (-fn[:, 2] > 0.55) & (c[:, 1] > hi[1] - 0.27 * h) & (np.abs(c[:, 0] - cx) < 0.13 * h)
+    # 10 Oct: the whole visible front of the head, not just the middle (the
+    # line to the main texture ran beside the mouth: patches in Studio) - what
+    # the front picture can see (depth test), facing forward at all, not down
+    RHf, RWf = front_depth.shape
+    fpx = np.clip(((hi[0] - c[:, 0]) * scale).astype(int), 0, RWf - 1)
+    fpy = np.clip(((hi[1] - c[:, 1]) * scale).astype(int), 0, RHf - 1)
+    seen = -c[:, 2] >= front_depth[fpy, fpx] - 0.03 * (hi[2] - lo[2])
+    sel = ((-fn[:, 2] > 0.25) & (fn[:, 1] > -0.5) & seen
+           & (c[:, 1] > hi[1] - 0.27 * h) & (np.abs(c[:, 0] - cx) < 0.18 * h))
     if sel.sum() < 20 or score < 0.2:
         print(f"{name}: face corner skipped (face match {score:.2f}, {int(sel.sum())} triangles)")
         return V, F, uv, tex, np.arange(len(V))
@@ -483,6 +491,24 @@ def split_shared_normals(V, F, N, min_deg=MIN_SPLIT_DEG):
                         away /= np.linalg.norm(away)
                         n = m * cos_min + away * np.sqrt(1 - cos_min ** 2) * 1.02
                         n /= np.linalg.norm(n)
+                    if any(n @ (N[d] / np.linalg.norm(N[d])) > cos_min for d in done):
+                        # 3+ points at one spot can bounce between neighbors:
+                        # a ring of directions round its own normal, widening
+                        base = N[k] / (np.linalg.norm(N[k]) + 1e-12)
+                        t1 = np.cross(base, [0.0, 1.0, 0.0])
+                        if np.linalg.norm(t1) < 1e-6:
+                            t1 = np.cross(base, [1.0, 0.0, 0.0])
+                        t1 /= np.linalg.norm(t1)
+                        t2 = np.cross(base, t1)
+                        found = False
+                        for ang in np.radians(min_deg * np.array([1.2, 1.6, 2.2, 3.0, 4.0])):
+                            for az in np.linspace(0, 2 * np.pi, 24, endpoint=False):
+                                cand = base * np.cos(ang) + (t1 * np.cos(az) + t2 * np.sin(az)) * np.sin(ang)
+                                if all(cand @ (N[d] / np.linalg.norm(N[d])) <= cos_min for d in done):
+                                    n, found = cand, True
+                                    break
+                            if found:
+                                break
                 N[k] = n * np.linalg.norm(N[k])
             done.append(k)
     return N
