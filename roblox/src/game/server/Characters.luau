@@ -9,6 +9,9 @@ local ServerStorage = game:GetService("ServerStorage")
 local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
 
 local Characters = {}
+-- models that died at once this server (Characters.apply): a test model
+-- in here is skipped and the old character plays
+Characters.broken = {}
 
 local KID_HEIGHT = 5.4 -- studs; the host is about twice that
 local HOST_HEIGHT = 12 -- rooms are 14 tall
@@ -303,6 +306,28 @@ function Characters.apply(plr, name)
 	m.Parent = workspace
 	plr.Character = m
 	old:Destroy()
+	-- a character that dies within seconds of going on is broken: say why in
+	-- F9 (Server) and remember it, so a test model is not used again
+	local born, startY = os.clock(), hrp.Position.Y
+	local function why()
+		local head = m:FindFirstChild("Head")
+		local neck = false
+		for _, d in ipairs(m:GetDescendants()) do
+			if d:IsA("JointInstance") and d.Name == "Neck" and d.Part0 and d.Part1 then
+				neck = true
+			end
+		end
+		local y = hrp.Parent and hrp.Position.Y or -math.huge
+		return string.format("root went from y=%.1f to y=%.1f%s, head %s, neck joint %s, RequiresNeck %s, HipHeight %.2f, root size %s",
+			startY, y, y < startY - 20 and " (FELL through the floor)" or "",
+			head and "there" or "MISSING", neck and "joined" or "MISSING", tostring(hum.RequiresNeck), hum.HipHeight, tostring(hrp.Size))
+	end
+	hum.Died:Once(function()
+		if os.clock() - born < 8 then
+			Characters.broken[name] = true
+			warn("[Characters] " .. name .. " died " .. string.format("%.1f", os.clock() - born) .. " s after going on: " .. why())
+		end
+	end)
 	return true
 end
 

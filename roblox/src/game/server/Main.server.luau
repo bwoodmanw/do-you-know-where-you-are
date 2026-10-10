@@ -343,7 +343,7 @@ local function modelFor(plr, s)
 		or (Config.TRY_MODEL_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId)
 	local try = tester and Config.STUDIO_TRY_MODEL and Config.STUDIO_TRY_MODEL[s.name]
 	if try and Characters.has(try) then
-		local problem = Characters.problem(try)
+		local problem = Characters.broken[try] and "it died as soon as it went on (see the [Characters] line above)" or Characters.problem(try)
 		if not problem then
 			return try
 		end
