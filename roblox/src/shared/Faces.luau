@@ -39,15 +39,27 @@ function Faces.add(model, name)
 	if head:FindFirstChild("ToonFace") then
 		return
 	end
-	local box, size = model:GetBoundingBox()
 	local up = root.CFrame.UpVector
 	local forward = root.CFrame.LookVector
 	local right = root.CFrame.RightVector
-	local h = size.Y
-	-- the face's middle, in the world: down from the top of the model
-	local topCenter = box.Position + up * (size.Y / 2)
-	local headMid = topCenter + right * (head.Position - topCenter):Dot(right)
-	local center = headMid - up * (f.top * h) + right * ((f.left or 0) * h)
+	-- the character's height from its VISIBLE parts only: the whole model's box
+	-- also holds Avatar Setup's invisible helpers, which reached far above the
+	-- head and put Echo's face 1.3 studs over it (10 Oct)
+	local topY, bottomY = -math.huge, math.huge
+	for _, p in ipairs(model:GetDescendants()) do
+		if p:IsA("BasePart") and p ~= root and p.Transparency < 1 then
+			local reach = math.abs(p.CFrame.RightVector:Dot(up)) * p.Size.X / 2
+				+ math.abs(p.CFrame.UpVector:Dot(up)) * p.Size.Y / 2
+				+ math.abs(p.CFrame.LookVector:Dot(up)) * p.Size.Z / 2
+			local y = p.Position:Dot(up)
+			topY = math.max(topY, y + reach)
+			bottomY = math.min(bottomY, y - reach)
+		end
+	end
+	local h = topY - bottomY
+	-- the face's middle, in the world: down from the top of the character,
+	-- across the middle of the head
+	local center = head.Position + up * (topY - head.Position:Dot(up)) - up * (f.top * h) + right * ((f.left or 0) * h)
 	-- the side of the head that faces forward
 	local best, bestDot = nil, -2
 	for _, normal in ipairs(Enum.NormalId:GetEnumItems()) do
