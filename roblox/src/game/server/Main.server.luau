@@ -330,18 +330,13 @@ local function ownsSkin(plr, skin)
 	return passCache[key]
 end
 local triedWarned = {} -- a broken test model is reported once
-local function modelFor(plr, s)
-	local data = Profile.get(plr)
-	local skinId = data and data.skins and data.skins[s.id]
-	for _, skin in ipairs(Config.SKINS or {}) do
-		if skin.id == skinId and skin.skill == s.id and Characters.has(skin.model) and ownsSkin(plr, skin) then
-			return skin.model
-		end
-	end
-	-- Studio (and the owner live): a remade test model for this character, if it is imported
+-- Studio (and the owner live): a remade test model for a character or a
+-- skin (Config.STUDIO_TRY_MODEL, by model name), if it is imported and sound;
+-- otherwise the model itself
+local function tryModel(plr, name)
 	local tester = RunService:IsStudio()
 		or (Config.TRY_MODEL_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId)
-	local try = tester and Config.STUDIO_TRY_MODEL and Config.STUDIO_TRY_MODEL[s.name]
+	local try = tester and Config.STUDIO_TRY_MODEL and Config.STUDIO_TRY_MODEL[name]
 	if try and Characters.has(try) then
 		local problem = Characters.broken[try] and "it died as soon as it went on (see the [Characters] line above)" or Characters.problem(try)
 		if not problem then
@@ -349,10 +344,20 @@ local function modelFor(plr, s)
 		end
 		if not triedWarned[try] then
 			triedWarned[try] = true
-			warn("Test model " .. try .. " not used - " .. problem .. ". Playing the old " .. s.name .. ".")
+			warn("Test model " .. try .. " not used - " .. problem .. ". Playing the old " .. name .. ".")
 		end
 	end
-	return s.name
+	return name
+end
+local function modelFor(plr, s)
+	local data = Profile.get(plr)
+	local skinId = data and data.skins and data.skins[s.id]
+	for _, skin in ipairs(Config.SKINS or {}) do
+		if skin.id == skinId and skin.skill == s.id and Characters.has(skin.model) and ownsSkin(plr, skin) then
+			return tryModel(plr, skin.model)
+		end
+	end
+	return tryModel(plr, s.name)
 end
 
 local function hrpOf(plr)

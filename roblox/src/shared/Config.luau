@@ -43,7 +43,13 @@ Config.UI_TEXT = { title = 36, body = 26 }
 -- plain character uses this model instead when it is in ServerStorage/Characters,
 -- e.g. { Tinker = "TinkerToon" }. With TRY_MODEL_FOR_OWNER the owner also
 -- plays it in the live game; other players never see it.
-Config.STUDIO_TRY_MODEL = { Tinker = "TinkerToon" }
+-- 10 Oct: every remade toon (TOON_WORKFLOW.md), by the model it replaces; one
+-- that is not imported yet simply leaves the old model playing
+Config.STUDIO_TRY_MODEL = {
+	Tinker = "TinkerToon", Brainy = "BrainyToon", Shadow = "ShadowToon", Muscle = "MuscleToon",
+	Glow = "GlowToon", Patch = "PatchToon", Echo = "EchoToon", Bramble = "BrambleToon",
+	PatchHalloween = "PatchHalloweenToon",
+}
 Config.TRY_MODEL_FOR_OWNER = true
 -- the look of each building: base light (ambient), a color tint, and for
 -- everyone richer colors, a soft glow on lights and a light haze. A Spooky
@@ -93,7 +99,7 @@ Config.ANIM = {
 	},
 	-- the kids (their skins use the same pack unless listed under model)
 	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy" },
-	model = { MuscleMummy = "zombie", TinkerToon = "robot" },
+	model = { MuscleMummy = "zombie" }, -- (a "...Toon" test model walks like its character)
 	-- models saved in a T-pose whose pack idle swings the arms behind the back
 	-- (Echo, 9 Oct): they keep the pack's walk and run but stand in Roblox's
 	-- plain idle

@@ -183,6 +183,11 @@ local function packFor(name)
 	if A.model[name] then
 		return A.packs[A.model[name]]
 	end
+	-- a remade test model ("BrainyToon") walks like its character
+	name = (string.gsub(name, "Toon$", ""))
+	if A.model[name] then
+		return A.packs[A.model[name]]
+	end
 	for _, s in ipairs(Config.SKILLS) do
 		if s.name == name then
 			return A.packs[A.skill[s.id] or ""]
@@ -283,13 +288,14 @@ function Characters.apply(plr, name)
 		local A = require(game:GetService("ReplicatedStorage").Shared.Config).ANIM
 		-- the skill this model belongs to (a skin's too), for the plain run
 		local skillId
+		local base = string.gsub(name, "Toon$", "") -- a remade test model: its character's
 		for _, s in ipairs(Config.SKILLS) do
-			if s.name == name then
+			if s.name == base then
 				skillId = s.id
 			end
 		end
 		for _, skin in ipairs(Config.SKINS or {}) do
-			if skin.model == name then
+			if skin.model == base then
 				skillId = skin.skill
 			end
 		end
