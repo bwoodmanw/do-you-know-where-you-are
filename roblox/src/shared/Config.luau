@@ -69,7 +69,7 @@ Config.PROPELLER_LIFT = 0
 -- crisp toon faces from the approved pictures (Faces.luau, tools/make_face.py):
 -- id = the uploaded art/faces/<name>-face.png (0 = not uploaded yet). The
 -- toon and the name it gets at its switch-over share the entry.
-local echoFace = { id = 0, top = 0.1641, left = 0, size = 0.5363 } -- art/faces/echo-face.png
+local echoFace = { id = 135489459825461, top = 0.1641, left = 0, size = 0.5363 } -- art/faces/echo-face.png
 Config.FACES = { EchoToon = echoFace, Echo = echoFace }
 -- if a face lands mirrored left-right or upside-down on the head, flip these
 Config.FACE_FLIP_U = false
