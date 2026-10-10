@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 10 Oct 2026)
 
-**Rounds 57 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
+**Rounds 58 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `aquarium`, the Aquarium's
 Main Hall); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,13 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 58 (10 Oct) - Characters screen: Skins and Skills windows; owner buttons
+- [ ] Lobby -> Characters: the character in 3D, the portraits, the level bar, and two big buttons: "⚡ Skills" (orange with "n upgrades to choose!" when some are waiting, else "Level n") and "✨ Skins" ("Wearing: ...") - no ladder or skin row on the screen itself (photo)
+- [ ] Skills: a window over the screen titled "⚡ <name>'s skills · Level n", the whole ladder (scrolls to Lv 20), the reset buttons at the bottom (FREE while the free reset is unused); X closes it back to the screen (photo)
+- [ ] Skins: picture tiles - Plain (the portrait) and each skin with its Game Pass picture (Muscle Mummy its corn icon), name, and "✅ Wearing" / "Tap to wear" / "Buy" with a Robux coin / "100 candy corns"; tapping one you own wears it (the tile turns green, the 3D model changes); X closes (photo)
+- [ ] Controller: B closes the open window first, then the screen
+- [ ] Owner only: 📊 Balance and 🎁 Gift sit in a row just above the Candy Corn banner, not on top of it (photo)
 
 ## Round 57 (10 Oct) - ladder fix C: one free reset per character
 - [ ] Lobby -> Characters, a character with picks: the reset button is green and says "Reset upgrades: FREE"; the Robux reset button is hidden

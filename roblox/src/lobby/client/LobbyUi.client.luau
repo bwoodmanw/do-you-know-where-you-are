@@ -548,7 +548,7 @@ task.spawn(function()
 	button(panel, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, 10, 1, -48), ZIndex = 31 }, function()
 		panel.Visible = false
 	end)
-	button(gui, "\u{1F4CA} Balance", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0, 372, 1, -52), ZIndex = 5 }, function()
+	button(gui, "\u{1F4CA} Balance", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0.5, -230, 1, -96), ZIndex = 5 }, function()
 		panel.Visible = not panel.Visible
 		if panel.Visible then
 			fill()
@@ -574,7 +574,7 @@ task.spawn(function()
 	bar("\u{1F440} Test", 172, "test")
 	bar("\u{1F5D1} Clear", 328, "clear")
 	bar("Done", 484, "done")
-	local _windowsBtn = button(gui, "\u{1FA9F} Windows", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0, 512, 1, -52), ZIndex = 5, Visible = Config.WINDOW_SETUP == true }, function()
+	local _windowsBtn = button(gui, "\u{1FA9F} Windows", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0.5, -90, 1, -96), ZIndex = 5, Visible = Config.WINDOW_SETUP == true }, function()
 		editingMode = not editingMode
 		setup.Visible = editingMode
 		if editingMode then
@@ -1286,7 +1286,7 @@ do
 
 	-- the owner's gift panel: candy corns or points for anyone in this Lobby
 	if game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId and e then
-		local giftBtn = button(gui, "\u{1F381} Gift", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 652, 1, -14), Size = UDim2.fromOffset(96, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
+		local giftBtn = button(gui, "\u{1F381} Gift", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0.5, 50, 1, -58), Size = UDim2.fromOffset(96, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
 		local panel = frame(gui, { Size = UDim2.fromOffset(560, 420), Position = UDim2.new(0.5, -280, 0.5, -210), Visible = false, ZIndex = 10 })
 		corner(panel, 18)
 		label(panel, { Size = UDim2.new(1, -20, 0, 36), Position = UDim2.fromOffset(10, 8), Text = "\u{1F381} Gifts (only you see this)", TextColor3 = PUMP, ZIndex = 11 })
@@ -1543,17 +1543,33 @@ local xpBack = frame(right, { Size = UDim2.new(1, -40, 0, 14), Position = UDim2.
 corner(xpBack, 7)
 local xpFill = frame(xpBack, { Size = UDim2.fromScale(0, 1), BackgroundColor3 = Color3.fromRGB(123, 227, 107), BackgroundTransparency = 0, ZIndex = 12 })
 corner(xpFill, 7)
+-- the Skills and Skins windows (Brent, 10 Oct): the Characters screen keeps
+-- the character, its level and two buttons; each opens its window over the
+-- screen (X, or B on a controller, closes it). Everything inside sits 20
+-- above the screen so it draws on top.
+local function charWindow(name)
+	local w = frame(chars, { Name = name, Size = UDim2.fromScale(1, 1), BackgroundTransparency = 0.02, Visible = false, ZIndex = 20 })
+	corner(w, 18)
+	local title = label(w, { Size = UDim2.new(1, -150, 0, 40), Position = UDim2.fromOffset(75, 12), Text = "", TextColor3 = PUMP, ZIndex = 21 })
+	button(w, "X", { Size = UDim2.fromOffset(48, 40), Position = UDim2.new(1, -64, 0, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 21 }, function()
+		w.Visible = false
+	end)
+	Gamepad.panel(w)
+	return w, title
+end
+local skillsWin, skillsTitle = charWindow("SkillsWindow")
+local skinsWin, skinsTitle = charWindow("SkinsWindow")
 local ladder = {}
 local ladderScroll = Instance.new("ScrollingFrame")
-ladderScroll.Size = UDim2.fromOffset(640, 204)
-ladderScroll.Position = UDim2.fromOffset(0, 186)
+ladderScroll.Size = UDim2.fromOffset(640, 388)
+ladderScroll.Position = UDim2.fromOffset(130, 64)
 ladderScroll.BackgroundTransparency = 1
 ladderScroll.BorderSizePixel = 0
 ladderScroll.ScrollBarThickness = 8
 ladderScroll.ScrollBarImageColor3 = Color3.fromRGB(255, 138, 31)
 ladderScroll.CanvasSize = UDim2.fromOffset(0, (Progress.MAX_LEVEL - 1) * 68 + 8)
 ladderScroll.ZIndex = 11
-ladderScroll.Parent = right
+ladderScroll.Parent = skillsWin
 for level = 2, Progress.MAX_LEVEL do
 	-- 4 down from the top: the buttons' cream edge is drawn just outside them,
 	-- and the list cut it off on the first row (level 2)
@@ -1572,6 +1588,13 @@ for level = 2, Progress.MAX_LEVEL do
 		end)
 	end
 end
+-- the ladder was built at the screen's layer: lift it into its window
+for _, o in ipairs(ladderScroll:GetDescendants()) do
+	if o:IsA("GuiObject") then
+		o.ZIndex += 20
+	end
+end
+ladderScroll.ZIndex += 20
 -- arrows to step through the characters
 local function stepChar(d)
 	local i = 1
@@ -1590,14 +1613,24 @@ button(chars, "\u{25B6}", { Size = UDim2.fromOffset(56, 36), Position = UDim2.fr
 	stepChar(1)
 end)
 -- choices are for keeps; a reset clears this character's whole ladder
-button(right, "\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Name = "ResetPoints", Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(92, 448), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 11 }, function()
+button(skillsWin, "\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}", { Name = "ResetPoints", Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(222, 470), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 31 }, function()
 	remotes.ResetLadder:FireServer(selected, "points")
 end)
 -- skins: the plain character, then each skin for it (Game Passes)
-local skinRow = frame(right, { Size = UDim2.new(1, -20, 0, 46), Position = UDim2.fromOffset(10, 396), BackgroundTransparency = 1, ZIndex = 11 })
-local skinOwned = {}
+-- the Skins window: a picture tile for the plain character and each skin
+-- (the Game Pass's own picture, fetched once; a corn skin's icon)
+local skinGrid = frame(skinsWin, { Size = UDim2.fromOffset(840, 450), Position = UDim2.fromOffset(30, 70), BackgroundTransparency = 1, ZIndex = 21 })
+do
+	local g = Instance.new("UIGridLayout")
+	g.CellSize = UDim2.fromOffset(156, 212)
+	g.CellPadding = UDim2.fromOffset(14, 14)
+	g.HorizontalAlignment = Enum.HorizontalAlignment.Center
+	g.SortOrder = Enum.SortOrder.LayoutOrder
+	g.Parent = skinGrid
+end
+local skinOwned, skinIcons = {}, {}
 local function paintSkins()
-	for _, c in ipairs(skinRow:GetChildren()) do
+	for _, c in ipairs(skinGrid:GetChildren()) do
 		if c:IsA("GuiObject") then
 			c:Destroy()
 		end
@@ -1608,26 +1641,33 @@ local function paintSkins()
 			table.insert(mine, skin)
 		end
 	end
-	skinRow.Visible = #mine > 0
-	if #mine == 0 then
-		return
-	end
 	local wearing = profile.skins and profile.skins[selected]
-	label(skinRow, { Size = UDim2.fromOffset(80, 40), Text = "\u{2728} Skins", TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
-	local x = 86
-	local function chip(text, on, onClick)
-		local b = button(skinRow, text, { Size = UDim2.fromOffset(170, 40), Position = UDim2.fromOffset(x, 0), BackgroundColor3 = on and Color3.fromRGB(47, 107, 58) or PLUM, ZIndex = 12 }, onClick)
-		x += 176
-		return b
+	local n = 0
+	local function tile(image, name, status, on, onClick)
+		n += 1
+		local t = button(skinGrid, "", { LayoutOrder = n, BackgroundColor3 = on and Color3.fromRGB(47, 107, 58) or PLUM, ZIndex = 22 }, onClick)
+		local pic = Instance.new("ImageLabel")
+		pic.BackgroundTransparency = 1
+		pic.Size = UDim2.fromOffset(136, 136)
+		pic.Position = UDim2.fromOffset(10, 8)
+		pic.ScaleType = Enum.ScaleType.Fit
+		pic.Image = (image or 0) > 0 and ("rbxassetid://" .. image) or ""
+		pic.ZIndex = 23
+		pic.Parent = t
+		corner(pic, 68)
+		label(t, { Size = UDim2.new(1, -10, 0, 38), Position = UDim2.fromOffset(5, 146), Text = name, TextWrapped = true, ZIndex = 23 })
+		label(t, { Size = UDim2.new(1, -10, 0, 22), Position = UDim2.fromOffset(5, 184), Text = status, TextColor3 = on and CREAM or Color3.fromRGB(185, 168, 207), ZIndex = 23 })
+		return t
 	end
-	chip((not wearing and "\u{2705} " or "") .. "Plain", not wearing, function()
+	tile(Config.PORTRAITS[selected], "Plain", not wearing and "\u{2705} Wearing" or "Tap to wear", not wearing, function()
 		remotes.EquipSkin:FireServer(selected, "")
 	end)
 	for _, skin in ipairs(mine) do
 		local owned = skinOwned[skin.id] or (skin.corn and profile.skinsEarned and profile.skinsEarned[skin.id])
 		local found = profile.stats and ((profile.stats.corn or 0) + (profile.stats.cornGift or 0) - (profile.stats.cornSpent or 0)) or 0
-		local tag = owned and "" or skin.corn and (" (" .. skin.corn .. " corns)") or ""
-		local c = chip((wearing == skin.id and "\u{2705} " or "") .. skin.name .. tag, wearing == skin.id, function()
+		local status = wearing == skin.id and "\u{2705} Wearing" or owned and "Tap to wear" or skin.corn and (skin.corn .. " candy corns") or "Buy"
+		local image = skin.icon or (skin.pass and skinIcons[skin.pass])
+		local t = tile(image, skin.name, status, wearing == skin.id, function()
 			if owned then
 				remotes.EquipSkin:FireServer(selected, skin.id)
 			elseif skin.corn then
@@ -1637,7 +1677,21 @@ local function paintSkins()
 			end
 		end)
 		if not owned and not skin.corn then
-			robuxIcon(c, 22) -- for sale for Robux
+			-- for sale for Robux: the coin next to "Buy"
+			local coin = robuxIcon(t, 20)
+			coin.Position = UDim2.new(0.5, 22, 1, -27)
+		end
+		if not image and skin.pass and skinIcons[skin.pass] == nil then
+			skinIcons[skin.pass] = false
+			task.spawn(function()
+				local ok, info = pcall(function()
+					return MarketplaceService:GetProductInfo(skin.pass, Enum.InfoType.GamePass)
+				end)
+				if ok and info and (info.IconImageAssetId or 0) > 0 then
+					skinIcons[skin.pass] = info.IconImageAssetId
+					paintSkins()
+				end
+			end)
 		end
 	end
 end
@@ -1659,7 +1713,7 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(_, _, bought)
 		task.delay(1, refreshOwned)
 	end
 end)
-local resetRobux = button(right, "\u{1F504} Reset upgrades: Robux", { Name = "ResetRobux", Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(364, 448), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 11, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
+local resetRobux = button(skillsWin, "\u{1F504} Reset upgrades: Robux", { Name = "ResetRobux", Size = UDim2.fromOffset(265, 34), Position = UDim2.fromOffset(494, 470), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 31, Visible = (Config.ROBUX_PRODUCTS.reset or 0) > 0 }, function()
 	remotes.ResetLadder:FireServer(selected, "robux")
 	MarketplaceService:PromptProductPurchase(player, Config.ROBUX_PRODUCTS.reset)
 end)
@@ -1671,6 +1725,15 @@ task.spawn(function()
 		resetRobux.Text = "\u{1F504} Reset upgrades: " .. info.PriceInRobux
 		robuxIcon(resetRobux, 22)
 	end
+end)
+local skillsTile = button(right, "", { Size = UDim2.fromOffset(300, 130), Position = UDim2.fromOffset(16, 214), BackgroundColor3 = PLUM, ZIndex = 12 }, function()
+	skinsWin.Visible = false
+	skillsWin.Visible = true
+end)
+local skinsTile = button(right, "", { Size = UDim2.fromOffset(300, 130), Position = UDim2.fromOffset(330, 214), BackgroundColor3 = PLUM, ZIndex = 12 }, function()
+	skillsWin.Visible = false
+	skinsWin.Visible = true
+	paintSkins()
 end)
 button(chars, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, -80, 1, -46), ZIndex = 11 }, function()
 	chars.Visible = false
@@ -1783,7 +1846,7 @@ repaintChars = function()
 		local tag = Config.FREE_RESET
 		local used = tag and profile.freeResets and profile.freeResets[tag] and profile.freeResets[tag][selected]
 		local free = tag ~= nil and not used and next(picks) ~= nil
-		local rp, rr = right:FindFirstChild("ResetPoints"), right:FindFirstChild("ResetRobux")
+		local rp, rr = skillsWin:FindFirstChild("ResetPoints"), skillsWin:FindFirstChild("ResetRobux")
 		if rp then
 			rp.Text = free and "\u{1F504} Reset upgrades: FREE" or ("\u{1F504} Reset upgrades: " .. Config.RESET_POINTS .. " \u{2B50}")
 			rp.BackgroundColor3 = free and Color3.fromRGB(46, 160, 90) or Color3.fromRGB(150, 60, 70)
@@ -1791,6 +1854,26 @@ repaintChars = function()
 		if rr then
 			rr.Visible = not free and (Config.ROBUX_PRODUCTS.reset or 0) > 0
 		end
+		-- the two buttons: upgrades waiting to be chosen, the skin worn
+		local waiting = 0
+		for level = 2, lvl do
+			local options = Progress.choices(selected, level)
+			local p = picks[tostring(level)]
+			if options and p ~= options[1].id and p ~= options[2].id then
+				waiting += 1
+			end
+		end
+		skillsTile.Text = "\u{26A1} Skills\n" .. (waiting > 0 and (waiting .. (waiting == 1 and " upgrade" or " upgrades") .. " to choose!") or ("Level " .. lvl))
+		skillsTile.BackgroundColor3 = waiting > 0 and Color3.fromRGB(190, 95, 25) or PLUM
+		local wornName = "Plain"
+		for _, skin in ipairs(Config.SKINS or {}) do
+			if profile.skins and skin.id == profile.skins[selected] then
+				wornName = skin.name
+			end
+		end
+		skinsTile.Text = "\u{2728} Skins\nWearing: " .. wornName
+		skillsTitle.Text = "\u{26A1} " .. sk.name .. "'s skills  \u{00B7}  Level " .. lvl
+		skinsTitle.Text = "\u{2728} " .. sk.name .. "'s skins"
 	end
 	for level = 2, Progress.MAX_LEVEL do
 		local options = Progress.choices(selected, level)
@@ -1811,6 +1894,7 @@ repaintChars = function()
 	paintSkins()
 end
 charsBtn.Activated:Connect(function()
+	skillsWin.Visible, skinsWin.Visible = false, false
 	chars.Visible = true
 	repaintChars()
 	task.spawn(refreshOwned)
