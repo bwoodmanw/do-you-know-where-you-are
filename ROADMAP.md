@@ -223,8 +223,8 @@ only when everyone presses Play.
    fixes after a week of data.
 5. Thanksgiving event (after 1 Nov; event page 7+ days ahead), then
    Christmas: a secret seasonal floor and / or a community-wide goal.
-   Brent's ideas below ("Seasonal events and pets"); Claude writes 3-4
-   options with a recommendation, Brent picks.
+   Options, yearly calendar and recommendations: `SEASONAL_EVENTS.md`
+   (10 Oct) - Brent picks (Thanksgiving page due 26 Oct).
 6. Community group bonus (once Brent makes the group).
 7. Later: B8 analytics, subscriptions (parked).
 

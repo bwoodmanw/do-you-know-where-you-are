@@ -30,11 +30,11 @@ Picture: `art/roblox-store/events/event-halloween.png` (1920 x 1080).
 
 ## 2. Thanksgiving and 3. Christmas
 
-Added once Brent picks their designs (November). **Submit for Featuring
-only works when the event is created at least 7 days before it starts** -
-create the Thanksgiving page by mid-November (a week before its start) and
-the Christmas page a week before its start. Their pictures will be made
-the same way.
+Ideas, dates and decisions: `SEASONAL_EVENTS.md` (10 Oct). Added here
+once Brent picks. **Submit for Featuring only works when the event is
+created at least 7 days before it starts** - Thanksgiving (starts 2 Nov
+2026 if it follows Halloween) needs its page by **26 Oct 2026**; Christmas
+(starts 1 Dec) by **24 Nov 2026**. Their pictures will be made the same way.
 
 ## Click by click (Creator Hub; menus move between versions - send a photo if a screen differs)
 
