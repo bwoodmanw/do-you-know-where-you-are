@@ -321,6 +321,10 @@ function Characters.apply(plr, name)
 	m.Parent = workspace
 	plr.Character = m
 	old:Destroy()
+	if game:GetService("RunService"):IsStudio() then
+		-- Studio's Output says which model each player now wears (testing toons)
+		print("[Characters] " .. plr.Name .. " is now wearing the model ServerStorage/Characters/" .. t.Name)
+	end
 	-- a character that dies within seconds of going on is broken: say why in
 	-- F9 (Server) and remember it, so a test model is not used again
 	local born, startY = os.clock(), hrp.Position.Y
