@@ -131,6 +131,9 @@ local function tileIcon(b, getId)
 		pic.Visible = id > 0
 		pic.Image = id > 0 and ("rbxassetid://" .. id) or ""
 		b.TextYAlignment = id > 0 and Enum.TextYAlignment.Bottom or Enum.TextYAlignment.Center
+		-- under a picture the words stay on one line (shrinking a little if
+		-- long) instead of wrapping up into the picture
+		b.TextWrapped = id <= 0
 		local cap = b:FindFirstChildOfClass("UITextSizeConstraint")
 		if cap then
 			cap.MaxTextSize = id > 0 and 18 or 24
@@ -406,7 +409,7 @@ local function paintCode()
 		end
 		local free = RoundState:GetAttribute("FreeClues") or 0
 		local left = tostring(RoundState:GetAttribute("CluesLeft") or 0)
-		clueBtn.Text = free > 0 and ("\u{1F4A1} Clue FREE (" .. left .. ")") or ("\u{1F4A1} Clue " .. cost .. "\u{2B50} (" .. left .. ")")
+		clueBtn.Text = free > 0 and ("\u{1F4A1} Clue FREE (" .. left .. ")") or ("\u{1F4A1} Clue " .. cost .. " (" .. left .. ")")
 	end
 end
 RoundState.AttributeChanged:Connect(paintCode)
