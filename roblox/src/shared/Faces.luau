@@ -17,11 +17,26 @@ local Config = require(script.Parent.Config)
 
 local Faces = {}
 
+local function say(text)
+	if game:GetService("RunService"):IsStudio() then
+		print("[Faces] " .. text)
+	end
+end
+
 function Faces.add(model, name)
 	local f = Config.FACES and Config.FACES[name]
+	if not f or (f.id or 0) <= 0 then
+		return -- this model has no crisp face (yet)
+	end
 	local head = model:FindFirstChild("Head")
 	local root = model:FindFirstChild("HumanoidRootPart")
-	if not f or (f.id or 0) <= 0 or not head or not head:IsA("BasePart") or not root or head:FindFirstChild("ToonFace") then
+	if not head or not head:IsA("BasePart") then
+		return say(name .. ": no part named Head (" .. (head and head.ClassName or "none") .. ")")
+	end
+	if not root then
+		return say(name .. ": no HumanoidRootPart")
+	end
+	if head:FindFirstChild("ToonFace") then
 		return
 	end
 	local box, size = model:GetBoundingBox()
@@ -65,8 +80,17 @@ function Faces.add(model, name)
 	t.Parent = head
 	if game:GetService("RunService"):IsStudio() then
 		-- for checking the placement while the faces are new (Output)
-		print(string.format("[Faces] %s: face on the head's %s side, middle at %.2f across / %.2f down (head %.2f x %.2f studs), picture square %.2f studs",
-			name, best.Name, u, v, halfAcross * 2, halfUp * 2, tile))
+		print(string.format("[Faces] %s: face on the head's %s side, middle at %.2f across / %.2f down (head %.2f x %.2f studs), picture square %.2f studs, offsets %.2f / %.2f; head is a %s%s",
+			name, best.Name, u, v, halfAcross * 2, halfUp * 2, tile, t.OffsetStudsU, t.OffsetStudsV, head.ClassName,
+			head:FindFirstChildOfClass("SurfaceAppearance") and " with a SurfaceAppearance" or ""))
+	end
+end
+
+-- Faces.add with any error said in Output (the callers used to hide it)
+function Faces.try(model, name)
+	local ok, err = pcall(Faces.add, model, name)
+	if not ok then
+		warn("[Faces] " .. tostring(name) .. " failed: " .. tostring(err))
 	end
 end
 

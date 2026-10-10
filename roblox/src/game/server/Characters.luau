@@ -293,7 +293,7 @@ function Characters.apply(plr, name)
 	end
 	fitHeight(m, KID_HEIGHT)
 	-- a crisp face from the approved picture (Config.FACES)
-	pcall(require(game:GetService("ReplicatedStorage").Shared.Faces).add, m, name)
+	require(game:GetService("ReplicatedStorage").Shared.Faces).try(m, name)
 	-- Brainy's beanie propeller, built on (Config.PROPELLER)
 	if Config.PROPELLER and Config.PROPELLER[name] then
 		pcall(require(game:GetService("ReplicatedStorage").Shared.Propeller).add, m, Config.PROPELLER_LIFT)
