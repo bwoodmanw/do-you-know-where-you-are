@@ -62,13 +62,16 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 
 ## Workflow 2 - the 3D models
 
+For the seven core kid characters only, use `CORE_TOON_MODEL_WORKFLOW.md`.
+The full table below also includes Tinker and the Halloween Nurse Patch skin.
+
 Tinker's row remakes him from both pictures (it replaces the Meshy
 retexture). Run it for one character first (Tinker), check it in the game,
 then the rest. The rows describe the approved pictures (10 Oct): Shadow's
 plain black shoes, Muscle's plain red high-tops, Echo's plain joggers, and
 Patch's new look (blonde, blue eyes, light-blue jeans). The Halloween Nurse
-Patch row needs its two pictures from "Patch's new look" below first - skip
-it until Claude has checked them.
+Patch row uses the two pictures checked on 10 Oct (ready).
+
 
 ```
 create new workflow to create 3D models based on the [Model Standard], [Reference] and [Model]. For each model, attach both [Reference] pictures (the front picture and the back picture), then save the model to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\[folder]\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\models\brainy-toon.glb.
@@ -83,7 +86,7 @@ Table for each [Model], [Reference] and [file name] combination is below:
 [Muscle, a strong, sturdy boy: spiky brown hair, yellow headband and wristbands, red T-shirt, black shorts, white socks, plain solid red high-top sneakers with white soles and white laces and no logo.] | [model-input\muscle\front-toon.png, model-input\muscle\back-toon.png] | [muscle-toon.glb]
 [Glow, a girl with a light: curly hair in a bun, green headband with a short antenna and a round yellow bulb, solid lime-green raincoat, round yellow chest lamp, dark olive pants, green rain boots.] | [model-input\glow\front-toon.png, model-input\glow\back-toon.png] | [glow-toon.glb]
 [Patch, a caring girl: long straight golden-blonde ponytail with a pink scrunchie, blue eyes, small forehead bandage, pink vest over a cream top, pink shoulder bag with a white heart, light-blue jeans, pink-and-cream sneakers.] | [model-input\patch\front-toon.png, model-input\patch\back-toon.png] | [patch-toon.glb]
-[Halloween Nurse Patch (a skin): the same blonde Patch in a dark gray cardigan over a black nurse top with a small orange pumpkin badge, a penlight on a cord, an orange jack-o'-lantern shoulder bag on a brown strap, an orange scrunchie, orange cargo jogger pants, white sneakers with small orange pumpkin dots.] | [model-input\halloween-nurse-patch\front-toon.png, model-input\halloween-nurse-patch\back-toon.png] | [halloween-nurse-patch-toon.glb]
+[Halloween Nurse Patch (a skin): the same blonde Patch in a dark gray cardigan over a black nurse top with a small orange pumpkin badge, a penlight on a cord, an orange jack-o'-lantern shoulder bag on a brown strap, an orange scrunchie, plain orange jogger pants with no pockets, white sneakers with small orange pumpkin dots.] | [model-input\halloween-nurse-patch\front-toon.png, model-input\halloween-nurse-patch\back-toon.png] | [halloween-nurse-patch-toon.glb]
 [Echo, a girl with headphones: curly hair in a bun, brass goggles on her head, purple headphones around her neck, yellow jacket over a plain purple hoodie, small black backpack, plain purple jogger pants, purple-and-yellow sneakers.] | [model-input\echo\front-toon.png, model-input\echo\back-toon.png] | [echo-toon.glb]
 [Bramble, a nature boy: crown of green leaves with a white flower, green poncho with a zigzag leaf edge, brown strap bag with acorns, brown cargo shorts, green socks, brown boots.] | [model-input\bramble\front-toon.png, model-input\bramble\back-toon.png] | [bramble-toon.glb]
 ```
@@ -103,6 +106,44 @@ Table for each [Model], [Reference] and [file name] combination is below:
 5. Claude adds it to `Config.STUDIO_TRY_MODEL` so you play it (Studio and
    live, only you); compare photos; if it wins, Claude switches it over
    (both places: the Lobby's Characters screen has its own copy).
+
+## After workflow 2 - the order of work
+
+1. **Claude checks every .glb** (renders front, back and side with
+   `tools/preview_glb.py`): the back matches the back picture, skin colored
+   arms, A-pose, nothing sticking out, triangles under 8,000, no logos.
+   Any that fail get a re-run of just that row.
+2. **Brent imports them into Party House** (Step 3 above), named
+   `TinkerToon`, `BrainyToon`, `ShadowToon`, `MuscleToon`, `GlowToon`,
+   `PatchToon`, `EchoToon`, `BrambleToon`, `PatchHalloweenToon`.
+3. **Claude switches all of them on for Brent only** (`STUDIO_TRY_MODEL`):
+   Studio and live, everyone else keeps the old ones.
+4. **Brent plays each one** (Studio, then live): photos front / back /
+   running, F9 Server lines (a broken model says `[Characters] ... died`
+   and the old one plays instead). Claude fixes walk / hip height / face
+   problems; a bad model gets its row re-run.
+5. **Switch over, one character at a time** (Party House):
+   - make a folder **ServerStorage -> CharactersOld** and drag the old model
+     (e.g. `Patch`) into it - out of `Characters`, so it is never picked by
+     mistake, but kept in case we go back;
+   - rename `PatchToon` to `Patch` (and `PatchHalloweenToon` to
+     `PatchHalloween`);
+   - right-click it -> **Save to Roblox** -> copy the new asset id to Claude.
+6. **Claude updates the code**: `Config.CHARACTER_ASSETS` (the Lobby's 3D
+   characters load from these ids), clears `STUDIO_TRY_MODEL`, tunes the
+   Lobby preview size (`Config.PREVIEW_SCALE`) and the plain-idle / plain-run
+   lists (`Config.ANIM`: the T-pose fixes may not be needed for A-pose models).
+7. **Patch's pictures**: upload the new `Patch.png` portrait in each place
+   (Claude gives the clicks) and the new Halloween Nurse Patch picture as the
+   Game Pass image in Creator Hub; Claude puts the two portrait ids in
+   `Config.PORTRAITS` / `Config.PORTRAITS_GAME`.
+8. **Publish both places**, a live test of the Lobby Characters screen (3D
+   models, Skins window) and a game with each character.
+9. **Then the other 7 skins** (Pumpkin Patch Tinker, Ghostly Shadow, Candy
+   Glow, Space Cadet Brainy, Snow Day Muscle, Starlight Echo, Autumn Leaf
+   Bramble) the same way - workflow 1 rows from their skin pictures, then
+   workflow 2 - so skins match the new look. Decision for Brent: all at once
+   or after the 8 characters are live.
 
 ## Patch's new look (Brent, 10 Oct): her pictures to remake
 
@@ -127,6 +168,6 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 [Picture] | [Reference] | [file name]
 [PORTRAIT, square: Patch from the chest up, turned slightly toward the camera, in her pink vest with pockets over a cream long-sleeve top, the brown strap of her shoulder bag across her chest. Behind her a soft glowing pink circle on a deep plum-purple background. In the bottom-right corner a round badge: a cream circle with a pink heart and a small bandage across it. Lay it out exactly like the attached old portrait - same framing, glow and badge - with Patch's new look.] | [model-input\patch\front-toon.png, roblox-store\portraits\Patch.png] | [roblox-store\portraits\Patch.png]
 [SKIN PICTURE, square, for "Halloween Nurse Patch": Patch from the waist up, wearing the Halloween nurse outfit from the attached outfit picture - a dark gray cardigan over a black nurse top with a small orange pumpkin badge, a little penlight on a cord, an orange shoulder bag with a friendly jack-o'-lantern face on a brown strap, an orange scrunchie. Inside a big circle with a glowing orange-to-plum background and a few soft white dots, on a dark background - laid out exactly like the attached old skin picture, with Patch's new look.] | [model-input\patch\front-toon.png, model-input\halloween-nurse-patch\a-pose-front.png, roblox-store\passes\pass-halloween-nurse-patch.png] | [roblox-store\passes\pass-halloween-nurse-patch.png]
-[FRONT view, full body, for the 3D skin: Patch in the Halloween nurse outfit from the attached outfit picture - dark gray cardigan over a black nurse top with a small orange pumpkin badge, a penlight on a cord, an orange jack-o'-lantern shoulder bag on a brown strap, orange cargo jogger pants, white sneakers with small orange pumpkin dots, an orange scrunchie. Every area one flat solid color. Standing in an A-pose: arms straight and angled down and away from the body, hands open, legs slightly apart, feet flat; facing the camera straight on; centered and filling the whole height. Plain flat light-gray background, even soft light, no floor shadow.] | [model-input\patch\front-toon.png, model-input\halloween-nurse-patch\a-pose-front.png] | [model-input\halloween-nurse-patch\front-toon.png]
-[BACK view, full body, for the 3D skin: the same Patch in the same Halloween nurse outfit as the attached front view, seen from directly behind in the same A-pose - the long blonde ponytail with the orange scrunchie, the back of the gray cardigan with the bag strap across it, orange pants, white-and-orange sneakers. Every color the same as the front. Plain flat light-gray background, even soft light.] | [model-input\halloween-nurse-patch\front-toon.png] | [model-input\halloween-nurse-patch\back-toon.png]
+[FRONT view, full body, for the 3D skin: Patch in the Halloween nurse outfit from the attached outfit picture - dark gray cardigan over a black nurse top with a small orange pumpkin badge, a penlight on a cord, an orange jack-o'-lantern shoulder bag on a brown strap, plain orange jogger pants with no pockets, white sneakers with small orange pumpkin dots, an orange scrunchie. Every area one flat solid color. Standing in an A-pose: arms straight and angled down and away from the body, hands open, legs slightly apart, feet flat; facing the camera straight on; centered and filling the whole height. Plain flat light-gray background, even soft light, no floor shadow.] | [model-input\patch\front-toon.png, model-input\halloween-nurse-patch\a-pose-front.png] | [model-input\halloween-nurse-patch\front-toon.png]
+[BACK view, full body, for the 3D skin: the same Patch in the same Halloween nurse outfit as the attached front view, seen from directly behind in the same A-pose - the long blonde ponytail with the orange scrunchie, the back of the gray cardigan with the bag strap across it, plain orange jogger pants, white-and-orange sneakers. Every color the same as the front. Plain flat light-gray background, even soft light.] | [model-input\halloween-nurse-patch\front-toon.png] | [model-input\halloween-nurse-patch\back-toon.png]
 ```
