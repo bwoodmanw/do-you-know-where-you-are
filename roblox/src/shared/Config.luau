@@ -70,7 +70,9 @@ Config.PROPELLER_LIFT = 0
 -- id = the uploaded art/faces/<name>-face.png (0 = not uploaded yet). The
 -- toon and the name it gets at its switch-over share the entry.
 local echoFace = { id = 135489459825461, top = 0.1641, left = 0, size = 0.5363 } -- art/faces/echo-face.png
-Config.FACES = { EchoToon = echoFace, Echo = echoFace }
+-- (only the toon names for now: "Echo" in Party House is still the OLD model
+-- until the switch-over, and the face landed on its head - 10 Oct)
+Config.FACES = { EchoToon = echoFace }
 -- if a face lands mirrored left-right or upside-down on the head, flip these
 Config.FACE_FLIP_U = false
 Config.FACE_FLIP_V = false

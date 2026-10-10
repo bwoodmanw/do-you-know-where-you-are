@@ -172,6 +172,11 @@ function Characters.problem(name)
 			link(d.Part0, d.Part1)
 		elseif d:IsA("WeldConstraint") then
 			link(d.Part0, d.Part1)
+		elseif d:IsA("Constraint") then
+			-- newer Avatar Setup joins the body with AnimationConstraints
+			-- (between attachments), not Motor6Ds (EchoToon, 10 Oct)
+			local a0, a1 = d.Attachment0, d.Attachment1
+			link(a0 and a0.Parent, a1 and a1.Parent)
 		end
 	end
 	local reached, todo = { [hrp] = true }, { hrp }
@@ -276,7 +281,7 @@ function Characters.apply(plr, name)
 	-- called Neck the Humanoid would think it lost its head and die
 	local neck = false
 	for _, d in ipairs(m:GetDescendants()) do
-		if d:IsA("JointInstance") and d.Name == "Neck" then
+		if (d:IsA("JointInstance") or d:IsA("Constraint")) and d.Name == "Neck" then
 			neck = true
 		end
 	end
