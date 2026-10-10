@@ -12,3 +12,4 @@ art/model-input/muscle/a-pose-front.png
 
 # Stable Fast 3D working files (tools/run_core_toon_sf3d.py) - only the final art/models/*.glb are kept
 art/sf3d-core-toon/
+__pycache__/
