@@ -190,6 +190,30 @@ def face_corner(name, V, F, uv, fn, tex, pic):
     if sel.sum() < 20 or score < 0.2:
         print(f"{name}: face corner skipped (face match {score:.2f}, {int(sel.sum())} triangles)")
         return V, F, uv, tex
+    # Also repaint the head's front in the ORIGINAL texture from the picture,
+    # lined up the same way (10 Oct: in Roblox some face triangles still showed
+    # Stable Fast 3D's brownish old face - Avatar Setup can merge the face's
+    # copied corners back; then they fall back here, now with the right
+    # colors). Cheeks and jaw just outside the sharp corner get it too.
+    fg_mask0, _ = outline(pic)
+    TH0, TW0 = tex.shape[:2]
+    uvpx0 = np.stack([uv[:, 0] * TW0, (1 - uv[:, 1]) * TH0], axis=1)
+    near_face = (-fn[:, 2] > 0.2) & (c[:, 1] > hi[1] - 0.29 * h) & (np.abs(c[:, 0] - cx) < 0.16 * h)
+    tex = tex.copy()
+    for f in np.nonzero(near_face)[0]:
+        pts, bc = raster(uvpx0[F[f]], TW0, TH0)
+        if pts is None or len(pts) == 0:
+            continue
+        p3 = bc @ V[F[f]]
+        rx = (hi[0] - p3[:, 0]) * scale
+        ry = (hi[1] - p3[:, 1]) * scale
+        ix = np.clip((bx0 + rx * s + dx).astype(int), 0, pic.shape[1] - 1)
+        iy = np.clip((by0 + ry * s + dy).astype(int), 0, pic.shape[0] - 1)
+        ok = fg_mask0[iy, ix]
+        # blend in toward the sides, so there is no hard edge to the side hair
+        w = min(1.0, (-fn[f, 2] - 0.2) / 0.3)
+        tx, ty = pts[ok, 0], pts[ok, 1]
+        tex[ty, tx] = tex[ty, tx] * (1 - w) + pic[iy[ok], ix[ok]].astype(np.float32) * w
     used = np.unique(F[sel])
     x0b, x1b = V[used, 0].min(), V[used, 0].max()
     y0b, y1b = V[used, 1].min(), V[used, 1].max()
