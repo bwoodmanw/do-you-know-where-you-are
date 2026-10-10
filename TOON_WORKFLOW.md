@@ -71,7 +71,9 @@ work folder without spaces, outside OneDrive - and only the finished model
 comes back to `art/models/`. All settings are in the script (one 1024 x 1024
 texture, about 8,000 triangles), so the workflow only runs it.
 
-**Stable Fast 3D builds from ONE picture - the front.** The back pictures are
+**Then the script paints the model's colors from the pictures** (, added 10 Oct): the front picture onto everything facing forward, the back picture onto everything facing back, the sides color-matched - so the back is no longer guessed (Tinker's smudge is gone) and the colors are not washed out (Shadow's black pants). It keeps the unpainted model as . To repaint one: .
+
+**Stable Fast 3D builds the SHAPE from ONE picture - the front.** The back pictures are
 checked but not used; Claude renders every model from behind, and any back
 that comes out wrong gets fixed (see the end of this section).
 

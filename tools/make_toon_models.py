@@ -101,6 +101,15 @@ def make(slug):
     MODELS.mkdir(parents=True, exist_ok=True)
     final = MODELS / JOBS[slug]
     shutil.copy2(mesh, final)
+    # then its colors straight from the front and back pictures (paint_toon.py):
+    # the back is no longer guessed, the washed-out colors come back
+    raw = final.with_name(final.stem + "-raw.glb")
+    if raw.exists():
+        raw.unlink()  # a fresh model: paint from it, not from an older one
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import paint_toon
+
+    paint_toon.paint(slug)
     return {"slug": slug, "glb": str(final), "triangles": triangles(final),
             "seconds": round(time.time() - started)}
 
