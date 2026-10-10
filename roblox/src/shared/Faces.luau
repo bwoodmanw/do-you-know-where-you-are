@@ -63,6 +63,11 @@ function Faces.add(model, name)
 	t.OffsetStudsU = (Config.FACE_FLIP_U and -1 or 1) * (u - tile / 2)
 	t.OffsetStudsV = (Config.FACE_FLIP_V and -1 or 1) * (v - tile / 2)
 	t.Parent = head
+	if game:GetService("RunService"):IsStudio() then
+		-- for checking the placement while the faces are new (Output)
+		print(string.format("[Faces] %s: face on the head's %s side, middle at %.2f across / %.2f down (head %.2f x %.2f studs), picture square %.2f studs",
+			name, best.Name, u, v, halfAcross * 2, halfUp * 2, tile))
+	end
 end
 
 return Faces
