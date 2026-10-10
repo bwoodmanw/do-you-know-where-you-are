@@ -7,6 +7,24 @@ community-wide goal, and **years factored in** - the events come back every
 year and grow. Pets: later, cosmetic only (ROADMAP). Nothing here is built
 yet: Brent picks, then Claude builds.
 
+## Decided (Brent, 10 Oct)
+
+- **Thanksgiving = D:** golden feathers on every floor + the Turkey Roundup
+  on the Harvest Barn floor, the Gobbler host, the Feast Meter, the Turkey
+  Wrangler badge, **all 4 skins** (Chef Brainy, Gobble Shadow, Pie Baker
+  Patch, Harvest Glow). Pie Crusty / Grandma's Kitchen kept for 2027.
+- **Thanksgiving starts the moment Halloween ends:** 1 Nov 2026, 12:00 AM
+  Eastern, until 1 Dec 12:00 AM Eastern (Christmas starts then). **Event
+  page created by 24 Oct** (7 full days before; 26 Oct would be too late).
+- **Christmas:** Holly and Miles (Deck the Doorway when together), plus
+  **Comet - the hardest character to get** (proposed: escape the Reindeer
+  Stables, a secret floor that opens only after escaping Candy Cane Lane,
+  during the season; Comet then stays unlocked). Host **Sir Shivers**. Maps
+  **Candy Cane Lane** + (possibly) **Reindeer Stables**. Event page by
+  **23 Nov** (starts 1 Dec).
+- **Yearly dates: yes** (build before Thanksgiving). **Yearly badge: no.**
+- Open: decision 6 (paid or earned) and Comet's unlock (above).
+
 ## 1. The yearly calendar (the "years" part)
 
 Today the Halloween hunt has a fixed 2026 end time in `Config.EVENT`. Each
@@ -16,8 +34,8 @@ returns every year with no code change:
 | Season | Runs (US Eastern) | 2026 | Event page by (7+ days ahead, for featuring) |
 |---|---|---|---|
 | Halloween - Candy Corn Hunt | 1 Oct - 1 Nov | running now | done |
-| Thanksgiving | 2 Nov - the Monday after Thanksgiving (4th Thursday of Nov) | 2 - 30 Nov | **26 Oct 2026** |
-| Christmas / winter | 1 Dec - 4 Jan (New Year inside it) | 1 Dec - 4 Jan 2027 | **24 Nov 2026** |
+| Thanksgiving | from the moment Halloween ends (1 Nov 12:00 AM) to 1 Dec 12:00 AM - always covers Thanksgiving (4th Thursday) | 1 - 30 Nov | **24 Oct 2026** |
+| Christmas / winter | 1 Dec - 4 Jan (New Year inside it) | 1 Dec - 4 Jan 2027 | **23 Nov 2026** |
 
 - Each season's shop stays open a week after it ends (as the Candy Shop does).
 - **What returns every year:** the season's map (secret seasonal floor),
@@ -66,7 +84,7 @@ for once - funny and different). **Pie Crusty and Grandma's Kitchen become
 Thanksgiving 2027's new host and map** - that is the "years" part working.
 Time: the 3 skins and the Gobbler go through TOON_WORKFLOW; the barn through
 `make_housemap.py`. Tight but doable by 2 Nov if picked this week; the event
-page (26 Oct) only needs the picture and the text.
+page (24 Oct) only needs the picture and the text.
 
 ## 3. Christmas - pick one (2 new characters, a combined ability, a host, a map, a badge, a community goal)
 
@@ -114,7 +132,7 @@ can be 2027's map).
 1. **Thanksgiving: A, B, C or D?** (recommended D). Then the 3 skins as
    listed, or swap any.
 2. **Thanksgiving start:** 2 Nov, straight after Halloween (recommended:
-   the event page goes up by 26 Oct), or later (mid-November, page a week
+   the event page goes up by 24 Oct), or later (mid-November, page a week
    before).
 3. **Christmas: Option 1 or 2?** (recommended 1), host Sir Shivers or Blizzard
    Bob, map Candy Cane Lane or Reindeer Stables.

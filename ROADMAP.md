@@ -224,7 +224,7 @@ only when everyone presses Play.
 5. Thanksgiving event (after 1 Nov; event page 7+ days ahead), then
    Christmas: a secret seasonal floor and / or a community-wide goal.
    Options, yearly calendar and recommendations: `SEASONAL_EVENTS.md`
-   (10 Oct) - Brent picks (Thanksgiving page due 26 Oct).
+   (10 Oct) - Brent picked 10 Oct (Thanksgiving page due 24 Oct).
 6. Community group bonus (once Brent makes the group).
 7. Later: B8 analytics, subscriptions (parked).
 
@@ -251,7 +251,7 @@ colour-blind code pictures, a tutorial coach, rejoin.
 
 ## Seasonal events and pets (Brent's ideas, 10 Oct)
 1. **Thanksgiving - a turkey hunt** (2 Nov - end of Nov; US Thanksgiving is
-   26 Nov; event page live by 26 Oct): a new character (a chef, maybe one
+   26 Nov; event page live by 24 Oct): a new character (a chef, maybe one
    more), a new host (a turkey gobbler, "Pie Crusty" or similar), new skins,
    a new map and a new badge. Built on the secret seasonal floor and a
    community-wide goal (the turkeys everyone finds add up).
