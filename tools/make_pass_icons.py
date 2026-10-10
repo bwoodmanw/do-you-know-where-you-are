@@ -67,15 +67,18 @@ def cutout(im):
 
 
 for folder, name, inner, outer in SKINS:
-    src = Image.open(os.path.join(SRC, folder, 'a-pose-front.png')).convert('RGB')
+    # 10 Oct: the toon picture (A-pose) where there is one - the old
+    # Ghostly Shadow picture was a T-pose (arms cut off at the sides)
+    toon = os.path.join(SRC, folder, 'front-toon.png')
+    src = Image.open(toon if os.path.exists(toon) and folder == 'ghostly-shadow' else os.path.join(SRC, folder, 'a-pose-front.png')).convert('RGB')
     W, H = src.size
     # head and shoulders: the top half of the picture, the middle of it
     # a T-pose (arms straight out) is cropped closer so the figure stays big
-    side = 0.3 if folder == 'ghostly-shadow' else 0.18
+    side = 0.18
     bust = cutout(src.crop((int(W * side), 0, int(W * (1 - side)), int(H * 0.5))))
     bb = bust.getchannel('A').point(lambda v: 255 if v > 40 else 0).getbbox()
     bust = bust.crop((bb[0], bb[1], bb[2], bust.height))
-    if folder == 'ghostly-shadow':
+    if False:  # (was the T-pose Ghostly Shadow)
         # arms cut at the sides: fade them out instead of a hard edge
         a = bust.getchannel('A')
         ramp = Image.new('L', bust.size, 255)
