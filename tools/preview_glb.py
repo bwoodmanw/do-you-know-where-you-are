@@ -57,7 +57,7 @@ def render(axis_u, axis_v, depth, flip_u, size=420):
         a, b, c = idx[t], idx[t + 1], idx[t + 2]
         z = (depth(pos[a]) + depth(pos[b]) + depth(pos[c])) / 3
         tris.append((z, a, b, c))
-    tris.sort()
+    tris.sort(key=lambda t: t[0], reverse=True)   # farthest first
     for z, a, b, c in tris:
         pts = [((xs[v] - minx) * sc + 20, size - ((ys[v] - miny) * sc + 20)) for v in (a, b, c)]
         u = (uv[a][0] + uv[b][0] + uv[c][0]) / 3
@@ -68,9 +68,11 @@ def render(axis_u, axis_v, depth, flip_u, size=420):
 
 
 # glTF is Y-up; draw far triangles first (painter's algorithm)
-front = render(0, 1, lambda p: -p[2], False)    # camera on +Z looking toward -Z
-back = render(0, 1, lambda p: p[2], True)       # camera on -Z
-side = render(2, 1, lambda p: -p[0], False)     # camera on +X
+# depth = distance from the camera (bigger = farther, drawn first after the
+# reverse sort below); u runs to the camera's right
+front = render(0, 1, lambda p: -p[2], False)    # camera on +Z looking toward -Z (+X on the right)
+back = render(0, 1, lambda p: p[2], True)       # camera on -Z (-X on the right)
+side = render(2, 1, lambda p: -p[0], True)      # camera on +X (-Z on the right)
 sheet = Image.new('RGB', (1300, 460), (20, 12, 30))
 for i, (im, name) in enumerate(((front, 'seen from +Z'), (back, 'seen from -Z'), (side, 'seen from +X'))):
     sheet.paste(im, (10 + i * 430, 10))
