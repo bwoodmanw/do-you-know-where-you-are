@@ -1481,7 +1481,7 @@ end)
 -- left: the character in 3D (drag to turn) and what their skill does
 local charName = label(chars, { Size = UDim2.fromOffset(230, 30), Position = UDim2.fromOffset(14, 54), Text = "", TextColor3 = PUMP, ZIndex = 11 })
 local view = Instance.new("ViewportFrame")
-view.Size = UDim2.fromOffset(230, 268)
+view.Size = UDim2.fromOffset(230, 400)
 view.Position = UDim2.fromOffset(14, 88)
 view.BackgroundColor3 = Color3.fromRGB(40, 26, 58)
 view.Ambient = Color3.fromRGB(170, 160, 190)
@@ -1498,11 +1498,11 @@ viewCam.Parent = view
 view.CurrentCamera = viewCam
 local noModel = label(view, { Size = UDim2.fromScale(1, 0.7), Position = UDim2.fromScale(0, 0.12), Text = "", ZIndex = 12 })
 label(view, { Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -24), Text = "drag to turn", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 12 })
-local skillAbout = label(chars, { Size = UDim2.fromOffset(230, 100), Position = UDim2.fromOffset(14, 404), TextScaled = true, TextWrapped = true,
+local skillAbout = label(chars, { Size = UDim2.fromOffset(610, 104), Position = UDim2.fromOffset(266, 188), TextScaled = true, TextWrapped = true,
 	TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 11 })
 do
 	local fit = Instance.new("UITextSizeConstraint")
-	fit.MaxTextSize = 16
+	fit.MaxTextSize = 22
 	fit.Parent = skillAbout
 end
 -- right: picking a character, their level and the skill ladder
@@ -1730,15 +1730,34 @@ task.spawn(function()
 		robuxIcon(resetRobux, 22)
 	end
 end)
-local skillsTile = button(right, "", { Size = UDim2.fromOffset(300, 130), Position = UDim2.fromOffset(16, 214), BackgroundColor3 = PLUM, ZIndex = 12 }, function()
+local SKILLS_BLUE, SKINS_PINK = Color3.fromRGB(38, 88, 150), Color3.fromRGB(140, 46, 112)
+local skillsTile = button(right, "", { Size = UDim2.fromOffset(300, 104), Position = UDim2.fromOffset(16, 308), BackgroundColor3 = SKILLS_BLUE, ZIndex = 12,
+	TextXAlignment = Enum.TextXAlignment.Left }, function()
 	skinsWin.Visible = false
 	skillsWin.Visible = true
 end)
-local skinsTile = button(right, "", { Size = UDim2.fromOffset(300, 130), Position = UDim2.fromOffset(330, 214), BackgroundColor3 = PLUM, ZIndex = 12 }, function()
+local skinsTile = button(right, "", { Size = UDim2.fromOffset(300, 104), Position = UDim2.fromOffset(330, 308), BackgroundColor3 = SKINS_PINK, ZIndex = 12,
+	TextXAlignment = Enum.TextXAlignment.Left }, function()
 	skillsWin.Visible = false
 	skinsWin.Visible = true
 	paintSkins()
 end)
+-- a picture on the left of each (the skill's icon; the skin being worn)
+for _, t in ipairs({ skillsTile, skinsTile }) do
+	local pic = Instance.new("ImageLabel")
+	pic.Name = "Pic"
+	pic.BackgroundTransparency = 1
+	pic.Size = UDim2.fromOffset(84, 84)
+	pic.Position = UDim2.new(0, 2, 0.5, -42)
+	pic.ScaleType = Enum.ScaleType.Fit
+	pic.ZIndex = 13
+	pic.Parent = t
+	corner(pic, 42)
+	local pad = t:FindFirstChildOfClass("UIPadding")
+	if pad then
+		pad.PaddingLeft = UDim.new(0, 100)
+	end
+end
 button(chars, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, -80, 1, -46), ZIndex = 11 }, function()
 	chars.Visible = false
 end)
@@ -1868,13 +1887,31 @@ repaintChars = function()
 			end
 		end
 		skillsTile.Text = "\u{26A1} Skills\n" .. (waiting > 0 and (waiting .. (waiting == 1 and " upgrade" or " upgrades") .. " to choose!") or ("Level " .. lvl))
-		skillsTile.BackgroundColor3 = waiting > 0 and Color3.fromRGB(190, 95, 25) or PLUM
-		local wornName = "Plain"
+		skillsTile.BackgroundColor3 = waiting > 0 and Color3.fromRGB(190, 95, 25) or SKILLS_BLUE
+		local skillPic = Config.UI_ICONS and Config.UI_ICONS["skill-" .. selected] or 0
+		skillsTile.Pic.Image = skillPic > 0 and ("rbxassetid://" .. skillPic) or ""
+
+		local wornName, wornPic = "Plain", Config.PORTRAITS[selected] or 0
 		for _, skin in ipairs(Config.SKINS or {}) do
 			if profile.skins and skin.id == profile.skins[selected] then
 				wornName = skin.name
+				wornPic = skin.icon or (skin.pass and skinIcons[skin.pass]) or wornPic
+				if not skin.icon and skin.pass and skinIcons[skin.pass] == nil then
+					-- the Game Pass picture, fetched once (as in the Skins window)
+					skinIcons[skin.pass] = false
+					task.spawn(function()
+						local ok, info = pcall(function()
+							return MarketplaceService:GetProductInfo(skin.pass, Enum.InfoType.GamePass)
+						end)
+						if ok and info and (info.IconImageAssetId or 0) > 0 then
+							skinIcons[skin.pass] = info.IconImageAssetId
+							repaintChars()
+						end
+					end)
+				end
 			end
 		end
+		skinsTile.Pic.Image = wornPic > 0 and ("rbxassetid://" .. wornPic) or ""
 		skinsTile.Text = "\u{2728} Skins\nWearing: " .. wornName
 		skillsTitle.Text = "\u{26A1} " .. sk.name .. "'s skills  \u{00B7}  Level " .. lvl
 		skinsTitle.Text = "\u{2728} " .. sk.name .. "'s skins"

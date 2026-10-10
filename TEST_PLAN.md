@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 10 Oct 2026)
 
-**Rounds 59 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
+**Rounds 60 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `aquarium`, the Aquarium's
 Main Hall); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,11 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 60 (10 Oct) - Characters screen layout
+- [ ] The description sits under the level bar, wide, in bigger text; the 3D character on the left is taller
+- [ ] Below it two shorter buttons that look different: Skills blue with the character's skill picture (orange when upgrades wait), Skins magenta with the worn skin's picture (the portrait when Plain) (photo)
+- [ ] Wear a skin: the Skins button shows that skin's picture
 
 ## Round 59 (10 Oct) - sounds: pickups are collected or eaten, not popped
 - [ ] Halloween candy corn on the floor: a bright "ding" (collected), no balloon pop
