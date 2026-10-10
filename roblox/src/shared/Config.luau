@@ -66,6 +66,14 @@ Config.TRY_MODEL_FOR_OWNER = true
 -- (the old Brainy has none either - 10 Oct photo; Space Cadet Brainy gets his once switched over)
 Config.PROPELLER = { Brainy = true, BrainyToon = true, BrainySpaceToon = true }
 Config.PROPELLER_LIFT = 0
+-- crisp toon faces from the approved pictures (Faces.luau, tools/make_face.py):
+-- id = the uploaded art/faces/<name>-face.png (0 = not uploaded yet). The
+-- toon and the name it gets at its switch-over share the entry.
+local echoFace = { id = 0, top = 0.1641, left = 0, size = 0.5363 } -- art/faces/echo-face.png
+Config.FACES = { EchoToon = echoFace, Echo = echoFace }
+-- if a face lands mirrored left-right or upside-down on the head, flip these
+Config.FACE_FLIP_U = false
+Config.FACE_FLIP_V = false
 -- the look of each building: base light (ambient), a color tint, and for
 -- everyone richer colors, a soft glow on lights and a light haze. A Spooky
 -- game keeps `spooky` of the ambient light (darker). Tune freely.

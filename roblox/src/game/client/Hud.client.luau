@@ -866,6 +866,7 @@ local function showChar()
 		shown = src:Clone()
 		shown.Parent = viewWorld
 		shown:PivotTo(CFrame.Angles(0, math.pi, 0))
+		pcall(require(ReplicatedStorage.Shared.Faces).add, shown, src.Name)
 		if Config.PROPELLER and Config.PROPELLER[src.Name] then
 			pcall(require(ReplicatedStorage.Shared.Propeller).add, shown, Config.PROPELLER_LIFT)
 		end
