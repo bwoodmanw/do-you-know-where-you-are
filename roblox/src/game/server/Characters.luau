@@ -76,6 +76,11 @@ local function strip(model)
 	for _, d in ipairs(model:GetDescendants()) do
 		if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") then
 			d:Destroy()
+		elseif d:IsA("FaceControls") then
+			-- Avatar Setup's guessed face rig: when an emote moves the face it
+			-- drags skin and hair across it (Echo's smeared face, 10 Oct) -
+			-- without it the face simply stays still
+			d:Destroy()
 		end
 	end
 end
