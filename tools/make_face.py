@@ -75,6 +75,8 @@ def make(name):
     glb = PROJECT / "art" / "models" / f"{name}-toon.glb"
     pic_path = PROJECT / "art" / "model-input" / name / "front-toon.png"
     mesh = trimesh.load(glb, force="scene").dump()[0]
+    # paint_toon turns the models round to face +Z for Roblox; face -Z again here
+    mesh.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [0, 1, 0]))
     render, scale, lo, hi = render_front(mesh, mesh.visual.material.baseColorTexture)
     RH, RW = render.shape[:2]
     body_h = hi[1] - lo[1]

@@ -203,6 +203,10 @@ def paint(name):
         baseColorTexture=Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)),
         metallicFactor=0.0, roughnessFactor=1.0)
     mesh.visual = trimesh.visual.TextureVisuals(uv=uv, material=material)
+    # Stable Fast 3D's models face -Z; Roblox's Import 3D shows them back to
+    # front (Brent had to set World Forward each time). Turned round here, they
+    # import facing forward with the default settings.
+    mesh.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [0, 1, 0]))
     mesh.export(glb)
     print(f"{name}: wrote {glb.name} ({len(F)} triangles, no normal map)")
 
