@@ -77,14 +77,20 @@ def raster(tri, w, h):
     return pts[inside].astype(int), bc[inside]
 
 
-def pad_islands(img, uvpx, F, grow=24):
+def pad_islands(img, uvpx, F, grow=24, keep=None):
     """the texture is cut into islands; the empty space between them shows up
     as dark lines along the seams once Studio shrinks the texture (Patch's face,
-    10 Oct). Fill the space next to every island with its own edge colors."""
+    10 Oct). Fill the space next to every island with its own edge colors.
+    keep: more triangles (pixel space, (n, 3, 2)) whose texels must stay as
+    they are - the face's fallback in the main texture (11 Oct)."""
     H, W = img.shape[:2]
     used = np.zeros((H, W), bool)
     for f in F:
         pts, _ = raster(uvpx[f], W, H)
+        if pts is not None and len(pts):
+            used[pts[:, 1], pts[:, 0]] = True
+    for tri in (keep if keep is not None else []):
+        pts, _ = raster(tri, W, H)
         if pts is not None and len(pts):
             used[pts[:, 1], pts[:, 0]] = True
     # 1 texel of slack round each triangle (they are rasterized at centers)
@@ -293,6 +299,69 @@ def face_corner(name, V, F, uv, fn, tex, pic):
     return V2, F2, uv2, new_tex, np.concatenate([np.arange(len(V)), np.array(extra_src, int)])
 
 
+MIN_SPLIT_DEG = 5.0  # Stable Fast 3D's own seams: median 18 deg apart, never 0
+
+
+def split_shared_normals(V, F, N, min_deg=MIN_SPLIT_DEG):
+    """11 Oct: Studio welds points that share a spot AND a normal and keeps only
+    one of their texture positions. The face corner's copies had exactly their
+    twin's normal: Studio welded them back and the triangles along the face's
+    edge stretched across the whole texture (brown smudges on Patch's jaw and
+    chin in game). Every point sharing a spot gets its own normal here: its own
+    triangles' average, then nudged until it is min_deg from the others there
+    (5 deg is invisible on flat cartoon colors)."""
+    N = N.copy()
+    fn = np.cross(V[F[:, 1]] - V[F[:, 0]], V[F[:, 2]] - V[F[:, 0]])  # area-weighted
+    own = np.zeros_like(N)
+    for j in range(3):
+        np.add.at(own, F[:, j], fn)
+    key = np.round(V, 5)
+    _, inv, cnt = np.unique(key, axis=0, return_inverse=True, return_counts=True)
+    inv = inv.ravel()
+    order = np.argsort(inv, kind="stable")
+    cos_min = np.cos(np.radians(min_deg))
+    i = 0
+    while i < len(order):
+        g = inv[order[i]]
+        idx = order[i:i + cnt[g]]
+        i += cnt[g]
+        if len(idx) < 2:
+            continue
+        done = [idx[0]]
+        for k in idx[1:]:
+            n = N[k] / (np.linalg.norm(N[k]) + 1e-12)
+            if any(n @ (N[d] / np.linalg.norm(N[d])) > cos_min for d in done):
+                o = own[k] / (np.linalg.norm(own[k]) + 1e-12)
+                if np.linalg.norm(own[k]) > 0 and all(o @ (N[d] / np.linalg.norm(N[d])) <= cos_min for d in done):
+                    n = o  # its own triangles' direction is different enough
+                else:
+                    for _ in range(36):  # tilt away from the nearest one
+                        near = max(done, key=lambda d: n @ (N[d] / np.linalg.norm(N[d])))
+                        m = N[near] / np.linalg.norm(N[near])
+                        if n @ m <= cos_min:
+                            break
+                        away = n - (n @ m) * m
+                        if np.linalg.norm(away) < 1e-6:  # identical: any sideways direction
+                            away = np.cross(m, [0.0, 1.0, 0.0])
+                            if np.linalg.norm(away) < 1e-6:
+                                away = np.cross(m, [1.0, 0.0, 0.0])
+                        away /= np.linalg.norm(away)
+                        n = m * cos_min + away * np.sqrt(1 - cos_min ** 2) * 1.02
+                        n /= np.linalg.norm(n)
+                N[k] = n * np.linalg.norm(N[k])
+            done.append(k)
+    return N
+
+
+def drop_unused(V, F, uv, src):
+    """points no triangle uses (the face corner's originals): Studio could still
+    weld them onto the copies"""
+    used = np.unique(F)
+    remap = np.full(len(V), -1, int)
+    remap[used] = np.arange(len(used))
+    return V[used], remap[F], uv[used], src[used]
+
+
 def paint(name):
     glb = MODELS / f"{name}-toon.glb"
     raw = MODELS / f"{name}-toon-raw.glb"
@@ -392,20 +461,24 @@ def paint(name):
         V2, F2, uv2, src = V, F, uv, np.arange(len(V))  # hosts: pumpkins, lamps and fish heads - no face corner
     else:
         V2, F2, uv2, out, src = face_corner(name, V, F, uv, fn, out, front_pic)
+    # the original triangles in the main texture (the face's fallback there)
+    keep = np.stack([uv2[:len(V), 0] * TW, (1 - uv2[:len(V), 1]) * TH], axis=1)[F]
+    V2, F2, uv2, src = drop_unused(V2, F2, uv2, src)
+    N2 = split_shared_normals(V2, F2, N0[src])
     uvpx2 = np.stack([uv2[:, 0] * TW, (1 - uv2[:, 1]) * TH], axis=1)
-    out = pad_islands(out, uvpx2, F2)
+    out = pad_islands(out, uvpx2, F2, keep=keep)
 
     material = trimesh.visual.material.PBRMaterial(
         baseColorTexture=Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)),
         metallicFactor=0.0, roughnessFactor=1.0)
-    mesh = trimesh.Trimesh(vertices=V2, faces=F2, vertex_normals=N0[src], process=False)
+    mesh = trimesh.Trimesh(vertices=V2, faces=F2, vertex_normals=N2, process=False)
     mesh.visual = trimesh.visual.TextureVisuals(uv=uv2, material=material)
     F = F2
     # Stable Fast 3D's models face -Z; Roblox's Import 3D shows them back to
     # front (Brent had to set World Forward each time). Turned round here, they
     # import facing forward with the default settings.
     mesh.apply_transform(trimesh.transformations.rotation_matrix(np.pi, [0, 1, 0]))
-    mesh.vertex_normals = N0[src] * np.array([-1.0, 1.0, -1.0])  # turned round with the model
+    mesh.vertex_normals = N2 * np.array([-1.0, 1.0, -1.0])  # turned round with the model
     mesh.export(glb, include_normals=True)
     print(f"{name}: wrote {glb.name} ({len(F)} triangles, no normal map)")
     # the safety check (tools/check_toon_models.py): a model that would break

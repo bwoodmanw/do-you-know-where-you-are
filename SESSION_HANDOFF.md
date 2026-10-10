@@ -197,6 +197,13 @@ Brent's agent copies: `CORE_TOON_MODEL_WORKFLOW.md`,
   with a retry (OneDrive / Rojo lock files briefly).
 - **Model files for Roblox must keep NORMAL** in the glb, or Studio welds
   seam points and the texture breaks along every seam.
+- **...and no two points at the same spot may share a normal** (11 Oct):
+  Studio welds same-spot same-normal points and keeps one UV. The face
+  corner's copies had their twin's exact normal - brown smudges on Patch's
+  jaw and chin in game while the file rendered clean. `paint_toon` now
+  splits them 5+ deg apart and drops unused points; the checker reads the
+  STORED normals (trimesh recomputes them) and fails any such pair.
+  `tools/preview_glb.py` drew every view from the wrong side until 4784acb.
 - **Avatar Setup** adds a face rig (FaceControls - stripped by our code), may
   join parts with AnimationConstraints instead of Motor6Ds (our joint check
   accepts both), and puts a SurfaceAppearance on parts (it hides Decals /

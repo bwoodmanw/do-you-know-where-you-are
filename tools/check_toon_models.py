@@ -8,6 +8,9 @@ every file it writes and stops (FAILED in make_toon_models) if any fails:
     seam (lines across Patch's face, her striped legs),
   - TEXCOORD_0 and one embedded color texture, 1024 x 1024 (Roblox's limit),
   - one mesh, 1,000 - 12,000 triangles,
+  - no two points at the same spot with the same normal but different
+    texture positions: Studio welds those and smears the texture (Patch's
+    jaw and chin in game, 11 Oct - the face corner's copied points),
   - facing forward for Roblox (+Z): Stable Fast 3D makes them facing -Z and
     Roblox showed them back to front,
   - characters and skins (not hosts): the sharp face corner is there (the
@@ -36,6 +39,45 @@ def gltf_json(path):
         raise ValueError("not a .glb file")
     n = struct.unpack_from("<I", b, 12)[0]
     return json.loads(b[20:20 + n])
+
+
+def stored(path, j, attr):
+    """an attribute exactly as stored in the .glb (trimesh recomputes normals)"""
+    b = Path(path).read_bytes()
+    n = struct.unpack_from("<I", b, 12)[0]
+    bin_off = 20 + n + 8
+    a = j["accessors"][j["meshes"][0]["primitives"][0]["attributes"][attr]]
+    bv = j["bufferViews"][a["bufferView"]]
+    k = {"VEC3": 3, "VEC2": 2}[a["type"]]
+    assert a["componentType"] == 5126, "float data expected"
+    stride = bv.get("byteStride", 0) or 4 * k
+    off = bin_off + bv.get("byteOffset", 0) + a.get("byteOffset", 0)
+    raw = np.frombuffer(b, np.uint8, count=stride * (a["count"] - 1) + 4 * k, offset=off)
+    rows = np.lib.stride_tricks.as_strided(raw, shape=(a["count"], 4 * k), strides=(stride, 1)).copy()
+    return rows.view(np.float32).reshape(a["count"], k).astype(np.float64)
+
+
+def welded_pairs(P, N, UV, min_deg=3.0):
+    """points at the same spot with different texture positions but (nearly) the
+    same normal: Studio welds them and the texture smears (11 Oct)"""
+    key = np.round(P, 5)
+    _, inv, cnt = np.unique(key, axis=0, return_inverse=True, return_counts=True)
+    inv = inv.ravel()
+    Nn = N / (np.linalg.norm(N, axis=1, keepdims=True) + 1e-12)
+    cos_min = np.cos(np.radians(min_deg))
+    bad = 0
+    order = np.argsort(inv, kind="stable")
+    i = 0
+    while i < len(order):
+        g = inv[order[i]]
+        idx = order[i:i + cnt[g]]
+        i += cnt[g]
+        for a in range(len(idx)):
+            for c in range(a + 1, len(idx)):
+                p, q = idx[a], idx[c]
+                if Nn[p] @ Nn[q] > cos_min and np.abs(UV[p] - UV[q]).max() > 1e-4:
+                    bad += 1
+    return bad
 
 
 def check(path, host=None):
@@ -76,7 +118,12 @@ def check(path, host=None):
         problems.append(f"texture {tex.size[0]}x{tex.size[1]} - Roblox shows at most 1024x1024")
     fn = m.face_normals
     if "NORMAL" in attrs:
-        vn = np.asarray(m.vertex_normals)
+        vn = stored(path, j, "NORMAL")
+        if len(vn) != len(m.vertices):
+            return problems + [f"{len(vn)} stored normals for {len(m.vertices)} points - trimesh changed the points"]
+        bad = welded_pairs(stored(path, j, "POSITION"), vn, stored(path, j, "TEXCOORD_0"))
+        if bad:
+            problems.append(f"{bad} pairs of points share a spot and a normal but not a texture position - Studio welds them and smears the texture (paint_toon's split_shared_normals didn't run)")
         agree = float((vn[m.faces] * fn[:, None, :]).sum(-1).mean())
         if agree < 0.85:
             problems.append(f"normals point the wrong way (agreement {agree:.2f}, want 0.85+)")
