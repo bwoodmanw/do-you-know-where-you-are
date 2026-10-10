@@ -360,10 +360,10 @@ cd "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are"
 & "C:\Users\bwood\Documents\Codex\2026-10-05\referenced-chatgpt-conversation-this-is-an\work\sf3d-venv\Scripts\python.exe" tools\make_toon_models.py host host-gummy host-hospital host-caretaker host-clownbear host-anglerfish
 ```
 
-or as an agent workflow (updated 11 Oct: the script already keeps the normals,
+or as an agent workflow (updated 10 Oct: the script already keeps the normals,
 turns each model to face forward, pads the seams and runs
 `tools/check_toon_models.py` on every file - hosts get no face corner, so
-the 11 Oct chin fix does not touch them):
+the 10 Oct chin fix does not touch them):
 
 ```
 create new workflow to make the 6 host 3D models. Do not change tools\make_toon_models.py, tools\paint_toon.py or tools\check_toon_models.py, do not write a new script, do not change any settings, and do not edit any other file. Roblox Studio must be closed first (the graphics card needs all its memory); if it is open, stop and tell me.

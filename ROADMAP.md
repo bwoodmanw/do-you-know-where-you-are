@@ -223,6 +223,8 @@ only when everyone presses Play.
    fixes after a week of data.
 5. Thanksgiving event (after 1 Nov; event page 7+ days ahead), then
    Christmas: a secret seasonal floor and / or a community-wide goal.
+   Brent's ideas below ("Seasonal events and pets"); Claude writes 3-4
+   options with a recommendation, Brent picks.
 6. Community group bonus (once Brent makes the group).
 7. Later: B8 analytics, subscriptions (parked).
 
@@ -246,3 +248,23 @@ colour-blind code pictures, a tutorial coach, rejoin.
    the group gets update posts (needs a Roblox group).
 7. Not recommended: a paid "escape the cage" revive (pay-to-win for kids;
    friends already rescue you).
+
+## Seasonal events and pets (Brent's ideas, 10 Oct)
+1. **Thanksgiving - a turkey hunt** (2 Nov - end of Nov; US Thanksgiving is
+   26 Nov; event page live by 26 Oct): a new character (a chef, maybe one
+   more), a new host (a turkey gobbler, "Pie Crusty" or similar), new skins,
+   a new map and a new badge. Built on the secret seasonal floor and a
+   community-wide goal (the turkeys everyone finds add up).
+2. **Christmas** (from about 1 Dec; event page by about 24 Nov): the same
+   shape - new characters (a mistletoe character, Holly, maybe a reindeer
+   friend) with a **combined ability when they play in the same party**
+   (e.g. something at a doorway with mistletoe), a frosty host, a new map
+   ("Candy Cane Lane" or Santa's reindeer stables), skins and a badge.
+3. **Pets - later, not now:** they must not change play, and the plushies
+   (squishies) already fill the collecting role. If added, cosmetic only (a
+   follower in the Lobby / on the floor with no effect), after Christmas.
+
+Each new character or host goes through TOON_WORKFLOW (pictures -> Stable
+Fast 3D -> paint_toon -> checker -> Studio import) and the skills ladder
+checks (`tools/check_ladder*.luau`); each new map through
+`tools/make_housemap.py` and `tools/check_rooms.luau`.

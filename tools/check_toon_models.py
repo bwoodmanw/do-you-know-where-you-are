@@ -10,7 +10,7 @@ every file it writes and stops (FAILED in make_toon_models) if any fails:
   - one mesh, 1,000 - 12,000 triangles,
   - no two points at the same spot with the same normal but different
     texture positions: Studio welds those and smears the texture (Patch's
-    jaw and chin in game, 11 Oct - the face corner's copied points),
+    jaw and chin in game, 10 Oct - the face corner's copied points),
   - facing forward for Roblox (+Z): Stable Fast 3D makes them facing -Z and
     Roblox showed them back to front,
   - characters and skins (not hosts): the sharp face corner is there (the
@@ -59,7 +59,7 @@ def stored(path, j, attr):
 
 def welded_pairs(P, N, UV, min_deg=3.0):
     """points at the same spot with different texture positions but (nearly) the
-    same normal: Studio welds them and the texture smears (11 Oct)"""
+    same normal: Studio welds them and the texture smears (10 Oct)"""
     key = np.round(P, 5)
     _, inv, cnt = np.unique(key, axis=0, return_inverse=True, return_counts=True)
     inv = inv.ravel()
