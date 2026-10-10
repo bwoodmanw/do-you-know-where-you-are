@@ -1474,6 +1474,10 @@ end)
 local chars = frame(gui, { Size = UDim2.fromOffset(900, 560), Position = UDim2.new(0.5, -450, 0.5, -280), Visible = false, ZIndex = 10 })
 corner(chars, 18)
 label(chars, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "Characters & skill ladder", TextColor3 = PUMP, ZIndex = 11 })
+-- a red X in the corner closes the screen (like its Skills and Skins windows)
+button(chars, "X", { Size = UDim2.fromOffset(48, 40), Position = UDim2.new(1, -64, 0, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
+	chars.Visible = false
+end)
 -- left: the character in 3D (drag to turn) and what their skill does
 local charName = label(chars, { Size = UDim2.fromOffset(230, 30), Position = UDim2.fromOffset(14, 54), Text = "", TextColor3 = PUMP, ZIndex = 11 })
 local view = Instance.new("ViewportFrame")
@@ -1548,7 +1552,7 @@ corner(xpFill, 7)
 -- screen (X, or B on a controller, closes it). Everything inside sits 20
 -- above the screen so it draws on top.
 local function charWindow(name)
-	local w = frame(chars, { Name = name, Size = UDim2.fromScale(1, 1), BackgroundTransparency = 0.02, Visible = false, ZIndex = 20 })
+	local w = frame(chars, { Name = name, Size = UDim2.fromScale(1, 1), BackgroundTransparency = 0, Visible = false, ZIndex = 20 })
 	corner(w, 18)
 	local title = label(w, { Size = UDim2.new(1, -150, 0, 40), Position = UDim2.fromOffset(75, 12), Text = "", TextColor3 = PUMP, ZIndex = 21 })
 	button(w, "X", { Size = UDim2.fromOffset(48, 40), Position = UDim2.new(1, -64, 0, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 21 }, function()
