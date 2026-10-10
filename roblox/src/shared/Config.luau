@@ -563,9 +563,16 @@ Config.SOUNDS = {
 	noise = 9120675895, -- Whistle calling 4
 	breath = 9113983944, -- Deep monster breathing 1 (loops on the host)
 	heart = 9119882039, -- Synth Whomps 38 (a heartbeat thump)
+	-- (10 Oct sound audit: pickups no longer pop like balloons)
+	collect = 9126073318, -- Synth Sparkle Tone High Pitch Bell Tone Ding (an item picked up)
+	eat = 9114224859, -- Eating Chips 1 (Candy Corn eaten; cut to 1 s)
+	squeak = 9120222027, -- Toy Squeak 1 (a plushie found)
+	shieldHit = 9119075376, -- Shield Impacts 13 (a Party Shield blocks a grab)
+	dizzy = 9113496949, -- Body Hit Comic 2 (the host stunned, stars)
 }
 -- the longest a sound plays, in seconds (some library sounds are long)
-Config.SOUND_MAX = { hide = 1.6, unhide = 1.5, escape = 5, cage = 2.5, rescue = 2, shove = 1.6, wrong = 1.2 }
+Config.SOUND_MAX = { hide = 1.6, unhide = 1.5, escape = 5, cage = 2.5, rescue = 2, shove = 1.6, wrong = 1.2,
+	eat = 1, shieldHit = 1, energy = 1.6 }
 
 -- play with a friend: +10% of the points from a game when a Roblox friend
 -- plays it with you

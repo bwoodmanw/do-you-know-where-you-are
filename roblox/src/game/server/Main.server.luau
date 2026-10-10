@@ -828,7 +828,12 @@ local function foundLoot(plr, item, pos)
 		return
 	end
 	addPoints(plr, 5)
-	Effects.burst(pos, "boost")
+	Effects.burst(pos, "boost", "collect")
+	if item == "candy" then
+		Effects.at(plr, "boost", "eat")
+	elseif item == "energy" then
+		Effects.at(plr, "boost", "energy")
+	end
 	applyBoost(plr, item)
 	say("boost", plr.DisplayName .. (FOUND_TEXT[item] or (" found " .. b.name .. "!")), { icon = b.icon, userId = plr.UserId, item = b.name })
 end
@@ -1276,14 +1281,14 @@ local function wirePrompts()
 					-- the team's Poppers: any one works on any blocked doorway
 					world.poppers = (world.poppers or 0) + 1
 					RoundState:SetAttribute("Poppers", world.poppers)
-					Effects.burst(entry.part.Position, "boost")
+					Effects.burst(entry.part.Position, "boost", "collect")
 					addPoints(plr, 10)
 					quest(plr, "key")
 					say("key", plr.DisplayName .. " found a Confetti Cannon! It blasts open any blocked doorway.", { icon = "\u{1F389}", userId = plr.UserId, item = "Confetti Cannon" })
 				elseif lock then
 					world.keys[lock] = true
 					RoundState:SetAttribute("Key_" .. lock, true)
-					Effects.burst(entry.part.Position, "boost")
+					Effects.burst(entry.part.Position, "boost", "collect")
 					addPoints(plr, 10)
 					quest(plr, "key")
 					say("key", plr.DisplayName .. " found the key to the " .. world.objects[lock].def.name .. "!", { icon = "\u{1F511}", userId = plr.UserId, item = "Key" })
@@ -1503,7 +1508,7 @@ function round.hostGummy(_, pos, hostModel)
 		end
 	end
 	table.insert(state.gummies, g)
-	Effects.sound(g.Position, "pop", 0.5)
+	Effects.sound(g.Position, "bounce", 0.5)
 	g.Touched:Connect(function(hitPart)
 		local plr = Players:GetPlayerFromCharacter(hitPart.Parent)
 		if not plr or not g.Parent or state.status ~= "playing" or plr:GetAttribute("Stuck") or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") or plr:GetAttribute("Crawling") then
@@ -2078,7 +2083,8 @@ function round.placePlushie()
 							end
 							addPoints(plr, Config.PLUSHIE_POINTS, true)
 							Profile.publish(plr)
-							Effects.burst(pos + Vector3.new(0, 2.5, 0), "rescue")
+							Effects.burst(pos + Vector3.new(0, 2.5, 0), "rescue", "collect")
+							Effects.sound(pos, "squeak", 0.9)
 							-- the finder gets a card with the plushie in 3D (on the
 							-- side, so it hides nothing); everyone else a message
 							for _, p in ipairs(Players:GetPlayers()) do
@@ -2210,7 +2216,7 @@ function round.placeCandyCorn()
 								n = data.stats.corn
 								Profile.publish(plr)
 							end
-							Effects.burst(c.pos, "pop")
+							Effects.burst(c.pos, "boost", "collect")
 							say("corn", "Candy corn found! " .. n .. " so far (+" .. e.points .. " points)", { userId = plr.UserId, found = n }, plr)
 							if n == e.goal then
 								say("info", "\u{1F383} " .. plr.DisplayName .. " found " .. e.goal .. " candy corns - Candy Corn Collector!")
@@ -2295,7 +2301,7 @@ function round.hostCaught(_, plr)
 		end
 		host:stun(2.5)
 		Effects.stars(host.model, 2.5)
-		Effects.at(plr, "pop")
+		Effects.at(plr, "pop", "shieldHit")
 		local sh = hrpOf(plr)
 		if sh then
 			Effects.ring(sh.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(120, 200, 255), 18, 0.6)
@@ -3398,7 +3404,7 @@ UseCandy.OnServerEvent:Connect(function(plr)
 	end
 	plr:SetAttribute("CandyCharges", n - 1)
 	Boost:FireClient(plr, "candy")
-	Effects.at(plr, "boost")
+	Effects.at(plr, "boost", "eat")
 	say("boost", plr.DisplayName .. " ate Candy Corn - running without getting puffed!", { icon = Config.ITEM_ICONS.candy, userId = plr.UserId, item = "Candy Corn" })
 end)
 
@@ -3412,11 +3418,7 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 	table.remove(bag, i)
 	paintBag(plr)
 	applyBoost(plr, id)
-	Effects.at(plr, "boost")
-	local spot = hrpOf(plr)
-	if spot and (id == "candy" or id == "energy") then
-		Effects.sound(spot.Position, id)
-	end
+	Effects.at(plr, "boost", id == "candy" and "eat" or id == "energy" and "energy" or nil)
 	say("boost", plr.DisplayName .. " used " .. boost.name .. "!", { icon = boost.icon, userId = plr.UserId, item = boost.name })
 end)
 
@@ -3546,7 +3548,7 @@ function round.start()
 		end
 		local nowDark = not world.dark[room]
 		world.setDark(room, nowDark)
-		Effects.sound(hrpOf(plr) and hrpOf(plr).Position or Vector3.zero, "pick", 0.5)
+		Effects.sound(hrpOf(plr) and hrpOf(plr).Position or Vector3.zero, "beep", 0.7)
 		say("info", nowDark and ("Lights off in the " .. room .. " - the host can't see as far in here.") or ("Lights on in the " .. room .. "."), nil, plr)
 	end
 	-- a TV, radio, drums or arcade machine switched on: the host comes to look
@@ -3624,7 +3626,7 @@ function round.start()
 				setVisible(plr, true)
 				plr:SetAttribute("Crawling", false)
 				Effects.sound(chute.to, "bounce", 1)
-				Effects.burst(chute.to + Vector3.new(0, 2, 0), "pop")
+				Effects.burst(chute.to + Vector3.new(0, 2, 0), "pop", false)
 				say("info", chute.landText or ("You landed in the laundry basket in the " .. chute.toRoom .. "!"), nil, plr)
 			end)
 		end)

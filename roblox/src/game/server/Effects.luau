@@ -80,13 +80,18 @@ local function sequence(colours)
 	return ColorSequence.new(keys)
 end
 
-function Effects.burst(position, kind)
+-- sound: optional - another sound's name instead of the kind's own, or
+-- false for none (the sparkle of "boost" with the "collect" ding, say)
+function Effects.burst(position, kind, sound)
 	local k = KINDS[kind]
 	if not k or typeof(position) ~= "Vector3" then
 		return
 	end
-	if KIND_SOUND[kind] then
-		Effects.sound(position, KIND_SOUND[kind])
+	if sound == nil then
+		sound = KIND_SOUND[kind]
+	end
+	if sound then
+		Effects.sound(position, sound)
 	end
 	local holder = Instance.new("Part")
 	holder.Anchored, holder.CanCollide, holder.CanQuery, holder.CanTouch = true, false, false, false
@@ -183,10 +188,10 @@ function Effects.surprise(position, kind)
 end
 
 -- the burst at a player, a little above the floor
-function Effects.at(player, kind)
+function Effects.at(player, kind, sound)
 	local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 	if hrp then
-		Effects.burst(hrp.Position, kind)
+		Effects.burst(hrp.Position, kind, sound)
 	end
 end
 
@@ -334,7 +339,7 @@ function Effects.stars(model, seconds)
 			s.Position = c + Vector3.new(math.cos(a) * 1.6, math.sin(t * 8 + i) * 0.2, math.sin(a) * 1.6)
 		end
 	end)
-	Effects.sound(head.Position, "pop", 0.6)
+	Effects.sound(head.Position, "dizzy", 0.7)
 end
 
 -- a picture that pops up over a player's head for a moment (💡 Think!, 🔧 Toolkit)

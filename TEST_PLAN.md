@@ -1,6 +1,6 @@
 # Escape Crew - test plan (updated 10 Oct 2026)
 
-**Rounds 58 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
+**Rounds 59 down to 12 (top): built 7-10 Oct. Rounds 36-45 partly tested by Brent (fixes made); 46-54 not yet play-tested.**
 Studio Play builds `Config.STUDIO_MAP` (now `aquarium`, the Aquarium's
 Main Hall); ask Claude for any other floor (`partyhouse`, `partyhouse_2`,
 `partyhouse_3`, `partyhouse_b`, `gummy`, `gummy_2`, `gummy_3`, `hospital`,
@@ -16,6 +16,15 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 (now `gummy`) with a random host (or `Config.STUDIO_HOST`). Ask Claude to switch
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
+
+## Round 59 (10 Oct) - sounds: pickups are collected or eaten, not popped
+- [ ] Halloween candy corn on the floor: a bright "ding" (collected), no balloon pop
+- [ ] A key or a Popper found: the same ding
+- [ ] A lost plushie: a toy squeak and the ding (it was a jail-cell door)
+- [ ] Candy Corn - from the bag, a present or the candy button: a crunchy munch (eaten); Second Wind: a gulp
+- [ ] A Party Shield blocks a grab: a shield thump (not a balloon); the stunned host's stars: a comic bonk
+- [ ] Light switch: a click (not the lock-pick sound); laundry basket landing: a bounce only
+- [ ] Still popping (on purpose): real balloons, a trick present popped, the Confetti Cannon
 
 ## Round 58 (10 Oct) - Characters screen: Skins and Skills windows; owner buttons
 - [ ] Lobby -> Characters: the character in 3D, the portraits, the level bar, and two big buttons: "⚡ Skills" (orange with "n upgrades to choose!" when some are waiting, else "Level n") and "✨ Skins" ("Wearing: ...") - no ladder or skin row on the screen itself (photo)
