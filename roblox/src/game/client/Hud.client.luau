@@ -122,9 +122,35 @@ local function tileIcon(b, getId)
 	pic.Name = "Icon"
 	pic.BackgroundTransparency = 1
 	pic.ScaleType = Enum.ScaleType.Fit
-	pic.Size = UDim2.new(1, 0, 1, -30) -- 10 Oct: more room for bigger words
+	pic.Size = UDim2.new(1, 0, 1, -24) -- 11 Oct: bigger pictures (was 1, -30)
 	pic.ZIndex = b.ZIndex + 1
 	pic.Parent = b
+	-- 11 Oct (Brent: the words were tiny): under a picture the words get their
+	-- own line, sized by its height. Scaled across the whole tile they shrank
+	-- to a sliver. The tile's own text stays (other code sets it) but hidden.
+	local words = Instance.new("TextLabel")
+	words.Name = "Words"
+	words.BackgroundTransparency = 1
+	words.Font = b.Font
+	words.TextScaled = true
+	words.TextWrapped = false
+	words.Size = UDim2.new(1, 0, 0, 24)
+	words.Position = UDim2.new(0, 0, 1, -24)
+	words.ZIndex = b.ZIndex + 1
+	words.Visible = false
+	words.Parent = b
+	do
+		local wcap = Instance.new("UITextSizeConstraint")
+		wcap.MaxTextSize = 22
+		wcap.MinTextSize = 12
+		wcap.Parent = words
+	end
+	local function copyWords()
+		words.Text = b.Text
+		words.TextColor3 = b.TextColor3
+	end
+	b:GetPropertyChangedSignal("TextColor3"):Connect(copyWords)
+	b:GetPropertyChangedSignal("Text"):Connect(copyWords)
 	local stripping = false
 	local function paint()
 		local id = getId() or 0
@@ -134,6 +160,8 @@ local function tileIcon(b, getId)
 		-- under a picture the words stay on one line (shrinking a little if
 		-- long) instead of wrapping up into the picture
 		b.TextWrapped = id <= 0
+		words.Visible = id > 0
+		b.TextTransparency = id > 0 and 1 or 0
 		local cap = b:FindFirstChildOfClass("UITextSizeConstraint")
 		if cap then
 			cap.MaxTextSize = id > 0 and 26 or 28
@@ -158,6 +186,7 @@ local function tileIcon(b, getId)
 	end
 	b:GetPropertyChangedSignal("Text"):Connect(paint)
 	paint()
+	copyWords()
 	return paint
 end
 
