@@ -677,7 +677,22 @@ local function opt(key, value)
 	remotes.SetOption:FireServer(key, value)
 end
 -- the map: one button here; the map screen opens for the whole party together
-local mapBtn = button(partyBox, "", { Size = UDim2.new(1, -40, 0, 80), Position = UDim2.fromOffset(20, 210), BackgroundColor3 = Color3.fromRGB(47, 107, 58) }, function()
+-- the chosen map's picture sits behind the button (10 Oct, Brent); the
+-- button turns see-through while a picture shows
+local mapPic = Instance.new("ImageLabel")
+mapPic.Size = UDim2.new(1, -40, 0, 56)
+mapPic.Position = UDim2.fromOffset(20, 222)
+mapPic.ScaleType = Enum.ScaleType.Crop
+mapPic.ImageColor3 = Color3.fromRGB(150, 150, 150) -- dimmed so the words stay readable
+mapPic.BackgroundTransparency = 1
+mapPic.Visible = false
+mapPic.Parent = partyBox
+do
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, 12)
+	c.Parent = mapPic
+end
+local mapBtn = button(partyBox, "", { Size = UDim2.new(1, -40, 0, 56), Position = UDim2.fromOffset(20, 222), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 2 }, function()
 	if not current then
 		return
 	end
@@ -868,8 +883,18 @@ local function paintParty(p)
 	local myVote = p.votes and p.votes[tostring(player.UserId)]
 	-- the chosen map on the party panel
 	local ci = Progress.mapIndex(p.chosen or "partyhouse")
-	mapBtn.Text = (amLeader and "\u{1F5FA} Tap to choose a map" or "\u{1F5FA} The leader chooses a map") .. (p.tower and "  \u{00B7} \u{1F5FC} Tower Run" or "")
-	local _ = ci
+	local anyVote = next(p.votes or {}) ~= nil
+	local chosenInfo = anyVote and ci and Progress.MAPS[ci]
+	local picId = chosenInfo and Config.MAP_IMAGES and (Config.MAP_IMAGES[chosenInfo.id] or Config.MAP_IMAGES["building-" .. chosenInfo.building]) or 0
+	mapPic.Visible = (picId or 0) > 0
+	mapPic.Image = mapPic.Visible and img(picId) or ""
+	mapBtn.BackgroundTransparency = mapPic.Visible and 1 or 0
+	mapBtn.TextStrokeTransparency = mapPic.Visible and 0 or 1
+	if chosenInfo then
+		mapBtn.Text = "\u{1F5FA} " .. chosenInfo.name .. (amLeader and "  \u{00B7} tap to change" or "") .. (p.tower and "  \u{00B7} \u{1F5FC} Tower Run" or "")
+	else
+		mapBtn.Text = (amLeader and "\u{1F5FA} Tap to choose a map" or "\u{1F5FA} The leader chooses a map") .. (p.tower and "  \u{00B7} \u{1F5FC} Tower Run" or "")
+	end
 	-- the map screen, the same for everyone in the party
 	mapScreen.Visible = p.mapScreen == true
 	msDone.Visible = amLeader
