@@ -685,6 +685,7 @@ local function checkEnd()
 		nextIn = Config.VOTE_SECONDS,
 		vote = true,
 		nextFloor = (won and not towerRun) and (nextFloor() or {}).name or nil,
+		floorName = (Progress.MAPS[Progress.mapIndex(mapId) or 0] or {}).name, -- 10 Oct: the title named the Party House everywhere
 		tower = towerRun and (state.towerFloor or 1) or nil,
 		players = rows,
 	})
@@ -1536,6 +1537,7 @@ function round.hostGummy(_, pos, hostModel)
 		plr:SetAttribute("Frozen", true)
 		setSpeed(plr, 0)
 		say("stuck", plr.DisplayName .. " stepped in a gummy puddle - stuck!", { userId = plr.UserId })
+		Effects.react(plr, "gummy", s.stick)
 		task.delay(s.stick, function()
 			plr:SetAttribute("Stuck", false)
 			plr:SetAttribute("Frozen", false)
@@ -1586,6 +1588,17 @@ function round.hostBlackout(_, pos)
 		eyes.Parent = head
 	end
 	say("dark", "The lights just went out in the " .. name .. "!")
+	for _, kid in ipairs(Players:GetPlayers()) do
+		local kh = kid.Character and kid.Character:FindFirstChild("HumanoidRootPart")
+		if kh and not kid:GetAttribute("Caged") and not kid:GetAttribute("Escaped") then
+			local kx, ky = math.floor(kh.Position.X / T), math.floor(kh.Position.Z / T)
+			for _, f in ipairs(HouseMap.floors) do
+				if f.name == name and kx >= f.x0 and kx <= f.x1 and ky >= f.y0 and ky <= f.y1 then
+					Effects.react(kid, "dark", Config.HOST_SKILLS.blackout.seconds)
+				end
+			end
+		end
+	end
 	task.delay(Config.HOST_SKILLS.blackout.seconds, function()
 		light.Enabled = true
 		if RoundState:GetAttribute("Blackout") == name then
@@ -1736,6 +1749,7 @@ do
 		end)
 		Effects.sound(lock.Position, "pick", 0.8)
 		say("lockup", "Jangle jangle... the Caretaker padlocked a doorway!", { userId = target.UserId })
+		Effects.react(target, "lockup")
 		task.delay(s.seconds, open)
 		return true
 	end
@@ -1882,6 +1896,7 @@ function round.placeJackBoxes()
 							b.pose(true)
 							Effects.burst(c + Vector3.new(0, 4, 0), "noise")
 							say("jackbox", "BOING! A jack-in-the-box gave " .. plr.DisplayName .. " away!", { userId = plr.UserId })
+							Effects.react(plr, "jack")
 							local hl = Instance.new("Highlight")
 							hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(255, 80, 120), Color3.fromRGB(255, 220, 80), 0.6
 							hl.Parent = plr.Character
@@ -1979,6 +1994,7 @@ function round.hostFakeGift(_, pos, hostModel)
 		local h = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
 		Effects.burst(box.Position + Vector3.new(0, 2, 0), "noise")
 		say("fake", "It was a trick present! The Anglerfish Keeper knows where " .. plr.DisplayName .. " is!", { userId = plr.UserId })
+		Effects.react(plr, "fake")
 		if plr.Character then
 			local hl = Instance.new("Highlight")
 			hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(120, 220, 255), Color3.fromRGB(255, 240, 170), 0.6
@@ -2270,6 +2286,7 @@ function round.hostHit(_, plr)
 		hum.PlatformStand = true
 	end
 	say("bonk", "BONK! " .. plr.DisplayName .. " was hit by a flying pumpkin!", { userId = plr.UserId })
+	Effects.react(plr, "bonk", Config.HOST_SKILLS.throw.knock)
 	task.delay(Config.HOST_SKILLS.throw.knock, function()
 		if hum and hum.Parent then
 			hum.PlatformStand = false

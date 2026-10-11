@@ -2400,7 +2400,8 @@ remotes.Results.OnClientEvent:Connect(function(r)
 			end)
 		end
 	end
-	resTitle.Text = r.won and "\u{1F389} You escaped the Party House!" or "\u{1F512} Everyone was caught..."
+	-- 10 Oct (Brent): the floor's own name (it said the Party House everywhere)
+	resTitle.Text = r.won and ("\u{1F389} You escaped " .. (r.floorName or "the floor") .. "!") or "\u{1F512} Everyone was caught..."
 	if r.tower then
 		resTitle.Text = r.won and "\u{1F5FC} Tower Run: you reached the top! (+25%)" or ("\u{1F5FC} Tower Run: caught on floor " .. r.tower)
 	end
@@ -2412,7 +2413,7 @@ remotes.Results.OnClientEvent:Connect(function(r)
 			extra ..= "  \u{2B06} Level " .. row.levelUp .. "!"
 		end
 		if row.unlocked then
-			extra ..= "  \u{1F513} " .. row.unlocked
+			extra ..= "  \u{1F513} Unlocked: " .. row.unlocked
 		end
 		if row.friendBonus and row.friendBonus > 0 then
 			extra ..= "  \u{1F46B} +" .. row.friendBonus .. " friend bonus"

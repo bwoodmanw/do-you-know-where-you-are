@@ -1264,15 +1264,19 @@ do
 			local owned = label(r, { Size = UDim2.fromOffset(64, 40), Position = UDim2.fromOffset(298, 12), Text = "", ZIndex = 12 })
 			return r, owned
 		end
+		-- 10 Oct (Brent): "Buy 9" read as buying 9 - the button says Buy, and
+		-- the cost (for the count chosen) sits beside the candy corn
 		local function buyButton(r, price, onClick)
-			local b = button(r, "Buy " .. price, { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(474, 12), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, onClick)
-			local pic = cornPic(r, 30, UDim2.fromOffset(562, 17), 12)
-			if pic then
-				b:GetPropertyChangedSignal("Visible"):Connect(function()
+			local b = button(r, "Buy", { Size = UDim2.fromOffset(60, 40), Position = UDim2.fromOffset(472, 12), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, onClick)
+			local cost = label(r, { Size = UDim2.fromOffset(36, 32), Position = UDim2.fromOffset(534, 16), Text = tostring(price), TextColor3 = PUMP, ZIndex = 12 })
+			local pic = cornPic(r, 24, UDim2.fromOffset(570, 20), 12)
+			b:GetPropertyChangedSignal("Visible"):Connect(function()
+				cost.Visible = b.Visible
+				if pic then
 					pic.Visible = b.Visible
-				end)
-			end
-			return b
+				end
+			end)
+			return b, cost
 		end
 		local i = 0
 		for _, id in ipairs(Progress.BOOST_ORDER) do
@@ -1284,10 +1288,10 @@ do
 				-- 10 Oct (Brent): like the Boost Shop - how many, then Buy
 				local count = 1
 				local qty = label(r, { Size = UDim2.fromOffset(30, 40), Position = UDim2.fromOffset(402, 12), Text = "1", ZIndex = 12 })
-				local buy
+				local cost
 				local function show()
 					qty.Text = tostring(count)
-					buy.Text = "Buy " .. price * count
+					cost.Text = tostring(price * count)
 				end
 				button(r, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(34, 40), Position = UDim2.fromOffset(366, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
 					count = math.max(1, count - 1)
@@ -1297,7 +1301,7 @@ do
 					count = math.min(10, count + 1)
 					show()
 				end)
-				buy = buyButton(r, price, function()
+				_, cost = buyButton(r, price, function()
 					remotes:WaitForChild("CornShop"):FireServer(id, count)
 					count = 1
 					show()

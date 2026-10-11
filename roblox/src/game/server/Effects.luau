@@ -66,6 +66,10 @@ local KINDS = {
 	boost = { SPARKLE, { Color3.fromRGB(255, 210, 63), Color3.fromRGB(255, 255, 255) }, 60, 7, 1, 1.4, Color3.fromRGB(255, 220, 120) },
 	caught = { SMOKE, { Color3.fromRGB(200, 40, 40), Color3.fromRGB(60, 10, 10) }, 50, 5, 3, 1.2, Color3.fromRGB(255, 60, 40) },
 	rescue = { SPARKLE, { Color3.fromRGB(255, 210, 63), Color3.fromRGB(123, 227, 107) }, 60, 8, 1.2, 1.4, Color3.fromRGB(255, 230, 140) },
+	-- host reactions (Effects.react, 10 Oct)
+	gummy = { SPARKLE, { Color3.fromRGB(255, 92, 170), Color3.fromRGB(255, 180, 220) }, 50, 8, 0.8, 1.2, nil },
+	pumpkin = { SPARKLE, { Color3.fromRGB(255, 140, 30), Color3.fromRGB(255, 210, 63) }, 50, 10, 0.7, 1.3, Color3.fromRGB(255, 160, 60) },
+	bubbles = { SPARKLE, { Color3.fromRGB(120, 220, 255), Color3.fromRGB(255, 255, 255) }, 70, 6, 1.4, 1.4, Color3.fromRGB(140, 220, 255) },
 	escape = { SPARKLE, { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(123, 227, 107) }, 120, 20, 1, 2, Color3.fromRGB(255, 240, 200) },
 }
 
@@ -370,6 +374,63 @@ function Effects.icon(player, text, seconds)
 		end
 	end)
 	Debris:AddItem(gui, (seconds or 1.8) + 0.5)
+end
+
+-- ---------- reactions when a host's ability gets a kid (10 Oct, Brent) ----------
+-- Effects only (no body animations yet: those come after the toon switch-over).
+--   gummy  stuck in a gummy puddle: pink goo at the feet, a Stuck! bubble
+--   bonk   hit by the Pumpkin's throw: an orange splat, dizzy stars
+--   dark   caught in the Robot's blackout: a scared face
+--   lockup padlocked by the Caretaker: a padlock and a clank
+--   jack   given away by a jack-in-the-box: a fright
+--   fake   opened the Anglerfish Keeper's fake present: a burst of bubbles
+function Effects.react(player, kind, seconds)
+	local hrp = hrpOf(player)
+	if not hrp then
+		return
+	end
+	local feet = hrp.Position - Vector3.new(0, 3, 0)
+	if kind == "gummy" then
+		seconds = seconds or 3
+		local goo = {}
+		-- a jelly puddle round the feet, wobbling, and blobs stuck to the shoes
+		local puddle = fxPart({ Shape = Enum.PartType.Cylinder, Material = Enum.Material.Glass, Transparency = 0.25,
+			Color = Color3.fromRGB(255, 92, 170), Size = Vector3.new(0.25, 4.2, 4.2),
+			CFrame = CFrame.new(feet + Vector3.new(0, 0.1, 0)) * CFrame.Angles(0, 0, math.rad(90)) })
+		table.insert(goo, puddle)
+		for i = 1, 5 do
+			local a = i * math.pi * 2 / 5
+			table.insert(goo, fxPart({ Shape = Enum.PartType.Ball, Material = Enum.Material.Glass, Transparency = 0.2,
+				Color = Color3.fromRGB(255, 120, 190), Size = Vector3.new(0.7, 0.7, 0.7),
+				Position = feet + Vector3.new(math.cos(a) * 0.8, 0.5 + (i % 2) * 0.4, math.sin(a) * 0.8) }))
+		end
+		TweenService:Create(puddle, TweenInfo.new(0.45, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true),
+			{ Size = Vector3.new(0.25, 4.8, 4.8) }):Play()
+		Effects.icon(player, "\u{1F616}", seconds)
+		Effects.sound(feet, "bounce", 0.7)
+		task.delay(seconds, function()
+			for _, g in ipairs(goo) do
+				g:Destroy()
+			end
+			Effects.burst(feet + Vector3.new(0, 1, 0), "gummy", "pop")
+		end)
+	elseif kind == "bonk" then
+		Effects.burst(hrp.Position + Vector3.new(0, 1.5, 0), "pumpkin", false)
+		if player.Character then
+			Effects.stars(player.Character, seconds or 2)
+		end
+		Effects.icon(player, "\u{1F4AB}", seconds or 2)
+	elseif kind == "dark" then
+		Effects.icon(player, "\u{1F628}", seconds or 3)
+	elseif kind == "lockup" then
+		Effects.icon(player, "\u{1F512}", seconds or 2)
+		Effects.sound(hrp.Position, "pick", 0.9)
+	elseif kind == "jack" then
+		Effects.icon(player, "\u{1F631}", seconds or 2)
+	elseif kind == "fake" then
+		Effects.burst(hrp.Position + Vector3.new(0, 1, 0), "bubbles", "pop")
+		Effects.icon(player, "\u{1F632}", seconds or 2)
+	end
 end
 
 -- a shimmering bubble round a player who has a Party Shield
