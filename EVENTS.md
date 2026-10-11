@@ -28,10 +28,36 @@ Picture: `art/roblox-store/events/event-halloween.png` (1920 x 1080).
 
 **Live since 9 Oct.**
 
-## 2. Thanksgiving and 3. Christmas
+## 2. Thanksgiving - Turkey Roundup (Nov 1 - Dec 1; page by Oct 24)
+
+Picture: `art/roblox-store/events/event-thanksgiving.png` (1920 x 1080; made
+once the two pictures in `THANKSGIVING_EVENT_PICTURE_WORKFLOW.md` are in).
+**This page promises the Turkey Roundup, the Gobbler, the Feast Meter and the
+skins - they must all be in the game on Nov 1.**
+
+- **Title:** Thanksgiving Turkey Roundup
+- **Subtitle:** Chase runaway turkeys and find golden feathers
+- **Description:**
+  Thanksgiving comes to Escape Crew! Six golden feathers are hidden on
+  every floor of every building - grab them while you escape. Then visit
+  the Harvest Barn, a new floor open only during the event, where little
+  runaway turkeys hide in the hay. For once YOU do the chasing - corner them
+  with your crew while the grumpy Gobbler chases you! Every turkey caught by
+  anyone fills the Feast Meter for rewards for everyone. Spend feathers in
+  the Lobby's Feather Shop on boosts and nine new Thanksgiving skins, and
+  find 50 for the Turkey Wrangler badge. The event ends December 1, so
+  gather your crew!
+- **Starts:** November 1, 12:00 AM Eastern Time (October 31, 9:00 PM
+  Pacific) - the moment the Candy Corn Hunt ends.
+- **Ends:** December 1, 12:00 AM Eastern Time (November 30, 9:00 PM
+  Pacific). The Feather Shop stays open through December 7.
+- **Category:** Quest. **Start Place:** Escape Crew. **Privacy:** Public.
+- **Submit for Featuring:** on - only possible if created by **October 24**.
+
+## 3. Christmas
 
 Ideas, dates and decisions: `SEASONAL_EVENTS.md` (10 Oct). Added here
-once Brent picks. **Submit for Featuring only works when the event is
+once its build is under way. **Submit for Featuring only works when the event is
 created at least 7 days before it starts** - Thanksgiving (starts 1 Nov
 2026, 12:00 AM Eastern, the moment Halloween ends) needs its page by
 **24 Oct 2026**; Christmas (starts 1 Dec) by **23 Nov 2026**. Their pictures will be made the same way.
