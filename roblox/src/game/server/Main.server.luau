@@ -807,6 +807,7 @@ local function applyBoost(plr, id)
 		Boost:FireClient(plr, "stamina")
 	elseif id == "shield" then
 		plr:SetAttribute("Shield", true)
+		plr:SetAttribute("SelfShieldAt", nil) -- this one keeps until a grab
 	elseif id == "freeze" then
 		if host and host.model then
 			host:stun(10)
@@ -947,6 +948,7 @@ local function wireStoreRooms()
 					extra = " And a free clue for the team!"
 				elseif roll == 2 then
 					plr:SetAttribute("Shield", true)
+					plr:SetAttribute("SelfShieldAt", nil)
 					extra = " And a Party Shield for " .. plr.DisplayName .. "!"
 				end
 				say("info", plr.DisplayName .. " opened a bonus present - points for everyone!" .. extra)
@@ -3282,16 +3284,19 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		Effects.aura(plr, "sneak", plr:GetAttribute("SneakTime") or 6)
 		say("sneak", plr.DisplayName .. " is sneaking - the host cannot see or grab them for " .. (plr:GetAttribute("SneakTime") or 6) .. " seconds!", { userId = plr.UserId })
 	elseif skill == "patch" then
-		-- a Party Shield for the nearest friend (all nearby with Shields for
-		-- All), everyone's breath back; alone, Patch shields herself
+		-- a Party Shield for the nearest friend without one (every friend
+		-- nearby without one with Shields for All); if no friend near needs one,
+		-- Patch shields herself - for Config.SELF_SHIELD seconds (10 Oct, Brent:
+		-- friends' shields last until a grab, hers runs out)
 		local nearest, nd, given = nil, math.huge, 0
 		for _, p in ipairs(Players:GetPlayers()) do
 			local h = hrpOf(p)
-			if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
+			if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and not p:GetAttribute("Shield") then
 				local d = (h.Position - hrp.Position).Magnitude
 				if d < 18 then
 					if plr:GetAttribute("HealShield") then
 						p:SetAttribute("Shield", true)
+						p:SetAttribute("SelfShieldAt", nil)
 						given += 1
 					elseif d < nd then
 						nearest, nd = p, d
@@ -3301,14 +3306,30 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		end
 		if nearest then
 			nearest:SetAttribute("Shield", true)
+			nearest:SetAttribute("SelfShieldAt", nil)
 			given += 1
 		end
 		if given == 0 then
-			plr:SetAttribute("Shield", true)
+			if plr:GetAttribute("Shield") and plr:GetAttribute("SelfShieldAt") == nil then
+				-- already holds a lasting shield: it stays as it is
+			else
+				local mark = workspace:GetServerTimeNow()
+				plr:SetAttribute("Shield", true)
+				plr:SetAttribute("SelfShieldAt", mark)
+				local secs = Config.SELF_SHIELD or 30
+				plr:SetAttribute("SelfShieldUntil", mark + secs)
+				task.delay(secs, function()
+					if plr.Parent and plr:GetAttribute("SelfShieldAt") == mark and plr:GetAttribute("Shield") and (plr:GetAttribute("ExtraShields") or 0) == 0 then
+						plr:SetAttribute("Shield", false)
+						plr:SetAttribute("SelfShieldAt", nil)
+						say("info", "\u{1F6E1} Your own Party Shield wore off.", nil, plr)
+					end
+				end)
+			end
 		end
 		Effects.at(plr, "heal")
 		Effects.ring(hrp.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(123, 227, 107), 36, 0.8)
-		say("heal", given == 0 and "Patch gave herself a Party Shield!" or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!"), { userId = plr.UserId })
+		say("heal", given == 0 and ("Patch gave herself a Party Shield (" .. (Config.SELF_SHIELD or 30) .. " s)!") or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!"), { userId = plr.UserId })
 	elseif skill == "muscle" then
 		local best, bd = nil, Config.BARRICADE.reach
 		for _, c in ipairs(world.crates or {}) do
@@ -3827,6 +3848,7 @@ function round.start()
 						plr:SetAttribute("ExtraShields", (plr:GetAttribute("ExtraShields") or 0) + 1)
 					end
 					plr:SetAttribute("Shield", true)
+					plr:SetAttribute("SelfShieldAt", nil)
 					plr:SetAttribute("ShieldBoost", true)
 					table.insert(on, id)
 				elseif id == "headstart" then
