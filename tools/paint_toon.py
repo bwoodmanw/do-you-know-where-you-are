@@ -618,17 +618,25 @@ def fit_side(fz, py, mask, sy, box):
     return best[1], best[0]
 
 
-def paint_view(img, mask, P, near, facing, F, uvpx, TW, TH, eps, painted, best):
+def paint_view(img, mask, P, near, facing, F, uvpx, TW, TH, eps, painted, best, depth_facing=None):
     """lays one picture over the texels of every triangle that faces it and
     that the picture can see (nearest surface at that pixel)"""
     IH, IW = img.shape[:2]
     depth = np.full((IH, IW), -np.inf, np.float32)
-    for f in np.nonzero(facing > 0)[0]:
+    # the depth test uses every triangle turned toward the picture, painted or not
+    for f in np.nonzero((facing if depth_facing is None else depth_facing) > 0)[0]:
         pts, bc = raster(P[F[f]], IW, IH)
         if pts is None or len(pts) == 0:
             continue
         z = bc @ near[F[f]]
         depth[pts[:, 1], pts[:, 0]] = np.maximum(depth[pts[:, 1], pts[:, 0]], z)
+    # 11 Oct (arm color on the body's sides: Gridiron Muscle's thighs): in a
+    # side picture the arm hangs over the body, and the model's arm never lines
+    # up with it exactly - so a surface with a much nearer one (an arm) within
+    # 2% of the picture's height keeps its own color instead
+    from scipy.ndimage import maximum_filter
+    r = max(2, int(0.02 * IH))
+    near_by = maximum_filter(np.where(np.isfinite(depth), depth, -1e9), size=2 * r + 1)
     for f in np.nonzero(facing > FACING_MIN)[0]:
         pts, bc = raster(uvpx[F[f]], TW, TH)
         if pts is None or len(pts) == 0:
@@ -637,7 +645,7 @@ def paint_view(img, mask, P, near, facing, F, uvpx, TW, TH, eps, painted, best):
         ix = np.clip(ip[:, 0].astype(int), 0, IW - 1)
         iy = np.clip(ip[:, 1].astype(int), 0, IH - 1)
         z = bc @ near[F[f]]
-        seen = (z >= depth[iy, ix] - eps) & mask[iy, ix]
+        seen = (z >= depth[iy, ix] - eps) & (z >= near_by[iy, ix] - 3 * eps) & mask[iy, ix]
         if not seen.any():
             continue
         w = min(1.0, (facing[f] - FACING_MIN) / (FACING_FULL - FACING_MIN))
@@ -759,7 +767,17 @@ def paint(name):
         eps = 0.02 * size[2] + 1e-6
         # paint every texel of the faces that face this view
         lo_f, full_f = (BACK_MIN, BACK_FULL) if view == "back" else (FACING_MIN, FACING_FULL)
-        for f in np.nonzero(facing > lo_f)[0]:
+        # 11 Oct (skin blotches beside the arms on the backs): the strict back
+        # rule is for the HEAD only (Echo's headphone cup); on the body the back
+        # picture keeps painting its back corners - in a side picture the arm
+        # hangs over them
+        lo_t = np.full(len(F), lo_f)
+        full_t = np.full(len(F), full_f)
+        if view == "back":
+            body_t = V[F].mean(axis=1)[:, 1] <= hi[1] - 0.27 * size[1]
+            lo_t[body_t], full_t[body_t] = FACING_MIN, FACING_FULL
+        for f in np.nonzero(facing > lo_t)[0]:
+            lo_f, full_f = lo_t[f], full_t[f]
             pts, bc = raster(uvpx[F[f]], TW, TH)
             if pts is None or len(pts) == 0:
                 continue
@@ -812,8 +830,13 @@ def paint(name):
             px = px.copy()
             px[head_v] = hpx
             fit = min(fit, hfit)
-        paint_view(img, mask, np.stack([px, py], axis=1), sign * V[:, 0], sign * fn[:, 0],
-                   F, uvpx, TW, TH, 0.02 * size[0] + 1e-6, painted, best)
+        # 11 Oct (Patch's face came out smudged, face match 0.65 -> 0.19): a side
+        # picture paints only what faces more to the side than to the front -
+        # the slopes of the cheeks and nose stay the front's (Stable Fast 3D
+        # built them from the front picture); full side color from ~65 deg round
+        side_facing = sign * fn[:, 0] - np.maximum(-fn[:, 2], 0.0)
+        paint_view(img, mask, np.stack([px, py], axis=1), sign * V[:, 0], side_facing,
+                   F, uvpx, TW, TH, 0.02 * size[0] + 1e-6, painted, best, sign * fn[:, 0])
         sides.append(f"{view} (fit {fit:.2f})")
     # how Stable Fast 3D shifted the colors (washed out), from the front, undone
     # everywhere; then the back picture laid over its guessed back
