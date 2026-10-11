@@ -1,6 +1,6 @@
 # Escape Crew - session handoff
 
-Last updated: 10 Oct 2026, end of the seventh session (long: the skill-ladder
+Last updated: 10 Oct 2026 (evening), end of the eighth session - see 'Session 8' first. Before that: end of the seventh session (long: the skill-ladder
 fix A/B/C, the Lobby Characters screen with Skills / Skins windows, a sound
 audit, and the **toon model upgrade** - new cartoon models for all 8
 characters, 9 skins and (in progress) 6 hosts, made on Brent's PC with Stable
@@ -8,6 +8,69 @@ Fast 3D and repainted by our own tools). Latest commits on `main`. **Brent
 last published both places some time after 0264fb7 (exact commit not
 recorded); nothing from this session is published. Hold publishing until the
 toon switch-over is done (below).**
+
+## Session 8 (10 Oct, evening) - read this first
+
+**Nothing published.** Both places are rebuilt locally; Brent tests in Studio
+(Rojo). Everything below is committed and pushed.
+
+**Toon faces - what was really wrong (a day of wrong turns, now settled):**
+- Studio reproduces our .glb exactly (Brent's `art/models/studio-export/`
+  exports matched triangles, UVs and texture). Every smudge was in OUR paint:
+  Stable Fast 3D guesses the sides and the underside, and paints the neck's
+  shadow. Not normals, not lighting, not Avatar Setup (Development Avatar
+  changed nothing; keep **Platform Avatar**).
+- `tools/paint_toon.py` now: whole visible face in the sharp corner;
+  `even_skin` (jaw / chin / neck = the cheeks' LIT skin, `lit_skin`);
+  `picture_chin` (nothing below the picture's chin copied onto the chin);
+  neck shadow -> skin (`skin_tone`); picture-edge kept off the face
+  (`EDGE_PX`); unseen triangles take neighbours' colours (`fill_unseen`);
+  **side pictures** `left-toon.png` / `right-toon.png` painted when present
+  (`fit_side`; the head fitted on its own; with sides the back picture only
+  paints what faces squarely back); points never share spot+normal
+  (`split_shared_normals`, the checker enforces it); `flatten_background.py`
+  for two-tone picture backgrounds.
+- **Echo remade** with headphones ON her ears (the neck ones fused into her
+  jaw); old files kept as `*-neckphones`. Last fix (one cup per side) needs
+  Brent's re-import photo.
+- **Next for models:** side pictures for everyone (one ChatGPT workflow,
+  Echo's format in `ECHO_SIDE_TOON_PICTURE_WORKFLOW.md`), repaint (minutes),
+  then Brent imports all, switch-over (old -> CharactersOld, rename, Save to
+  Roblox, ids into `Config.CHARACTER_ASSETS` - the Lobby's 3D Patch still
+  shows the OLD saved model until then). Hosts: 6 toons made and checked
+  (Caretaker's mop lump, Robot's 3 feet - judge at import).
+- **Thanksgiving models made** (Brent's run): Chef Brainy, Gobble Shadow, Pie
+  Baker Patch, Harvest Glow, Scarecrow Tinker, Gridiron Muscle, Feast DJ Echo,
+  Cozy Cocoa Echo, Acorn Bramble, the Gobbler, the turkey - all checked.
+
+**Game changes this session (untested in Play unless noted):**
+- Candy Shop: - qty + then Buy, cost beside the corn icon, receipt line.
+- Skeleton Key no longer breaks blocked passages (Conveyor Hall bug).
+- Plushie Book: tap to enlarge, faces front, bigger cards; a found plushie
+  hops, spins and faces its finder.
+- Host reactions (`Effects.react`): gummy goo, pumpkin stars, blackout,
+  padlock, jack-in-the-box, fake-present bubbles. Body animations: after the
+  switch-over.
+- Results name the floor escaped; "Unlocked:" before new floors.
+- Party map voting: Start waits for everyone's vote or 30 s after the last
+  join (`Config.VOTE_WINDOW`); ties to the leader.
+- Hiding spots are real furniture (wardrobe doors open, curtain rod, sofa,
+  box flaps, covered table); the 🙈 sits above and draws on top (32 studs).
+- Patch's own shield lasts 30 s (`Config.SELF_SHIELD`); friends who already
+  have one are skipped, so she shields herself when all nearby have one.
+- HUD: bigger tiles (100x74), countdowns + fading in the last 5 s on active
+  slots, ⬅ Lobby, **My Skills** button/panel, jumpscare framed on the host's
+  outline; Brainy's propeller placed from the model's outline.
+- Lobby: Spooky first and default. Ghostly Shadow's pass picture remade
+  (Brent uploads it). Tower Run kept as is (opens after the top floor).
+
+**Events decided (`SEASONAL_EVENTS.md`):** Thanksgiving = feathers on every
+floor + Turkey Roundup on the Harvest Barn floor, the Gobbler, Feast Meter,
+Turkey Wrangler badge, 9 skins; starts 1 Nov 12:00 AM ET; **event page by
+24 Oct**. Feathers sold for Robux (2 bundles; bought ones never count for the
+badge / meter). Christmas: Holly + Miles (Deck the Doorway), Comet the
+hardest (escape the Reindeer Stables), Sir Shivers, Candy Cane Lane; page by
+23 Nov. Yearly dates: build before Thanksgiving. Yearly badge: no.
 
 ## What it is
 
