@@ -117,7 +117,7 @@ require(ReplicatedStorage.Shared.Sfx).group()
 local RoundState = Instance.new("Configuration")
 RoundState.Name = "RoundState"
 RoundState.Parent = ReplicatedStorage
-RoundState:SetAttribute("Spook", "giggly")
+RoundState:SetAttribute("Spook", "spooky") -- 10 Oct: Spooky by default (Brent)
 RoundState:SetAttribute("Difficulty", "normal")
 
 -- the floor above this one in the same building (nil on a top floor)

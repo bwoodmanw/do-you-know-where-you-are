@@ -122,7 +122,7 @@ local function tileIcon(b, getId)
 	pic.Name = "Icon"
 	pic.BackgroundTransparency = 1
 	pic.ScaleType = Enum.ScaleType.Fit
-	pic.Size = UDim2.new(1, 0, 1, -22)
+	pic.Size = UDim2.new(1, 0, 1, -30) -- 10 Oct: more room for bigger words
 	pic.ZIndex = b.ZIndex + 1
 	pic.Parent = b
 	local stripping = false
@@ -136,7 +136,7 @@ local function tileIcon(b, getId)
 		b.TextWrapped = id <= 0
 		local cap = b:FindFirstChildOfClass("UITextSizeConstraint")
 		if cap then
-			cap.MaxTextSize = id > 0 and 18 or 24
+			cap.MaxTextSize = id > 0 and 26 or 28
 		end
 		if id > 0 and not stripping then
 			-- the picture replaces the emoji at the start of the words
@@ -268,7 +268,9 @@ local function jumpscare()
 		local look = root and root.CFrame.LookVector or Vector3.new(0, 0, -1)
 		local dir = Vector3.new(look.X, 0, look.Z)
 		dir = dir.Magnitude > 0.1 and dir.Unit or Vector3.new(0, 0, -1)
-		scareFace = { head = head, dir = dir, r = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2 }
+		local hr = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2
+		local bcf, bsize = copy:GetBoundingBox()
+		scareFace = { head = head, dir = dir, r = hr, face = Vector3.new(bcf.Position.X, bcf.Position.Y + bsize.Y / 2 - hr * 1.15, bcf.Position.Z) }
 	end
 	scareView.Visible = scareFace ~= nil
 	local cam = workspace.CurrentCamera
@@ -278,8 +280,8 @@ local function jumpscare()
 		local f = os.clock() - t0
 		if scareFace then
 			-- rush in on the face
-			local d = scareFace.r * (2.6 - math.min(1, f * 2.5) * 1.3)
-			local aim = scareFace.head.Position - Vector3.new(0, scareFace.r * 0.15, 0)
+			local d = scareFace.r * (2.8 - math.min(1, f * 2.5) * 1.2)
+			local aim = (scareFace.face or scareFace.head.Position) - Vector3.new(0, scareFace.r * 0.1, 0)
 			scareCam.CFrame = CFrame.lookAt(aim + scareFace.dir * d + Vector3.new((math.random() - 0.5) * 0.15, 0, 0), aim)
 		end
 		if scareImg then
@@ -332,6 +334,13 @@ local function hostCloseUp(intense)
 	redFlash.BackgroundTransparency = intense and 0.35 or 0.7
 	TweenService:Create(redFlash, TweenInfo.new(0.7), { BackgroundTransparency = 1 }):Play()
 	local r = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2
+	-- 10 Oct (Brent: off centre, too close, space above the head): aim at the
+	-- middle of the model's own outline, one head below its top - an imported
+	-- head part can sit off to one side
+	local faceAt = function()
+		local bcf, bsize = host:GetBoundingBox()
+		return Vector3.new(bcf.Position.X, bcf.Position.Y + bsize.Y / 2 - r * 1.15, bcf.Position.Z)
+	end
 	local t0 = os.clock()
 	local dur = intense and 2.6 or 2
 	scareBusyUntil = os.clock() + dur + (intense and 1.4 or 0.2)
@@ -351,8 +360,8 @@ local function hostCloseUp(intense)
 		end
 		-- rush in on the face, then hold it filling the screen, shaking
 		local e = 1 - (1 - math.min(1, f * 1.6)) ^ 3
-		local dist = r + 9.5 - e * 7.7
-		cam.FieldOfView = fov - e * 25
+		local dist = r + 9.5 - e * 7.0
+		cam.FieldOfView = fov - e * 22
 		local s = (intense and 0.3 or 0.1) * e
 		-- the face points the way the host walks (its root); a head part's own
 		-- direction can be backwards on an imported model
@@ -361,9 +370,10 @@ local function hostCloseUp(intense)
 		faceDir = faceDir.Magnitude > 0.1 and faceDir.Unit or Vector3.new(0, 0, -1)
 		-- aim a little below the middle of the head part: an imported head part
 		-- is taller than the face, so this keeps the whole face on screen
-		local front = head.Position + faceDir * dist + Vector3.new(0, r * 0.05, 0)
+		local face = faceAt()
+		local front = face + faceDir * dist + Vector3.new(0, r * 0.05, 0)
 		local shake = Vector3.new((math.random() - 0.5) * s, (math.random() - 0.5) * s, (math.random() - 0.5) * s)
-		cam.CFrame = CFrame.lookAt(front + shake, head.Position - Vector3.new(0, r * 0.2, 0))
+		cam.CFrame = CFrame.lookAt(front + shake, face - Vector3.new(0, r * 0.1, 0))
 	end)
 end
 
@@ -1358,11 +1368,25 @@ do
 	-- what this character's levels give, all the time: "Your levels: run +10%,
 	-- stamina +20%..." (computers: its own line; phones: it takes turns with
 	-- the building name, 5 s each)
-	local levels = label(bars, { Size = UDim2.new(1, -16, 0, TOUCH and 32 or 30), Position = UDim2.fromOffset(8, TOUCH and 54 or 88), Text = "", TextWrapped = true,
-		TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextColor3 = Color3.fromRGB(150, 220, 255), Visible = not TOUCH })
+	-- 10 Oct (Brent): a Skills button instead of a squeezed line - it opens a
+	-- panel with one bonus per line
+	local skillsPanel = frame(gui, { Size = UDim2.fromOffset(380, 300), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Visible = false, ZIndex = 40 })
+	corner(skillsPanel, 16)
+	label(skillsPanel, { Size = UDim2.new(1, -24, 0, 34), Position = UDim2.fromOffset(12, 10), Text = "\u{2B06} Your skill levels", TextColor3 = PUMP, ZIndex = 41 })
+	local levels = label(skillsPanel, { Size = UDim2.new(1, -32, 1, -110), Position = UDim2.fromOffset(16, 52), Text = "", TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, TextColor3 = Color3.fromRGB(150, 220, 255), ZIndex = 41 })
 	local cap = Instance.new("UITextSizeConstraint")
-	cap.MaxTextSize = 14
+	cap.MaxTextSize = 24
 	cap.Parent = levels
+	button(skillsPanel, "Close", { Size = UDim2.fromOffset(140, 40), Position = UDim2.new(0.5, -70, 1, -50), ZIndex = 41 }, function()
+		skillsPanel.Visible = false
+	end)
+	if TOUCH then
+		roomName.Size = UDim2.new(1, -124, 0, 32)
+	end
+	button(bars, "\u{2B06} My Skills", { Size = UDim2.fromOffset(TOUCH and 108 or 140, 30), Position = TOUCH and UDim2.new(1, -114, 0, 56) or UDim2.fromOffset(8, 88), BackgroundColor3 = Color3.fromRGB(70, 140, 220) }, function()
+		skillsPanel.Visible = not skillsPanel.Visible
+	end)
 	local function pct(x)
 		return math.floor(x * 100 + 0.5)
 	end
@@ -1389,21 +1413,12 @@ do
 		if cool > 0.001 then
 			table.insert(parts, "\u{1F504} recharge " .. pct(cool) .. "% faster")
 		end
-		levels.Text = #parts > 0 and ("\u{2B06} Your levels: " .. table.concat(parts, "  ")) or "\u{2B06} No level bonuses yet - play to level up!"
+		levels.Text = #parts > 0 and table.concat(parts, "\n") or "No level bonuses yet - play to level up!"
 	end
 	for _, a in ipairs({ "RunMult", "StaminaMult", "HoldMult", "SightMult", "CooldownMult", "Skill" }) do
 		player:GetAttributeChangedSignal(a):Connect(paint)
 	end
 	paint()
-	if TOUCH then
-		task.spawn(function()
-			while levels.Parent do
-				task.wait(5)
-				levels.Visible = not levels.Visible
-				roomName.Visible = not levels.Visible
-			end
-		end)
-	end
 end
 local mapBox = frame(gui, { Size = UDim2.fromOffset(MAP_W + 8, MAP_H + 32), Position = mapAt, BackgroundTransparency = 0.25, BackgroundColor3 = Color3.fromRGB(22, 13, 34) })
 corner(mapBox, 10)
@@ -1725,7 +1740,7 @@ task.spawn(function()
 end)
 
 -- ---------- leave for the Lobby (asks first) ----------
-local leaveBtn = button(gui, "\u{1F6AA} Lobby", { Size = UDim2.fromOffset(96, 36), Position = UDim2.new(1, -110, 0, 94), ZIndex = 5 })
+local leaveBtn = button(gui, "\u{2B05} Lobby", { Size = UDim2.fromOffset(96, 36), Position = UDim2.new(1, -110, 0, 94), ZIndex = 5 })
 local leaveBox = frame(gui, { Size = UDim2.fromOffset(360, 140), Position = UDim2.new(0.5, -180, 0.4, -70), Visible = false, ZIndex = 45 })
 corner(leaveBox, 16)
 label(leaveBox, { Size = UDim2.new(1, -30, 0, 60), Position = UDim2.fromOffset(15, 10), Text = "Leave this game and go back to the Lobby?", TextWrapped = true, ZIndex = 46 })
@@ -1792,7 +1807,13 @@ activeList.HorizontalAlignment = Enum.HorizontalAlignment.Right
 activeList.Padding = UDim.new(0, 6)
 activeList.Parent = activeRow
 local function activeSlot(boostId, fallback)
-	local f = frame(activeRow, { Size = UDim2.fromOffset(44, 44), BackgroundTransparency = 0.3, Visible = false })
+	-- a CanvasGroup so the whole slot can fade in and out in its last seconds
+	local f = Instance.new("CanvasGroup")
+	f.Size = UDim2.fromOffset(44, 44)
+	f.BackgroundColor3 = NIGHT
+	f.BackgroundTransparency = 0.3
+	f.Visible = false
+	f.Parent = activeRow
 	corner(f, 22)
 	local ring = Instance.new("UIStroke")
 	ring.Color = Color3.fromRGB(123, 227, 107)
@@ -1983,7 +2004,9 @@ RunService.RenderStepped:Connect(function(dt)
 	runBtn.BackgroundColor3 = (runToggle or shiftHeld) and PUMP or Color3.fromRGB(75, 58, 102)
 	-- the active boosts row
 	shieldSlot.Visible = player:GetAttribute("Shield") == true
-	shieldText.Text = "ON"
+	-- Patch's shield on herself runs out (Config.SELF_SHIELD): count it down
+	local shieldLeft = player:GetAttribute("SelfShieldAt") and ((player:GetAttribute("SelfShieldUntil") or 0) - workspace:GetServerTimeNow()) or 0
+	shieldText.Text = shieldLeft > 0 and (math.ceil(shieldLeft) .. "s") or "ON"
 	local candyLeft = candyUntil - os.clock()
 	candySlot.Visible = candyLeft > 0
 	candyText.Text = candyLeft > 0 and (math.ceil(candyLeft) .. "s") or ""
@@ -1993,6 +2016,14 @@ RunService.RenderStepped:Connect(function(dt)
 	local burstLeft = (player:GetAttribute("TeamBurstUntil") or 0) - workspace:GetServerTimeNow()
 	speedSlot.Visible = burstLeft > 0
 	speedText.Text = burstLeft > 0 and (math.ceil(burstLeft) .. "s") or ""
+	-- 10 Oct (Brent): the last 5 seconds of anything that runs out: it fades
+	-- in and out so you notice it's nearly over
+	do
+		local pulse = 0.55 * (0.5 + 0.5 * math.sin(os.clock() * 9))
+		for slot, left in pairs({ [shieldSlot] = shieldLeft, [candySlot] = candyLeft, [freezeSlot] = frozenLeft, [speedSlot] = burstLeft }) do
+			slot.GroupTransparency = (left > 0 and left <= 5) and pulse or 0
+		end
+	end
 	staminaBar.Size = UDim2.fromScale(stamina / 100, 1)
 	staminaBar.BackgroundColor3 = tired and Color3.fromRGB(255, 77, 94) or Color3.fromRGB(123, 227, 107)
 	gameEarned.Text = "\u{2B50} " .. tostring(player:GetAttribute("GameEarned") or 0) .. " points this game" .. (player:GetAttribute("FriendBonus") and "  \u{1F46B} +10%" or "")

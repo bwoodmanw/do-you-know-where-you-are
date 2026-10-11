@@ -1199,6 +1199,7 @@ local function decorateHide(root, entry, look)
 	local deco = Instance.new("Folder")
 	deco.Name = "HideDeco"
 	deco.Parent = root
+	entry.deco = deco
 	local function bit(props)
 		props.CanCollide, props.CanQuery, props.CanTouch, props.CastShadow = false, false, false, false
 		return part(deco, props)
@@ -1585,9 +1586,18 @@ function House.buildObjects(world)
 			entry.prompt = prompt(entry.part, "Hide", "Fits " .. (o.cap or 2))
 			-- hiding places are marked so they stand out from things to search
 			local mark = Instance.new("BillboardGui")
-			mark.Size = UDim2.fromOffset(40, 40)
-			mark.StudsOffset = Vector3.new(0, entry.part.Size.Y / 2 + 1.6, 0)
-			mark.MaxDistance = 40
+			mark.Size = UDim2.fromOffset(48, 48)
+			-- above the tallest bit of the furniture (crown, rod, sofa back), and
+			-- drawn on top so nothing hides it - only up close (10 Oct, Brent)
+			local top = entry.part.Position.Y + entry.part.Size.Y / 2
+			for _, d in ipairs(entry.deco and entry.deco:GetChildren() or {}) do
+				if d:IsA("BasePart") then
+					top = math.max(top, d.Position.Y + d.Size.Y / 2)
+				end
+			end
+			mark.StudsOffset = Vector3.new(0, top - entry.part.Position.Y + 2.2, 0)
+			mark.AlwaysOnTop = true
+			mark.MaxDistance = 32
 			mark.Parent = entry.part
 			local mt = Instance.new("TextLabel")
 			mt.Size = UDim2.fromScale(1, 1)

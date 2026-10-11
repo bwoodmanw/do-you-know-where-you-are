@@ -786,10 +786,10 @@ for i, key in ipairs(Config.DIFFICULTY_ORDER) do
 		opt("difficulty", key)
 	end)
 end
-local gigBtn = button(optBox, "\u{1F604} Giggly", { Size = UDim2.fromOffset(190, 34), Position = UDim2.fromOffset(0, 126) }, function()
+local gigBtn = button(optBox, "\u{1F604} Giggly", { Size = UDim2.fromOffset(190, 34), Position = UDim2.fromOffset(200, 126) }, function()
 	opt("spook", "giggly")
 end)
-local spkBtn = button(optBox, "\u{1F47B} Spooky", { Size = UDim2.fromOffset(190, 34), Position = UDim2.fromOffset(200, 126) }, function()
+local spkBtn = button(optBox, "\u{1F47B} Spooky", { Size = UDim2.fromOffset(190, 34), Position = UDim2.fromOffset(0, 126) }, function() -- 10 Oct: Spooky first (Brent)
 	opt("spook", "spooky")
 end)
 local startBtn = button(partyBox, "\u{25B6} Start", { Size = UDim2.fromOffset(130, 48), Position = UDim2.new(0, 20, 1, -64), BackgroundColor3 = PUMP, TextColor3 = NIGHT }, function()

@@ -828,7 +828,7 @@ CreateParty.OnServerEvent:Connect(function(plr, solo)
 		created = os.clock(),
 		friendsOnly = true,
 		difficulty = "normal",
-		spook = "giggly",
+		spook = "spooky", -- 10 Oct: Spooky by default (Brent)
 		votes = {},
 	}
 	nextId += 1
@@ -958,7 +958,7 @@ QuickPlay.OnServerEvent:Connect(function(plr)
 		created = os.clock(),
 		friendsOnly = true,
 		difficulty = "normal",
-		spook = "giggly",
+		spook = "spooky", -- 10 Oct: Spooky by default (Brent)
 		votes = { [tostring(plr.UserId)] = pick },
 	}
 	nextId += 1
