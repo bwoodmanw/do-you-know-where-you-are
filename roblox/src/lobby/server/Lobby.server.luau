@@ -510,14 +510,14 @@ local function snapshot(party)
 		chosen = chosenMap(party),
 		voteEnds = party.voteEnds,
 		tower = party.tower == true,
-		unlocked = (Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked,
+		unlocked = Progress.openMaps((Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked, Seasons.active() and Seasons.active().id),
 	}
 end
 
 -- the map the party plays: most votes among maps that are ready and the
 -- leader has unlocked; a tie goes to the leader's vote
 function chosenMap(party)
-	local unlocked = (Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked
+	local unlocked = Progress.openMaps((Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked, Seasons.active() and Seasons.active().id)
 	local tally, best, bestN = {}, "partyhouse", 0
 	for userId, mapId in pairs(party.votes) do
 		local i = Progress.mapIndex(mapId)
@@ -913,7 +913,7 @@ SetOption.OnServerEvent:Connect(function(plr, key, value)
 		end
 		party.tower = value
 	elseif key == "building" and typeof(value) == "string" then
-		for _, b in ipairs(Progress.BUILDINGS) do
+		for _, b in ipairs(Progress.buildingsFor(Seasons.active() and Seasons.active().id)) do
 			if b.id == value then
 				party.building = value
 			end
@@ -998,7 +998,7 @@ VoteMap.OnServerEvent:Connect(function(plr, mapId)
 	if not Progress.MAPS[i].ready then
 		return Notice:FireClient(plr, Progress.MAPS[i].name .. " is coming soon!")
 	end
-	local unlocked = (Profile.get(party.leader) or { unlocked = {} }).unlocked
+	local unlocked = Progress.openMaps((Profile.get(party.leader) or { unlocked = {} }).unlocked, Seasons.active() and Seasons.active().id)
 	if not unlocked[mapId] then
 		return Notice:FireClient(plr, "Your leader hasn't unlocked " .. Progress.MAPS[i].name .. " yet - escape the map before it first.")
 	end
@@ -1079,6 +1079,64 @@ do
 		Profile.save(plr)
 		CornBought:FireClient(plr, boost.icon, boost.name, count, total, false, e.id)
 		Notice:FireClient(plr, boost.icon .. " " .. count .. " x " .. boost.name .. " for " .. total .. " " .. e.many .. "!")
+	end)
+end
+
+-- the Feast Meter (Thanksgiving): the community total for the Lobby screen
+-- (remotes' "Feast" / "FeastSeason" attributes), and each stage's reward,
+-- once per player per season and year (Config.FEAST) - checked every minute
+do
+	local FeastMeter = require(ReplicatedStorage.Shared.FeastMeter)
+	local function reward(plr, total, key, sid)
+		local data = Profile.get(plr)
+		if not data or not key then
+			return
+		end
+		data.feast = data.feast or {}
+		data.feast[key] = data.feast[key] or {}
+		local got = data.feast[key]
+		local changed = false
+		for _, i in ipairs(FeastMeter.reached(sid, total)) do
+			if not got[tostring(i)] then
+				got[tostring(i)] = true
+				changed = true
+				local st = Config.FEAST[sid].stages[i]
+				if st.points then
+					data.points += st.points
+				end
+				if st.boost then
+					data.inv[st.boost] = (data.inv[st.boost] or 0) + 1
+				end
+				local s = Seasons.get(sid)
+				if st.feathers and s then
+					local k = s.item .. "Gift"
+					data.stats[k] = (data.stats[k] or 0) + st.feathers
+				end
+				Notice:FireClient(plr, "\u{1F967} The Feast Meter reached " .. st.at .. " turkeys! You got " .. st.say)
+			end
+		end
+		if changed then
+			Profile.publish(plr)
+			Profile.save(plr)
+		end
+	end
+	task.spawn(function()
+		while true do
+			local total, key = FeastMeter.get()
+			local _, sid = FeastMeter.key()
+			remotes:SetAttribute("Feast", key and total or nil)
+			remotes:SetAttribute("FeastSeason", key and sid or nil)
+			for _, plr in ipairs(Players:GetPlayers()) do
+				task.spawn(reward, plr, total, key, sid)
+			end
+			task.wait(60)
+		end
+	end)
+	Players.PlayerAdded:Connect(function(plr)
+		task.wait(8) -- once the profile has loaded
+		local total, key = FeastMeter.get()
+		local _, sid = FeastMeter.key()
+		reward(plr, total, key, sid)
 	end)
 end
 

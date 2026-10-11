@@ -153,7 +153,7 @@ Config.ANIM = {
 	plainRun = { shadow = true, brainy = true },
 	run = 507767714, -- Roblox's plain R15 run
 	-- the hosts
-	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation" },
+	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie" },
 }
 Config.CAGE_WALK = 5 -- a caged kid can shuffle round inside the cage (no jumping)
 Config.RUN = 20
@@ -230,8 +230,10 @@ Config.HOSTS = {
 	-- picks); lure = a glowing lure on a stalk above his head (Meshy lost the
 	-- model's own)
 	anglerfish = { model = "HostAnglerfish", name = "the Anglerfish Keeper", skill = "fakegift", tint = Color3.fromRGB(60, 110, 130), lure = true },
+	-- the Harvest Barn's host (Thanksgiving): only in the barn, always there
+	gobbler = { model = "HostGobbler", name = "the Gobbler", tint = Color3.fromRGB(126, 72, 40), hidden = true },
 }
-Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear", aquarium = "anglerfish" }
+Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear", aquarium = "anglerfish", harvestbarn = "gobbler" }
 -- the "escaped all floors" badge counts these buildings' floors (its badge says 9 floors)
 Config.ALL_FLOORS_BUILDINGS = { partyhouse = true, gummy = true, hospital = true }
 Config.CLUES = 3
@@ -259,7 +261,7 @@ Config.BADGES = {
 	aquarium = 2071235778459400, -- Making a Splash: escaped the Aquarium's top floor (Rooftop Pools)
 	basement = 3470854860514085, -- Down in the Dark: escaped the Party House's Secret Basement
 	corn = 1601997395414164, -- Candy Corn Collector: found the Halloween season's goal of candy corns
-	feather = 0, -- Thanksgiving (Creator Hub: not made yet)
+	turkey = 0, -- Turkey Wrangler: caught Config.ROUNDUP.goal runaway turkeys (Thanksgiving; Creator Hub: not made yet)
 	tower = 2702531171107423, -- Tower Climber: reached the top in a Tower Run
 	rescuer = 4200883843590712, -- Hero of the Crew: freed 10 friends from the cage
 	untouched = 1991556459225776, -- Untouchable: escaped without being caught
@@ -403,7 +405,8 @@ Config.SEASONS = {
 		id = "thanksgiving", name = "Feather Hunt", shopName = "Feather Shop", item = "feather",
 		one = "golden feather", many = "golden feathers", icon = "\u{1FAB6}",
 		from = { 11, 1 }, to = { 12, 1 }, shopDays = 7,
-		perFloor = 6, points = 3, goal = 50, near = 4, badge = "feather", badgeName = "Turkey Wrangler", look = "Thanksgiving",
+		-- no badge for feathers: Thanksgiving's badge is for turkeys (Config.ROUNDUP)
+		perFloor = 6, points = 3, near = 4, look = "Thanksgiving",
 		shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 },
 		gift = { 25, 100 },
 		bundles = { { amount = 50, product = 0 }, { amount = 150, product = 0 } },
@@ -412,6 +415,30 @@ Config.SEASONS = {
 -- Studio only: pretend it is this date for the seasons ({ 2026, 11, 5 } tries
 -- Thanksgiving's Feather Hunt and shop; nil = today)
 Config.STUDIO_SEASON_DATE = nil
+-- the Turkey Roundup (Thanksgiving, the Harvest Barn - Brent, 11 Oct):
+-- `turkeys` runaway turkeys run from any kid closer than `flee` studs, at
+-- `speed` (walking is Config.WALK, running Config.RUN - cornering them
+-- together works best); within `catch` studs one is caught (`points`). The
+-- barn doors swing open once every one is caught. `goal` caught in all earns
+-- BADGES.turkey. The turkey is ServerStorage/Characters/Turkey (plain Import
+-- 3D, no Avatar Setup), else a built one. `share`: a turkey caught counts
+-- for everyone in the party (decision 6, asked 11 Oct)
+Config.ROUNDUP = { turkeys = 8, flee = 16, catch = 4, speed = 15, height = 3.2, points = 5, goal = 50, share = true }
+-- the Feast Meter (Thanksgiving, Brent 11 Oct): every runaway turkey caught
+-- in every server adds up (shared/FeastMeter.luau). Each stage reached gives
+-- every player its reward once, in the Lobby (late joiners too): points,
+-- a boost in the bag, or the season's item to spend (not toward a badge).
+-- `say`: how the Lobby names the reward. Thresholds: check after the first
+-- week (the Balance table).
+Config.FEAST = {
+	thanksgiving = {
+		stages = {
+			{ at = 250, points = 500, say = "500 points" },
+			{ at = 1000, boost = "shield", say = "a free Party Shield (in your Boost Shop)" },
+			{ at = 3000, feathers = 25, feast = true, say = "25 golden feathers - and the feast is on!" },
+		},
+	},
+}
 -- the owner's gift buttons for points (Lobby)
 Config.GIFT_POINTS = { 500, 2000 }
 -- the pictures of each season's item (0 = its emoji); the candy corn is the

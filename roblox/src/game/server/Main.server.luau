@@ -28,6 +28,7 @@ local Effects = require(script.Parent.Effects)
 local Plushies = require(ReplicatedStorage.Shared.Plushies)
 local Shapes = require(ReplicatedStorage.Shared.Shapes) -- stretched balls need a sphere mesh
 local Seasons = require(ReplicatedStorage.Shared.Seasons) -- the yearly events (Config.SEASONS)
+local FeastMeter = require(ReplicatedStorage.Shared.FeastMeter) -- Thanksgiving's community goal
 local Characters = require(script.Parent.Characters)
 local Props = require(script.Parent.Props)
 
@@ -650,7 +651,9 @@ local function checkEnd()
 			local out = plr:GetAttribute("Escaped") == true and not plr:GetAttribute("Waiting")
 			if out then
 				award(plr, "firstEscape")
-				if m and m.secret then
+				if m and m.season then
+					-- a season floor (the Harvest Barn): its badge comes from its hunt
+				elseif m and m.secret then
 					award(plr, "basement") -- the Secret Basement (not the building's top floor)
 				elseif m and not nextFloor() then
 					award(plr, m.building)
@@ -710,7 +713,7 @@ local function escape(plr, side)
 end
 
 local function openDoor(plr, how)
-	if state.doorOpen then
+	if state.doorOpen or (state.roundup and how ~= "turkeys") then
 		return
 	end
 	state.doorOpen = true
@@ -722,7 +725,8 @@ local function openDoor(plr, how)
 	world.objects.door.usePrompt.Enabled = false
 	addPoints(plr, 25)
 	quest(plr, "door")
-	say("open", how == "pick" and ("Click! " .. plr.DisplayName .. " picked the lock! Everybody out!") or "The big door is open! Everybody out!")
+	say("open", how == "turkeys" and "Every turkey caught! The big barn doors swing open - everybody out!"
+		or how == "pick" and ("Click! " .. plr.DisplayName .. " picked the lock! Everybody out!") or "The big door is open! Everybody out!")
 end
 
 local function revealAll(plr, by)
@@ -2289,7 +2293,7 @@ function round.placeCandyCorn()
 							Effects.burst(c.pos, "boost", "collect")
 							local One = string.upper(string.sub(e.one, 1, 1)) .. string.sub(e.one, 2)
 							say("corn", One .. " found! " .. n .. " so far (+" .. e.points .. " points)", { userId = plr.UserId, found = n, item = e.item }, plr)
-							if n == e.goal then
+							if e.goal and e.badgeName and n == e.goal then
 								say("info", e.icon .. " " .. plr.DisplayName .. " found " .. e.goal .. " " .. e.many .. " - " .. e.badgeName .. "!")
 							end
 							local have = data and Seasons.have(data.stats, e) or 0
@@ -2299,13 +2303,295 @@ function round.placeCandyCorn()
 									say("info", e.icon .. " " .. price .. " " .. e.many .. " to spend - get " .. skin.name .. " in the Lobby's " .. e.shopName .. "!", nil, plr)
 								end
 							end
-							local badge = Config.BADGES[e.badge] or 0
-							if n >= e.goal and badge > 0 then
+							local badge = e.badge and Config.BADGES[e.badge] or 0
+							if e.goal and n >= e.goal and badge > 0 then
 								task.spawn(pcall, function()
 									game:GetService("BadgeService"):AwardBadge(plr.UserId, badge)
 								end)
 							end
 						end
+					end
+				end
+			end
+		end
+	end)
+end
+
+-- the Turkey Roundup (Thanksgiving, on the Harvest Barn floor - Brent, 11 Oct):
+-- the stall gates stand open, the keys and the code aren't needed; little
+-- runaway turkeys hide round the barn and run from any kid who comes near
+-- (a bit slower than running, so the crew corners them together); every one
+-- caught counts toward the Turkey Wrangler badge (Config.ROUNDUP.goal) - for
+-- the whole party with `share` - and once all are caught the big barn doors
+-- swing open.
+function round.placeTurkeys()
+	state.roundup = nil
+	RoundState:SetAttribute("Roundup", nil)
+	local R = Config.ROUNDUP
+	if not R or HouseMap.theme ~= "barn" then
+		return
+	end
+	local myState, myWorld = state, world
+	state.roundup = { caught = 0, total = 0 }
+	-- the stall gates stand open from the start; no keypad on the big doors
+	for id, entry in pairs(world.objects) do
+		if entry.def and entry.def.kind == "lock" and not entry.def.bonus and not world.unlocked[id] then
+			world.unlocked[id] = true
+			RoundState:SetAttribute("Lock_" .. id, true)
+			entry.part.CanCollide = false
+			entry.part.Position += Vector3.new(0, 13, 0)
+			for _, k in ipairs({ "unlockPrompt", "pickPrompt", "shovePrompt", "popperPrompt" }) do
+				if entry[k] then
+					entry[k].Enabled = false
+				end
+			end
+			if entry.lockPart then
+				entry.lockPart:Destroy()
+			end
+			for _, p in ipairs(entry.pile or {}) do
+				p:Destroy()
+			end
+			if entry.giftPrompt then
+				entry.giftPrompt.Enabled = true
+			end
+		end
+	end
+	local door = world.objects.door
+	if door then
+		for _, k in ipairs({ "usePrompt", "padPrompt" }) do
+			if door[k] then
+				door[k].Enabled = false
+			end
+		end
+	end
+	-- where they hide: free floor slots, spread round the barn
+	local taken = {}
+	for _, o in pairs(world.objects) do
+		if o.def and o.def.x then
+			table.insert(taken, { o.def.x, o.def.y })
+		end
+	end
+	for _, t in ipairs(state.extraTaken or {}) do
+		table.insert(taken, t)
+	end
+	local pool = {}
+	for _, sl in ipairs(HouseMap.floorSlots or {}) do
+		local ok = true
+		for _, t in ipairs(taken) do
+			if math.abs(t[1] - sl[1]) <= 1 and math.abs(t[2] - sl[2]) <= 1 then
+				ok = false
+			end
+		end
+		if ok then
+			table.insert(pool, sl)
+		end
+	end
+	local spots = {}
+	while #spots < R.turkeys and #pool > 0 do
+		local sl = table.remove(pool, math.random(1, #pool))
+		local spaced = true
+		for _, s in ipairs(spots) do
+			if math.abs(s[1] - sl[1]) + math.abs(s[2] - sl[2]) < 5 then
+				spaced = false
+			end
+		end
+		if spaced then
+			table.insert(spots, sl)
+			table.insert(state.extraTaken, { sl[1], sl[2] })
+		end
+	end
+	-- the turkey: the imported model (Characters/Turkey), else a built one
+	local src = game:GetService("ServerStorage"):FindFirstChild("Characters")
+	src = src and src:FindFirstChild("Turkey")
+	local function makeTurkey()
+		local m
+		if src then
+			m = src:Clone()
+			for _, d in ipairs(m:GetDescendants()) do
+				if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("Humanoid") then
+					d:Destroy()
+				end
+			end
+		else
+			m = Instance.new("Model")
+			local function bit(shape, size, pos, color)
+				local p = Instance.new("Part")
+				p.Shape, p.Size, p.Color = shape, size, color
+				Shapes.fix(p, shape, size)
+				p.Material = Enum.Material.SmoothPlastic
+				p.CFrame = CFrame.new(pos)
+				p.Parent = m
+				return p
+			end
+			local BROWN, CREAM, ORANGE = Color3.fromRGB(126, 72, 40), Color3.fromRGB(246, 222, 180), Color3.fromRGB(255, 140, 30)
+			bit(Enum.PartType.Ball, Vector3.new(2.4, 2.2, 2.4), Vector3.new(0, 1.6, 0), BROWN)
+			bit(Enum.PartType.Ball, Vector3.new(1.4, 1.4, 0.8), Vector3.new(0, 1.5, 0.95), CREAM)
+			bit(Enum.PartType.Ball, Vector3.new(1.3, 1.3, 1.3), Vector3.new(0, 2.9, 0.6), BROWN)
+			bit(Enum.PartType.Ball, Vector3.new(0.4, 0.3, 0.6), Vector3.new(0, 2.8, 1.3), ORANGE)
+			for i = -2, 2 do
+				local col = ({ Color3.fromRGB(214, 58, 40), ORANGE, Color3.fromRGB(255, 206, 60) })[i % 3 + 1]
+				local f = bit(Enum.PartType.Ball, Vector3.new(0.8, 2.2, 0.4), Vector3.new(0, 2.4, -1.1), col)
+				f.CFrame = CFrame.new(0, 1.8, -1.1) * CFrame.Angles(0, 0, math.rad(i * 25)) * CFrame.new(0, 0.9, 0)
+			end
+		end
+		for _, p in ipairs(m:GetDescendants()) do
+			if p:IsA("BasePart") then
+				p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery, p.CastShadow = true, false, false, false, false
+			end
+		end
+		local _, size = m:GetBoundingBox()
+		if size.Y > 0 then
+			m:ScaleTo(m:GetScale() * R.height / size.Y)
+		end
+		return m
+	end
+	-- the imported toons face +Z (paint_toon), the built one too; PivotTo with
+	-- lookAt faces -Z, so turn it round
+	local TURN = CFrame.Angles(0, math.pi, 0)
+	local turkeys = {}
+	for _, sl in ipairs(spots) do
+		local m = makeTurkey()
+		m.Name = "RunawayTurkey"
+		m.Parent = world.root
+		local cf, size = m:GetBoundingBox()
+		local lift = m:GetPivot().Position.Y - (cf.Position.Y - size.Y / 2)
+		local pos = House.at(sl[1], sl[2], 0)
+		local t = { model = m, pos = pos, lift = lift, face = Vector3.new(0, 0, 1), busyUntil = 0 }
+		m:PivotTo(CFrame.lookAt(pos + Vector3.new(0, lift, 0), pos + Vector3.new(0, lift, 0) + t.face) * TURN)
+		table.insert(turkeys, t)
+	end
+	state.roundup.total = #turkeys
+	RoundState:SetAttribute("Roundup", "0/" .. #turkeys)
+	if #turkeys == 0 then
+		return
+	end
+	-- how far a turkey can run that way before a wall or furniture
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	local function runTo(from, dir, most)
+		local skip = {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Character then
+				table.insert(skip, p.Character)
+			end
+		end
+		if host and host.model then
+			table.insert(skip, host.model)
+		end
+		params.FilterDescendantsInstances = skip
+		local eye = from + Vector3.new(0, 1.5, 0)
+		local hit = workspace:Raycast(eye, dir * most, params)
+		local d = hit and math.max(0, (hit.Position - eye).Magnitude - 2.5) or most
+		return from + dir * d, d
+	end
+	local function move(t, to, speed)
+		local from = t.pos
+		local dist = (to - from).Magnitude
+		if dist < 0.5 then
+			return
+		end
+		local seconds = dist / speed
+		t.face = (to - from).Unit
+		t.busyUntil = os.clock() + seconds
+		t.moving = (t.moving or 0) + 1
+		local mine = t.moving
+		task.spawn(function()
+			local start = os.clock()
+			while t.model.Parent and t.moving == mine do
+				local a = math.min(1, (os.clock() - start) / seconds)
+				t.pos = from:Lerp(to, a)
+				-- a little hop as it runs
+				local hop = math.abs(math.sin(a * seconds * 9)) * 0.6
+				local p = t.pos + Vector3.new(0, t.lift + hop, 0)
+				t.model:PivotTo(CFrame.lookAt(p, p + t.face) * TURN)
+				if a >= 1 then
+					break
+				end
+				task.wait()
+			end
+		end)
+	end
+	local function catch(t, plr)
+		t.moving = (t.moving or 0) + 1
+		local at = t.pos
+		t.model:Destroy()
+		Effects.burst(at + Vector3.new(0, 1.5, 0), "boost", "collect")
+		state.roundup.caught += 1
+		local n, total = state.roundup.caught, state.roundup.total
+		RoundState:SetAttribute("Roundup", n .. "/" .. total)
+		addPoints(plr, R.points, true)
+		-- the badge count: the catcher, or the whole party (share)
+		local who = R.share and Players:GetPlayers() or { plr }
+		for _, p in ipairs(who) do
+			local data = Profile.get(p)
+			if data then
+				data.stats.turkey = (data.stats.turkey or 0) + 1
+				Profile.publish(p)
+				local badge = Config.BADGES.turkey or 0
+				if data.stats.turkey == R.goal then
+					say("info", "\u{1F983} " .. p.DisplayName .. " has caught " .. R.goal .. " turkeys - Turkey Wrangler!")
+				end
+				if data.stats.turkey >= R.goal and badge > 0 then
+					task.spawn(pcall, function()
+						game:GetService("BadgeService"):AwardBadge(p.UserId, badge)
+					end)
+				end
+			end
+		end
+		FeastMeter.add(1) -- the community goal: every turkey in every server
+		say("corn", "Gobble! " .. plr.DisplayName .. " caught a runaway turkey! " .. n .. " of " .. total, { userId = plr.UserId, found = n, item = "turkey" })
+		if n >= total then
+			openDoor(plr, "turkeys")
+		end
+	end
+	task.spawn(function()
+		while state == myState and world == myWorld and state.status == "playing" do
+			task.wait(0.1)
+			local kids = {}
+			for _, p in ipairs(Players:GetPlayers()) do
+				local h = hrpOf(p)
+				if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and not p:GetAttribute("Waiting") then
+					table.insert(kids, { plr = p, pos = h.Position })
+				end
+			end
+			for _, t in ipairs(turkeys) do
+				if not t.model.Parent then
+					continue
+				end
+				local near, nd = nil, math.huge
+				for _, k in ipairs(kids) do
+					local d = (Vector3.new(k.pos.X, 0, k.pos.Z) - Vector3.new(t.pos.X, 0, t.pos.Z)).Magnitude
+					if d < nd then
+						near, nd = k, d
+					end
+				end
+				if near and nd <= R.catch then
+					catch(t, near.plr)
+				elseif near and nd < R.flee and os.clock() >= t.busyUntil - 0.15 then
+					-- run: of a few ways away from the kid, the one that ends furthest from them
+					local away = Vector3.new(t.pos.X - near.pos.X, 0, t.pos.Z - near.pos.Z)
+					away = away.Magnitude > 0.1 and away.Unit or Vector3.new(1, 0, 0)
+					local best, bestScore = nil, -math.huge
+					for _, deg in ipairs({ 0, 35, -35, 70, -70, 110, -110 }) do
+						local dir = (CFrame.Angles(0, math.rad(deg), 0) * CFrame.new(away)).Position
+						local to, d = runTo(t.pos, dir, 10)
+						if d >= 2 then
+							local kid = Vector3.new(near.pos.X, 0, near.pos.Z)
+							local score = (Vector3.new(to.X, 0, to.Z) - kid).Magnitude + d * 0.2
+							if score > bestScore then
+								best, bestScore = to, score
+							end
+						end
+					end
+					if best then
+						move(t, best, R.speed)
+					end
+				elseif os.clock() >= t.busyUntil + 1.5 and math.random() < 0.03 then
+					-- pecking about: a short stroll
+					local a = math.random() * math.pi * 2
+					local to, d = runTo(t.pos, Vector3.new(math.cos(a), 0, math.sin(a)), 5)
+					if d >= 2 then
+						move(t, to, 4)
 					end
 				end
 			end
@@ -3892,7 +4178,8 @@ function round.start()
 	local mapI = Progress.mapIndex(RoundState:GetAttribute("Map") or "partyhouse")
 	local own = Config.BUILDING_HOST[mapI and Progress.MAPS[mapI].building or "partyhouse"] or "pumpkin"
 	local kind = own
-	if math.random() >= 0.5 then
+	-- a season floor (the Harvest Barn) always has its own host (the Gobbler)
+	if math.random() >= 0.5 and not (mapI and Progress.MAPS[mapI].season) then
 		local others = {}
 		for k, h in pairs(Config.HOSTS) do
 			if k ~= own and not h.hidden then
@@ -3914,6 +4201,7 @@ function round.start()
 		round.placeJackBoxes()
 	end
 	round.placeCandyCorn()
+	round.placeTurkeys()
 	round.placePlushie()
 	RoundState:SetAttribute("Blackout", "")
 	RoundState:SetAttribute("DarkRooms", "")

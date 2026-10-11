@@ -33,6 +33,9 @@ Progress.MAPS = {
 	{ id = "aquarium", building = "aquarium", floor = 1, name = "Aquarium: Main Hall", icon = "\u{1F41F}", ready = true },
 	{ id = "aquarium_2", building = "aquarium", floor = 2, name = "Aquarium: Deep Sea", icon = "\u{1F419}", ready = true },
 	{ id = "aquarium_3", building = "aquarium", floor = 3, name = "Aquarium: Rooftop Pools", icon = "\u{1F42C}", ready = true },
+	-- season floors (11 Oct): open to everyone while their season runs
+	-- (Config.SEASONS), hidden the rest of the year; no floor above them
+	{ id = "harvestbarn", building = "harvestbarn", floor = 0, name = "The Harvest Barn", icon = "\u{1F983}", ready = true, secret = true, season = "thanksgiving" },
 }
 
 Progress.BUILDINGS = {
@@ -42,7 +45,35 @@ Progress.BUILDINGS = {
 	{ id = "school", name = "Midnight School" },
 	{ id = "carnival", name = "Creepy Carnival" },
 	{ id = "aquarium", name = "Sunken Aquarium" },
+	{ id = "harvestbarn", name = "The Harvest Barn", season = "thanksgiving" },
 }
+
+-- the buildings to show now: every year-round one, and a season's own while
+-- that season runs (seasonId: Seasons.active()'s id, or nil)
+function Progress.buildingsFor(seasonId)
+	local out = {}
+	for _, b in ipairs(Progress.BUILDINGS) do
+		if b.season == nil or b.season == seasonId then
+			table.insert(out, b)
+		end
+	end
+	return out
+end
+
+-- a player's open maps now: the ones they unlocked, plus the running
+-- season's floors (everyone may play those); a copy - never saved
+function Progress.openMaps(unlocked, seasonId)
+	local out = {}
+	for id, v in pairs(unlocked or {}) do
+		out[id] = v
+	end
+	for _, m in ipairs(Progress.MAPS) do
+		if m.season then
+			out[m.id] = m.season == seasonId or nil
+		end
+	end
+	return out
+end
 
 -- what escaping this floor unlocks
 function Progress.unlocksAfter(id)

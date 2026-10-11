@@ -34,6 +34,24 @@ yet: Brent picks, then Claude builds.
   no pressure pop-ups (the shop shows the end date). Christmas: the same
   with ornaments.
 
+## Thanksgiving build decisions (Brent, 11 Oct)
+
+1. **Harvest Barn: catch all the turkeys and the barn doors swing open**,
+   then escape (no keys or code on that floor).
+2. **Everyone can play the barn** during the season (no unlock).
+3. **Feast Meter** (every turkey caught in every server): 250 = 500 points
+   each, 1,000 = a free Party Shield, 3,000 = 25 feathers + a Lobby feast
+   table; collected in the Lobby, once each, also by late joiners.
+   Thresholds to be checked after the first week (Balance table).
+4. **Skins: 150 feathers each**, or Game Passes at the same Robux price as
+   the other skins.
+5. **Turkey Wrangler badge: catch 50 turkeys.**
+6. (Asked 11 Oct) share feathers / turkeys with the whole party?
+   Recommended yes.
+
+Built so far: the yearly calendar and the Feather Shop (11 Oct, commit
+8961675), the event text (`EVENTS.md`), the badge picture.
+
 ## 1. The yearly calendar (the "years" part)
 
 Today the Halloween hunt has a fixed 2026 end time in `Config.EVENT`. Each

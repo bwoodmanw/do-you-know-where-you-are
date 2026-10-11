@@ -742,10 +742,10 @@ local function card(parent, x, y, w, h, onClick)
 	return { button = b, name = name, sub = sub, stroke = stroke }
 end
 -- the building cards share one row (900 wide): 3 at 290, more get narrower
-local nb = #Progress.BUILDINGS
+local nb = #Progress.buildingsFor(Seasons.active() and Seasons.active().id)
 local bgap = nb <= 3 and 15 or 10
 local bw = nb <= 3 and 290 or math.floor((900 - (nb - 1) * bgap) / nb)
-for i, bld in ipairs(Progress.BUILDINGS) do
+for i, bld in ipairs(Progress.buildingsFor(Seasons.active() and Seasons.active().id)) do
 	buildingCards[bld.id] = card(mapScreen, 20 + (i - 1) * (bw + bgap), 92, bw, 190, function()
 		if amLeader then
 			opt("building", bld.id)
@@ -911,6 +911,9 @@ local function paintParty(p)
 	msWait.Text = amLeader and "Tap Done when everyone has voted." or ("Waiting for " .. p.leader .. " to tap Done...")
 	for _, bld in ipairs(Progress.BUILDINGS) do
 		local c = buildingCards[bld.id]
+		if not c then
+			continue -- a season's building out of its season
+		end
 		local total, open = 0, 0
 		for _, m in ipairs(Progress.MAPS) do
 			if m.building == bld.id then
@@ -1541,6 +1544,40 @@ do
 			end
 		end)
 	end
+end
+
+-- the Feast Meter (Thanksgiving): every turkey caught anywhere, filling to
+-- its last stage, and what the next stage gives (Config.FEAST); bottom left
+do
+	local panel = frame(gui, { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 12, 1, -12), Size = UDim2.fromOffset(340, 76), Visible = false, ZIndex = 5 })
+	corner(panel, 14)
+	local fmTitle = label(panel, { Size = UDim2.new(1, -16, 0, 26), Position = UDim2.fromOffset(8, 4), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 6 })
+	local back = frame(panel, { Size = UDim2.new(1, -16, 0, 16), Position = UDim2.fromOffset(8, 34), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 6 })
+	corner(back, 8)
+	local fill = frame(back, { Size = UDim2.fromScale(0, 1), BackgroundColor3 = Color3.fromRGB(255, 170, 60), BackgroundTransparency = 0, ZIndex = 7 })
+	corner(fill, 8)
+	local fmSub = label(panel, { Size = UDim2.new(1, -16, 0, 18), Position = UDim2.fromOffset(8, 54), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 6 })
+	local function paintFeast()
+		local total, sid = remotes:GetAttribute("Feast"), remotes:GetAttribute("FeastSeason")
+		local f = sid and Config.FEAST and Config.FEAST[sid]
+		panel.Visible = total ~= nil and f ~= nil
+		if not panel.Visible then
+			return
+		end
+		local nextSt
+		for _, st in ipairs(f.stages) do
+			if total < st.at then
+				nextSt = st
+				break
+			end
+		end
+		fill.Size = UDim2.fromScale(math.clamp(total / f.stages[#f.stages].at, 0, 1), 1)
+		fmTitle.Text = "\u{1F967} Feast Meter: " .. total .. " turkeys caught"
+		fmSub.Text = nextSt and ("At " .. nextSt.at .. ", everyone gets " .. nextSt.say) or "Every stage reached - the feast is on!"
+	end
+	remotes:GetAttributeChangedSignal("Feast"):Connect(paintFeast)
+	remotes:GetAttributeChangedSignal("FeastSeason"):Connect(paintFeast)
+	paintFeast()
 end
 
 -- Roblox's own Robux icon (instead of "R$"), in a space kept at a button's right edge

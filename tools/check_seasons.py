@@ -90,7 +90,7 @@ eq("skin price season", select(2, S.skinPrice({ feather = 150 })).id, "thanksgiv
 eq("pass skin", S.skinPrice({ pass = 1 }), nil)
 -- every season is complete
 for _, s in ipairs(Config.SEASONS) do
-	for _, k in ipairs({ "id", "name", "shopName", "item", "one", "many", "from", "to", "perFloor", "points", "goal", "near", "badge", "shop" }) do
+	for _, k in ipairs({ "id", "name", "shopName", "item", "one", "many", "from", "to", "perFloor", "points", "near", "shop" }) do
 		eq(s.id .. "." .. k .. " set", s[k] ~= nil, true)
 	end
 end

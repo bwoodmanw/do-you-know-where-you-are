@@ -801,6 +801,41 @@ def plan_basement():
     return p
 
 
+# ---------------------------------------------------------------- the Harvest Barn (Thanksgiving, floor 0)
+# A secret seasonal floor (open to everyone during Thanksgiving, from the
+# Lobby). Built on the Secret Basement's checked 3 x 3 grid with its own
+# rooms, furniture and look, and a corn maze (rows of corn) in the old Coal
+# Room. In the game the Turkey Roundup runs here: the stall gates (L1, L2)
+# stand open, and the big barn doors swing open once every runaway turkey
+# is caught (Main.server.luau) - the keys and the code are not needed.
+def plan_barn():
+    p = plan_basement()
+    p.id, p.name = 'barn_a', 'The Harvest Barn'
+    p.building, p.floor_no, p.theme = 'harvestbarn', 0, 'barn'
+    p.exit_style, p.exit_text = 'garden', 'Out through the big barn doors!'
+    rooms = {'Wine Cellar': 'Feed Room', 'Cellar Stairs': 'Big Barn Doors', 'Pumpkin Cellar': 'Pumpkin Patch',
+             'Coal Room': 'Corn Maze', 'Boiler Room': 'Threshing Floor', 'Workshop': 'Tractor Shed',
+             'Laundry': 'Chicken Coop', 'Cellar Entrance': 'Barn Entrance', 'Old Storage': 'Hay Storage'}
+    floor_kinds = {'boards': 'straw', 'tiles': 'dirt', 'wood': 'barnwood'}
+    for n in [f[5] for f in p.floors]:
+        assert n in rooms, n
+    p.floors = [(x0, y0, x1, y1, floor_kinds.get(k, k), rooms[n]) for x0, y0, x1, y1, k, n in p.floors]
+    # hay bales for shelves, feed troughs for tables
+    kinds = {'shelf': 'hay', 'table': 'trough'}
+    # the corn maze: the Coal Room's table and shelf make way for two rows of corn
+    gone = [(2, 13, 4, 14, 'table'), (8, 17, 10, 17, 'shelf')]
+    for fu in gone:
+        assert fu in p.furniture, fu
+        p.furniture.remove(fu)
+        p.rect(fu[0], fu[1], fu[2], fu[3], '.')
+    p.furniture = [(x0, y0, x1, y1, kinds.get(k, k)) for x0, y0, x1, y1, k in p.furniture]
+    for f in [(3, 13, 10, 13, 'corn'), (2, 17, 9, 17, 'corn')]:
+        p.furnish(*f)
+    names = {'L1': 'Feed Room gate', 'L2': 'Big Barn Doors gate'}
+    p.fixed = [dict(o, name=names[o['id']]) if o['id'] in names else o for o in p.fixed]
+    return p
+
+
 # ---------------------------------------------------------------- floor 2: the Bedrooms
 def plan_bedrooms():
     p = Plan('bed_a', 'The Party House - Bedrooms')
@@ -1205,6 +1240,7 @@ hosp = add_closets(plan_hospital())
 ward = add_closets(plan_wards())
 lab = add_closets(plan_labs())
 cellar = add_closets(plan_basement())
+barn = add_closets(plan_barn())
 school = add_closets(plan_school())
 school2 = add_closets(plan_school2())
 school3 = add_closets(plan_school3())
@@ -1224,7 +1260,8 @@ for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirr
           midway, mirror(midway, 'midway_b', 'Carnival - The Midway'), bigtop, mirror(bigtop, 'bigtop_b', 'Carnival - The Big Top'),
           funhouse, mirror(funhouse, 'funhouse_b', 'Carnival - The Funhouse'),
           mainhall, mirror(mainhall, 'mainhall_b', 'Sunken Aquarium - Main Hall'), deepsea, mirror(deepsea, 'deepsea_b', 'Sunken Aquarium - Deep Sea'),
-          rooftop, mirror(rooftop, 'rooftop_b', 'Sunken Aquarium - Rooftop Pools')):
+          rooftop, mirror(rooftop, 'rooftop_b', 'Sunken Aquarium - Rooftop Pools'),
+          barn, mirror(barn, 'barn_b', 'The Harvest Barn')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (
@@ -1259,7 +1296,7 @@ out = ['--[[',
        '\tpassage), D the big exit door, C the host\'s door.',
        '\tReturns building -> floor number -> list of plans.',
        ']]', '', 'return {']
-for bld in ('partyhouse', 'gummy', 'hospital', 'school', 'carnival', 'aquarium'):
+for bld in ('partyhouse', 'gummy', 'hospital', 'school', 'carnival', 'aquarium', 'harvestbarn'):
  out.append('\t%s = {' % bld)
  for fl in sorted({pfl for p, _, _, _, pfl in plans if p.building == bld}):
   out.append('\t[%d] = {' % fl)

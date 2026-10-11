@@ -451,6 +451,11 @@ local function paintCode()
 		parts[i] = k and ('<font color="' .. hex(Config.COLOR3[k]) .. '">\u{25CF}</font>' .. (Config.COLOR_SHAPE[k] or "")) or "?"
 	end
 	codeLabel.Text = "Code: " .. table.concat(parts, " ")
+	-- the Harvest Barn: the turkeys caught instead of the code (no code there)
+	local roundup = RoundState:GetAttribute("Roundup")
+	if roundup then
+		codeLabel.Text = "\u{1F983} Turkeys: " .. string.gsub(roundup, "/", " / ")
+	end
 	if clueBtn then
 		local cost = RoundState:GetAttribute("ClueCost") or 10
 		if player:GetAttribute("Skill") == "brainy" then
@@ -2612,6 +2617,9 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 			if s.item == item then
 				many, emoji = s.many, s.icon
 			end
+		end
+		if item == "turkey" then
+			many, emoji = "turkeys caught", "\u{1F983}"
 		end
 		local pic = Config.SEASON_IMAGES and Config.SEASON_IMAGES[item] or 0
 		popUp(pic > 0 and pic or emoji, tostring(data.found or "") .. " " .. many)

@@ -17,6 +17,32 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 63 (11 Oct) - Thanksgiving: the Harvest Barn, the Turkey Roundup, the Feast Meter
+
+Ask Claude first to set `Config.STUDIO_SEASON_DATE = { 2026, 11, 5 }` and
+`Config.STUDIO_MAP = "harvestbarn"` (and back afterwards).
+
+- Studio Play builds the Harvest Barn: red barn walls, straw floors, hay
+  bales (some stacked two high), feed troughs, two rows of tall corn in the
+  Corn Maze. Photos of each room. The stall gates stand open; the big doors
+  have no keypad prompt.
+- The top bar says "Turkeys: 0 / 8" instead of the code.
+- 8 runaway turkeys round the barn (the imported `Turkey` model once it is
+  in ServerStorage/Characters - plain Import 3D, no Avatar Setup - otherwise
+  a built brown one). Walk at one: it hops away; corner it and touch it -
+  "Gobble! ... caught a runaway turkey! 1 of 8", the count goes up, a pop-up.
+  Do they ever get stuck in walls or furniture, run through walls, or float?
+  (photo + where)
+- Catch all 8: "Every turkey caught! The big barn doors swing open" - walk
+  out, the round ends as usual.
+- The host is always the Gobbler (the built brown one until HostGobbler is
+  imported).
+- Golden feathers on the barn floor too.
+- Lobby (season date as above): a 7th building card, the Harvest Barn, its
+  one floor open to everyone; the Feast Meter at the bottom left (0 turkeys
+  in Studio unless API access is on: Home -> Game Settings -> Security ->
+  Enable Studio Access to API Services).
+
 ## Round 62 (11 Oct) - yearly seasons, tile words, map button
 
 - In game: the tile words under the pictures are bigger (size 20; long ones a

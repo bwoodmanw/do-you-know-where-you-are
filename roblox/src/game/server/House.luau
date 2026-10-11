@@ -26,6 +26,8 @@ local THEMES = {
 	carnival = { wall = Color3.fromRGB(122, 38, 56), light = Color3.fromRGB(255, 205, 140), ceiling = Color3.fromRGB(70, 30, 80) },
 	-- the Sunken Aquarium: deep teal walls, cool blue-white light, a dark ceiling
 	aquarium = { wall = Color3.fromRGB(28, 72, 96), light = Color3.fromRGB(165, 215, 255), ceiling = Color3.fromRGB(18, 38, 58) },
+	-- the Harvest Barn (Thanksgiving): barn-red walls, warm lantern light, dark rafters
+	barn = { wall = Color3.fromRGB(138, 46, 38), light = Color3.fromRGB(255, 212, 150), ceiling = Color3.fromRGB(58, 40, 30) },
 }
 local HT = 24 -- ceiling height of tall rooms (the Gallery with its loft)
 
@@ -54,6 +56,10 @@ local FLOOR = {
 	mintlino = { Enum.Material.SmoothPlastic, Color3.fromRGB(165, 200, 185) },
 	greylino = { Enum.Material.SmoothPlastic, Color3.fromRGB(150, 156, 166) },
 	door = { Enum.Material.WoodPlanks, Color3.fromRGB(62, 44, 34) },
+	-- the Harvest Barn
+	straw = { Enum.Material.Sand, Color3.fromRGB(212, 176, 96) },
+	dirt = { Enum.Material.Ground, Color3.fromRGB(112, 82, 56) },
+	barnwood = { Enum.Material.WoodPlanks, Color3.fromRGB(120, 80, 52) },
 }
 
 local Shapes = require(game:GetService("ReplicatedStorage").Shared.Shapes) -- stretched balls (eggs, fish bodies) need a sphere mesh
@@ -812,6 +818,48 @@ local function aquariumFurniture(root, kind, x, y, map)
 	return false
 end
 
+-- the Harvest Barn's furniture (Thanksgiving): hay bales, feed troughs and
+-- rows of tall corn (the corn maze); anything else falls back to the plain
+-- furniture
+local function barnFurniture(root, kind, x, y)
+	if kind == "hay" then
+		-- a hay bale, two on top of each other on every other tile, tied with twine
+		local two = (x + y) % 2 == 0
+		for i = 0, two and 1 or 0 do
+			local hz = 1.5 + i * 3
+			part(root, { Name = "HayBale", Size = Vector3.new(T - 0.4, 3, T * 0.8), Position = at(x, y, hz), Material = Enum.Material.Sand, Color = Color3.fromRGB(226, 186, 92) })
+			for k = -1, 1, 2 do
+				part(root, { Name = "Twine", Size = Vector3.new(0.25, 3.05, T * 0.8 + 0.05), Position = at(x, y, hz) + Vector3.new(k * T * 0.22, 0, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(150, 110, 60), CanCollide = false })
+			end
+		end
+		return true
+	elseif kind == "trough" then
+		-- a wooden feed trough on legs, full of corn and grain
+		part(root, { Name = "Trough", Size = Vector3.new(T - 0.4, 1.6, T * 0.7), Position = at(x, y, 2.6), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(118, 78, 48) })
+		part(root, { Name = "Feed", Size = Vector3.new(T - 1, 0.3, T * 0.7 - 0.6), Position = at(x, y, 3.45), Material = Enum.Material.Sand, Color = Color3.fromRGB(240, 196, 70), CanCollide = false })
+		for k = -1, 1, 2 do
+			part(root, { Name = "TroughLeg", Size = Vector3.new(0.5, 1.8, T * 0.6), Position = at(x, y, 0.9) + Vector3.new(k * (T / 2 - 0.8), 0, 0), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(96, 64, 40) })
+		end
+		part(root, { Name = "TroughBlock", Size = Vector3.new(T - 0.4, 3.4, T * 0.7), Position = at(x, y, 1.7), Transparency = 1 })
+		return true
+	elseif kind == "corn" then
+		-- three tall corn stalks with leaves and a yellow cob; a wall you can't see through
+		for i = -1, 1 do
+			local off = Vector3.new(i * T * 0.3, 0, ((x + i) % 2 - 0.5) * 1.2)
+			local sh = 9 + (x * 7 + y * 3 + i) % 3
+			part(root, { Name = "CornStalk", Size = Vector3.new(0.45, sh, 0.45), Position = at(x, y, sh / 2) + off, Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(96, 150, 60), CanCollide = false })
+			for k = 1, 3 do
+				local lh = sh * (0.3 + k * 0.18)
+				part(root, { Name = "CornLeaf", Size = Vector3.new(0.2, 0.25, 2.4), CFrame = CFrame.new(at(x, y, lh) + off) * CFrame.Angles(math.rad(-25), math.rad(k * 120 + i * 40), 0) * CFrame.new(0, 0, 1.1), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(120, 170, 70), CanCollide = false })
+			end
+			part(root, { Name = "CornCob", Size = Vector3.new(0.7, 1.5, 0.7), Position = at(x, y, sh * 0.6) + off + Vector3.new(0.35, 0, 0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(250, 205, 60), CanCollide = false })
+		end
+		part(root, { Name = "CornBlock", Size = Vector3.new(T, 10, T * 0.9), Position = at(x, y, 5), Transparency = 1 })
+		return true
+	end
+	return false
+end
+
 -- the hospital's furniture: medicine cabinets, a reception counter, steel
 -- tables and desks, beds with rails
 local function hospitalFurniture(root, kind, x, y)
@@ -955,6 +1003,8 @@ function House.build(map)
 					-- a carnival stall, cart, pond, ride or seats
 				elseif map.theme == "aquarium" and aquariumFurniture(root, kind, x, y, map) then
 					-- a fish tank, pool, kelp, submarine, bones, coral or the great tank
+				elseif map.theme == "barn" and barnFurniture(root, kind, x, y) then
+					-- a hay bale, a feed trough or a row of corn
 				elseif kind == "table" then
 					part(root, { Name = "Table", Size = Vector3.new(T, 0.6, T), Position = at(x, y, 3.4), Material = Enum.Material.Fabric, Color = Color3.fromRGB(242, 233, 247) })
 					part(root, { Name = "TableSkirt", Size = Vector3.new(T - 0.2, 3, T - 0.2), Position = at(x, y, 1.6), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 138, 31) })
