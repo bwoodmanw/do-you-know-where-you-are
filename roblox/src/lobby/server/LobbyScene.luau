@@ -504,6 +504,132 @@ local function promptOn(p, action, object)
 	return pp
 end
 
+-- the Thanksgiving feast (the Feast Meter's last stage): a long table with a
+-- tablecloth, seats to sit on, and food to take a bite of (a munch and a
+-- wobble) - a roast turkey, a giant pumpkin pie, pies, corn, rolls, mashed
+-- potatoes, cranberry sauce and cider. `at`: the middle of the table on the ground.
+function Scene.feast(at)
+	if workspace:FindFirstChild("LobbyFeast") then
+		return
+	end
+	local folder = Instance.new("Folder")
+	folder.Name = "LobbyFeast"
+	folder.Parent = workspace
+	local L, Wd, Ht = 26, 6, 3.4 -- the table: long along Z
+	local top = at + Vector3.new(0, Ht, 0)
+	part(folder, { Name = "FeastTable", Size = Vector3.new(Wd, 0.6, L), Position = top - Vector3.new(0, 0.3, 0), Color = Color3.fromRGB(120, 78, 48), Material = Enum.Material.WoodPlanks })
+	part(folder, { Name = "Tablecloth", Size = Vector3.new(Wd + 0.4, 0.1, L + 0.4), Position = top + Vector3.new(0, 0.02, 0), Color = Color3.fromRGB(230, 120, 40), Material = Enum.Material.Fabric, CanCollide = false })
+	part(folder, { Name = "TableRunner", Size = Vector3.new(2, 0.12, L + 0.6), Position = top + Vector3.new(0, 0.05, 0), Color = Color3.fromRGB(150, 40, 40), Material = Enum.Material.Fabric, CanCollide = false })
+	for _, dz in ipairs({ -L / 2 + 1, L / 2 - 1 }) do
+		for _, dx in ipairs({ -Wd / 2 + 0.6, Wd / 2 - 0.6 }) do
+			part(folder, { Name = "TableLeg", Size = Vector3.new(0.6, Ht - 0.6, 0.6), Position = at + Vector3.new(dx, (Ht - 0.6) / 2, dz), Color = Color3.fromRGB(96, 62, 38), Material = Enum.Material.WoodPlanks })
+		end
+	end
+	-- seats both sides, facing the table, and one at each end
+	for i = 0, 4 do
+		local z = -L / 2 + 3 + i * (L - 6) / 4
+		for _, side in ipairs({ -1, 1 }) do
+			local p = at + Vector3.new(side * (Wd / 2 + 1.6), 2, z)
+			seat(folder, CFrame.lookAt(p, Vector3.new(at.X, p.Y, p.Z)), Vector3.new(2.2, 0.4, 2.2), Color3.fromRGB(90, 58, 36))
+			part(folder, { Name = "SeatLegs", Size = Vector3.new(1.8, 1.8, 1.8), Position = p - Vector3.new(0, 1.1, 0), Color = Color3.fromRGB(90, 58, 36), Material = Enum.Material.WoodPlanks })
+		end
+	end
+	for _, side in ipairs({ -1, 1 }) do
+		local p = at + Vector3.new(0, 2, side * (L / 2 + 1.6))
+		seat(folder, CFrame.lookAt(p, Vector3.new(p.X, p.Y, at.Z)), Vector3.new(2.2, 0.4, 2.2), Color3.fromRGB(150, 40, 40))
+		part(folder, { Name = "SeatLegs", Size = Vector3.new(1.8, 1.8, 1.8), Position = p - Vector3.new(0, 1.1, 0), Color = Color3.fromRGB(90, 58, 36), Material = Enum.Material.WoodPlanks })
+	end
+	-- a dish: its parts (offsets from its spot on the table), and a bite prompt
+	local function dish(name, spot, bits)
+		local m = Instance.new("Model")
+		m.Name = name
+		m.Parent = folder
+		local main
+		for _, b in ipairs(bits) do
+			local p = part(m, { Name = b.name or name, Shape = b.shape, Size = b.size, CFrame = CFrame.new(top + spot + b.off) * (b.rot or CFrame.new()), Color = b.color, Material = b.mat or Enum.Material.SmoothPlastic, CanCollide = false })
+			main = main or p
+		end
+		local pp = promptOn(main, "Take a bite", name)
+		pp.HoldDuration = 0
+		local busy = false
+		pp.Triggered:Connect(function()
+			sound(main, "eat", 0.8)
+			if busy then
+				return
+			end
+			busy = true
+			local base = m:GetPivot()
+			for k = 1, 3 do
+				m:PivotTo(base * CFrame.Angles(0, 0, math.rad(k % 2 == 0 and -6 or 6)))
+				task.wait(0.06)
+			end
+			m:PivotTo(base)
+			busy = false
+		end)
+		return m
+	end
+	local PLATE = Color3.fromRGB(245, 240, 230)
+	local function plate(spot, r)
+		part(folder, { Name = "Plate", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.15, r, r), CFrame = CFrame.new(top + spot + Vector3.new(0, 0.12, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = PLATE, CanCollide = false })
+	end
+	local CYL = CFrame.Angles(0, 0, math.rad(90))
+	-- the roast turkey in the middle
+	plate(Vector3.new(0, 0, -4), 4.2)
+	dish("Roast Turkey", Vector3.new(0, 0, -4), {
+		{ shape = Enum.PartType.Ball, size = Vector3.new(2.6, 1.8, 3.2), off = Vector3.new(0, 1.0, 0), color = Color3.fromRGB(190, 110, 50) },
+		{ name = "Drumstick", shape = Enum.PartType.Ball, size = Vector3.new(0.8, 0.8, 1.6), off = Vector3.new(-1.2, 0.8, 1.2), color = Color3.fromRGB(176, 100, 45) },
+		{ name = "Drumstick", shape = Enum.PartType.Ball, size = Vector3.new(0.8, 0.8, 1.6), off = Vector3.new(1.2, 0.8, 1.2), color = Color3.fromRGB(176, 100, 45) },
+		{ name = "Bone", shape = Enum.PartType.Ball, size = Vector3.new(0.35, 0.35, 0.35), off = Vector3.new(-1.2, 0.9, 2.1), color = PLATE },
+		{ name = "Bone", shape = Enum.PartType.Ball, size = Vector3.new(0.35, 0.35, 0.35), off = Vector3.new(1.2, 0.9, 2.1), color = PLATE },
+	})
+	-- the giant pumpkin pie
+	dish("Giant Pumpkin Pie", Vector3.new(0, 0, 4), {
+		{ name = "PieCrust", shape = Enum.PartType.Cylinder, size = Vector3.new(0.7, 4.4, 4.4), off = Vector3.new(0, 0.4, 0), rot = CYL, color = Color3.fromRGB(214, 160, 90) },
+		{ name = "PieFilling", shape = Enum.PartType.Cylinder, size = Vector3.new(0.72, 3.8, 3.8), off = Vector3.new(0, 0.42, 0), rot = CYL, color = Color3.fromRGB(205, 110, 40) },
+		{ name = "Cream", shape = Enum.PartType.Ball, size = Vector3.new(1, 0.7, 1), off = Vector3.new(0, 0.95, 0), color = Color3.fromRGB(255, 252, 240) },
+	})
+	-- little dishes along the table
+	local smalls = {
+		{ "Pumpkin Pie", { { name = "PieCrust", shape = Enum.PartType.Cylinder, size = Vector3.new(0.5, 2, 2), off = Vector3.new(0, 0.3, 0), rot = CYL, color = Color3.fromRGB(214, 160, 90) }, { name = "PieFilling", shape = Enum.PartType.Cylinder, size = Vector3.new(0.52, 1.6, 1.6), off = Vector3.new(0, 0.32, 0), rot = CYL, color = Color3.fromRGB(205, 110, 40) } } },
+		{ "Corn on the Cob", { { shape = Enum.PartType.Ball, size = Vector3.new(0.7, 0.7, 2), off = Vector3.new(-0.4, 0.45, 0), color = Color3.fromRGB(250, 205, 60) }, { shape = Enum.PartType.Ball, size = Vector3.new(0.7, 0.7, 2), off = Vector3.new(0.4, 0.45, 0.2), color = Color3.fromRGB(250, 205, 60) } } },
+		{ "Mashed Potatoes", { { name = "Bowl", shape = Enum.PartType.Cylinder, size = Vector3.new(0.8, 1.8, 1.8), off = Vector3.new(0, 0.4, 0), rot = CYL, color = Color3.fromRGB(200, 90, 50) }, { shape = Enum.PartType.Ball, size = Vector3.new(1.5, 0.9, 1.5), off = Vector3.new(0, 0.85, 0), color = Color3.fromRGB(250, 240, 210) } } },
+		{ "Cranberry Sauce", { { name = "Bowl", shape = Enum.PartType.Cylinder, size = Vector3.new(0.7, 1.5, 1.5), off = Vector3.new(0, 0.35, 0), rot = CYL, color = Color3.fromRGB(240, 240, 235) }, { shape = Enum.PartType.Cylinder, size = Vector3.new(0.72, 1.2, 1.2), off = Vector3.new(0, 0.4, 0), rot = CYL, color = Color3.fromRGB(170, 20, 50) } } },
+		{ "Bread Rolls", { { shape = Enum.PartType.Ball, size = Vector3.new(0.9, 0.7, 0.9), off = Vector3.new(-0.5, 0.4, 0), color = Color3.fromRGB(220, 160, 90) }, { shape = Enum.PartType.Ball, size = Vector3.new(0.9, 0.7, 0.9), off = Vector3.new(0.5, 0.4, 0.2), color = Color3.fromRGB(220, 160, 90) }, { shape = Enum.PartType.Ball, size = Vector3.new(0.9, 0.7, 0.9), off = Vector3.new(0, 0.4, -0.5), color = Color3.fromRGB(220, 160, 90) } } },
+		{ "Apple Cider", { { shape = Enum.PartType.Cylinder, size = Vector3.new(1.6, 1, 1), off = Vector3.new(0, 0.8, 0), rot = CYL, color = Color3.fromRGB(190, 120, 40), mat = Enum.Material.Glass } } },
+	}
+	local spots = { -11, -8, 8, 11 }
+	local n = 0
+	for _, z in ipairs(spots) do
+		for _, x in ipairs({ -1.6, 1.6 }) do
+			n += 1
+			local d = smalls[(n - 1) % #smalls + 1]
+			plate(Vector3.new(x, 0, z), 2.4)
+			dish(d[1], Vector3.new(x, 0, z), d[2])
+		end
+	end
+	-- warm lanterns at the ends
+	for _, dz in ipairs({ -L / 2 - 4, L / 2 + 4 }) do
+		part(folder, { Name = "LanternPost", Size = Vector3.new(0.4, 8, 0.4), Position = at + Vector3.new(0, 4, dz), Color = Color3.fromRGB(40, 32, 30), Material = Enum.Material.Metal })
+		local lamp = part(folder, { Name = "Lantern", Size = Vector3.new(1.2, 1.4, 1.2), Position = at + Vector3.new(0, 8.6, dz), Color = Color3.fromRGB(255, 200, 110), Material = Enum.Material.Neon, CanCollide = false })
+		local l = Instance.new("PointLight")
+		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 200, 130), 22, 1.6
+		l.Parent = lamp
+	end
+	-- a sign
+	local sign = part(folder, { Name = "FeastSign", Size = Vector3.new(0.3, 3, 10), Position = at + Vector3.new(Wd / 2 + 4.5, 5, 0), Color = Color3.fromRGB(120, 78, 48), Material = Enum.Material.WoodPlanks })
+	local sg = Instance.new("SurfaceGui")
+	sg.Face = Enum.NormalId.Right
+	sg.Parent = sign
+	local t = Instance.new("TextLabel")
+	t.Size = UDim2.fromScale(1, 1)
+	t.BackgroundTransparency = 1
+	t.TextScaled = true
+	t.Font = Enum.Font.GothamBlack
+	t.TextColor3 = Color3.fromRGB(255, 220, 140)
+	t.Text = "The Feast! Thanks for catching the turkeys"
+	t.Parent = sg
+end
+
 function Scene.fun()
 	local folder = Instance.new("Folder")
 	folder.Name = "LobbyFun"

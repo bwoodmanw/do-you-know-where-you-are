@@ -46,8 +46,16 @@ yet: Brent picks, then Claude builds.
 4. **Skins: 150 feathers each**, or Game Passes at the same Robux price as
    the other skins.
 5. **Turkey Wrangler badge: catch 50 turkeys.**
-6. (Asked 11 Oct) share feathers / turkeys with the whole party?
-   Recommended yes.
+6. **Party credit:** a feather found or a turkey caught counts for everyone
+   in the party (points still go to whoever touched it).
+7. **Feast Meter rewards only for players who took part** in catching a
+   turkey this season. Stages changed: 250 = 100 points; 1,000 = a Frozen
+   Pop + 200 points; 3,000 = 25 feathers + the feast table in the Lobby
+   (sit at it, take a bite of every dish).
+8. **Thanksgiving boosts in the Feather Shop:** the regular boosts with
+   Thanksgiving names and pictures (Pumpkin Pie, Pie Tin Shield, Corn Maze
+   Map, Apple Cider, Turkey Trot, Cranberry Ice Pop) - pictures in
+   `THANKSGIVING_EVENT_PICTURE_WORKFLOW.md`.
 
 Built so far: the yearly calendar and the Feather Shop (11 Oct, commit
 8961675), the event text (`EVENTS.md`), the badge picture.

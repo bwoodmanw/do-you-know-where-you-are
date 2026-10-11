@@ -42,6 +42,16 @@ Ask Claude first to set `Config.STUDIO_SEASON_DATE = { 2026, 11, 5 }` and
   one floor open to everyone; the Feast Meter at the bottom left (0 turkeys
   in Studio unless API access is on: Home -> Game Settings -> Security ->
   Enable Studio Access to API Services).
+- Feathers count for the whole party (2-player Studio test: Test -> Clients
+  and Servers -> 2 players): one picks up a feather, both counts go up.
+- Feather Shop (season date as above): the rows read Pumpkin Pie, Pie Tin
+  Shield, Corn Maze Map, Apple Cider, Turkey Trot, Cranberry Ice Pop, each
+  "Works like ..."; buying one says e.g. "Pumpkin Pie (Candy Corn)" and it
+  lands in the Boost Shop as Candy Corn.
+- The feast: ask Claude to set `Config.STUDIO_FEAST_TOTAL = 3000`. Within a
+  minute the feast table appears on the lawn (left of the trampoline):
+  sit on a seat, "Take a bite" on every dish (a munch and a wobble). Photo
+  from above - is it in a good place?
 
 ## Round 62 (11 Oct) - yearly seasons, tile words, map button
 

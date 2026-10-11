@@ -405,9 +405,22 @@ Config.SEASONS = {
 		id = "thanksgiving", name = "Feather Hunt", shopName = "Feather Shop", item = "feather",
 		one = "golden feather", many = "golden feathers", icon = "\u{1FAB6}",
 		from = { 11, 1 }, to = { 12, 1 }, shopDays = 7,
-		-- no badge for feathers: Thanksgiving's badge is for turkeys (Config.ROUNDUP)
-		perFloor = 6, points = 3, near = 4, look = "Thanksgiving",
+		-- no badge for feathers: Thanksgiving's badge is for turkeys (Config.ROUNDUP).
+		-- share: a feather found counts for everyone in the party (Brent, 11 Oct)
+		perFloor = 6, points = 3, near = 4, look = "Thanksgiving", share = true,
 		shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 },
+		-- the Feather Shop's Thanksgiving boosts (Brent, 11 Oct): the same
+		-- boosts with Thanksgiving names and pictures (image: an uploaded
+		-- picture's id, 0 = the emoji); bought ones land in the bag as the
+		-- regular boost
+		looks = {
+			candy = { name = "Pumpkin Pie", icon = "\u{1F967}", image = 0 },
+			shield = { name = "Pie Tin Shield", icon = "\u{1F6E1}", image = 0 },
+			clue = { name = "Corn Maze Map", icon = "\u{1F5FA}", image = 0 },
+			energy = { name = "Apple Cider", icon = "\u{1F34E}", image = 0 },
+			headstart = { name = "Turkey Trot", icon = "\u{1F983}", image = 0 },
+			freeze = { name = "Cranberry Ice Pop", icon = "\u{1F9CA}", image = 0 },
+		},
 		gift = { 25, 100 },
 		bundles = { { amount = 50, product = 0 }, { amount = 150, product = 0 } },
 	},
@@ -426,19 +439,25 @@ Config.STUDIO_SEASON_DATE = nil
 Config.ROUNDUP = { turkeys = 8, flee = 16, catch = 4, speed = 15, height = 3.2, points = 5, goal = 50, share = true }
 -- the Feast Meter (Thanksgiving, Brent 11 Oct): every runaway turkey caught
 -- in every server adds up (shared/FeastMeter.luau). Each stage reached gives
--- every player its reward once, in the Lobby (late joiners too): points,
--- a boost in the bag, or the season's item to spend (not toward a badge).
--- `say`: how the Lobby names the reward. Thresholds: check after the first
--- week (the Balance table).
+-- every player who took part in catching a turkey this season its reward
+-- once, in the Lobby (late joiners too, once they have): points, a boost in
+-- the bag, or the season's item to spend (not toward a badge); `feast` sets
+-- the feast table in the Lobby (FEAST_TABLE_AT: its middle). `say`: how the
+-- Lobby names the reward. Thresholds: check after the first week (the
+-- Balance table). Brent, 11 Oct.
 Config.FEAST = {
 	thanksgiving = {
 		stages = {
-			{ at = 250, points = 500, say = "500 points" },
-			{ at = 1000, boost = "shield", say = "a free Party Shield (in your Boost Shop)" },
-			{ at = 3000, feathers = 25, feast = true, say = "25 golden feathers - and the feast is on!" },
+			{ at = 250, points = 100, say = "100 points" },
+			{ at = 1000, boost = "freeze", points = 200, say = "a free Frozen Pop and 200 points" },
+			{ at = 3000, feathers = 25, feast = true, say = "25 golden feathers - and the feast table is set in the Lobby!" },
 		},
 	},
 }
+Config.FEAST_TABLE_AT = Vector3.new(-46, 0, 52)
+-- Studio only: pretend the Feast Meter is at this total (3000 sets the feast
+-- table); nil = the real total
+Config.STUDIO_FEAST_TOTAL = nil
 -- the owner's gift buttons for points (Lobby)
 Config.GIFT_POINTS = { 500, 2000 }
 -- the pictures of each season's item (0 = its emoji); the candy corn is the

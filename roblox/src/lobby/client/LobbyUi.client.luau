@@ -1364,7 +1364,14 @@ do
 			local boost = Progress.BOOSTS[id]
 			if price and boost then
 				i += 1
-				local r, owned = row(i, Config.BOOST_IMAGES and Config.BOOST_IMAGES[id], boost.icon, boost.name, boost.say)
+				-- a season's look of the boost (Thanksgiving: Pumpkin Pie for Candy Corn)
+				local look = e.looks and e.looks[id]
+				local r, owned
+				if look then
+					r, owned = row(i, (look.image or 0) > 0 and look.image or (Config.BOOST_IMAGES and Config.BOOST_IMAGES[id]), look.icon, look.name, "Works like " .. boost.name .. ": " .. boost.say)
+				else
+					r, owned = row(i, Config.BOOST_IMAGES and Config.BOOST_IMAGES[id], boost.icon, boost.name, boost.say)
+				end
 				-- 10 Oct (Brent): like the Boost Shop - how many, then Buy
 				local count = 1
 				local qty = label(r, { Size = UDim2.fromOffset(30, 40), Position = UDim2.fromOffset(398, 12), Text = "1", ZIndex = 12 })
@@ -1573,7 +1580,7 @@ do
 		end
 		fill.Size = UDim2.fromScale(math.clamp(total / f.stages[#f.stages].at, 0, 1), 1)
 		fmTitle.Text = "\u{1F967} Feast Meter: " .. total .. " turkeys caught"
-		fmSub.Text = nextSt and ("At " .. nextSt.at .. ", everyone gets " .. nextSt.say) or "Every stage reached - the feast is on!"
+		fmSub.Text = nextSt and ("At " .. nextSt.at .. ": " .. nextSt.say .. " for everyone who caught a turkey") or "Every stage reached - the feast is on!"
 	end
 	remotes:GetAttributeChangedSignal("Feast"):Connect(paintFeast)
 	remotes:GetAttributeChangedSignal("FeastSeason"):Connect(paintFeast)

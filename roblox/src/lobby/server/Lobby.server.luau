@@ -1077,8 +1077,11 @@ do
 		data.inv[id] = (data.inv[id] or 0) + count -- not "paid": it doesn't sell back for points
 		Profile.publish(plr)
 		Profile.save(plr)
-		CornBought:FireClient(plr, boost.icon, boost.name, count, total, false, e.id)
-		Notice:FireClient(plr, boost.icon .. " " .. count .. " x " .. boost.name .. " for " .. total .. " " .. e.many .. "!")
+		-- a season's look of the boost (Thanksgiving: Pumpkin Pie for Candy Corn)
+		local look = e.looks and e.looks[id]
+		local shown = look and (look.name .. " (" .. boost.name .. ")") or boost.name
+		CornBought:FireClient(plr, look and look.icon or boost.icon, shown, count, total, false, e.id)
+		Notice:FireClient(plr, (look and look.icon or boost.icon) .. " " .. count .. " x " .. shown .. " for " .. total .. " " .. e.many .. "!")
 	end)
 end
 
@@ -1089,7 +1092,8 @@ do
 	local FeastMeter = require(ReplicatedStorage.Shared.FeastMeter)
 	local function reward(plr, total, key, sid)
 		local data = Profile.get(plr)
-		if not data or not key then
+		-- only players who took part in catching a turkey this season (Brent, 11 Oct)
+		if not data or not key or not (data.feastJoined and data.feastJoined[key]) then
 			return
 		end
 		data.feast = data.feast or {}
@@ -1120,12 +1124,22 @@ do
 			Profile.save(plr)
 		end
 	end
+	local feastSet = false
 	task.spawn(function()
 		while true do
 			local total, key = FeastMeter.get()
 			local _, sid = FeastMeter.key()
 			remotes:SetAttribute("Feast", key and total or nil)
 			remotes:SetAttribute("FeastSeason", key and sid or nil)
+			-- the last stage sets the feast table in the Lobby
+			if key and not feastSet then
+				for _, i in ipairs(FeastMeter.reached(sid, total)) do
+					if Config.FEAST[sid].stages[i].feast then
+						feastSet = true
+						require(script.Parent.LobbyScene).feast(Config.FEAST_TABLE_AT)
+					end
+				end
+			end
 			for _, plr in ipairs(Players:GetPlayers()) do
 				task.spawn(reward, plr, total, key, sid)
 			end

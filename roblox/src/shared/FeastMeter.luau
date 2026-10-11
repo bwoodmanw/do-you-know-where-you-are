@@ -87,6 +87,10 @@ function FeastMeter.get()
 	if not key then
 		return 0, nil
 	end
+	-- Studio: pretend the meter is at Config.STUDIO_FEAST_TOTAL (to see the stages and the feast)
+	if Config.STUDIO_FEAST_TOTAL and game:GetService("RunService"):IsStudio() then
+		return Config.STUDIO_FEAST_TOTAL, key
+	end
 	if key == cacheKey and os.clock() - cacheAt < 60 then
 		return cache, key
 	end

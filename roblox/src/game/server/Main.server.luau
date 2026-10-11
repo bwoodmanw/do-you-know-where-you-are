@@ -2290,6 +2290,16 @@ function round.placeCandyCorn()
 								n = data.stats[e.item]
 								Profile.publish(plr)
 							end
+							-- share (Thanksgiving's feathers): it counts for everyone else in the party too
+							if e.share then
+								for _, other in ipairs(Players:GetPlayers()) do
+									local od = other ~= plr and Profile.get(other)
+									if od then
+										od.stats[e.item] = (od.stats[e.item] or 0) + 1
+										Profile.publish(other)
+									end
+								end
+							end
 							Effects.burst(c.pos, "boost", "collect")
 							local One = string.upper(string.sub(e.one, 1, 1)) .. string.sub(e.one, 2)
 							say("corn", One .. " found! " .. n .. " so far (+" .. e.points .. " points)", { userId = plr.UserId, found = n, item = e.item }, plr)
@@ -2522,10 +2532,16 @@ function round.placeTurkeys()
 		addPoints(plr, R.points, true)
 		-- the badge count: the catcher, or the whole party (share)
 		local who = R.share and Players:GetPlayers() or { plr }
+		local feastKey = FeastMeter.key()
 		for _, p in ipairs(who) do
 			local data = Profile.get(p)
 			if data then
 				data.stats.turkey = (data.stats.turkey or 0) + 1
+				-- took part this season: shares the Feast Meter's rewards (Brent, 11 Oct)
+				if feastKey then
+					data.feastJoined = data.feastJoined or {}
+					data.feastJoined[feastKey] = true
+				end
 				Profile.publish(p)
 				local badge = Config.BADGES.turkey or 0
 				if data.stats.turkey == R.goal then
