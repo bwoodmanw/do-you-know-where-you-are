@@ -128,26 +128,36 @@ local function tileIcon(b, getId)
 	-- 11 Oct (Brent: the words were tiny): under a picture the words get their
 	-- own line, sized by its height. Scaled across the whole tile they shrank
 	-- to a sliver. The tile's own text stays (other code sets it) but hidden.
+	-- 11 Oct (2nd try, still small): a set size, 20 unless the words are too
+	-- wide for the tile, then a step smaller each time (never under 13); the
+	-- line spans the whole tile, over the side padding
 	local words = Instance.new("TextLabel")
 	words.Name = "Words"
 	words.BackgroundTransparency = 1
 	words.Font = b.Font
-	words.TextScaled = true
+	words.TextScaled = false
+	words.TextSize = 20
 	words.TextWrapped = false
-	words.Size = UDim2.new(1, 0, 0, 24)
-	words.Position = UDim2.new(0, 0, 1, -24)
+	words.Size = UDim2.new(1, 12, 0, 24)
+	words.Position = UDim2.new(0, -6, 1, -24)
 	words.ZIndex = b.ZIndex + 1
 	words.Visible = false
 	words.Parent = b
-	do
-		local wcap = Instance.new("UITextSizeConstraint")
-		wcap.MaxTextSize = 22
-		wcap.MinTextSize = 12
-		wcap.Parent = words
+	local function fitWords()
+		local w = words.AbsoluteSize.X
+		local size = 20
+		if w > 0 then
+			while size > 13 and game:GetService("TextService"):GetTextSize(words.Text, size, words.Font, Vector2.new(10000, 100)).X > w do
+				size -= 1
+			end
+		end
+		words.TextSize = size
 	end
+	words:GetPropertyChangedSignal("AbsoluteSize"):Connect(fitWords)
 	local function copyWords()
 		words.Text = b.Text
 		words.TextColor3 = b.TextColor3
+		fitWords()
 	end
 	b:GetPropertyChangedSignal("TextColor3"):Connect(copyWords)
 	b:GetPropertyChangedSignal("Text"):Connect(copyWords)
