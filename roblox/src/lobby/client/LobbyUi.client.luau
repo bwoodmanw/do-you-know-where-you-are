@@ -1085,6 +1085,47 @@ do
 		floorName[m.id] = m.name
 	end
 	local spinning = {} -- [viewport] = plushie model, turned slowly while the book is open
+	-- 10 Oct (Brent): tap a plushie to see it big
+	local big = frame(book, { Size = UDim2.new(1, -40, 1, -24), Position = UDim2.fromOffset(20, 12), BackgroundColor3 = Color3.fromRGB(40, 30, 55), Visible = false, ZIndex = 30 })
+	corner(big, 16)
+	local bigVf = Instance.new("ViewportFrame")
+	bigVf.Size = UDim2.new(1, -40, 1, -150)
+	bigVf.Position = UDim2.fromOffset(20, 16)
+	bigVf.BackgroundTransparency = 1
+	bigVf.Ambient = Color3.fromRGB(170, 160, 180)
+	bigVf.LightDirection = Vector3.new(-0.4, -1, -0.6)
+	bigVf.ZIndex = 31
+	bigVf.Parent = big
+	local bigCam = Instance.new("Camera")
+	bigCam.FieldOfView = 30
+	bigCam.Parent = bigVf
+	bigVf.CurrentCamera = bigCam
+	local bigName = label(big, { Size = UDim2.new(1, -40, 0, 36), Position = UDim2.new(0, 20, 1, -128), ZIndex = 31 })
+	local bigFloor = label(big, { Size = UDim2.new(1, -40, 0, 24), Position = UDim2.new(0, 20, 1, -90), TextColor3 = Color3.fromRGB(255, 210, 63), ZIndex = 31 })
+	button(big, "Back", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -56), ZIndex = 31 }, function()
+		big.Visible = false
+	end)
+	local bigModel
+	local function showBig(p, got, floor)
+		if bigModel then
+			spinning[bigVf] = nil
+			bigModel:Destroy()
+			bigModel = nil
+		end
+		local okP, plush = pcall(function()
+			return require(ReplicatedStorage.Shared.Plushies).build(p, CFrame.new(), true)
+		end)
+		if okP and plush then
+			plush.Parent = bigVf
+			bigModel = plush
+			spinning[bigVf] = plush
+			bigCam.CFrame = CFrame.lookAt(Vector3.new(0, 1.6, -7.5), Vector3.new(0, 1.35, 0))
+		end
+		bigVf.ImageColor3 = got and Color3.new(1, 1, 1) or Color3.new(0, 0, 0)
+		bigName.Text = got and p.name or "\u{2753} Not found yet"
+		bigFloor.Text = (got and "Found in " or "Lost somewhere in ") .. floor
+		big.Visible = true
+	end
 	RunService.RenderStepped:Connect(function()
 		if book.Visible then
 			local a = os.clock() * 0.8
@@ -1102,6 +1143,9 @@ do
 			end
 		end
 		table.clear(spinning)
+		if bigModel and big.Visible then
+			spinning[bigVf] = bigModel
+		end
 		local found = 0
 		local have = profile.plush or {}
 		for i, p in ipairs(Config.PLUSHIES) do
@@ -1138,12 +1182,22 @@ do
 			end
 			label(card, { Size = UDim2.new(1, -10, 0, 34), Position = UDim2.fromOffset(5, 58), Text = got and p.name or "Lost somewhere in", TextWrapped = true, TextColor3 = got and CREAM or Color3.fromRGB(180, 170, 195), ZIndex = 23 })
 			label(card, { Size = UDim2.new(1, -10, 0, 20), Position = UDim2.fromOffset(5, 94), Text = floorName[p.map] or p.map, TextColor3 = got and Color3.fromRGB(255, 210, 63) or Color3.fromRGB(150, 140, 170), ZIndex = 23 })
+			local tap = Instance.new("TextButton")
+			tap.Size = UDim2.fromScale(1, 1)
+			tap.BackgroundTransparency = 1
+			tap.Text = ""
+			tap.ZIndex = 25
+			tap.Parent = card
+			tap.Activated:Connect(function()
+				showBig(p, got, floorName[p.map] or p.map)
+			end)
 		end
-		sub.Text = found .. " of " .. #Config.PLUSHIES .. " found" .. (found == #Config.PLUSHIES and " - you found them all!" or " - one is hidden on every floor. Look closely for a little sparkle!")
+		sub.Text = found .. " of " .. #Config.PLUSHIES .. " found" .. (found == #Config.PLUSHIES and " - you found them all! Tap one to see it big." or " - one on every floor. Tap one to see it big.")
 	end
 	local _ = title
 	button(book, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -56), ZIndex = 22 }, function()
 		book.Visible = false
+		big.Visible = false
 	end)
 	local bookBtn = tileBtn(menu, "plushies", "\u{1F9F8}", "Plushies", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(162, 424) })
 	bookBtn.Activated:Connect(function()

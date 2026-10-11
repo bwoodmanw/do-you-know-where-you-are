@@ -854,7 +854,10 @@ end
 
 -- a locked inner door opens (with its key, or Tinker picks it)
 local function openLock(plr, id, how)
-	if world.unlocked[id] then
+	-- a blocked passage has no lock: only Muscle or a Confetti Cannon clears it
+	-- (the Skeleton Key marked it open and errored, so Shove and the cannon then
+	-- refused it - Conveyor Hall, 10 Oct)
+	if world.unlocked[id] or world.objects[id].def.blocked then
 		return
 	end
 	world.unlocked[id] = true
@@ -1265,7 +1268,7 @@ local function wirePrompts()
 					state.oncePerGame["skel" .. plr.UserId] = true
 					local n = 0
 					for other, e in pairs(world.objects) do
-						if e.def and e.def.kind == "lock" and not world.unlocked[other] then
+						if e.def and e.def.kind == "lock" and not e.def.blocked and not world.unlocked[other] then
 							openLock(plr, other, "pick")
 							n += 1
 						end
