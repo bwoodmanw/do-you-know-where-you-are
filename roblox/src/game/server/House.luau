@@ -1186,6 +1186,127 @@ function House.placeCrates(world, n)
 	end
 end
 
+-- ---------- hiding spots that look like real furniture (10 Oct, Brent) ----------
+-- the plain block stays (it holds the prompt and blocks the way); the details
+-- go round it. entry.flaps: parts that swing open for a moment (House.peekHide)
+local function hingeTo(cf, hinge, angle, axis)
+	local rot = axis == "x" and CFrame.Angles(angle, 0, 0) or CFrame.Angles(0, angle, 0)
+	return hinge * rot * hinge:Inverse() * cf
+end
+local function decorateHide(root, entry, look)
+	local body = entry.part
+	local c, s = body.Position, body.Size
+	local deco = Instance.new("Folder")
+	deco.Name = "HideDeco"
+	deco.Parent = root
+	local function bit(props)
+		props.CanCollide, props.CanQuery, props.CanTouch, props.CastShadow = false, false, false, false
+		return part(deco, props)
+	end
+	entry.flaps = {}
+	local function flap(p, hinge, angle, axis)
+		table.insert(entry.flaps, { part = p, closed = p.CFrame, open = hingeTo(p.CFrame, hinge, angle, axis) })
+	end
+	if look == "wardrobe" or look == nil then
+		-- warm wood, not near-black (it read as a black rectangle in dark rooms)
+		body.Color = Color3.fromRGB(122, 78, 46)
+		local doorCol, trim, brass = Color3.fromRGB(150, 98, 58), Color3.fromRGB(86, 52, 30), Color3.fromRGB(230, 185, 80)
+		bit({ Name = "Crown", Size = Vector3.new(s.X + 0.8, 0.7, s.Z + 0.8), Position = c + Vector3.new(0, s.Y / 2 + 0.35, 0), Color = trim, Material = Enum.Material.Wood })
+		bit({ Name = "Plinth", Size = Vector3.new(s.X + 0.4, 0.6, s.Z + 0.4), Position = c - Vector3.new(0, s.Y / 2 - 0.3, 0), Color = trim, Material = Enum.Material.Wood })
+		for _, side in ipairs({ -1, 1 }) do
+			local z = side * (s.Z / 2 + 0.12)
+			for _, lr in ipairs({ -1, 1 }) do
+				local w = s.X / 2 - 0.25
+				local door = bit({ Name = "Door", Size = Vector3.new(w, s.Y - 1.6, 0.25), Position = c + Vector3.new(lr * (w / 2 + 0.1), 0.1, z), Color = doorCol, Material = Enum.Material.Wood })
+				-- a raised panel on each door
+				local panel = bit({ Name = "Panel", Size = Vector3.new(w - 1, s.Y - 3.6, 0.12), Position = door.Position + Vector3.new(0, 0, side * 0.18), Color = doorCol:Lerp(trim, 0.35), Material = Enum.Material.Wood })
+				local knob = bit({ Name = "Knob", Shape = Enum.PartType.Ball, Size = Vector3.new(0.45, 0.45, 0.45), Position = c + Vector3.new(lr * 0.5, 0.2, z + side * 0.3), Color = brass, Material = Enum.Material.Metal })
+				local hinge = CFrame.new(c + Vector3.new(lr * (s.X / 2 - 0.05), 0, z))
+				local angle = -lr * side * math.rad(70)
+				flap(door, hinge, angle, "y")
+				flap(panel, hinge, angle, "y")
+				flap(knob, hinge, angle, "y")
+			end
+		end
+	elseif look == "curtain" then
+		local rodY = c.Y + s.Y / 2 + 0.3
+		bit({ Name = "Rod", Shape = Enum.PartType.Cylinder, Size = Vector3.new(s.X + 1.4, 0.35, 0.35), Position = Vector3.new(c.X, rodY, c.Z), Color = Color3.fromRGB(200, 160, 70), Material = Enum.Material.Metal })
+		for _, e in ipairs({ -1, 1 }) do
+			bit({ Name = "Finial", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.6, 0.6), Position = Vector3.new(c.X + e * (s.X / 2 + 0.7), rodY, c.Z), Color = Color3.fromRGB(200, 160, 70), Material = Enum.Material.Metal })
+		end
+		-- soft folds down both faces, darker in the dips
+		local n = math.max(4, math.floor(s.X / 1.3))
+		for i = 0, n - 1 do
+			local x = c.X - s.X / 2 + (i + 0.5) * s.X / n
+			for _, side in ipairs({ -1, 1 }) do
+				bit({ Name = "Fold", Size = Vector3.new(s.X / n * 0.45, s.Y - 0.4, 0.2), Position = Vector3.new(x, c.Y - 0.2, c.Z + side * (s.Z / 2 + 0.05)), Color = body.Color:Lerp(Color3.new(0, 0, 0), i % 2 == 0 and 0.25 or 0), Material = Enum.Material.Fabric })
+			end
+		end
+		-- a gap at the floor you could peek under
+		bit({ Name = "Hem", Size = Vector3.new(s.X, 0.3, s.Z + 0.2), Position = c - Vector3.new(0, s.Y / 2 - 0.4, 0), Color = Color3.fromRGB(230, 190, 90), Material = Enum.Material.Fabric })
+	elseif look == "sofa" then
+		local col = body.Color
+		-- the block is the seat; a back behind it, arms at the ends, cushions on top
+		bit({ Name = "Back", Size = Vector3.new(s.X, 3, 1.2), Position = c + Vector3.new(0, s.Y / 2 + 1.1, s.Z / 2 - 0.6), Color = col:Lerp(Color3.new(0, 0, 0), 0.15), Material = Enum.Material.Fabric })
+		for _, e in ipairs({ -1, 1 }) do
+			bit({ Name = "Arm", Size = Vector3.new(1.2, 1.6, s.Z), Position = c + Vector3.new(e * (s.X / 2 - 0.6), s.Y / 2 + 0.6, 0), Color = col:Lerp(Color3.new(0, 0, 0), 0.1), Material = Enum.Material.Fabric })
+		end
+		local n = 3
+		for i = 0, n - 1 do
+			local w = (s.X - 2.6) / n
+			bit({ Name = "Cushion", Size = Vector3.new(w - 0.2, 0.7, s.Z - 1.6), Position = c + Vector3.new(-s.X / 2 + 1.3 + (i + 0.5) * w, s.Y / 2 + 0.35, -0.5), Color = col:Lerp(Color3.new(1, 1, 1), 0.15), Material = Enum.Material.Fabric })
+		end
+		-- a dark gap under it: room to squeeze in
+		bit({ Name = "Gap", Size = Vector3.new(s.X - 0.6, 0.6, 0.1), Position = c + Vector3.new(0, -s.Y / 2 + 0.4, -s.Z / 2 - 0.06), Color = Color3.fromRGB(20, 15, 25), Material = Enum.Material.SmoothPlastic })
+	elseif look == "box" then
+		local tape = Color3.fromRGB(225, 200, 150)
+		bit({ Name = "Tape", Size = Vector3.new(0.8, s.Y + 0.05, s.Z + 0.05), Position = c, Color = tape, Material = Enum.Material.SmoothPlastic })
+		-- four flaps on top, a little open
+		local top = c.Y + s.Y / 2
+		for _, d in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
+			local alongX = d[1] ~= 0
+			local size = alongX and Vector3.new(s.X / 2, 0.15, s.Z) or Vector3.new(s.X, 0.15, s.Z / 2)
+			local edge = Vector3.new(d[1] * s.X / 2, 0, d[2] * s.Z / 2)
+			local hinge = CFrame.new(Vector3.new(c.X, top, c.Z) + edge)
+			local closed = CFrame.new(Vector3.new(c.X, top + 0.08, c.Z) + edge / 2)
+			local tilt = alongX and CFrame.Angles(0, 0, d[1] * math.rad(-20)) or CFrame.Angles(d[2] * math.rad(20), 0, 0)
+			local f = bit({ Name = "Flap", Size = size, CFrame = hinge * tilt * hinge:Inverse() * closed, Color = body.Color:Lerp(Color3.new(1, 1, 1), 0.1), Material = Enum.Material.Cardboard })
+			local openTilt = alongX and CFrame.Angles(0, 0, d[1] * math.rad(-75)) or CFrame.Angles(d[2] * math.rad(75), 0, 0)
+			table.insert(entry.flaps, { part = f, closed = f.CFrame, open = hinge * openTilt * hinge:Inverse() * closed })
+		end
+	elseif look == "cloth" then
+		-- a table under a long cloth: the top, a hem, a lace trim
+		bit({ Name = "TableTop", Size = Vector3.new(s.X + 0.6, 0.4, s.Z + 1.6), Position = c + Vector3.new(0, s.Y / 2 + 0.2, 0), Color = body.Color, Material = Enum.Material.Fabric })
+		for _, side in ipairs({ -1, 1 }) do
+			bit({ Name = "Drape", Size = Vector3.new(s.X + 0.6, s.Y + 0.2, 0.15), Position = c + Vector3.new(0, 0.1, side * (s.Z / 2 + 0.8)), Color = body.Color, Material = Enum.Material.Fabric })
+			bit({ Name = "Lace", Size = Vector3.new(s.X + 0.7, 0.35, 0.2), Position = c + Vector3.new(0, -s.Y / 2 + 0.3, side * (s.Z / 2 + 0.85)), Color = Color3.fromRGB(255, 160, 200), Material = Enum.Material.Fabric })
+		end
+	end
+end
+
+-- the doors or flaps swing open for a moment (someone hid or came out)
+function House.peekHide(entry)
+	if not entry or not entry.flaps or #entry.flaps == 0 or entry.peeking then
+		return
+	end
+	entry.peeking = true
+	local open = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	local shut = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+	for _, f in ipairs(entry.flaps) do
+		TweenService:Create(f.part, open, { CFrame = f.open }):Play()
+	end
+	task.delay(0.7, function()
+		for _, f in ipairs(entry.flaps) do
+			if f.part.Parent then
+				TweenService:Create(f.part, shut, { CFrame = f.closed }):Play()
+			end
+		end
+		task.delay(0.35, function()
+			entry.peeking = false
+		end)
+	end)
+end
+
 function House.buildObjects(world)
 	local root, map = world.root, world.map
 	for _, o in ipairs(map.objects) do
@@ -1459,6 +1580,7 @@ function House.buildObjects(world)
 				size, col, mat, y = Vector3.new(5, 5, 5), Color3.fromRGB(201, 154, 91), Enum.Material.Cardboard, 2.5
 			end
 			entry.part = part(root, { Name = "Hide " .. o.id, Size = size, Position = base + Vector3.new(0, y, 0), Color = col, Material = mat })
+			decorateHide(root, entry, o.look)
 			entry.inside = base + Vector3.new(0, 3, 0)
 			entry.prompt = prompt(entry.part, "Hide", "Fits " .. (o.cap or 2))
 			-- hiding places are marked so they stand out from things to search

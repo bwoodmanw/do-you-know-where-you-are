@@ -757,6 +757,7 @@ local function unhide(plr)
 	end
 	setVisible(plr, true)
 	if entry then
+		House.peekHide(entry)
 		teleport(plr, entry.outside)
 		Effects.sound(entry.outside, "unhide")
 	end
@@ -1386,6 +1387,7 @@ local function wirePrompts()
 					hrp.Anchored = true
 				end
 				setVisible(plr, false)
+				House.peekHide(entry)
 				Effects.sound(entry.inside, "hide")
 				say("hide", "You are hiding. Press Jump or the Hide button to come out.", nil, plr)
 			end)
