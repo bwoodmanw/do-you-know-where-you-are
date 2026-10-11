@@ -2118,6 +2118,24 @@ function round.placePlushie()
 							Profile.publish(plr)
 							Effects.burst(pos + Vector3.new(0, 2.5, 0), "rescue", "collect")
 							Effects.sound(pos, "squeak", 0.9)
+							-- 10 Oct (Brent): it hops, spins and ends up facing its finder
+							task.spawn(function()
+								local start = m:GetPivot()
+								local toward = Vector3.new(h.Position.X, start.Y, h.Position.Z)
+								local face = CFrame.lookAt(start.Position, start.Position - (toward - start.Position)) -- the plushie's front is -Z
+								local _, yaw0 = start:ToEulerAnglesYXZ()
+								local _, yaw1 = face:ToEulerAnglesYXZ()
+								local turn = (yaw1 - yaw0) % (math.pi * 2) + math.pi * 2
+								local t0 = os.clock()
+								while m.Parent and os.clock() - t0 < 0.8 do
+									local t = (os.clock() - t0) / 0.8
+									m:PivotTo(CFrame.new(start.Position + Vector3.new(0, math.sin(t * math.pi) * 1.5, 0)) * CFrame.Angles(0, yaw0 + turn * t, 0))
+									task.wait()
+								end
+								if m.Parent then
+									m:PivotTo(CFrame.new(start.Position) * CFrame.Angles(0, yaw0 + turn, 0))
+								end
+							end)
 							-- the finder gets a card with the plushie in 3D (on the
 							-- side, so it hides nothing); everyone else a message
 							for _, p in ipairs(Players:GetPlayers()) do

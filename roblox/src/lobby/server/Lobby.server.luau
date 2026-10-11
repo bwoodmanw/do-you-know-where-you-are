@@ -507,6 +507,7 @@ local function snapshot(party)
 		mapScreen = party.mapScreen == true,
 		building = party.building or "partyhouse",
 		chosen = chosenMap(party),
+		voteEnds = party.voteEnds,
 		tower = party.tower == true,
 		unlocked = (Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked,
 	}
@@ -851,6 +852,8 @@ local function joinParty(plr, id)
 	leave(plr)
 	table.insert(party.members, plr)
 	partyOf[plr] = party
+	-- a fair chance to vote: the window restarts for the new player
+	party.voteEnds = workspace:GetServerTimeNow() + (Config.VOTE_WINDOW or 30)
 	for _, m in ipairs(party.members) do
 		Notice:FireClient(m, plr.DisplayName .. " joined the party!")
 	end
@@ -970,6 +973,17 @@ end)
 StartParty.OnServerEvent:Connect(function(plr)
 	local party = partyOf[plr]
 	if party and party.leader == plr then
+		-- everyone gets to vote: all votes in, or the window has run out
+		local voted = 0
+		for _, m in ipairs(party.members) do
+			if party.votes[tostring(m.UserId)] then
+				voted += 1
+			end
+		end
+		local left = math.ceil((party.voteEnds or 0) - workspace:GetServerTimeNow())
+		if #party.members > 1 and voted < #party.members and left > 0 then
+			return Notice:FireClient(plr, "\u{23F3} Waiting for votes (" .. voted .. "/" .. #party.members .. ") - you can start in " .. left .. " s, or when everyone has voted.")
+		end
 		start(party)
 	end
 end)

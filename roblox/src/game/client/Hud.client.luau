@@ -2520,7 +2520,7 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 						conn:Disconnect()
 						return
 					end
-					plush:PivotTo(CFrame.Angles(0, math.pi + (os.clock() - t0) * 2, 0))
+					plush:PivotTo(CFrame.Angles(0, (os.clock() - t0) * 2, 0)) -- starts facing you (10 Oct)
 				end)
 			end
 			label(card, { Size = UDim2.new(1, -20, 0, 46), Position = UDim2.fromOffset(10, 162), Text = "You found " .. def.name .. "!", TextWrapped = true, TextColor3 = PUMP, ZIndex = 46 })

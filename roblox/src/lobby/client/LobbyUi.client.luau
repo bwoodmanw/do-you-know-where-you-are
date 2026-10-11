@@ -807,6 +807,32 @@ button(partyBox, "Leave", { Size = UDim2.fromOffset(130, 48), Position = UDim2.n
 	remotes.LeaveParty:FireServer()
 end)
 
+-- 10 Oct (Brent): the vote countdown on the party panel; Start waits for
+-- everyone's vote or the end of the window (the server checks too)
+do
+	task.spawn(function()
+		while true do
+			task.wait(0.5)
+			local p = current
+			if p and partyBox.Visible then
+				local voted = 0
+				for _, m in ipairs(p.members or {}) do
+					if p.votes and p.votes[tostring(m.userId)] then
+						voted += 1
+					end
+				end
+				local n = #(p.members or {})
+				local left = math.max(0, math.ceil((p.voteEnds or 0) - workspace:GetServerTimeNow()))
+				local waiting = n > 1 and voted < n and left > 0
+				local base = string.split(mapBtn.Text, "  \u{23F3}")[1]
+				mapBtn.Text = waiting and (base .. "  \u{23F3} " .. voted .. "/" .. n .. " voted \u{00B7} 0:" .. string.format("%02d", left)) or base
+				startBtn.Text = waiting and ("\u{23F3} 0:" .. string.format("%02d", left)) or "\u{25B6} Start"
+				startBtn.BackgroundColor3 = waiting and PLUM or PUMP
+			end
+		end
+	end)
+end
+
 local function paintParty(p)
 	current = p
 	inParty = p ~= nil
@@ -1076,7 +1102,7 @@ do
 	grid.ZIndex = 21
 	grid.Parent = book
 	local layout = Instance.new("UIGridLayout")
-	layout.CellSize = UDim2.fromOffset(150, 120)
+	layout.CellSize = UDim2.fromOffset(150, 170) -- 10 Oct: bigger pictures
 	layout.CellPadding = UDim2.fromOffset(8, 8)
 	layout.SortOrder = Enum.SortOrder.LayoutOrder
 	layout.Parent = grid
@@ -1131,7 +1157,7 @@ do
 			local a = os.clock() * 0.8
 			for _, m in pairs(spinning) do
 				if m.Parent then
-					m:PivotTo(CFrame.Angles(0, math.pi + math.sin(a) * 0.9, 0))
+					m:PivotTo(CFrame.Angles(0, math.sin(a) * 0.9, 0)) -- facing the camera (10 Oct: the half turn showed their backs)
 				end
 			end
 		end
@@ -1157,7 +1183,7 @@ do
 			corner(card, 12)
 			-- the plushie itself, turning slowly (a dark shape until found)
 			local vf = Instance.new("ViewportFrame")
-			vf.Size = UDim2.new(1, 0, 0, 56)
+			vf.Size = UDim2.new(1, 0, 0, 100)
 			vf.Position = UDim2.fromOffset(0, 2)
 			vf.BackgroundTransparency = 1
 			vf.Ambient = Color3.fromRGB(170, 160, 180)
@@ -1178,10 +1204,10 @@ do
 				vcam.CFrame = CFrame.lookAt(Vector3.new(0, 1.6, -9.5), Vector3.new(0, 1.35, 0))
 			end
 			if not got then
-				label(card, { Size = UDim2.fromOffset(30, 30), Position = UDim2.new(0.5, -15, 0, 14), Text = "\u{2753}", ZIndex = 24 })
+				label(card, { Size = UDim2.fromOffset(30, 30), Position = UDim2.new(0.5, -15, 0, 34), Text = "\u{2753}", ZIndex = 24 })
 			end
-			label(card, { Size = UDim2.new(1, -10, 0, 34), Position = UDim2.fromOffset(5, 58), Text = got and p.name or "Lost somewhere in", TextWrapped = true, TextColor3 = got and CREAM or Color3.fromRGB(180, 170, 195), ZIndex = 23 })
-			label(card, { Size = UDim2.new(1, -10, 0, 20), Position = UDim2.fromOffset(5, 94), Text = floorName[p.map] or p.map, TextColor3 = got and Color3.fromRGB(255, 210, 63) or Color3.fromRGB(150, 140, 170), ZIndex = 23 })
+			label(card, { Size = UDim2.new(1, -10, 0, 34), Position = UDim2.fromOffset(5, 102), Text = got and p.name or "Lost somewhere in", TextWrapped = true, TextColor3 = got and CREAM or Color3.fromRGB(180, 170, 195), ZIndex = 23 })
+			label(card, { Size = UDim2.new(1, -10, 0, 20), Position = UDim2.fromOffset(5, 140), Text = floorName[p.map] or p.map, TextColor3 = got and Color3.fromRGB(255, 210, 63) or Color3.fromRGB(150, 140, 170), ZIndex = 23 })
 			local tap = Instance.new("TextButton")
 			tap.Size = UDim2.fromScale(1, 1)
 			tap.BackgroundTransparency = 1
