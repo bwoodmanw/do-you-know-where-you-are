@@ -891,7 +891,14 @@ local function paintParty(p)
 	mapBtn.BackgroundTransparency = mapPic.Visible and 1 or 0
 	mapBtn.TextStrokeTransparency = mapPic.Visible and 0 or 1
 	if chosenInfo then
-		mapBtn.Text = "\u{1F5FA} " .. chosenInfo.name .. (amLeader and "  \u{00B7} tap to change" or "") .. (p.tower and "  \u{00B7} \u{1F5FC} Tower Run" or "")
+		local tower = p.tower and "  \u{00B7} \u{1F5FC} Tower Run" or ""
+		local full = "\u{1F5FA} " .. chosenInfo.name .. (amLeader and "  \u{00B7} tap to change" or "") .. tower
+		-- 11 Oct (Brent): a map name too long for one line drops "tap to change",
+		-- so the name keeps the second line and never goes to three (the button
+		-- is 384 wide inside its padding)
+		local short = "\u{1F5FA} " .. chosenInfo.name .. tower
+		local wide = game:GetService("TextService"):GetTextSize(short, Config.UI_TEXT.body, mapBtn.Font, Vector2.new(10000, 100)).X
+		mapBtn.Text = wide > 384 * 0.95 and short or full
 	else
 		mapBtn.Text = (amLeader and "\u{1F5FA} Tap to choose a map" or "\u{1F5FA} The leader chooses a map") .. (p.tower and "  \u{00B7} \u{1F5FC} Tower Run" or "")
 	end
