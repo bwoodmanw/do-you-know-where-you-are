@@ -17,6 +17,29 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 62 (11 Oct) - yearly seasons, tile words, map button
+
+- In game: the tile words under the pictures are bigger (size 20; long ones a
+  little smaller, never under 13). Photo of the tiles, and one while a skill
+  counts down.
+- Lobby party panel: a map with a long name (Party House: Secret Basement)
+  shows its name without "tap to change", on two lines at most; a short name
+  keeps "tap to change".
+- Lobby, today (Halloween): the Candy Shop banner looks as before; the shop
+  has a new orange line "Find them on every floor through Oct 31. The shop is
+  open through Nov 7." and its rows scroll. Buy a boost with candy corns - the
+  receipt line and the Boost Shop as before.
+- In game: candy corns still on every floor; picking one up says "Candy corn
+  found! N so far" and pops up as before.
+- Thanksgiving in Studio (ask Claude to set `Config.STUDIO_SEASON_DATE` to
+  { 2026, 11, 5 }): two banners in the Lobby (the Feather Shop at the bottom,
+  the Candy Shop above it, open through Nov 7); the Feather Shop shows the
+  feather emoji until its picture is uploaded; in game, golden feathers (a
+  gold feather that bobs and glows) instead of candy corns, "Golden feather
+  found!".
+- Owner only: the Gift panel gives the running season's item (+25 feathers in
+  November) and points; Balance and Gift sit above both banners.
+
 ## Round 61 (10 Oct) - Brainy's propeller; descriptions one line per button
 - [ ] BrainyToon (once imported): a blue two-blade propeller on a steel stem on top of the beanie, spinning, in the game (you and a friend both see it turn) and on the Lobby Characters screen once BrainyToon is saved to Roblox; not floating above or sunk into the beanie (photo) - if it is, tell Claude (one number, Config.PROPELLER_LIFT)
 - [ ] The old Brainy has no second propeller

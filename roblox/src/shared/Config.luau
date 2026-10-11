@@ -258,7 +258,8 @@ Config.BADGES = {
 	carnival = 1457721020150782, -- Star of the Show: escaped the Carnival's top floor (Funhouse)
 	aquarium = 2071235778459400, -- Making a Splash: escaped the Aquarium's top floor (Rooftop Pools)
 	basement = 3470854860514085, -- Down in the Dark: escaped the Party House's Secret Basement
-	corn = 1601997395414164, -- Candy Corn Collector: found Config.EVENT.goal candy corns (Halloween)
+	corn = 1601997395414164, -- Candy Corn Collector: found the Halloween season's goal of candy corns
+	feather = 0, -- Thanksgiving (Creator Hub: not made yet)
 	tower = 2702531171107423, -- Tower Climber: reached the top in a Tower Run
 	rescuer = 4200883843590712, -- Hero of the Crew: freed 10 friends from the cage
 	untouched = 1991556459225776, -- Untouchable: escaped without being caught
@@ -377,16 +378,45 @@ Config.PHRASES = {
 Config.PING_PHRASES = { ["Over here!"] = true, ["I found something!"] = true, ["Key found!"] = true, ["Help me!"] = true, ["Need Tinker!"] = true, ["Need Brainy!"] = true }
 Config.PING_SECONDS = 6
 
--- the Halloween Candy Corn Hunt: candy corns on every floor until `ends`
--- (os.time: 1 Nov 2026, midnight US Eastern). Each is `points` for whoever
--- picks it up; `goal` in all earns the badge (BADGES.corn).
-Config.EVENT = { name = "Candy Corn Hunt", ends = 1793505600, perFloor = 6, points = 3, goal = 50, near = 4,
-	-- the Candy Shop in the Lobby: boosts (and the event skin) for candy
-	-- corns on hand (found minus spent). The badge counts every corn ever
-	-- found, spent or not. Open until shopUntil (a week after the hunt).
-	shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 }, shopUntil = 1794114000,
-	-- the owner's gift buttons in the Lobby (corns go to spend, not to the badge)
-	giftCorn = { 25, 100 }, giftPoints = { 500, 2000 } }
+-- the seasons (11 Oct 2026, SEASONAL_EVENTS.md): each comes back every year
+-- by itself (shared/Seasons.luau works out the dates, US Eastern midnight).
+-- While a season runs, `perFloor` of its `item` hide on every floor, each
+-- `points` for whoever picks it up; `goal` found in all earns BADGES[badge].
+-- Its shop in the Lobby (boosts, and skins priced in the item - a skin's
+-- `corn = 100` / `feather = 150`) stays open `shopDays` after it ends.
+-- `bundles`: the item sold for Robux - Developer Products (Creator Hub ->
+-- Monetization -> Developer Products; 0 = not on sale). Bought ones only
+-- spend: they never count toward the badge or the community meter.
+-- `gift`: the owner's gift buttons (to spend, not toward the badge).
+Config.SEASONS = {
+	{
+		id = "halloween", name = "Candy Corn Hunt", shopName = "Candy Shop", item = "corn",
+		one = "candy corn", many = "candy corns", icon = "\u{1F383}",
+		from = { 10, 1 }, to = { 11, 1 }, shopDays = 7,
+		perFloor = 6, points = 3, goal = 50, near = 4, badge = "corn", badgeName = "Candy Corn Collector", look = "Halloween",
+		shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 },
+		gift = { 25, 100 },
+	},
+	{
+		-- starts the moment Halloween ends (Brent, 10 Oct); the Turkey Roundup,
+		-- the Gobbler and the Feast Meter come with the Thanksgiving build
+		id = "thanksgiving", name = "Feather Hunt", shopName = "Feather Shop", item = "feather",
+		one = "golden feather", many = "golden feathers", icon = "\u{1FAB6}",
+		from = { 11, 1 }, to = { 12, 1 }, shopDays = 7,
+		perFloor = 6, points = 3, goal = 50, near = 4, badge = "feather", badgeName = "Turkey Wrangler", look = "Thanksgiving",
+		shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 },
+		gift = { 25, 100 },
+		bundles = { { amount = 50, product = 0 }, { amount = 150, product = 0 } },
+	},
+}
+-- Studio only: pretend it is this date for the seasons ({ 2026, 11, 5 } tries
+-- Thanksgiving's Feather Hunt and shop; nil = today)
+Config.STUDIO_SEASON_DATE = nil
+-- the owner's gift buttons for points (Lobby)
+Config.GIFT_POINTS = { 500, 2000 }
+-- the pictures of each season's item (0 = its emoji); the candy corn is the
+-- Candy Corn boost's picture
+Config.SEASON_IMAGES = { corn = 122983417837830, feather = 0 }
 
 -- icons for things you pick up
 -- what hides on each floor: these always, plus one of `extra`, each in a

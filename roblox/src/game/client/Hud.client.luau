@@ -2605,8 +2605,16 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 		end
 		return
 	elseif kind == "corn" and data and data.userId == player.UserId then
-		local pic = Config.BOOST_IMAGES and Config.BOOST_IMAGES.candy or 0
-		popUp(pic > 0 and pic or "\u{1F383}", tostring(data.found or "") .. " candy corns")
+		-- a season's item found (Config.SEASONS: candy corns, golden feathers)
+		local item = data.item or "corn"
+		local many, emoji = "candy corns", "\u{1F383}"
+		for _, s in ipairs(Config.SEASONS or {}) do
+			if s.item == item then
+				many, emoji = s.many, s.icon
+			end
+		end
+		local pic = Config.SEASON_IMAGES and Config.SEASON_IMAGES[item] or 0
+		popUp(pic > 0 and pic or emoji, tostring(data.found or "") .. " " .. many)
 	elseif kind == "quest" and data and data.userId == player.UserId then
 		popUp("\u{1F4DC}", "Quest done! +" .. tostring(data.points or 0))
 	elseif (kind == "boost" or kind == "pop") and data and data.userId == player.UserId then

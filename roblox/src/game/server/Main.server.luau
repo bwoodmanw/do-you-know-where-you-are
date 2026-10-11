@@ -27,6 +27,7 @@ local Host = require(script.Parent.Host)
 local Effects = require(script.Parent.Effects)
 local Plushies = require(ReplicatedStorage.Shared.Plushies)
 local Shapes = require(ReplicatedStorage.Shared.Shapes) -- stretched balls need a sphere mesh
+local Seasons = require(ReplicatedStorage.Shared.Seasons) -- the yearly events (Config.SEASONS)
 local Characters = require(script.Parent.Characters)
 local Props = require(script.Parent.Props)
 
@@ -309,10 +310,13 @@ local function ownsSkin(plr, skin)
 	if Config.SKINS_FREE_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId then
 		return true
 	end
-	if skin.corn then
-		-- an event skin: yours once bought with candy corns in the Candy Shop
+	if Seasons.skinPrice(skin) then
+		-- a season skin (priced in candy corns, feathers...): yours once bought
+		-- in its shop; one that is also a Game Pass is yours either way
 		local d = Profile.get(plr)
-		return d ~= nil and d.skinsEarned ~= nil and d.skinsEarned[skin.id] == true
+		if d ~= nil and d.skinsEarned ~= nil and d.skinsEarned[skin.id] == true then
+			return true
+		end
 	end
 	if not skin.pass or skin.pass <= 0 then
 		return false
@@ -2162,12 +2166,13 @@ function round.placePlushie()
 	end)
 end
 
--- the Halloween Candy Corn Hunt: a few candy corns on random free checked
--- spots of every floor (behind the locks too) until Config.EVENT.ends.
--- Walk into one to pick it up: points, and the count towards the badge.
+-- the season's hunt (Config.SEASONS - Halloween's candy corns, Thanksgiving's
+-- golden feathers): a few on random free checked spots of every floor (behind
+-- the locks too) while the season runs. Walk into one to pick it up: points,
+-- and the count towards the season's badge.
 function round.placeCandyCorn()
-	local e = Config.EVENT
-	if not e or os.time() >= e.ends then
+	local e = Seasons.active()
+	if not e then
 		return
 	end
 	local myState, myWorld = state, world
@@ -2216,7 +2221,7 @@ function round.placeCandyCorn()
 	for _, c in ipairs(corns) do
 		local pos = House.at(c.x, c.y, 2.2)
 		local m = Instance.new("Model")
-		m.Name = "CandyCorn"
+		m.Name = e.item == "corn" and "CandyCorn" or "Golden" .. string.upper(string.sub(e.item, 1, 1)) .. string.sub(e.item, 2)
 		-- a candy corn: a rounded yellow base, an orange middle, a white tip,
 		-- each band narrower than the one below; it bobs and glows
 		local YEL, ORA, WHI = Color3.fromRGB(255, 205, 40), Color3.fromRGB(255, 130, 25), Color3.fromRGB(255, 250, 240)
@@ -2227,6 +2232,16 @@ function round.placeCandyCorn()
 			{ Enum.PartType.Cylinder, Vector3.new(0.6, 1.05, 1.05), 1.0, WHI },
 			{ Enum.PartType.Ball, Vector3.new(0.75, 0.75, 0.75), 1.35, WHI },
 		}
+		if e.item ~= "corn" then
+			-- a golden feather (Thanksgiving): a tall flat gold vane with a pale
+			-- middle stripe, on a short quill; it bobs and glows the same way
+			local GOLD, PALE, QUILL = Color3.fromRGB(255, 196, 46), Color3.fromRGB(255, 236, 160), Color3.fromRGB(214, 150, 40)
+			bands = {
+				{ Enum.PartType.Ball, Vector3.new(0.45, 2.8, 1.4), 0.35, GOLD },
+				{ Enum.PartType.Ball, Vector3.new(0.5, 2.4, 0.3), 0.4, PALE },
+				{ Enum.PartType.Cylinder, Vector3.new(1.1, 0.2, 0.2), -1.35, QUILL },
+			}
+		end
 		local parts = {}
 		for _, bd in ipairs(bands) do
 			local pt = Instance.new("Part")
@@ -2267,24 +2282,27 @@ function round.placeCandyCorn()
 							local data = Profile.get(plr)
 							local n = 0
 							if data then
-								data.stats.corn = (data.stats.corn or 0) + 1
-								n = data.stats.corn
+								data.stats[e.item] = (data.stats[e.item] or 0) + 1
+								n = data.stats[e.item]
 								Profile.publish(plr)
 							end
 							Effects.burst(c.pos, "boost", "collect")
-							say("corn", "Candy corn found! " .. n .. " so far (+" .. e.points .. " points)", { userId = plr.UserId, found = n }, plr)
+							local One = string.upper(string.sub(e.one, 1, 1)) .. string.sub(e.one, 2)
+							say("corn", One .. " found! " .. n .. " so far (+" .. e.points .. " points)", { userId = plr.UserId, found = n, item = e.item }, plr)
 							if n == e.goal then
-								say("info", "\u{1F383} " .. plr.DisplayName .. " found " .. e.goal .. " candy corns - Candy Corn Collector!")
+								say("info", e.icon .. " " .. plr.DisplayName .. " found " .. e.goal .. " " .. e.many .. " - " .. e.badgeName .. "!")
 							end
-							local have = data and n + (data.stats.cornGift or 0) - (data.stats.cornSpent or 0) or 0
+							local have = data and Seasons.have(data.stats, e) or 0
 							for _, skin in ipairs(Config.SKINS or {}) do
-								if skin.corn and have == skin.corn and not skin.hidden and not (data.skinsEarned and data.skinsEarned[skin.id]) then
-									say("info", "\u{1F383} " .. skin.corn .. " candy corns to spend - get " .. skin.name .. " in the Lobby's Candy Shop!", nil, plr)
+								local price = skin[e.item]
+								if type(price) == "number" and have == price and not skin.hidden and not (data.skinsEarned and data.skinsEarned[skin.id]) then
+									say("info", e.icon .. " " .. price .. " " .. e.many .. " to spend - get " .. skin.name .. " in the Lobby's " .. e.shopName .. "!", nil, plr)
 								end
 							end
-							if n >= e.goal and (Config.BADGES.corn or 0) > 0 then
+							local badge = Config.BADGES[e.badge] or 0
+							if n >= e.goal and badge > 0 then
 								task.spawn(pcall, function()
-									game:GetService("BadgeService"):AwardBadge(plr.UserId, Config.BADGES.corn)
+									game:GetService("BadgeService"):AwardBadge(plr.UserId, badge)
 								end)
 							end
 						end

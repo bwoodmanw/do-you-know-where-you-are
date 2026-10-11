@@ -19,6 +19,7 @@ local Places = require(ReplicatedStorage.Shared.Places)
 local offerRejoin, queueReminder, Quests -- set further down
 local Profile = require(ReplicatedStorage.Shared.Profile)
 local Progress = require(ReplicatedStorage.Shared.Progress)
+local Seasons = require(ReplicatedStorage.Shared.Seasons) -- the yearly events (Config.SEASONS)
 
 -- 3D characters for the Characters screen, from the models saved to Roblox
 do
@@ -1024,37 +1025,42 @@ BuyBoost.OnServerEvent:Connect(function(plr, id)
 	Notice:FireClient(plr, boost.icon .. " You bought " .. boost.name .. "!")
 end)
 
--- the Candy Shop (Halloween): boosts for candy corns found in the games
+-- the seasons' shops (Config.SEASONS: Halloween's Candy Shop, Thanksgiving's
+-- Feather Shop): boosts and season skins for the season's item, while its
+-- shop is open (Seasons.shops)
 do
-	local CornShop = remote("CornShop") -- (boostId or "skin:<id>", count 1-10)
+	local CornShop = remote("CornShop") -- (seasonId, boostId or "skin:<id>", count 1-10)
 	-- what was bought, for the shop's receipt line (10 Oct, Brent: it was
 	-- unclear that bought boosts land in the Boost Shop)
-	local CornBought = remote("CornBought") -- (icon, name, count, corns spent, isSkin)
-	CornShop.OnServerEvent:Connect(function(plr, id, count)
+	local CornBought = remote("CornBought") -- (icon, name, count, spent, isSkin, seasonId)
+	CornShop.OnServerEvent:Connect(function(plr, seasonId, id, count)
 		count = (typeof(count) == "number" and count == count) and math.clamp(math.floor(count), 1, 10) or 1
-		local e = Config.EVENT
+		local w = typeof(seasonId) == "string" and Seasons.openWindow(seasonId)
+		local e = w and w.season
 		local data = Profile.get(plr)
-		if not e or not data or typeof(id) ~= "string" or os.time() >= (e.shopUntil or 0) then
+		if not e or not data or typeof(id) ~= "string" then
 			return
 		end
-		local have = (data.stats.corn or 0) + (data.stats.cornGift or 0) - (data.stats.cornSpent or 0)
-		-- the event skin: 100 corns on hand, spent, and it is yours for good
+		local have = Seasons.have(data.stats, e)
+		local spentKey = e.item .. "Spent"
+		-- a season skin: its price on hand, spent, and it is yours for good
 		for _, skin in ipairs(Config.SKINS or {}) do
-			if skin.corn and not skin.hidden and id == "skin:" .. skin.id then
+			local price = skin[e.item]
+			if type(price) == "number" and not skin.hidden and id == "skin:" .. skin.id then
 				data.skinsEarned = data.skinsEarned or {}
 				if data.skinsEarned[skin.id] then
 					return Notice:FireClient(plr, skin.name .. " is already yours - pick it in Characters.")
 				end
-				if have < skin.corn then
-					return Notice:FireClient(plr, "You need " .. skin.corn .. " candy corns for " .. skin.name .. " (you have " .. have .. ").")
+				if have < price then
+					return Notice:FireClient(plr, "You need " .. price .. " " .. e.many .. " for " .. skin.name .. " (you have " .. have .. ").")
 				end
-				data.stats.cornSpent = (data.stats.cornSpent or 0) + skin.corn
+				data.stats[spentKey] = (data.stats[spentKey] or 0) + price
 				data.skinsEarned[skin.id] = true
 				data.skins = data.skins or {}
 				data.skins[skin.skill] = skin.id -- wear it straight away
 				Profile.publish(plr)
 				Profile.save(plr)
-				CornBought:FireClient(plr, "\u{2728}", skin.name, 1, skin.corn, true)
+				CornBought:FireClient(plr, "\u{2728}", skin.name, 1, price, true, e.id)
 				return Notice:FireClient(plr, "\u{2728} " .. skin.name .. " is yours! Wearing it next game.")
 			end
 		end
@@ -1065,27 +1071,28 @@ do
 		end
 		local total = price * count
 		if have < total then
-			return Notice:FireClient(plr, "You need " .. total .. " candy corns for " .. count .. " " .. boost.name .. " (you have " .. have .. ").")
+			return Notice:FireClient(plr, "You need " .. total .. " " .. e.many .. " for " .. count .. " " .. boost.name .. " (you have " .. have .. ").")
 		end
-		data.stats.cornSpent = (data.stats.cornSpent or 0) + total
+		data.stats[spentKey] = (data.stats[spentKey] or 0) + total
 		data.inv[id] = (data.inv[id] or 0) + count -- not "paid": it doesn't sell back for points
 		Profile.publish(plr)
 		Profile.save(plr)
-		CornBought:FireClient(plr, boost.icon, boost.name, count, total, false)
-		Notice:FireClient(plr, boost.icon .. " " .. count .. " x " .. boost.name .. " for " .. total .. " candy corns!")
+		CornBought:FireClient(plr, boost.icon, boost.name, count, total, false, e.id)
+		Notice:FireClient(plr, boost.icon .. " " .. count .. " x " .. boost.name .. " for " .. total .. " " .. e.many .. "!")
 	end)
 end
 
--- the owner's gifts: candy corns (to spend - not towards the badge) or
+-- the owner's gifts: a season's item (to spend - not towards the badge) or
 -- points, to a player in this Lobby server. Only the experience's owner.
 do
-	local OwnerGift = remote("OwnerGift") -- (userId, "corn" | "points", amount)
+	local OwnerGift = remote("OwnerGift") -- (userId, seasonId | "points", amount)
 	OwnerGift.OnServerEvent:Connect(function(plr, userId, kind, amount)
-		local e = Config.EVENT or {}
 		if not (game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId) then
 			return
 		end
-		local allowed = kind == "corn" and e.giftCorn or kind == "points" and e.giftPoints or {}
+		local w = kind ~= "points" and typeof(kind) == "string" and Seasons.openWindow(kind)
+		local e = w and w.season
+		local allowed = kind == "points" and Config.GIFT_POINTS or e and e.gift or {}
 		if not table.find(allowed, amount) then
 			return
 		end
@@ -1094,14 +1101,15 @@ do
 		if not data then
 			return Notice:FireClient(plr, "That player isn't in this Lobby any more.")
 		end
-		if kind == "corn" then
-			data.stats.cornGift = (data.stats.cornGift or 0) + amount
+		if e then
+			local k = e.item .. "Gift"
+			data.stats[k] = (data.stats[k] or 0) + amount
 		else
 			data.points += amount
 		end
 		Profile.publish(to)
 		Profile.save(to)
-		local what = amount .. (kind == "corn" and " candy corns" or " points")
+		local what = amount .. (e and (" " .. e.many) or " points")
 		Notice:FireClient(plr, "\u{1F381} Gave " .. to.DisplayName .. " " .. what .. ".")
 		if to ~= plr then
 			Notice:FireClient(to, "\u{1F381} A gift from " .. plr.DisplayName .. ": " .. what .. "!")
@@ -1192,11 +1200,41 @@ for id, productId in pairs(Config.ROBUX_PRODUCTS) do
 		productToBoost[productId] = id
 	end
 end
+-- Robux: a season's item in bundles (Config.SEASONS bundles) - they only
+-- spend, never count toward the badge or the community meter
+local productToBundle = {}
+for _, s in ipairs(Config.SEASONS or {}) do
+	for _, b in ipairs(s.bundles or {}) do
+		if (b.product or 0) > 0 then
+			productToBundle[b.product] = { season = s, amount = b.amount }
+		end
+	end
+end
 local function resetLadder(data, skill)
 	data.picks[skill] = {}
 end
 MarketplaceService.ProcessReceipt = function(info)
 	local plr = Players:GetPlayerByUserId(info.PlayerId)
+	local bundle = productToBundle[info.ProductId]
+	if bundle then
+		local d = plr and Profile.get(plr)
+		if not d then
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+		local s = bundle.season
+		d.receipts = d.receipts or {}
+		if not d.receipts[info.PurchaseId] then
+			d.receipts[info.PurchaseId] = true
+			local k = s.item .. "Bought"
+			d.stats[k] = (d.stats[k] or 0) + bundle.amount
+		end
+		if not Profile.save(plr) then
+			return Enum.ProductPurchaseDecision.NotProcessedYet
+		end
+		Profile.publish(plr)
+		Notice:FireClient(plr, s.icon .. " " .. bundle.amount .. " " .. s.many .. " added - spend them in the " .. s.shopName .. "!")
+		return Enum.ProductPurchaseDecision.PurchaseGranted
+	end
 	-- the skill-ladder reset, for the character chosen before buying
 	if (Config.ROBUX_PRODUCTS.reset or 0) > 0 and info.ProductId == Config.ROBUX_PRODUCTS.reset then
 		local d = plr and Profile.get(plr)
@@ -1535,10 +1573,13 @@ local function ownsSkin(plr, skin)
 	if Config.SKINS_FREE_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId then
 		return true
 	end
-	if skin.corn then
-		-- an event skin: yours once bought with candy corns in the Candy Shop
+	if Seasons.skinPrice(skin) then
+		-- a season skin (priced in candy corns, feathers...): yours once bought
+		-- in its shop; one that is also a Game Pass is yours either way
 		local d = Profile.get(plr)
-		return d ~= nil and d.skinsEarned ~= nil and d.skinsEarned[skin.id] == true
+		if d ~= nil and d.skinsEarned ~= nil and d.skinsEarned[skin.id] == true then
+			return true
+		end
 	end
 	if not skin.pass or skin.pass <= 0 then
 		return false
