@@ -719,6 +719,10 @@ def paint(name):
     # 10 Oct: front triangles that line up with the picture's BACKGROUND (the
     # wispy hair edges: Stable Fast 3D tinted them gray - Echo's pale halo)
     front_bg = np.zeros(len(F), np.float32)
+    # 10 Oct (Echo's second headphone cup): with side pictures the back picture
+    # only paints what faces squarely back (within ~45 deg); sides take the rest
+    has_sides = all((INPUT / name / f"{v}-toon.png").exists() for v in ("left", "right"))
+    BACK_MIN, BACK_FULL = (0.7, 0.85) if has_sides else (FACING_MIN, FACING_FULL)
     # Stable Fast 3D's models face -Z (checked on Tinker and Shadow, 10 Oct)
     for view, sign in (("front", -1.0), ("back", 1.0)):
         img = np.asarray(Image.open(pics[view]).convert("RGB"))
@@ -728,6 +732,17 @@ def paint(name):
         # on its right; one looking along +Z has +X on its left)
         fx = (V[:, 0] - lo[0]) / size[0] if sign > 0 else (hi[0] - V[:, 0]) / size[0]
         px = bx0 + fx * (bx1 - bx0)
+        if view == "back":
+            # 10 Oct (Echo's second headphone cup): the head on its own - its
+            # width in the picture's top rows, not the body's
+            head_v = V[:, 1] > hi[1] - 0.27 * size[1]
+            rows = mask[int(by0):int(by0 + 0.24 * (by1 - by0))]
+            cols = np.nonzero(rows.any(axis=0))[0]
+            if head_v.sum() > 50 and len(cols) > 10:
+                hx0, hx1 = V[head_v, 0].min(), V[head_v, 0].max()
+                hf = (V[head_v, 0] - hx0) / max(hx1 - hx0, 1e-6)
+                px = px.copy()
+                px[head_v] = cols.min() + hf * (cols.max() - cols.min())
         py = by0 + (hi[1] - V[:, 1]) / size[1] * (by1 - by0)
         near = sign * V[:, 2]  # bigger = nearer this view's camera
         P = np.stack([px, py], axis=1)
@@ -743,7 +758,8 @@ def paint(name):
             depth[pts[:, 1], pts[:, 0]] = np.maximum(cur, z)
         eps = 0.02 * size[2] + 1e-6
         # paint every texel of the faces that face this view
-        for f in np.nonzero(facing > FACING_MIN)[0]:
+        lo_f, full_f = (BACK_MIN, BACK_FULL) if view == "back" else (FACING_MIN, FACING_FULL)
+        for f in np.nonzero(facing > lo_f)[0]:
             pts, bc = raster(uvpx[F[f]], TW, TH)
             if pts is None or len(pts) == 0:
                 continue
@@ -757,7 +773,7 @@ def paint(name):
             seen = vis & mask[iy, ix]
             if not seen.any():
                 continue
-            w = min(1.0, (facing[f] - FACING_MIN) / (FACING_FULL - FACING_MIN))
+            w = min(1.0, (facing[f] - lo_f) / (full_f - lo_f))
             tx, ty = pts[seen, 0], pts[seen, 1]
             col = img[iy[seen], ix[seen]].astype(np.float32)
             if view == "front":
@@ -784,6 +800,18 @@ def paint(name):
         py = by0 + (hi[1] - V[:, 1]) * sy
         fz = (V[:, 2] - lo[2]) if sign < 0 else (hi[2] - V[:, 2])
         px, fit = fit_side(fz, py, mask, sy, (bx0, bx1))
+        # 10 Oct (Echo's two headphones in Studio): the head gets its own fit -
+        # Stable Fast 3D guessed its depth apart from the body's
+        head_v = V[:, 1] > hi[1] - 0.27 * size[1]
+        hmask = np.zeros_like(mask)
+        hy1 = int(by0 + 0.30 * (by1 - by0))
+        hmask[int(by0):hy1] = mask[int(by0):hy1]
+        hxs = np.nonzero(hmask.any(axis=0))[0]
+        if head_v.sum() > 50 and len(hxs) > 10:
+            hpx, hfit = fit_side(fz[head_v], py[head_v], hmask, sy, (hxs.min(), hxs.max()))
+            px = px.copy()
+            px[head_v] = hpx
+            fit = min(fit, hfit)
         paint_view(img, mask, np.stack([px, py], axis=1), sign * V[:, 0], sign * fn[:, 0],
                    F, uvpx, TW, TH, 0.02 * size[0] + 1e-6, painted, best)
         sides.append(f"{view} (fit {fit:.2f})")
