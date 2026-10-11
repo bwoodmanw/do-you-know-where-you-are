@@ -39,11 +39,23 @@ function Propeller.add(model, lift)
 	if not head or not head:IsA("BasePart") or model:FindFirstChild("Propeller") then
 		return
 	end
-	local s = math.max(head.Size.X, head.Size.Z) -- everything in head widths
+	-- 10 Oct: sized and placed from the model's own outline - the top of the
+	-- whole model, above its middle, facing the way the model faces. A toon's
+	-- Head part from Avatar Setup isn't where the head is drawn (Brent's photo:
+	-- the propeller by Brainy's shins); it still rides on the Head (welded).
+	local box, size = model:GetBoundingBox()
+	local s = math.clamp(size.X * 0.3, 0.6, 2.5) -- "a head width": about a third of the A-pose width
+	if model:FindFirstChild("HumanoidRootPart") == nil then
+		s = math.max(head.Size.X, head.Size.Z)
+	end
 	local holder = Instance.new("Model")
 	holder.Name = "Propeller"
 	holder.Parent = model
-	local top = head.CFrame * CFrame.new(0, head.Size.Y / 2 + (lift or 0) * s, 0)
+	local rot = model:GetPivot().Rotation
+	local top = CFrame.new(box.Position + Vector3.new(0, size.Y / 2 + (lift or 0) * s - 0.06 * s, 0)) * rot
+	if game:GetService("RunService"):IsStudio() and (head.Position - top.Position).Magnitude > size.Y * 0.35 then
+		print("[Propeller] " .. model.Name .. ": the Head part is " .. string.format("%.1f", (head.Position - top.Position).Magnitude) .. " studs from the model's top - placed on the top")
+	end
 	-- a short steel stem (a Cylinder's height is its X: stood up with a turn)
 	local stem = part(holder, { Name = "Stem", Shape = Enum.PartType.Cylinder, Color = STEEL,
 		Size = Vector3.new(0.2 * s, 0.07 * s, 0.07 * s), CFrame = top * CFrame.new(0, 0.08 * s, 0) * CFrame.Angles(0, 0, math.rad(90)) })

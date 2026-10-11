@@ -196,7 +196,12 @@ def even_skin(name, V, F, uv, fn, tex, sel, pic, fg_mask, align):
     dxc = np.abs(c[:, 0] - cx)
     facing = -fn[:, 2]
     # the picture's skin: the cheeks (below the eyes, beside the nose)
-    skin = pic_median(sel & (c[:, 1] < hi[1] - 0.17 * h) & (c[:, 1] > hi[1] - 0.24 * h) & (dxc > 0.03 * h) & (dxc < 0.09 * h))
+    cheeks = sel & (c[:, 1] < hi[1] - 0.17 * h) & (c[:, 1] > hi[1] - 0.24 * h) & (dxc > 0.03 * h) & (dxc < 0.09 * h)
+    if cheeks.any():
+        kx, ky = to_pic(c[cheeks])
+        skin = lit_skin(pic[ky, kx][fg_mask[ky, kx]])
+    else:
+        skin = None
     # the picture's hair: the top of the head, facing forward
     hair = pic_median((facing > 0.3) & (c[:, 1] > hi[1] - 0.05 * h) & (dxc < 0.08 * h))
     # a mask or a hood over the cheeks (Shadow, Ghostly Shadow): no skin to even out
@@ -265,6 +270,28 @@ def picture_chin(pic, fg_mask, nose_x, nose_y):
 
 
 EDGE_PX = 10  # picture pixels of the outline's edge kept off the head (1536-tall pictures)
+
+
+def skin_tone(pc):
+    """picture pixels with a skin tone, light or in shadow: warm, with green and
+    blue in skin's proportions to red (red cloth has far less green; dark hair
+    is darker than any lit or shadowed skin here)"""
+    r, g, b = pc[:, 0] + 1e-3, pc[:, 1], pc[:, 2]
+    return (r > 95) & (g / r > 0.5) & (g / r < 0.85) & (b / r > 0.3) & (b / r < 0.75) & (g > b)
+
+
+def lit_skin(cols):
+    """the lit skin color among picture samples: skin-toned ones only, the
+    brighter half of those (Echo's cheeks also caught shadow and hair: her
+    median was a dark brown, painted over her chin as a 'beard', 10 Oct)"""
+    cols = np.asarray(cols, np.float32).reshape(-1, 3)
+    if len(cols) == 0:
+        return None
+    sk = cols[skin_tone(cols)]
+    if len(sk) < 10:
+        return None
+    lum = sk @ np.array([0.3, 0.59, 0.11], np.float32)
+    return np.median(sk[lum >= np.median(lum)], axis=0)
 
 
 def face_corner(name, V, F, uv, fn, tex, pic):
@@ -386,6 +413,29 @@ def face_corner(name, V, F, uv, fn, tex, pic):
         tx, ty = pts[ok, 0], pts[ok, 1]
         tex[ty, tx] = tex[ty, tx] * (1 - w) + pic[iy[ok], ix[ok]].astype(np.float32) * w
     tex = even_skin(name, V, F, uv, fn, tex, sel, pic, fg_mask0, (bx0, by0, s, dx, dy, scale, hi, h, cx))
+    # 10 Oct: the neck's shadow below the picture's chin (Echo's brown 'beard'
+    # in Studio) becomes the cheeks' skin - only picture pixels with a skin tone
+    skin_c = None
+    if chin_rows is not None:
+        cheekc = sel & (c[:, 1] < hi[1] - 0.17 * h) & (c[:, 1] > hi[1] - 0.24 * h) & (np.abs(c[:, 0] - cx) > 0.03 * h) & (np.abs(c[:, 0] - cx) < 0.09 * h)
+        cx_, cy_ = to_pic(c[cheekc])
+        cheek_cols = pic[cy_, cx_].astype(np.float32)
+        if len(cheek_cols) >= 10:
+            skin_c = lit_skin(cheek_cols)
+    if skin_c is not None:
+        zone = (c[:, 1] < hi[1] - 0.18 * h) & (c[:, 1] > hi[1] - 0.34 * h) & (np.abs(c[:, 0] - cx) < 0.10 * h) & (-fn[:, 2] > 0.0)
+        neck_n = 0
+        for f in np.nonzero(zone)[0]:
+            pts, bc = raster(uvpx0[F[f]], TW0, TH0)
+            if pts is None or len(pts) == 0:
+                continue
+            ix, iy = to_pic(bc @ V[F[f]])
+            ok = below_chin(ix, iy) & skin_tone(pic[iy, ix].astype(np.float32)) & fg_mask0[iy, ix]
+            if ok.any():
+                tex[pts[ok, 1], pts[ok, 0]] = skin_c
+                neck_n += int(ok.sum())
+        if neck_n:
+            print(f"{name}: neck shadow below the chin painted skin ({neck_n} texels)")
     used = np.unique(F[sel])
     x0b, x1b = V[used, 0].min(), V[used, 0].max()
     y0b, y1b = V[used, 1].min(), V[used, 1].max()
@@ -449,6 +499,9 @@ def face_corner(name, V, F, uv, fn, tex, pic):
         grow = (~known) & (count > 0)
         corner[grow] = total[grow] / count[grow][:, None]
         known |= grow
+    if skin_c is not None:
+        neck = below_chin(px.ravel(), py.ravel()).reshape(px.shape) & skin_tone(pic[py, px].reshape(-1, 3).astype(np.float32)).reshape(px.shape)
+        corner[neck] = skin_c
     new_tex[0:ch, TW - cw:TW] = corner
     print(f"{name}: face corner from the picture (match {score:.2f}, {int(sel.sum())} triangles, {cw}x{ch} pixels for the face)")
     return V2, F2, uv2, new_tex, np.concatenate([np.arange(len(V)), np.array(extra_src, int)])
