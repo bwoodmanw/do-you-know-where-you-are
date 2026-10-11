@@ -431,7 +431,7 @@ roomName = label(bars, { Size = UDim2.new(1, -16, 0, 32), Position = UDim2.fromO
 do
 -- the team's items, as icons above the active boosts: a key for each locked
 -- door still shut, and the Confetti Cannons (they stay through a cage)
-local itemRow = frame(gui, { Size = UDim2.fromOffset(290, 58), Position = TOUCH and UDim2.new(1, -300, 1, -534) or UDim2.new(1, -300, 1, -394), BackgroundTransparency = 1 })
+local itemRow = frame(gui, { Size = UDim2.fromOffset(318, 58), Position = TOUCH and UDim2.new(1, -328, 1, -562) or UDim2.new(1, -328, 1, -422), BackgroundTransparency = 1 })
 local itemList = Instance.new("UIListLayout")
 itemList.FillDirection = Enum.FillDirection.Horizontal
 itemList.HorizontalAlignment = Enum.HorizontalAlignment.Right
@@ -493,9 +493,9 @@ local staminaBar = bar(10, Color3.fromRGB(123, 227, 107), "Stamina")
 local gameEarned = label(bars, { Size = UDim2.new(1, -16, 0, 18), Position = UDim2.fromOffset(8, 30), Text = "\u{2B50} 0 points this game", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 210, 63) })
 
 -- ---------- action buttons ----------
-local acts = frame(gui, { Size = UDim2.fromOffset(290, 212), Position = TOUCH and UDim2.new(1, -300, 1, -362) or UDim2.new(1, -300, 1, -222), BackgroundTransparency = 1 })
+local acts = frame(gui, { Size = UDim2.fromOffset(318, 240), Position = TOUCH and UDim2.new(1, -328, 1, -390) or UDim2.new(1, -328, 1, -250), BackgroundTransparency = 1 }) -- 10 Oct: bigger tiles
 local grid = Instance.new("UIGridLayout")
-grid.CellSize = UDim2.fromOffset(92, 64)
+grid.CellSize = UDim2.fromOffset(100, 74)
 grid.CellPadding = UDim2.fromOffset(6, 6)
 grid.HorizontalAlignment = Enum.HorizontalAlignment.Right
 grid.VerticalAlignment = Enum.VerticalAlignment.Bottom
@@ -1267,7 +1267,7 @@ end)
 -- Tap boosts (Candy, Energy Drink, Extra Clue) sit in the bag until used;
 -- keys 1 and 2 on a keyboard. Shield and Head Start work by themselves and
 -- show as ON badges (the shield greys out once it has saved you).
-local boostBar = frame(gui, { Size = UDim2.fromOffset(290, 56), Position = TOUCH and UDim2.new(1, -300, 1, -362) or UDim2.new(1, -300, 1, -222), BackgroundTransparency = 1 })
+local boostBar = frame(gui, { Size = UDim2.fromOffset(318, 56), Position = TOUCH and UDim2.new(1, -328, 1, -390) or UDim2.new(1, -328, 1, -250), BackgroundTransparency = 1 }) -- with the bigger tiles (10 Oct)
 local boostList = Instance.new("UIListLayout")
 boostList.FillDirection = Enum.FillDirection.Horizontal
 boostList.HorizontalAlignment = Enum.HorizontalAlignment.Right
@@ -1800,7 +1800,7 @@ end)
 
 -- ---------- boosts working right now: icon and how long is left ----------
 end
-local activeRow = frame(gui, { Size = UDim2.fromOffset(290, 46), Position = TOUCH and UDim2.new(1, -300, 1, -474) or UDim2.new(1, -300, 1, -334), BackgroundTransparency = 1 })
+local activeRow = frame(gui, { Size = UDim2.fromOffset(318, 46), Position = TOUCH and UDim2.new(1, -328, 1, -502) or UDim2.new(1, -328, 1, -362), BackgroundTransparency = 1 })
 local activeList = Instance.new("UIListLayout")
 activeList.FillDirection = Enum.FillDirection.Horizontal
 activeList.HorizontalAlignment = Enum.HorizontalAlignment.Right
