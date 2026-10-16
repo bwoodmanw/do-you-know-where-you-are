@@ -414,12 +414,12 @@ Config.SEASONS = {
 		-- picture's id, 0 = the emoji); bought ones land in the bag as the
 		-- regular boost
 		looks = {
-			candy = { name = "Pumpkin Pie", icon = "\u{1F967}", image = 0 },
-			shield = { name = "Pie Tin Shield", icon = "\u{1F6E1}", image = 0 },
-			clue = { name = "Corn Maze Map", icon = "\u{1F5FA}", image = 0 },
-			energy = { name = "Apple Cider", icon = "\u{1F34E}", image = 0 },
-			headstart = { name = "Turkey Trot", icon = "\u{1F983}", image = 0 },
-			freeze = { name = "Cranberry Ice Pop", icon = "\u{1F9CA}", image = 0 },
+			candy = { name = "Pumpkin Pie", icon = "\u{1F967}", image = 72898927371668 },
+			shield = { name = "Pie Tin Shield", icon = "\u{1F6E1}", image = 124494590099278 },
+			clue = { name = "Corn Maze Map", icon = "\u{1F5FA}", image = 125545308401539 },
+			energy = { name = "Apple Cider", icon = "\u{1F34E}", image = 131306139454693 },
+			headstart = { name = "Turkey Trot", icon = "\u{1F983}", image = 136250158458958 },
+			freeze = { name = "Cranberry Ice Pop", icon = "\u{1F9CA}", image = 135524207766765 },
 		},
 		gift = { 25, 100 },
 		bundles = { { amount = 50, product = 0 }, { amount = 150, product = 0 } },
@@ -462,7 +462,7 @@ Config.STUDIO_FEAST_TOTAL = nil
 Config.GIFT_POINTS = { 500, 2000 }
 -- the pictures of each season's item (0 = its emoji); the candy corn is the
 -- Candy Corn boost's picture
-Config.SEASON_IMAGES = { corn = 122983417837830, feather = 0 }
+Config.SEASON_IMAGES = { corn = 122983417837830, feather = 139087553903886 } -- feather: art/roblox-store/feather-512.png (16 Oct)
 
 -- icons for things you pick up
 -- what hides on each floor: these always, plus one of `extra`, each in a
@@ -515,7 +515,7 @@ Config.CHARACTER_ASSETS = {
 	Patch = 82716883621716, -- 10 Oct: the blonde toon with the sharp face (PatchToon saved; was 120375206872909)
 	Muscle = 95343724720766, -- 7 Oct: clean shoes (was 116831403539618)
 	Tinker = 78501763696161, -- 16 Oct: the toon (switch-over; was 115806881502179)
-	Shadow = 85123632229176,
+	Shadow = 127121007468275, -- 16 Oct: the toon (switch-over; was 85123632229176)
 	Brainy = 87704425550431, -- 16 Oct: the toon (switch-over; was 96432127418740)
 	Echo = 88227116066224, -- 11 Oct: the remade toon, headphones on her ears (EchoToon saved; before: 138682489420791 neck headphones, 139525446217656)
 	Bramble = 115700894998579, -- 10 Oct: the toon (BrambleToon saved; was 83770262810721)
@@ -574,6 +574,7 @@ Config.MAP_IMAGES = {
 	carnival_2 = 128885533879458, -- The Big Top
 	carnival_3 = 102152843956658, -- The Funhouse
 	["building-aquarium"] = 112735362765924,
+	["building-harvestbarn"] = 114769245234832, -- 16 Oct: the Harvest Barn (Thanksgiving)
 	aquarium = 91974787928356, -- Main Hall
 	aquarium_2 = 75069384210834, -- Deep Sea
 	aquarium_3 = 111966719661004, -- Rooftop Pools
