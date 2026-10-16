@@ -520,6 +520,8 @@ Config.CHARACTER_ASSETS = {
 	GlowCandy = 112507047824940, -- 16 Oct: the toon (switch-over; was 99155956475141)
 	MuscleSnow = 116588219809929, -- 16 Oct: the toon (was 109339323825822)
 	MuscleMummy = 109676849849034, -- 16 Oct: the toon (Roblox's filter shows its name as ###; was 121243831267156)
+	-- the Thanksgiving skins (16 Oct; their Config.SKINS entries come with their Game Passes)
+	PatchPie = 139357223306899,
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
