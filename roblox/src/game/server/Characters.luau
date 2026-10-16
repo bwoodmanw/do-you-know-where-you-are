@@ -300,6 +300,8 @@ function Characters.apply(plr, name)
 			d.Anchored = false
 		end
 	end
+	local sizeBefore = select(2, ModelBounds(m, true))
+	local extentsBefore = m:GetExtentsSize()
 	fitHeight(m, KID_HEIGHT)
 	-- a crisp face from the approved picture (Config.FACES)
 	require(game:GetService("ReplicatedStorage").Shared.Faces).try(m, name)
@@ -356,6 +358,10 @@ function Characters.apply(plr, name)
 	if game:GetService("RunService"):IsStudio() then
 		-- Studio's Output says which model each player now wears (testing toons)
 		print("[Characters] " .. plr.Name .. " is now wearing the model ServerStorage/Characters/" .. t.Name)
+		-- 16 Oct (Glow came out tiny): the sizes, to see why a model is the wrong size
+		print(string.format("[Characters] %s size: body %.1f tall before, model outline %.1f x %.1f x %.1f before; now body %.1f tall, scale %.2f, root %s, humanoid scales %s", t.Name,
+			sizeBefore.Y, extentsBefore.X, extentsBefore.Y, extentsBefore.Z, select(2, ModelBounds(m, true)).Y, m:GetScale(), tostring(hrp.Size),
+			tostring(hum:FindFirstChild("BodyHeightScale") and hum.BodyHeightScale.Value or "none")))
 	end
 	-- a character that dies within seconds of going on is broken: say why in
 	-- F9 (Server) and remember it, so a test model is not used again
