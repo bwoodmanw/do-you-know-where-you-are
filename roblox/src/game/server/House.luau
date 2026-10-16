@@ -1856,6 +1856,8 @@ end
 -- bunches, rugs. None of it is solid or blocks the host's eyes. ----------
 local DECOR = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color3.fromRGB(255, 210, 63), Color3.fromRGB(70, 209, 96), Color3.fromRGB(138, 107, 209), Color3.fromRGB(255, 138, 31) }
 local HOSPITAL_PICTURES = { "\u{1FA7A}", "\u{1F48A}", "\u{1FA79}", "\u{1F9F8}", "\u{1F3E5}", "\u{1F47B}", "\u{1F987}", "\u{1F383}" }
+-- Thanksgiving bunting: autumn leaves' colors
+local AUTUMN_DECOR = { Color3.fromRGB(230, 120, 30), Color3.fromRGB(190, 50, 40), Color3.fromRGB(240, 190, 60), Color3.fromRGB(130, 80, 45) }
 local HALLOWEEN_DECOR = { Color3.fromRGB(255, 138, 31), Color3.fromRGB(110, 60, 160), Color3.fromRGB(30, 24, 34), Color3.fromRGB(150, 220, 60) }
 local CANDY_PICTURES = { "\u{1F36C}", "\u{1F36D}", "\u{1F9C1}", "\u{1F369}", "\u{1F36B}", "\u{1F370}", "\u{1F366}", "\u{1F388}" }
 local PICTURES = { "\u{1F383}", "\u{1F47B}", "\u{1F987}", "\u{1F578}", "\u{1F382}", "\u{1F388}", "\u{1F315}", "\u{1F36D}" }
@@ -1865,6 +1867,9 @@ local SCHOOL_PICTURES = { "\u{1F34E}", "\u{270F}", "\u{1F4DA}", "\u{1F514}", "\u
 
 function House.decorate(world)
 	local root, map = world.root, world.map
+	-- the season's decorations (16 Oct): Halloween's bats and spiders in
+	-- October, autumn bunting in November
+	local decorSeason = require(game:GetService("ReplicatedStorage").Shared.Seasons).decor()
 	local candy = map.theme == "gummy"
 	local hosp = map.theme == "hospital"
 	local busy = {}
@@ -1940,12 +1945,12 @@ function House.decorate(world)
 			for i = 0, n do
 				local t = i / n
 				local p = a:Lerp(b, t) - Vector3.new(0, math.sin(t * math.pi) * 2.5, 0)
-				local flags = (Config.HALLOWEEN and not candy) and HALLOWEEN_DECOR or DECOR
+				local flags = (decorSeason == "halloween" and not candy) and HALLOWEEN_DECOR or (decorSeason == "thanksgiving" and not candy) and AUTUMN_DECOR or DECOR
 				deco({ Name = "Flag", Size = Vector3.new(1.3, 1.5, 0.08), CFrame = CFrame.lookAt(p, p + side), Color = flags[(i + r) % #flags + 1], Material = Enum.Material.Fabric })
 			end
 		end
 		-- Halloween: two paper bats hanging from the ceiling, slowly turning
-		if Config.HALLOWEEN then
+		if decorSeason == "halloween" then
 			local brng = Random.new(r * 7)
 			for _ = 1, 2 do
 				local bx = brng:NextNumber(x0 + 3, math.max(x0 + 3.1, x1 - 3))
@@ -1973,7 +1978,7 @@ function House.decorate(world)
 				end)
 			end
 		end
-		if Config.HALLOWEEN then
+		if decorSeason == "halloween" then
 			local hrng = Random.new(r * 31 + 7)
 			local top = (f.tall and HT or H)
 			-- a little spider that slowly goes up and down on its thread

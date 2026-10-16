@@ -136,6 +136,16 @@ function Seasons.shops(now)
 	return out
 end
 
+-- the season whose decorations are up now (its id), or nil: the running
+-- season, while Config.HALLOWEEN (the decorations switch) is on
+function Seasons.decor(now)
+	if not Config.HALLOWEEN then
+		return nil
+	end
+	local s = Seasons.active(now)
+	return s and s.id or nil
+end
+
 -- a season by id
 function Seasons.get(id)
 	for _, s in ipairs(Config.SEASONS or {}) do

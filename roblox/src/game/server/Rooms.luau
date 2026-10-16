@@ -1818,7 +1818,7 @@ local function paintView(sg, theme, seed)
 	blob(mx, my, 0.34, 0.34, C(255, 250, 220), 0.85, 0.5)
 	blob(mx, my, 0.2, 0.2, C(255, 248, 215), 0, 0.5)
 	blob(mx + 0.04, my - 0.03, 0.05, 0.05, C(230, 225, 195), 0, 0.5)
-	if Config.HALLOWEEN then
+	if require(game:GetService("ReplicatedStorage").Shared.Seasons).decor() == "halloween" then
 		local bat = Instance.new("TextLabel")
 		bat.BackgroundTransparency = 1
 		bat.AnchorPoint = Vector2.new(0.5, 0.5)

@@ -350,7 +350,7 @@ Config.AMBIENT = {
 	buzz = 9112823813, -- Light Bulb Buzz (hospital corridors, TVs)
 }
 -- Halloween dressing in every room (orange / purple bunting, paper bats)
-Config.HALLOWEEN = true
+Config.HALLOWEEN = true -- 16 Oct: the season decorations switch (Seasons.decor: Halloween's in October, Thanksgiving's in November)
 -- the coach for new players: tips during their first games
 Config.COACH_GAMES = 2
 -- Muscle's Barricade: crates beside doorways (crates per floor), how close he
@@ -422,7 +422,7 @@ Config.SEASONS = {
 			freeze = { name = "Cranberry Ice Pop", icon = "\u{1F9CA}", image = 135524207766765 },
 		},
 		gift = { 25, 100 },
-		bundles = { { amount = 50, product = 0 }, { amount = 150, product = 0 } },
+		bundles = { { amount = 50, product = 3719001731 }, { amount = 150, product = 3719001840 } }, -- 99 / 249 Robux (16 Oct)
 	},
 }
 -- Studio only: pretend it is this date for the seasons ({ 2026, 11, 5 } tries
@@ -513,7 +513,7 @@ Config.ROBUX_PRODUCTS = {
 Config.CHARACTER_ASSETS = {
 	Glow = 74307875851069,
 	Patch = 82716883621716, -- 10 Oct: the blonde toon with the sharp face (PatchToon saved; was 120375206872909)
-	Muscle = 95343724720766, -- 7 Oct: clean shoes (was 116831403539618)
+	Muscle = 130534216338914, -- 16 Oct: the toon (switch-over; was 95343724720766, before 116831403539618)
 	Tinker = 78501763696161, -- 16 Oct: the toon (switch-over; was 115806881502179)
 	Shadow = 127121007468275, -- 16 Oct: the toon (switch-over; was 85123632229176)
 	Brainy = 87704425550431, -- 16 Oct: the toon (switch-over; was 96432127418740)

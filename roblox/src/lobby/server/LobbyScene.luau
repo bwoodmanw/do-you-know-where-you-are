@@ -12,6 +12,7 @@ local ServerStorage = game:GetService("ServerStorage")
 local Scene = {}
 
 local Shapes = require(game:GetService("ReplicatedStorage").Shared.Shapes) -- stretched balls (eggs, fish bodies) need a sphere mesh
+local sound -- (below: a short sound at a part)
 local function part(parent, props)
 	local p = Instance.new("Part")
 	p.Anchored = true
@@ -387,14 +388,7 @@ function Scene.perimeter()
 end
 
 -- ---------- Halloween dressing for the Lobby ----------
-function Scene.halloween()
-	local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
-	if not Config.HALLOWEEN then
-		return
-	end
-	local folder = Instance.new("Folder")
-	folder.Name = "LobbyHalloween"
-	folder.Parent = workspace
+function Scene.halloween(folder)
 	-- orange and purple lights strung across the lane between the lamp posts
 	for z = 30, -50, -20 do
 		local a, b = Vector3.new(-11, 9.6, z), Vector3.new(11, 9.6, z)
@@ -462,8 +456,10 @@ function Scene.halloween()
 	end)
 	-- a thin purple haze
 	local Lighting = game:GetService("Lighting")
-	if not Lighting:FindFirstChildOfClass("Atmosphere") then
-		local atm = Instance.new("Atmosphere")
+	local atm = Lighting:FindFirstChildOfClass("Atmosphere")
+	if not atm or atm.Name == "SeasonAtmosphere" then
+		atm = atm or Instance.new("Atmosphere")
+		atm.Name = "SeasonAtmosphere"
 		atm.Density = 0.32
 		atm.Offset = 0.1
 		atm.Color = Color3.fromRGB(110, 80, 150)
@@ -473,13 +469,262 @@ function Scene.halloween()
 	end
 end
 
+-- a little cartoon turkey from parts (brown body, cream belly, tail fan),
+-- facing +Z, its pivot on the ground; `scale` 1 = about 3.5 studs tall
+local function builtTurkey(parent, scale)
+	local m = Instance.new("Model")
+	m.Name = "LobbyTurkey"
+	local BROWN, CREAM, ORANGE, RED = Color3.fromRGB(126, 72, 40), Color3.fromRGB(246, 222, 180), Color3.fromRGB(255, 140, 30), Color3.fromRGB(214, 50, 40)
+	local function bit(shape, size, off, color, rot)
+		return part(m, { Name = "TurkeyPart", Shape = shape, Size = size * scale, CFrame = CFrame.new(off * scale) * (rot or CFrame.new()), Color = color, Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CanTouch = false })
+	end
+	for i = -2, 2 do
+		local col = ({ RED, ORANGE, Color3.fromRGB(255, 206, 60) })[(i + 2) % 3 + 1]
+		local f = bit(Enum.PartType.Ball, Vector3.new(0.8, 2.2, 0.4), Vector3.new(0, 1.8, -1.1), col)
+		f.CFrame = CFrame.new(Vector3.new(0, 1.8, -1.1) * scale) * CFrame.Angles(0, 0, math.rad(i * 25)) * CFrame.new(0, 0.9 * scale, 0)
+	end
+	local body = bit(Enum.PartType.Ball, Vector3.new(2.4, 2.2, 2.4), Vector3.new(0, 1.6, 0), BROWN)
+	bit(Enum.PartType.Ball, Vector3.new(1.4, 1.4, 0.8), Vector3.new(0, 1.5, 0.95), CREAM)
+	bit(Enum.PartType.Ball, Vector3.new(1.3, 1.3, 1.3), Vector3.new(0, 2.9, 0.6), BROWN)
+	bit(Enum.PartType.Ball, Vector3.new(0.45, 0.32, 0.6), Vector3.new(0, 2.8, 1.3), ORANGE)
+	bit(Enum.PartType.Ball, Vector3.new(0.25, 0.55, 0.25), Vector3.new(0.12, 2.45, 1.25), RED)
+	for _, sx in ipairs({ -1, 1 }) do
+		bit(Enum.PartType.Ball, Vector3.new(0.32, 0.32, 0.15), Vector3.new(sx * 0.3, 3.05, 1.18), Color3.new(1, 1, 1))
+		bit(Enum.PartType.Ball, Vector3.new(0.15, 0.15, 0.08), Vector3.new(sx * 0.3, 3.05, 1.26), Color3.fromRGB(20, 15, 15))
+		bit(Enum.PartType.Block, Vector3.new(0.22, 0.8, 0.22), Vector3.new(sx * 0.5, 0.4, 0), ORANGE)
+		bit(Enum.PartType.Block, Vector3.new(0.5, 0.12, 0.6), Vector3.new(sx * 0.5, 0.06, 0.15), ORANGE)
+	end
+	m.PrimaryPart = body
+	m:PivotTo(CFrame.new(0, 0, 0)) -- pivot = the body's centre, 1.6 * scale above the feet
+	m.Parent = parent
+	return m, 1.6 * scale
+end
+
+-- Thanksgiving in the Lobby (Brent, 16 Oct): autumn lights over the lane,
+-- hay bales, pumpkins, gourds and corn bundles at the gate, scarecrows where
+-- the tombstones stood, leaf piles, a turkey parade balloon drifting over
+-- the lawn, loose turkeys that scurry away from anyone who comes near, and a
+-- warm amber haze
+function Scene.thanksgiving(folder)
+	-- lights across the lane: orange, gold and red
+	local LIGHTS = { Color3.fromRGB(255, 138, 31), Color3.fromRGB(255, 200, 60), Color3.fromRGB(200, 50, 40) }
+	for z = 30, -50, -20 do
+		local a, b = Vector3.new(-11, 9.6, z), Vector3.new(11, 9.6, z)
+		for k = 0, 14 do
+			local p = a:Lerp(b, k / 14) - Vector3.new(0, math.sin(k / 14 * math.pi) * 1.6, 0)
+			part(folder, { Name = "LaneLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 0.5, 0.5), Position = p, Color = LIGHTS[k % 3 + 1], Material = Enum.Material.Neon, CanCollide = false })
+		end
+	end
+	-- the gate: hay bales, pumpkins and gourds, a bundle of corn stalks each side
+	for _, x in ipairs({ -15, 15 }) do
+		part(folder, { Name = "HayBale", Size = Vector3.new(5, 2.6, 3), Position = Vector3.new(x, 1.3, -62), Color = Color3.fromRGB(215, 180, 90), Material = Enum.Material.Fabric })
+		for i = -1, 1 do
+			local pk = part(folder, { Name = "Pumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.4, 1.6), Position = Vector3.new(x + i * 1.6, 3.3, -62), Color = i == 0 and Color3.fromRGB(240, 120, 20) or Color3.fromRGB(245, 210, 120), Material = Enum.Material.SmoothPlastic })
+			part(folder, { Name = "PumpkinStem", Size = Vector3.new(0.25, 0.4, 0.25), Position = pk.Position + Vector3.new(0, 0.85, 0), Color = Color3.fromRGB(70, 110, 40), CanCollide = false })
+		end
+		for i = -1, 1, 2 do
+			part(folder, { Name = "Gourd", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 1.1, 0.8), Position = Vector3.new(x + i * 3, 0.55, -60.2), Color = i < 0 and Color3.fromRGB(110, 150, 60) or Color3.fromRGB(240, 200, 70), Material = Enum.Material.SmoothPlastic })
+		end
+		local cx = x + (x < 0 and -4.5 or 4.5)
+		for k = 0, 6 do
+			local ang = k / 7 * math.pi * 2
+			part(folder, { Name = "CornStalk", Size = Vector3.new(0.35, 7, 0.35), CFrame = CFrame.new(cx + math.cos(ang) * 0.5, 3.5, -62 + math.sin(ang) * 0.5) * CFrame.Angles(math.sin(ang) * 0.12, 0, -math.cos(ang) * 0.12), Color = Color3.fromRGB(205, 175, 100), Material = Enum.Material.SmoothPlastic, CanCollide = false })
+		end
+		part(folder, { Name = "CornTie", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 1.6, 1.6), CFrame = CFrame.new(cx, 2.6, -62) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(150, 40, 40), Material = Enum.Material.Fabric, CanCollide = false })
+	end
+	-- friendly scarecrows where the tombstones stood
+	for i, p in ipairs({ Vector3.new(-40, 0, 30), Vector3.new(-48, 0, 12), Vector3.new(44, 0, -40), Vector3.new(-44, 0, -60), Vector3.new(62, 0, 40), Vector3.new(-60, 0, 70) }) do
+		local face = CFrame.lookAt(p, Vector3.new(0, 0, p.Z)) * CFrame.Angles(0, math.rad((i * 37) % 30 - 15), 0)
+		local function at(x, y, z)
+			return face * CFrame.new(x, y, z)
+		end
+		part(folder, { Name = "ScarecrowPost", Size = Vector3.new(0.4, 6.5, 0.4), CFrame = at(0, 3.25, 0.3), Color = Color3.fromRGB(110, 75, 45), Material = Enum.Material.WoodPlanks })
+		part(folder, { Name = "ScarecrowArms", Size = Vector3.new(5, 0.35, 0.35), CFrame = at(0, 4.6, 0.3), Color = Color3.fromRGB(110, 75, 45), Material = Enum.Material.WoodPlanks })
+		part(folder, { Name = "ScarecrowShirt", Size = Vector3.new(2, 2.4, 1), CFrame = at(0, 4.2, 0), Color = Color3.fromRGB(190, 50, 45), Material = Enum.Material.Fabric })
+		part(folder, { Name = "ScarecrowPants", Size = Vector3.new(1.8, 1.4, 0.9), CFrame = at(0, 2.4, 0), Color = Color3.fromRGB(60, 90, 160), Material = Enum.Material.Fabric })
+		for _, sx in ipairs({ -1, 1 }) do
+			part(folder, { Name = "Straw", Size = Vector3.new(0.6, 0.5, 0.5), CFrame = at(sx * 2.6, 4.6, 0.3), Color = Color3.fromRGB(225, 195, 100), Material = Enum.Material.Fabric, CanCollide = false })
+		end
+		part(folder, { Name = "ScarecrowHead", Shape = Enum.PartType.Ball, Size = Vector3.new(1.7, 1.5, 1.7), CFrame = at(0, 6.2, 0), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
+		part(folder, { Name = "HatBrim", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.15, 2.8, 2.8), CFrame = at(0, 6.95, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(215, 180, 90), Material = Enum.Material.Fabric, CanCollide = false })
+		part(folder, { Name = "HatTop", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.8, 1.4, 1.4), CFrame = at(0, 7.4, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(215, 180, 90), Material = Enum.Material.Fabric, CanCollide = false })
+		for _, sx in ipairs({ -0.35, 0.35 }) do
+			part(folder, { Name = "ScarecrowEye", Shape = Enum.PartType.Ball, Size = Vector3.new(0.25, 0.25, 0.1), CFrame = at(sx, 6.4, -0.82), Color = Color3.fromRGB(30, 20, 15), CanCollide = false })
+		end
+		part(folder, { Name = "ScarecrowSmile", Size = Vector3.new(0.7, 0.12, 0.1), CFrame = at(0, 5.9, -0.84), Color = Color3.fromRGB(30, 20, 15), CanCollide = false })
+	end
+	-- leaf piles on the lawn
+	local LEAF = { Color3.fromRGB(230, 120, 30), Color3.fromRGB(190, 50, 40), Color3.fromRGB(240, 190, 60), Color3.fromRGB(160, 90, 40) }
+	local rng = Random.new(11)
+	for _, c in ipairs({ Vector3.new(-26, 0, 30), Vector3.new(26, 0, 36), Vector3.new(-30, 0, 70), Vector3.new(30, 0, 74), Vector3.new(-8, 0, 84) }) do
+		for _ = 1, 26 do
+			local off = Vector3.new(rng:NextNumber(-2.2, 2.2), 0, rng:NextNumber(-2.2, 2.2))
+			local h = 0.1 + (2.2 - off.Magnitude) * 0.25
+			part(folder, { Name = "Leaf", Size = Vector3.new(0.9, 0.08, 0.7), CFrame = CFrame.new(c + off + Vector3.new(0, math.max(0.05, h), 0)) * CFrame.Angles(rng:NextNumber(-0.5, 0.5), rng:NextNumber(0, 6.28), rng:NextNumber(-0.5, 0.5)), Color = LEAF[rng:NextInteger(1, #LEAF)], Material = Enum.Material.SmoothPlastic, CanCollide = false })
+		end
+	end
+	-- a turkey parade balloon drifting over the lawn (where Halloween's ghost was)
+	local balloon = builtTurkey(folder, 2.6)
+	balloon.Name = "TurkeyBalloon"
+	task.spawn(function()
+		local t = 0
+		while balloon.Parent do
+			t += 0.05
+			local p = Vector3.new(math.sin(t * 0.3) * 30, 13 + math.sin(t * 1.4) * 1.2, 50 + math.cos(t * 0.3) * 20)
+			local d = Vector3.new(math.cos(t * 0.3) * 0.3 * 30, 0, -math.sin(t * 0.3) * 0.3 * 20)
+			balloon:PivotTo(CFrame.lookAt(p, p - d) * CFrame.Angles(0, math.rad(180), 0))
+			task.wait(0.05)
+		end
+	end)
+	-- loose turkeys on the lawn: they peck about and scurry off when someone comes near
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	local turkeys = {}
+	for i = 1, 6 do
+		local m, up = builtTurkey(folder, 0.9)
+		local pos = Vector3.new(-30 + i * 9, 0, 40 + (i % 3) * 12)
+		local t = { model = m, up = up, pos = pos, face = Vector3.new(0, 0, 1), busyUntil = 0 }
+		m:PivotTo(CFrame.lookAt(pos + Vector3.new(0, up, 0), pos + Vector3.new(0, up, 0) + t.face) * CFrame.Angles(0, math.rad(180), 0))
+		table.insert(turkeys, t)
+	end
+	local function runTo(from, dir, most)
+		local skip = { folder }
+		for _, plr in ipairs(Players:GetPlayers()) do
+			if plr.Character then
+				table.insert(skip, plr.Character)
+			end
+		end
+		params.FilterDescendantsInstances = skip
+		local hit = workspace:Raycast(from + Vector3.new(0, 1.2, 0), dir * most, params)
+		local d = hit and math.max(0, (hit.Position - from).Magnitude - 2) or most
+		local to = from + dir * d
+		-- stay on the lawn and the lane
+		to = Vector3.new(math.clamp(to.X, -70, 70), 0, math.clamp(to.Z, -55, 88))
+		return to, (to - from).Magnitude
+	end
+	local function move(t, to, speed)
+		local from = t.pos
+		local dist = (to - from).Magnitude
+		if dist < 0.5 then
+			return
+		end
+		local seconds = dist / speed
+		t.face = (to - from).Unit
+		t.busyUntil = os.clock() + seconds
+		t.moving = (t.moving or 0) + 1
+		local mine = t.moving
+		task.spawn(function()
+			local start = os.clock()
+			while t.model.Parent and t.moving == mine do
+				local a = math.min(1, (os.clock() - start) / seconds)
+				t.pos = from:Lerp(to, a)
+				local hop = math.abs(math.sin(a * seconds * 9)) * 0.5
+				local p = t.pos + Vector3.new(0, t.up + hop, 0)
+				t.model:PivotTo(CFrame.lookAt(p, p + t.face) * CFrame.Angles(0, math.rad(180), 0))
+				if a >= 1 then
+					break
+				end
+				task.wait()
+			end
+		end)
+	end
+	task.spawn(function()
+		while folder.Parent do
+			task.wait(0.15)
+			for _, t in ipairs(turkeys) do
+				local near, nd = nil, math.huge
+				for _, plr in ipairs(Players:GetPlayers()) do
+					local h = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+					if h then
+						local d = (Vector3.new(h.Position.X, 0, h.Position.Z) - t.pos).Magnitude
+						if d < nd then
+							near, nd = h.Position, d
+						end
+					end
+				end
+				if near and nd < 12 and os.clock() >= t.busyUntil - 0.1 then
+					local away = Vector3.new(t.pos.X - near.X, 0, t.pos.Z - near.Z)
+					away = away.Magnitude > 0.1 and away.Unit or Vector3.new(1, 0, 0)
+					local best, bestD = nil, -1
+					for _, deg in ipairs({ 0, 40, -40, 80, -80 }) do
+						local dir = (CFrame.Angles(0, math.rad(deg), 0) * CFrame.new(away)).Position
+						local to = runTo(t.pos, dir, 9)
+						local score = (to - Vector3.new(near.X, 0, near.Z)).Magnitude
+						if score > bestD then
+							best, bestD = to, score
+						end
+					end
+					if best then
+						if math.random() < 0.3 then
+							sound(t.model.PrimaryPart, "squeak", 0.5)
+						end
+						move(t, best, 13)
+					end
+				elseif os.clock() >= t.busyUntil + 2 and math.random() < 0.04 then
+					local a = math.random() * math.pi * 2
+					local to = runTo(t.pos, Vector3.new(math.cos(a), 0, math.sin(a)), 5)
+					move(t, to, 3.5)
+				end
+			end
+		end
+	end)
+	-- a warm amber haze
+	local Lighting = game:GetService("Lighting")
+	local atm = Lighting:FindFirstChildOfClass("Atmosphere")
+	if not atm or atm.Name == "SeasonAtmosphere" then
+		atm = atm or Instance.new("Atmosphere")
+		atm.Name = "SeasonAtmosphere"
+		atm.Density = 0.28
+		atm.Offset = 0.1
+		atm.Color = Color3.fromRGB(200, 140, 90)
+		atm.Decay = Color3.fromRGB(120, 70, 45)
+		atm.Glare, atm.Haze = 0, 1.1
+		atm.Parent = Lighting
+	end
+end
+
+-- the season's decorations (Seasons.decor: Halloween's in October,
+-- Thanksgiving's in November, none otherwise), checked every minute so a
+-- Lobby server running at midnight swaps them by itself
+function Scene.seasons()
+	local Seasons = require(game:GetService("ReplicatedStorage").Shared.Seasons)
+	local builders = { halloween = Scene.halloween, thanksgiving = Scene.thanksgiving }
+	local shown, folder = nil, nil
+	task.spawn(function()
+		while true do
+			local want = Seasons.decor()
+			if want ~= shown then
+				if folder then
+					folder:Destroy()
+					folder = nil
+				end
+				local atm = game:GetService("Lighting"):FindFirstChild("SeasonAtmosphere")
+				if atm then
+					atm:Destroy()
+				end
+				shown = want
+				if want and builders[want] then
+					folder = Instance.new("Folder")
+					folder.Name = "LobbySeason"
+					folder.Parent = workspace
+					local ok, err = pcall(builders[want], folder)
+					if not ok then
+						warn("[Lobby] the " .. want .. " decorations failed: " .. tostring(err))
+					end
+				end
+			end
+			task.wait(60)
+		end
+	end)
+end
+
 -- ---------- things to play with while waiting ----------
 local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
 local Sfx = require(game:GetService("ReplicatedStorage").Shared.Sfx)
 local TweenService = game:GetService("TweenService")
 local Debris = game:GetService("Debris")
 
-local function sound(at, name, volume)
+function sound(at, name, volume)
 	local id = Config.SOUNDS[name]
 	if not id then
 		return
@@ -615,8 +860,12 @@ function Scene.feast(at)
 		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 200, 130), 22, 1.6
 		l.Parent = lamp
 	end
-	-- a sign
-	local sign = part(folder, { Name = "FeastSign", Size = Vector3.new(0.3, 3, 10), Position = at + Vector3.new(Wd / 2 + 4.5, 5, 0), Color = Color3.fromRGB(120, 78, 48), Material = Enum.Material.WoodPlanks })
+	-- a big sign behind the table (the lane side is +X), on two posts (Brent, 16 Oct)
+	local signX = -(Wd / 2 + 3.4)
+	for _, dz in ipairs({ -7, 7 }) do
+		part(folder, { Name = "SignPost", Size = Vector3.new(0.5, 12, 0.5), Position = at + Vector3.new(signX - 0.3, 6, dz), Color = Color3.fromRGB(96, 62, 38), Material = Enum.Material.WoodPlanks })
+	end
+	local sign = part(folder, { Name = "FeastSign", Size = Vector3.new(0.3, 5, 16), Position = at + Vector3.new(signX, 9, 0), Color = Color3.fromRGB(120, 78, 48), Material = Enum.Material.WoodPlanks })
 	local sg = Instance.new("SurfaceGui")
 	sg.Face = Enum.NormalId.Right
 	sg.Parent = sign
