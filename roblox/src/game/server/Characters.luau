@@ -119,8 +119,12 @@ local function soften(model)
 	end
 end
 
+-- 16 Oct (Brent: Halloween Patch and Glow came out tiny): measured head to
+-- feet from the body's own parts (shared/ModelBounds) - an invisible root
+-- part, a leftover piece or anything else in the model no longer counts
+local ModelBounds = require(game:GetService("ReplicatedStorage").Shared.ModelBounds)
 local function fitHeight(model, height)
-	local size = model:GetExtentsSize()
+	local _, size = ModelBounds(model, true)
 	if size.Y > 0.1 then
 		model:ScaleTo(model:GetScale() * height / size.Y)
 	end

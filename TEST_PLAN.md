@@ -17,6 +17,16 @@ Studio Play cannot teleport, so the Party House builds `Config.STUDIO_MAP`
 either: `partyhouse`, `partyhouse_2`, `partyhouse_3`, `gummy`; host `pumpkin`,
 `gummy`, `robot`.
 
+## Round 64 (16 Oct) - toon sizes, hiding spots, the host close-up
+
+- Play as Halloween Patch and as Glow (and any other): the same height as
+  the other kids / a friend's avatar (about 5.4 studs). Photo beside a friend.
+- Walk round a wardrobe and a curtain hiding spot with the camera behind
+  them: they stay solid (the camera stops in front instead of seeing
+  through). Hide inside: the view is as before.
+- Get caught by the Anglerfish Keeper: the close-up shows his face (not
+  the stalk on his head). Same check with the Robot and the Gobbler.
+
 ## Round 63 (11 Oct) - Thanksgiving: the Harvest Barn, the Turkey Roundup, the Feast Meter
 
 Ask Claude first to set `Config.STUDIO_SEASON_DATE = { 2026, 11, 5 }` and

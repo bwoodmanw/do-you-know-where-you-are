@@ -372,13 +372,12 @@ local function hostCloseUp(intense)
 	playLocal(intense and "roar" or "giggle", 1)
 	redFlash.BackgroundTransparency = intense and 0.35 or 0.7
 	TweenService:Create(redFlash, TweenInfo.new(0.7), { BackgroundTransparency = 1 }):Play()
-	local r = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2
-	-- 10 Oct (Brent: off centre, too close, space above the head): aim at the
-	-- middle of the model's own outline, one head below its top - an imported
-	-- head part can sit off to one side
+	-- 16 Oct (Brent: the anglerfish's close-up showed the stalk on his head):
+	-- the toons have a real Head part - aim a little below its middle (a
+	-- stalk, a hat or ears make the head part tall), sized by its width
+	local r = math.max(head.Size.X, head.Size.Z) / 2
 	local faceAt = function()
-		local bcf, bsize = host:GetBoundingBox()
-		return Vector3.new(bcf.Position.X, bcf.Position.Y + bsize.Y / 2 - r * 1.15, bcf.Position.Z)
+		return head.Position - Vector3.new(0, head.Size.Y * 0.12, 0)
 	end
 	local t0 = os.clock()
 	local dur = intense and 2.6 or 2
@@ -2833,8 +2832,12 @@ do
 			if not hit then
 				return
 			end
-			if STOP[hit.Instance.Name] then
-				local stopAt = hit.Position - unit * 0.6
+			-- 16 Oct (Brent: the wardrobe and the curtain looked hollow - the
+			-- camera's fading): a hiding spot stops the camera too, unless you are
+			-- hiding in it
+			local hideSpot = string.sub(hit.Instance.Name, 1, 5) == "Hide " and not player:GetAttribute("Hidden")
+			if STOP[hit.Instance.Name] or hideSpot then
+				local stopAt = hit.Position - unit * (hideSpot and 1.2 or 0.6)
 				if (stopAt - from).Magnitude < 0.6 then
 					stopAt = from - unit * 0.1
 				end
