@@ -21,7 +21,7 @@ tex = np.asarray(mesh.visual.material.baseColorTexture.convert("RGB"))
 TH, TW = tex.shape[:2]
 lo, hi = V.min(0), V.max(0)
 h = hi[1] - lo[1]
-head = V[:, 1] > hi[1] - 0.3 * h
+head = V[:, 1] > hi[1] - (float(sys.argv[4]) if len(sys.argv) > 4 else 0.3) * h  # the top part shown (a tall hat: 0.4)
 c = V[head].mean(0)
 S = 520
 

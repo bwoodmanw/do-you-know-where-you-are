@@ -580,8 +580,45 @@ function Scene.thanksgiving(folder)
 	local params = RaycastParams.new()
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	local turkeys = {}
+	-- the saved turkey (Config.TURKEY_ASSET), about 3 studs tall; else built ones
+	local Config = require(game:GetService("ReplicatedStorage").Shared.Config)
+	local saved
+	if (Config.TURKEY_ASSET or 0) > 0 then
+		local ok, box = pcall(function()
+			return game:GetService("InsertService"):LoadAsset(Config.TURKEY_ASSET)
+		end)
+		saved = ok and box and (box:FindFirstChildWhichIsA("Model", true) or box) or nil
+	end
+	local function oneTurkey()
+		if not saved then
+			return builtTurkey(folder, 0.9)
+		end
+		local m = saved:Clone()
+		for _, d in ipairs(m:GetDescendants()) do
+			if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("Humanoid") then
+				d:Destroy()
+			elseif d:IsA("BasePart") then
+				d.Anchored, d.CanCollide, d.CanTouch, d.CanQuery, d.CastShadow = true, false, false, false, false
+			end
+		end
+		if not m:IsA("Model") then
+			local wrap = Instance.new("Model")
+			for _, c in ipairs(m:GetChildren()) do
+				c.Parent = wrap
+			end
+			m = wrap
+		end
+		local _, size = m:GetBoundingBox()
+		if size.Y > 0 then
+			m:ScaleTo(m:GetScale() * 3 / size.Y)
+		end
+		m.Name = "LobbyTurkey"
+		m.Parent = folder
+		local cf, sz = m:GetBoundingBox()
+		return m, m:GetPivot().Position.Y - (cf.Position.Y - sz.Y / 2)
+	end
 	for i = 1, 6 do
-		local m, up = builtTurkey(folder, 0.9)
+		local m, up = oneTurkey()
 		local pos = Vector3.new(-30 + i * 9, 0, 40 + (i % 3) * 12)
 		local t = { model = m, up = up, pos = pos, face = Vector3.new(0, 0, 1), busyUntil = 0 }
 		m:PivotTo(CFrame.lookAt(pos + Vector3.new(0, up, 0), pos + Vector3.new(0, up, 0) + t.face) * CFrame.Angles(0, math.rad(180), 0))
@@ -656,7 +693,7 @@ function Scene.thanksgiving(folder)
 					end
 					if best then
 						if math.random() < 0.3 then
-							sound(t.model.PrimaryPart, "squeak", 0.5)
+							sound(t.model.PrimaryPart or t.model:FindFirstChildWhichIsA("BasePart", true), "squeak", 0.5)
 						end
 						move(t, best, 13)
 					end

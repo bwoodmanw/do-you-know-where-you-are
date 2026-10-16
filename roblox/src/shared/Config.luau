@@ -45,27 +45,8 @@ Config.UI_TEXT = { title = 36, body = 26 }
 -- plays it in the live game; other players never see it.
 -- 10 Oct: every remade toon (TOON_WORKFLOW.md), by the model it replaces; one
 -- that is not imported yet simply leaves the old model playing
-Config.STUDIO_TRY_MODEL = {
-	Tinker = "TinkerToon", Brainy = "BrainyToon", Shadow = "ShadowToon", Muscle = "MuscleToon",
-	Glow = "GlowToon", Patch = "PatchToon", Echo = "EchoToon", Bramble = "BrambleToon",
-	PatchHalloween = "PatchHalloweenToon",
-	-- the other skins (10 Oct)
-	TinkerPumpkin = "TinkerPumpkinToon",
-	ShadowGhost = "ShadowGhostToon",
-	GlowCandy = "GlowCandyToon",
-	BrainySpace = "BrainySpaceToon",
-	MuscleSnow = "MuscleSnowToon",
-	EchoStar = "EchoStarToon",
-	BrambleAutumn = "BrambleAutumnToon",
-	MuscleMummy = "MuscleMummyToon",
-	-- the hosts (10 Oct): in Studio only (a host is shared by the whole server)
-	Host = "HostToon",
-	HostGummy = "HostGummyToon",
-	HostRobot = "HostRobotToon",
-	HostCaretaker = "HostCaretakerToon",
-	HostClownBear = "HostClownBearToon",
-	HostAnglerfish = "HostAnglerfishToon",
-}
+-- 16 Oct: empty - the switch-over is done, every toon has its real name
+Config.STUDIO_TRY_MODEL = {}
 Config.TRY_MODEL_FOR_OWNER = true
 -- Studio testing: play the plain characters whatever skin your save wears
 -- (Brent's Patch kept coming up as the Halloween Nurse, 10 Oct)
@@ -436,6 +417,9 @@ Config.STUDIO_SEASON_DATE = nil
 -- BADGES.turkey. The turkey is ServerStorage/Characters/Turkey (plain Import
 -- 3D, no Avatar Setup), else a built one. `share`: a turkey caught counts
 -- for everyone in the party (decision 6, asked 11 Oct)
+-- the runaway turkey saved to Roblox (16 Oct, turkey-toon.glb): the barn and
+-- the Lobby load it by id when ServerStorage/Characters has no `Turkey`
+Config.TURKEY_ASSET = 72652828731875
 Config.ROUNDUP = { turkeys = 8, flee = 16, catch = 4, speed = 15, height = 3.2, points = 5, goal = 50, share = true }
 -- the Feast Meter (Thanksgiving, Brent 11 Oct): every runaway turkey caught
 -- in every server adds up (shared/FeastMeter.luau). Each stage reached gives
@@ -515,26 +499,27 @@ Config.CHARACTER_ASSETS = {
 	Patch = 134219247129487, -- 16 Oct: the toon re-saved after the paint fixes (switch-over; was 82716883621716)
 	Muscle = 130534216338914, -- 16 Oct: the toon (switch-over; was 95343724720766, before 116831403539618)
 	Tinker = 78501763696161, -- 16 Oct: the toon (switch-over; was 115806881502179)
-	Shadow = 127121007468275, -- 16 Oct: the toon (switch-over; was 85123632229176)
+	Shadow = 100728281135913, -- 16 Oct: the toon, re-saved without the hood eyes (was 127121007468275, 85123632229176)
 	Brainy = 87704425550431, -- 16 Oct: the toon (switch-over; was 96432127418740)
 	Echo = 88227116066224, -- 11 Oct: the remade toon, headphones on her ears (EchoToon saved; before: 138682489420791 neck headphones, 139525446217656)
 	Bramble = 82084067369494, -- 16 Oct: the toon (switch-over; was 115700894998579)
-	Host = 135742994182895,
-	HostGummy = 106903651525041,
-	HostRobot = 95188395596101,
-	HostCaretaker = 97512217825851, -- 8 Oct
-	HostClownBear = 139812870283621, -- 8 Oct
-	HostAnglerfish = 100510711229549, -- 8 Oct
+	Host = 78111751248797, -- 16 Oct: the toon (was 135742994182895)
+	HostGummy = 116416098972830, -- 16 Oct: the toon (was 106903651525041)
+	HostRobot = 119385437872877, -- 16 Oct: the toon (was 95188395596101)
+	HostCaretaker = 73241443458594, -- 16 Oct: the toon (was 97512217825851)
+	HostClownBear = 133235893605671, -- 16 Oct: the toon (was 139812870283621)
+	HostAnglerfish = 74543464155605, -- 16 Oct: the toon (was 100510711229549)
+	HostGobbler = 95540375773828, -- 16 Oct: the Harvest Barn's host (Thanksgiving)
 	-- skins (Config.SKINS: the model names)
 	TinkerPumpkin = 109267063359948, -- 16 Oct: the toon (switch-over; was 107525785066601)
-	ShadowGhost = 104153912502548, -- 8 Oct: remade in A-pose (was 126072588049013, T-pose)
-	BrambleAutumn = 90429061895312,
+	ShadowGhost = 101692193915974, -- 16 Oct: the toon (was 104153912502548)
+	BrambleAutumn = 80420392958646, -- 16 Oct: the toon (was 90429061895312)
 	PatchHalloween = 133530858867825, -- 16 Oct: the toon (switch-over; was 108839284344455)
-	EchoStar = 78905373095211, -- 8 Oct: remade face (was 78330257038104)
-	BrainySpace = 110376512028941,
+	EchoStar = 114691261070478, -- 16 Oct: the toon, headphones on her ears (was 78905373095211)
+	BrainySpace = 116325623350674, -- 16 Oct: the toon (was 110376512028941)
 	GlowCandy = 112507047824940, -- 16 Oct: the toon (switch-over; was 99155956475141)
-	MuscleSnow = 109339323825822,
-	MuscleMummy = 121243831267156, -- 8 Oct: the Halloween Candy Shop skin
+	MuscleSnow = 116588219809929, -- 16 Oct: the toon (was 109339323825822)
+	MuscleMummy = 109676849849034, -- 16 Oct: the toon (Roblox's filter shows its name as ###; was 121243831267156)
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon

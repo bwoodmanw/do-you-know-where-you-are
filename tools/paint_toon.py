@@ -38,8 +38,9 @@ FOLDERS = ["tinker", "brainy", "shadow", "muscle", "glow", "patch", "echo", "bra
 # no sharp face corner: hosts (pumpkins, lamps, fish heads) and the turkey
 def no_face(name):
     return name.startswith("host") or name in ("turkey",)
-# characters whose hood covers the face from the side (no side painting on the head)
-HOODED = {"shadow", "ghostly-shadow", "gobble-shadow"}
+# characters whose hood covers the face from the side, or whose tall hat throws
+# the side picture's head out of line (no side painting on the head; 16 Oct)
+HOODED = {"shadow", "ghostly-shadow", "gobble-shadow", "chef-brainy"}
 FACING_MIN, FACING_FULL = 0.12, 0.45  # blend from side-on to fully facing
 
 

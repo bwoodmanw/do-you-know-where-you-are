@@ -2413,6 +2413,16 @@ function round.placeTurkeys()
 	-- the turkey: the imported model (Characters/Turkey), else a built one
 	local src = game:GetService("ServerStorage"):FindFirstChild("Characters")
 	src = src and src:FindFirstChild("Turkey")
+	if not src and (Config.TURKEY_ASSET or 0) > 0 then
+		-- the turkey saved to Roblox (Config.TURKEY_ASSET)
+		local ok, box = pcall(function()
+			return game:GetService("InsertService"):LoadAsset(Config.TURKEY_ASSET)
+		end)
+		src = ok and box and box:FindFirstChildWhichIsA("Model", true) or nil
+		if not src and ok and box then
+			src = box -- the asset's own container holds the parts
+		end
+	end
 	local function makeTurkey()
 		local m
 		if src then
