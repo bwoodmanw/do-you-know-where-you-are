@@ -124,6 +124,15 @@ end
 -- part, a leftover piece or anything else in the model no longer counts
 local ModelBounds = require(game:GetService("ReplicatedStorage").Shared.ModelBounds)
 local function fitHeight(model, height)
+	-- 16 Oct (Glow at 1.3 studs): Avatar Setup stores the imported mesh's
+	-- small size as the Humanoid's body scales (0.29 for Glow), and Roblox's
+	-- automatic scaling then shrank the character again after this sizing -
+	-- only this sizing counts
+	for _, hum in ipairs(model:GetDescendants()) do
+		if hum:IsA("Humanoid") then
+			hum.AutomaticScalingEnabled = false
+		end
+	end
 	local _, size = ModelBounds(model, true)
 	if size.Y > 0.1 then
 		model:ScaleTo(model:GetScale() * height / size.Y)
