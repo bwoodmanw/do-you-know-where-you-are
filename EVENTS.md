@@ -44,9 +44,9 @@ skins - they must all be in the game on Nov 1.**
   runaway turkeys hide in the hay. For once YOU do the chasing - corner them
   with your crew while the grumpy Gobbler chases you! Every turkey caught by
   anyone fills the Feast Meter for rewards for everyone. Spend feathers in
-  the Lobby's Feather Shop on boosts and nine new Thanksgiving skins, and
-  find 50 for the Turkey Wrangler badge. The event ends December 1, so
-  gather your crew!
+  the Lobby's Feather Shop on Thanksgiving boosts and nine new skins, and
+  catch 50 turkeys for the Turkey Wrangler badge. The event ends
+  December 1, so gather your crew!
 - **Starts:** November 1, 12:00 AM Eastern Time (October 31, 9:00 PM
   Pacific) - the moment the Candy Corn Hunt ends.
 - **Ends:** December 1, 12:00 AM Eastern Time (November 30, 9:00 PM
