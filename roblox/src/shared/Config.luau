@@ -526,7 +526,7 @@ Config.CHARACTER_ASSETS = {
 	HostClownBear = 139812870283621, -- 8 Oct
 	HostAnglerfish = 100510711229549, -- 8 Oct
 	-- skins (Config.SKINS: the model names)
-	TinkerPumpkin = 107525785066601,
+	TinkerPumpkin = 109267063359948, -- 16 Oct: the toon (switch-over; was 107525785066601)
 	ShadowGhost = 104153912502548, -- 8 Oct: remade in A-pose (was 126072588049013, T-pose)
 	BrambleAutumn = 90429061895312,
 	PatchHalloween = 133530858867825, -- 16 Oct: the toon (switch-over; was 108839284344455)
