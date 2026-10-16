@@ -1,0 +1,18 @@
+{
+  "workflow": "tools/workflows/thanksgiving-store-icon.json",
+  "generated_on": "2026-10-16",
+  "mode": "built-in image_gen",
+  "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. A SQUARE picture used as the game's store icon, so it must read clearly when shown very small: one bold, simple composition, big shapes, strong contrast, faces large. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, colors, clothes). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nThe Thanksgiving store icon. The Gobbler (the first picture: the big grumpy cartoon turkey in the straw farmer's hat and blue bandana) fills most of the picture, seen from the chest up, leaning toward the camera with a funny grumpy frown, holding up one big shiny glowing golden feather. A small runaway baby turkey (the second picture) peeks in from the bottom corner with a cheeky grin. Behind them a warm glowing orange sunset sky with a red barn roof and a few drifting autumn leaves, darker purple at the edges so the characters pop. Keep everything important away from the very edges (the corners may be rounded off).\n\nReference roles: Image 1 is the Gobbler character reference. Image 2 is the baby turkey character reference. Image 3 is the rendering-style reference only; do not include its Halloween characters or props.",
+  "references": [
+    "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\host-gobbler\\front-toon.png",
+    "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\turkey\\front-toon.png",
+    "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\icon-halloween.png"
+  ],
+  "source_path": "C:\\Users\\bwood\\.codex\\generated_images\\01a145cc-768b-7b11-8b16-a7c6eec816d6\\exec-d61049f1-34fe-463e-b7cd-7c09609a292b.png",
+  "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\icon-thanksgiving-store.png",
+  "file_name": "icon-thanksgiving-store.png",
+  "width": 1254,
+  "height": 1254,
+  "format": "PNG",
+  "validation": "PNG decoded; square 1254 x 1254; visually inspected at full size and 128 x 128. Character likeness, single golden feather, friendly grumpy mood, sunset palette, corner safety, and absence of text or logos checked."
+}

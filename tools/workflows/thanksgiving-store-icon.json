@@ -1,0 +1,17 @@
+{
+  "name": "Thanksgiving store icon",
+  "reference_root": "art",
+  "output_root": "art/roblox-store",
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. A SQUARE picture used as the game's store icon, so it must read clearly when shown very small: one bold, simple composition, big shapes, strong contrast, faces large. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, colors, clothes). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.",
+  "assets": [
+    {
+      "file_name": "icon-thanksgiving-store.png",
+      "picture": "The Thanksgiving store icon. The Gobbler (the first picture: the big grumpy cartoon turkey in the straw farmer's hat and blue bandana) fills most of the picture, seen from the chest up, leaning toward the camera with a funny grumpy frown, holding up one big shiny glowing golden feather. A small runaway baby turkey (the second picture) peeks in from the bottom corner with a cheeky grin. Behind them a warm glowing orange sunset sky with a red barn roof and a few drifting autumn leaves, darker purple at the edges so the characters pop. Keep everything important away from the very edges (the corners may be rounded off).",
+      "references": [
+        "model-input\\host-gobbler\\front-toon.png",
+        "model-input\\turkey\\front-toon.png",
+        "roblox-store\\icon-halloween.png"
+      ]
+    }
+  ]
+}

@@ -532,7 +532,7 @@ Config.CHARACTER_ASSETS = {
 	PatchHalloween = 133530858867825, -- 16 Oct: the toon (switch-over; was 108839284344455)
 	EchoStar = 78905373095211, -- 8 Oct: remade face (was 78330257038104)
 	BrainySpace = 110376512028941,
-	GlowCandy = 99155956475141,
+	GlowCandy = 112507047824940, -- 16 Oct: the toon (switch-over; was 99155956475141)
 	MuscleSnow = 109339323825822,
 	MuscleMummy = 121243831267156, -- 8 Oct: the Halloween Candy Shop skin
 }

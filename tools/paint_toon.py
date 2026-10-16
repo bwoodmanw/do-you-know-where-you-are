@@ -38,6 +38,8 @@ FOLDERS = ["tinker", "brainy", "shadow", "muscle", "glow", "patch", "echo", "bra
 # no sharp face corner: hosts (pumpkins, lamps, fish heads) and the turkey
 def no_face(name):
     return name.startswith("host") or name in ("turkey",)
+# characters whose hood covers the face from the side (no side painting on the head)
+HOODED = {"shadow", "ghostly-shadow", "gobble-shadow"}
 FACING_MIN, FACING_FULL = 0.12, 0.45  # blend from side-on to fully facing
 
 
@@ -623,7 +625,9 @@ def paint_view(img, mask, P, near, facing, F, uvpx, TW, TH, eps, painted, best, 
     that the picture can see (nearest surface at that pixel)"""
     IH, IW = img.shape[:2]
     depth = np.full((IH, IW), -np.inf, np.float32)
-    # the depth test uses every triangle turned toward the picture, painted or not
+    # the depth test uses every triangle, whichever way it faces (16 Oct: the face,
+    # facing forward, was left out - so from the side nothing hid the inside of
+    # Shadow's hood, and it was painted with the eye: two eyes per side)
     for f in np.nonzero((facing if depth_facing is None else depth_facing) > 0)[0]:
         pts, bc = raster(P[F[f]], IW, IH)
         if pts is None or len(pts) == 0:
@@ -835,8 +839,13 @@ def paint(name):
         # the slopes of the cheeks and nose stay the front's (Stable Fast 3D
         # built them from the front picture); full side color from ~65 deg round
         side_facing = sign * fn[:, 0] - np.maximum(-fn[:, 2], 0.0)
+        # 16 Oct (an eye on each side of Shadow's hood): the model's hood comes
+        # further forward than in the side picture, so the picture's face landed
+        # on the hood - hooded heads keep their front / back painting
+        if name in HOODED:
+            side_facing = np.where(V[F].mean(axis=1)[:, 1] > hi[1] - 0.3 * size[1], 0.0, side_facing)
         paint_view(img, mask, np.stack([px, py], axis=1), sign * V[:, 0], side_facing,
-                   F, uvpx, TW, TH, 0.02 * size[0] + 1e-6, painted, best, sign * fn[:, 0])
+                   F, uvpx, TW, TH, 0.02 * size[0] + 1e-6, painted, best, np.ones(len(F)))
         sides.append(f"{view} (fit {fit:.2f})")
     # how Stable Fast 3D shifted the colors (washed out), from the front, undone
     # everywhere; then the back picture laid over its guessed back
