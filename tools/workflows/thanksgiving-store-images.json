@@ -1,0 +1,81 @@
+{
+  "name": "Thanksgiving store images",
+  "reference_root": "art",
+  "output_root": "art/roblox-store",
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.",
+  "assets": [
+    {
+      "file_name": "icon-thanksgiving.png",
+      "picture": "A SQUARE picture, the Thanksgiving event picture. The Gobbler (the first picture: the big grumpy cartoon turkey in the straw farmer's hat and blue bandana) leans toward the camera from the middle of the picture, frowning in a funny, not scary way, holding up one big shiny golden feather in his wing-hand. Peeking out from behind him on the left, Chef Brainy (the second picture) looks surprised; on the right, Pie Baker Patch (the third picture) giggles. A small runaway baby turkey (the fourth picture) dashes across the bottom right with a cheeky grin. Behind them: a cozy red barn at sunset with hay bales, a few orange and red autumn leaves drifting, a big warm orange sun low in the sky, deep purple-to-orange sky. Keep the LEFT third of the picture calm and darker (sky and leaves only, no characters) so the game's title can sit beside it.",
+      "references": [
+        "model-input\\host-gobbler\\front-toon.png",
+        "model-input\\chef-brainy\\front-toon.png",
+        "model-input\\pie-baker-patch\\front-toon.png",
+        "model-input\\turkey\\front-toon.png",
+        "roblox-store\\icon-halloween.png"
+      ]
+    },
+    {
+      "file_name": "feather-icon.png",
+      "picture": "A SQUARE round game icon of ONE shiny golden feather, laid across the icon at an angle, glossy gold with a pale golden middle stripe and a short quill, inside a glowing orange-and-gold ring on a deep purple background with a few small sparkles and swooshes - exactly the same layout, ring, glow and style as the attached picture (the candy corn icon), only the candy corn becomes the golden feather. The feather fills most of the circle; nothing else inside.",
+      "references": [
+        "roblox-store\\boost-candy-512.png"
+      ]
+    },
+    {
+      "file_name": "maps\\building-harvestbarn.png",
+      "picture": "A WIDE 16:9 picture of the Harvest Barn, a new place in the game, seen from a little above and to the side, in exactly the same style, angle, framing and night lighting as the attached picture (another building in the game): a big friendly red barn with white trim and a hayloft door, its big front doors open with warm light inside, a little tractor shed and a round grain silo beside it, a corn field and a small corn maze, hay bales, a pumpkin patch, a scarecrow made of straw with a pumpkin head, strings of warm lanterns, a few small runaway baby turkeys scattered round the yard, autumn trees with orange and red leaves, a big orange harvest moon in a deep purple evening sky. No people.",
+      "references": [
+        "roblox-store\\maps\\building-aquarium.png"
+      ]
+    },
+    {
+      "file_name": "boost-pie-512.png",
+      "picture": "A SQUARE round game icon of a whole PUMPKIN PIE with a golden crust and a swirl of whipped cream on top, a slice slightly pulled out, glowing and tempting - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the attached candy corn icon. The pie fills most of the circle; nothing else inside.",
+      "references": [
+        "roblox-store\\boost-candy-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-pietin-512.png",
+      "picture": "A SQUARE round game icon of a round shiny metal PIE TIN used as a little shield, with a big golden pie crust leaf pressed in its middle and a soft golden glow around it - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Party Shield boost, for the idea only. The shield fills most of the circle; nothing else inside.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-shield-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-cornmap-512.png",
+      "picture": "A SQUARE round game icon of a folded paper MAP of a CORN MAZE with a winding dotted path and a little red X, with a few green corn stalks peeking over its edges - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Extra Clue boost, for the idea only. The map fills most of the circle; nothing else inside.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-clue-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-cider-512.png",
+      "picture": "A SQUARE round game icon of a glass MUG of hot APPLE CIDER with a cinnamon stick, a slice of apple on the rim and a little curl of steam - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Second Wind boost, for the idea only. The mug fills most of the circle; nothing else inside.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-energy-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-turkeytrot-512.png",
+      "picture": "A SQUARE round game icon of a cute little cartoon TURKEY running fast (a TURKEY TROT), with speed lines behind it and a small stopwatch floating beside it - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Head Start boost, for the idea only; the third is the turkey to draw. The turkey fills most of the circle; nothing else inside.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-headstart-512.png",
+        "model-input\\turkey\\front-toon.png"
+      ]
+    },
+    {
+      "file_name": "boost-cranpop-512.png",
+      "picture": "A SQUARE round game icon of a deep red CRANBERRY ICE POP on a stick, frosty and sparkling, with a few cranberries and little ice crystals around it - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Frozen Pop boost, for the idea only. The ice pop fills most of the circle; nothing else inside.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-freeze-512.png"
+      ]
+    }
+  ]
+}

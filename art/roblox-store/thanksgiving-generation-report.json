@@ -1,0 +1,127 @@
+{
+  "workflow": "tools/workflows/thanksgiving-store-images.json",
+  "generation_mode": "built-in image_gen",
+  "date": "2026-10-16",
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.",
+  "assets": [
+    {
+      "file_name": "icon-thanksgiving.png",
+      "references": [
+        "model-input\\host-gobbler\\front-toon.png",
+        "model-input\\chef-brainy\\front-toon.png",
+        "model-input\\pie-baker-patch\\front-toon.png",
+        "model-input\\turkey\\front-toon.png",
+        "roblox-store\\icon-halloween.png"
+      ],
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nA SQUARE picture, the Thanksgiving event picture. The Gobbler (the first picture: the big grumpy cartoon turkey in the straw farmer's hat and blue bandana) leans toward the camera from the middle of the picture, frowning in a funny, not scary way, holding up one big shiny golden feather in his wing-hand. Peeking out from behind him on the left, Chef Brainy (the second picture) looks surprised; on the right, Pie Baker Patch (the third picture) giggles. A small runaway baby turkey (the fourth picture) dashes across the bottom right with a cheeky grin. Behind them: a cozy red barn at sunset with hay bales, a few orange and red autumn leaves drifting, a big warm orange sun low in the sky, deep purple-to-orange sky. Keep the LEFT third of the picture calm and darker (sky and leaves only, no characters) so the game's title can sit beside it.\n\nReference roles in attached order: 1 Gobbler identity; 2 Chef Brainy identity; 3 Pie Baker Patch identity; 4 baby turkey identity; 5 visual rendering style only. Keep the entire left third clear of characters, barn and props, dark sky with sparse leaves only; place the character group in the remaining middle/right area. Square 1:1 composition. Do not copy Halloween characters or costumes from reference 5.\n\nCritical composition requirement: create usable TITLE SPACE, but do not draw the title. Reserve the LEFT 40 PERCENT of the square from the very top to the very bottom as quiet, dark-purple sky, with at most three sparse autumn leaves. No ground, hay, fences, buildings, bright sun, feathers or character silhouettes may enter that left 40 percent. Put the entire barn sunset scene and character group inside the RIGHT 60 PERCENT, with a softly blended sky boundary. The orange sun is behind the barn in the upper-right. Gobbler's head and feather stay to the right of the 40 percent boundary. Chef Brainy peeks from Gobbler's left shoulder within the right 60 percent, and MUST have the small blue propeller atop his white chef's hat and wooden spoon behind his ear. Patch peeks from his right shoulder and MUST wear puffy cream oven mitts; preserve her blue eyes, pink scrunchie, blonde ponytail, bandage and flour smudge. Baby turkey dashes in the lower-right. Scale the group down enough to keep all four faces clear without encroaching on title space. This is a single coherent square event illustration, with no panel line.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a14583-fd92-7181-b69c-cbb8b4c714ca\\exec-063ad3db-f320-42b1-952d-084a5a7789fe.png",
+      "saved_path": "C:/Users/bwood/OneDrive/Documents/Kids Games/Do You Know Where You Are/art/roblox-store/icon-thanksgiving.png",
+      "width": 1254,
+      "height": 1254,
+      "png_verified": true
+    },
+    {
+      "file_name": "feather-icon.png",
+      "references": [
+        "roblox-store\\boost-candy-512.png"
+      ],
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nA SQUARE round game icon of ONE shiny golden feather, laid across the icon at an angle, glossy gold with a pale golden middle stripe and a short quill, inside a glowing orange-and-gold ring on a deep purple background with a few small sparkles and swooshes - exactly the same layout, ring, glow and style as the attached picture (the candy corn icon), only the candy corn becomes the golden feather. The feather fills most of the circle; nothing else inside.\n\nThe attached candy-corn icon is the reference for the exact orange-gold ring, deep-purple field, glow and framing. Replace the candy corn with the single feather. Square 1:1, opaque background.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a14583-fd92-7181-b69c-cbb8b4c714ca\\exec-e655117d-5b0d-49da-bd43-56379d1f18f7.png",
+      "saved_path": "C:/Users/bwood/OneDrive/Documents/Kids Games/Do You Know Where You Are/art/roblox-store/feather-icon.png",
+      "width": 1254,
+      "height": 1254,
+      "png_verified": true
+    },
+    {
+      "file_name": "maps\\building-harvestbarn.png",
+      "references": [
+        "roblox-store\\maps\\building-aquarium.png"
+      ],
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nA WIDE 16:9 picture of the Harvest Barn, a new place in the game, seen from a little above and to the side, in exactly the same style, angle, framing and night lighting as the attached picture (another building in the game): a big friendly red barn with white trim and a hayloft door, its big front doors open with warm light inside, a little tractor shed and a round grain silo beside it, a corn field and a small corn maze, hay bales, a pumpkin patch, a scarecrow made of straw with a pumpkin head, strings of warm lanterns, a few small runaway baby turkeys scattered round the yard, autumn trees with orange and red leaves, a big orange harvest moon in a deep purple evening sky. No people.\n\nUse the attached aquarium image only for its polished 3D rendering, elevated three-quarter viewpoint, complete environment framing and warm lanterns against purple nighttime lighting. Depict the requested land-based barn environment. Wide EXACT 16:9 landscape composition. No text or lettering on the barn or grain silo. Scarecrow is a simple straw-and-pumpkin farm prop with no cultural costume.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a14583-fd92-7181-b69c-cbb8b4c714ca\\exec-0c354a0d-4218-4a6f-812a-671a093bbd3f.png",
+      "saved_path": "C:/Users/bwood/OneDrive/Documents/Kids Games/Do You Know Where You Are/art/roblox-store/maps/building-harvestbarn.png",
+      "width": 1672,
+      "height": 941,
+      "png_verified": true
+    },
+    {
+      "file_name": "boost-pie-512.png",
+      "references": [
+        "roblox-store\\boost-candy-512.png"
+      ],
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nA SQUARE round game icon of a whole PUMPKIN PIE with a golden crust and a swirl of whipped cream on top, a slice slightly pulled out, glowing and tempting - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the attached candy corn icon. The pie fills most of the circle; nothing else inside.\n\nThe attached candy-corn icon controls the exact ring layout, orange-gold glow, deep-purple field, glossy toy material, sparkles and swooshes. Replace its candy corn with the requested pumpkin pie and its slightly displaced slice. Square 1:1, opaque background.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a14583-fd92-7181-b69c-cbb8b4c714ca\\exec-251c1fe2-51d1-4cd4-a17e-0e55948b2ff7.png",
+      "saved_path": "C:/Users/bwood/OneDrive/Documents/Kids Games/Do You Know Where You Are/art/roblox-store/boost-pie-512.png",
+      "width": 1254,
+      "height": 1254,
+      "png_verified": true
+    },
+    {
+      "file_name": "boost-pietin-512.png",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-shield-512.png"
+      ],
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nA SQUARE round game icon of a round shiny metal PIE TIN used as a little shield, with a big golden pie crust leaf pressed in its middle and a soft golden glow around it - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Party Shield boost, for the idea only. The shield fills most of the circle; nothing else inside.\n\nReference roles in attached order: 1 candy corn controls the exact ring layout, orange-gold glow, deep-purple background, glossy material, sparkles and swooshes; 2 regular shield provides the shield concept only. Use an unpainted reflective silver metal pie tin with a golden pastry leaf in its center. Keep the orange-gold ring from reference 1. Square 1:1, opaque background.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a14583-fd92-7181-b69c-cbb8b4c714ca\\exec-104fe9f1-9d37-4274-b96d-c2b8393437d8.png",
+      "saved_path": "C:/Users/bwood/OneDrive/Documents/Kids Games/Do You Know Where You Are/art/roblox-store/boost-pietin-512.png",
+      "width": 1254,
+      "height": 1254,
+      "png_verified": true
+    },
+    {
+      "file_name": "boost-cornmap-512.png",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-clue-512.png"
+      ],
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nA SQUARE round game icon of a folded paper MAP of a CORN MAZE with a winding dotted path and a little red X, with a few green corn stalks peeking over its edges - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Extra Clue boost, for the idea only. The map fills most of the circle; nothing else inside.\n\nReference roles in attached order: 1 candy corn controls the exact ring layout, orange-gold glow, deep-purple background, glossy toy rendering, sparkles and swooshes; 2 Extra Clue is conceptual only. The map has a clear drawn maze with a dotted route; the requested red X is a small crossed route-marker symbol, not typeset lettering. No labels, words, legend, question marks or numbers. Square 1:1, opaque background.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a14583-fd92-7181-b69c-cbb8b4c714ca\\exec-577f8d21-67a1-4876-9271-493cb4c06b50.png",
+      "saved_path": "C:/Users/bwood/OneDrive/Documents/Kids Games/Do You Know Where You Are/art/roblox-store/boost-cornmap-512.png",
+      "width": 1254,
+      "height": 1254,
+      "png_verified": true
+    },
+    {
+      "file_name": "boost-cider-512.png",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-energy-512.png"
+      ],
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nA SQUARE round game icon of a glass MUG of hot APPLE CIDER with a cinnamon stick, a slice of apple on the rim and a little curl of steam - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Second Wind boost, for the idea only. The mug fills most of the circle; nothing else inside.\n\nReference roles in attached order: 1 candy corn controls the exact ring layout, orange-gold glow, deep-purple background, glossy toy rendering, sparkles and swooshes; 2 regular Second Wind boost is conceptual only. The mug is clear glass holding amber apple cider, with the requested cinnamon stick, apple slice and steam. Keep the orange-gold ring of reference 1. Square 1:1, opaque background.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a14583-fd92-7181-b69c-cbb8b4c714ca\\exec-188ffa7c-e92e-40a2-bca6-e2a4a54abd2c.png",
+      "saved_path": "C:/Users/bwood/OneDrive/Documents/Kids Games/Do You Know Where You Are/art/roblox-store/boost-cider-512.png",
+      "width": 1254,
+      "height": 1254,
+      "png_verified": true
+    },
+    {
+      "file_name": "boost-turkeytrot-512.png",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-headstart-512.png",
+        "model-input\\turkey\\front-toon.png"
+      ],
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nA SQUARE round game icon of a cute little cartoon TURKEY running fast (a TURKEY TROT), with speed lines behind it and a small stopwatch floating beside it - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Head Start boost, for the idea only; the third is the turkey to draw. The turkey fills most of the circle; nothing else inside.\n\nReference roles in attached order: 1 candy corn controls the exact ring layout, orange-gold glow, deep-purple background, glossy toy rendering, sparkles and swooshes; 2 Head Start supplies the speed/stopwatch concept only; 3 baby turkey is the exact identity, proportions, face and colors to preserve. Render that turkey in a running pose using polished glossy lighting consistent with reference 1. The small stopwatch has hands and simple tick marks, no numbers, letters or dangling pumpkin ornament. Only turkey, small stopwatch, speed lines and decorative ring effects. Square 1:1, opaque background.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a14583-fd92-7181-b69c-cbb8b4c714ca\\exec-6faefc85-5326-470d-a825-37953679e4da.png",
+      "saved_path": "C:/Users/bwood/OneDrive/Documents/Kids Games/Do You Know Where You Are/art/roblox-store/boost-turkeytrot-512.png",
+      "width": 1254,
+      "height": 1254,
+      "png_verified": true
+    },
+    {
+      "file_name": "boost-cranpop-512.png",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-freeze-512.png"
+      ],
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos, brand marks, team colors or emblems, no pilgrim, Native American or other cultural costumes.\n\nA SQUARE round game icon of a deep red CRANBERRY ICE POP on a stick, frosty and sparkling, with a few cranberries and little ice crystals around it - inside a glowing orange-and-gold ring on a deep purple background with a few sparkles and swooshes, exactly the same layout, ring, glow and style as the first attached picture (the candy corn icon). The second attached picture is the regular Frozen Pop boost, for the idea only. The ice pop fills most of the circle; nothing else inside.\n\nReference roles in attached order: 1 candy corn controls the exact ring layout, orange-gold glow, deep-purple background, glossy toy rendering, sparkles and swooshes; 2 Frozen Pop supplies the ice-pop concept and frosty material only. The ice pop is deep cranberry red; preserve the orange-and-gold ring of reference 1. Include just the requested cranberries and ice crystals beside the single pop on a plain wooden stick. Square 1:1, opaque background.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a14583-fd92-7181-b69c-cbb8b4c714ca\\exec-c0c688d4-92ed-40e6-a928-5e4aacd63ef5.png",
+      "saved_path": "C:/Users/bwood/OneDrive/Documents/Kids Games/Do You Know Where You Are/art/roblox-store/boost-cranpop-512.png",
+      "width": 1254,
+      "height": 1254,
+      "png_verified": true
+    }
+  ],
+  "validation": "All nine PNGs decoded; eight square images; barn matches the reference at 1672x941 (approximately 16:9). Visually inspected each generated output. Native generated dimensions retained."
+}

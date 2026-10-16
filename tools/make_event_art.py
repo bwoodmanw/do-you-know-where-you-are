@@ -28,6 +28,18 @@ EVENTS = {
                "Until November 1"],
         accent=(255, 150, 40),
     ),
+    "thanksgiving": dict(
+        art="art/roblox-store/icon-thanksgiving.png",
+        icon="art/roblox-store/feather-512.png",
+        sky=((34, 16, 58), (86, 34, 52)),
+        kicker="THANKSGIVING EVENT",
+        title=["TURKEY", "ROUNDUP"],
+        lines=["Catch runaway turkeys in the Harvest Barn",
+               "Golden feathers on every floor",
+               "9 new skins in the Feather Shop",
+               "November 1 - 30"],
+        accent=(255, 170, 50),
+    ),
 }
 
 
