@@ -427,7 +427,7 @@ Config.SEASONS = {
 }
 -- Studio only: pretend it is this date for the seasons ({ 2026, 11, 5 } tries
 -- Thanksgiving's Feather Hunt and shop; nil = today)
-Config.STUDIO_SEASON_DATE = nil
+Config.STUDIO_SEASON_DATE = { 2026, 11, 5 } -- TRYING THANKSGIVING (16 Oct): back to nil before publishing
 -- the Turkey Roundup (Thanksgiving, the Harvest Barn - Brent, 11 Oct):
 -- `turkeys` runaway turkeys run from any kid closer than `flee` studs, at
 -- `speed` (walking is Config.WALK, running Config.RUN - cornering them
@@ -457,7 +457,7 @@ Config.FEAST = {
 Config.FEAST_TABLE_AT = Vector3.new(-46, 0, 52)
 -- Studio only: pretend the Feast Meter is at this total (3000 sets the feast
 -- table); nil = the real total
-Config.STUDIO_FEAST_TOTAL = nil
+Config.STUDIO_FEAST_TOTAL = 3000 -- TRYING THE FEAST (16 Oct): back to nil before publishing
 -- the owner's gift buttons for points (Lobby)
 Config.GIFT_POINTS = { 500, 2000 }
 -- the pictures of each season's item (0 = its emoji); the candy corn is the
@@ -484,7 +484,7 @@ Config.ARRIVE_WAIT = 45 -- the first game waits this long at most for the rest o
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "aquarium" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3), aquarium(_2, _3)
+Config.STUDIO_MAP = "harvestbarn" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3), aquarium(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); nil = random
