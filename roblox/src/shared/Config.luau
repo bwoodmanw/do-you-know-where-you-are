@@ -261,7 +261,7 @@ Config.BADGES = {
 	aquarium = 2071235778459400, -- Making a Splash: escaped the Aquarium's top floor (Rooftop Pools)
 	basement = 3470854860514085, -- Down in the Dark: escaped the Party House's Secret Basement
 	corn = 1601997395414164, -- Candy Corn Collector: found the Halloween season's goal of candy corns
-	turkey = 0, -- Turkey Wrangler: caught Config.ROUNDUP.goal runaway turkeys (Thanksgiving; Creator Hub: not made yet)
+	turkey = 3884844105524558, -- Turkey Wrangler: caught Config.ROUNDUP.goal runaway turkeys (Thanksgiving, 16 Oct)
 	tower = 2702531171107423, -- Tower Climber: reached the top in a Tower Run
 	rescuer = 4200883843590712, -- Hero of the Crew: freed 10 friends from the cage
 	untouched = 1991556459225776, -- Untouchable: escaped without being caught
@@ -427,7 +427,7 @@ Config.SEASONS = {
 }
 -- Studio only: pretend it is this date for the seasons ({ 2026, 11, 5 } tries
 -- Thanksgiving's Feather Hunt and shop; nil = today)
-Config.STUDIO_SEASON_DATE = { 2026, 11, 5 } -- TRYING THANKSGIVING (16 Oct): back to nil before publishing
+Config.STUDIO_SEASON_DATE = nil
 -- the Turkey Roundup (Thanksgiving, the Harvest Barn - Brent, 11 Oct):
 -- `turkeys` runaway turkeys run from any kid closer than `flee` studs, at
 -- `speed` (walking is Config.WALK, running Config.RUN - cornering them
@@ -457,7 +457,7 @@ Config.FEAST = {
 Config.FEAST_TABLE_AT = Vector3.new(-46, 0, 52)
 -- Studio only: pretend the Feast Meter is at this total (3000 sets the feast
 -- table); nil = the real total
-Config.STUDIO_FEAST_TOTAL = 3000 -- TRYING THE FEAST (16 Oct): back to nil before publishing
+Config.STUDIO_FEAST_TOTAL = nil
 -- the owner's gift buttons for points (Lobby)
 Config.GIFT_POINTS = { 500, 2000 }
 -- the pictures of each season's item (0 = its emoji); the candy corn is the
@@ -484,7 +484,7 @@ Config.ARRIVE_WAIT = 45 -- the first game waits this long at most for the rest o
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "harvestbarn" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3), aquarium(_2, _3)
+Config.STUDIO_MAP = "aquarium" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3), aquarium(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); nil = random
@@ -511,14 +511,14 @@ Config.ROBUX_PRODUCTS = {
 -- Lobby shows these in 3D; the Party House uses them for any character not
 -- imported there. 0 = not saved yet.
 Config.CHARACTER_ASSETS = {
-	Glow = 74307875851069,
-	Patch = 82716883621716, -- 10 Oct: the blonde toon with the sharp face (PatchToon saved; was 120375206872909)
+	Glow = 105479199903450, -- 16 Oct: the toon (switch-over; was 74307875851069)
+	Patch = 134219247129487, -- 16 Oct: the toon re-saved after the paint fixes (switch-over; was 82716883621716)
 	Muscle = 130534216338914, -- 16 Oct: the toon (switch-over; was 95343724720766, before 116831403539618)
 	Tinker = 78501763696161, -- 16 Oct: the toon (switch-over; was 115806881502179)
 	Shadow = 127121007468275, -- 16 Oct: the toon (switch-over; was 85123632229176)
 	Brainy = 87704425550431, -- 16 Oct: the toon (switch-over; was 96432127418740)
 	Echo = 88227116066224, -- 11 Oct: the remade toon, headphones on her ears (EchoToon saved; before: 138682489420791 neck headphones, 139525446217656)
-	Bramble = 115700894998579, -- 10 Oct: the toon (BrambleToon saved; was 83770262810721)
+	Bramble = 82084067369494, -- 16 Oct: the toon (switch-over; was 115700894998579)
 	Host = 135742994182895,
 	HostGummy = 106903651525041,
 	HostRobot = 95188395596101,
@@ -529,7 +529,7 @@ Config.CHARACTER_ASSETS = {
 	TinkerPumpkin = 107525785066601,
 	ShadowGhost = 104153912502548, -- 8 Oct: remade in A-pose (was 126072588049013, T-pose)
 	BrambleAutumn = 90429061895312,
-	PatchHalloween = 108839284344455, -- 10 Oct: the blonde toon, before the sharp face (re-save it after re-importing; before: 134018828418260, the brunette 80329522710291)
+	PatchHalloween = 133530858867825, -- 16 Oct: the toon (switch-over; was 108839284344455)
 	EchoStar = 78905373095211, -- 8 Oct: remade face (was 78330257038104)
 	BrainySpace = 110376512028941,
 	GlowCandy = 99155956475141,

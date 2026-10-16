@@ -470,8 +470,8 @@ RoundState.AttributeChanged:Connect(paintCode)
 paintCode()
 
 -- ---------- bars ----------
-local bars = frame(gui, { Size = UDim2.fromOffset(250, 84), Position = TOUCH and UDim2.fromOffset(10, 60) or UDim2.new(0, 10, 1, -94), BackgroundTransparency = 0.3 })
-roomName = label(bars, { Size = UDim2.new(1, -16, 0, 32), Position = UDim2.fromOffset(8, 54), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
+local bars = frame(gui, { Size = UDim2.fromOffset(250, 106), Position = TOUCH and UDim2.fromOffset(10, 60) or UDim2.new(0, 10, 1, -116), BackgroundTransparency = 0.3 }) -- 16 Oct: a row taller (the season's count)
+roomName = label(bars, { Size = UDim2.new(1, -16, 0, 32), Position = UDim2.fromOffset(8, 74), Text = "The Party House", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP })
 do
 -- the team's items, as icons above the active boosts: a key for each locked
 -- door still shut, and the Confetti Cannons (they stay through a cage)
@@ -535,6 +535,28 @@ end
 local staminaBar = bar(10, Color3.fromRGB(123, 227, 107), "Stamina")
 -- points earned in this game (clues are paid from these)
 local gameEarned = label(bars, { Size = UDim2.new(1, -16, 0, 18), Position = UDim2.fromOffset(8, 30), Text = "\u{2B50} 0 points this game", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 210, 63) })
+do
+	-- the running season's item, every one ever found (Brent, 16 Oct): golden
+	-- feathers in November, candy corns in October; hidden out of season
+	local Seasons = require(ReplicatedStorage.Shared.Seasons)
+	local seasonCount = label(bars, { Size = UDim2.new(1, -16, 0, 18), Position = UDim2.fromOffset(8, 52), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 196, 46), Visible = false })
+	local function paintSeason()
+		local s = Seasons.active()
+		if not s then
+			seasonCount.Visible = false
+			return
+		end
+		local ok, data = pcall(function()
+			return HttpService:JSONDecode(player:GetAttribute("ProfileJson") or "{}")
+		end)
+		local n = ok and data and data.stats and data.stats[s.item] or 0
+		local Many = string.upper(string.sub(s.many, 1, 1)) .. string.sub(s.many, 2)
+		seasonCount.Text = s.icon .. " " .. Many .. ": " .. n
+		seasonCount.Visible = true
+	end
+	player:GetAttributeChangedSignal("ProfileJson"):Connect(paintSeason)
+	paintSeason()
+end
 
 -- ---------- action buttons ----------
 local acts = frame(gui, { Size = UDim2.fromOffset(318, 240), Position = TOUCH and UDim2.new(1, -328, 1, -390) or UDim2.new(1, -328, 1, -250), BackgroundTransparency = 1 }) -- 10 Oct: bigger tiles
@@ -1405,7 +1427,7 @@ local PX = MAP_W / HouseMap.w
 local MAP_H = math.floor(PX * HouseMap.h + 0.5)
 -- computers: the map in the bottom-left corner with the bars above it;
 -- touch screens: the bars at the top left with the map under them
-local BARS_H = TOUCH and 92 or 124 -- computers: a line of level bonuses at the bottom
+local BARS_H = TOUCH and 114 or 146 -- computers: a line of level bonuses at the bottom (16 Oct: +22 for the season's count)
 local mapAt = TOUCH and UDim2.fromOffset(10, 60 + BARS_H + 6) or UDim2.new(0, 10, 1, -(MAP_H + 32) - 10)
 bars.Size = UDim2.fromOffset(MAP_W + 8, BARS_H)
 do
@@ -1428,7 +1450,7 @@ do
 	if TOUCH then
 		roomName.Size = UDim2.new(1, -124, 0, 32)
 	end
-	button(bars, "\u{2B06} My Skills", { Size = UDim2.fromOffset(TOUCH and 108 or 140, 30), Position = TOUCH and UDim2.new(1, -114, 0, 56) or UDim2.fromOffset(8, 88), BackgroundColor3 = Color3.fromRGB(70, 140, 220) }, function()
+	button(bars, "\u{2B06} My Skills", { Size = UDim2.fromOffset(TOUCH and 108 or 140, 30), Position = TOUCH and UDim2.new(1, -114, 0, 78) or UDim2.fromOffset(8, 110), BackgroundColor3 = Color3.fromRGB(70, 140, 220) }, function()
 		skillsPanel.Visible = not skillsPanel.Visible
 	end)
 	local function pct(x)
