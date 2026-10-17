@@ -250,6 +250,15 @@ Brent's agent copies: `CORE_TOON_MODEL_WORKFLOW.md`,
 
 ## Lessons (keep)
 
+- **Import the toons 5x bigger** (16 Oct): a toon .glb is 0.94 units tall;
+  sometimes Import 3D brings it in at 0.93 studs, and Avatar Setup then
+  squeezes a full-size skeleton into it (Model scale ~0.207): root part above
+  the head, shoulders off, floating, long arms when running (Glow, Halloween
+  Patch). Import `art/models/<name>-toon-x5.glb` (`tools/scale_glb.py`) and
+  check it is kid-sized before Avatar Setup. Also: wait for the colors before
+  Avatar Setup (else the model stays gray); the game turns Roblox's automatic
+  avatar scaling off and sizes characters by their body parts.
+
 - Don't rename the start place. Teleports, invites, purchases, parties and
   private servers only work live.
 - Rojo: Lobby = 34873, Party House = 34872. Rojo started from Claude's shell
