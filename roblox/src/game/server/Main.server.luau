@@ -2993,9 +2993,11 @@ do
 						d.Anchored, d.CanCollide, d.CanQuery, d.CanTouch = true, false, false, false
 					end
 				end
+				-- 17 Oct (Brent: a clone blocked Shadow's way): no Humanoid in a clone
+				-- (it can make the body solid again); kids run straight through it
 				local hum = c:FindFirstChildOfClass("Humanoid")
 				if hum then
-					hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+					hum:Destroy()
 				end
 				local hl = Instance.new("Highlight")
 				hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(40, 20, 70), Color3.fromRGB(150, 100, 220), 0.15
