@@ -307,9 +307,11 @@ local function jumpscare()
 		local look = root and root.CFrame.LookVector or Vector3.new(0, 0, -1)
 		local dir = Vector3.new(look.X, 0, look.Z)
 		dir = dir.Magnitude > 0.1 and dir.Unit or Vector3.new(0, 0, -1)
-		local hr = math.max(head.Size.X, head.Size.Y, head.Size.Z) / 2
-		local bcf, bsize = copy:GetBoundingBox()
-		scareFace = { head = head, dir = dir, r = hr, face = Vector3.new(bcf.Position.X, bcf.Position.Y + bsize.Y / 2 - hr * 1.15, bcf.Position.Z) }
+		-- 17 Oct (Brent: the entrance no longer showed the face): the toon hosts
+		-- have a real Head part - aim a little below its middle (a hat, a stalk
+		-- or ears make it tall), sized by its width, as the catch close-up does
+		local hr = math.max(head.Size.X, head.Size.Z) / 2
+		scareFace = { head = head, dir = dir, r = hr, face = head.Position - Vector3.new(0, head.Size.Y * 0.12, 0) }
 	end
 	scareView.Visible = scareFace ~= nil
 	local cam = workspace.CurrentCamera
