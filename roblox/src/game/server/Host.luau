@@ -294,7 +294,18 @@ function Host:canSee(char)
 	params.FilterType = Enum.RaycastFilterType.Exclude
 	params.FilterDescendantsInstances = { self.model, char }
 	local hit = workspace:Raycast(head.Position, target.Position - head.Position, params)
-	return hit == nil
+	if hit == nil then
+		return true
+	end
+	-- 17 Oct (Brent: the host didn't spot Tinker close by): the toon hosts are
+	-- 12 tall and their heads sit above the 10-stud door frames, so a look
+	-- from the head into the next room hit the frame - also look from the chest
+	local root = self.model:FindFirstChild("HumanoidRootPart")
+	if root then
+		local chest = root.Position + Vector3.new(0, 1.5, 0)
+		return workspace:Raycast(chest, target.Position - chest, params) == nil
+	end
+	return false
 end
 
 function Host:moveTo(goal)
