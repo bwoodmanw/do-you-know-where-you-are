@@ -147,25 +147,29 @@ Config.STAMINA_DRAIN = 22 -- per second while running
 Config.STAMINA_REGEN = 15 -- per second otherwise
 
 Config.HOST = {
-	patrol = 8,
-	search = 10,
+	patrol = 9, -- 17 Oct: 9 (was 8)
+	search = 11, -- 17 Oct: 11 (was 10)
 	hunt = { giggly = 12, spooky = 14 },
 	sight = { giggly = 32, spooky = 40 },
 	shadowSight = 14, -- how close it must be to see Shadow
 	catch = 4.5,
-	lostAfter = 4, -- seconds out of sight before it gives up
+	lostAfter = 5, -- seconds out of sight before it gives up (17 Oct: 5, was 4)
 }
 
 -- Difficulty: chosen before the host comes out. timer = seconds to escape
 -- before the lights go out and the host goes into a frenzy. bonus multiplies
 -- the escape reward.
 Config.DIFFICULTY_ORDER = { "easy", "normal", "hard", "nightmare" }
+-- 17 Oct (Brent: "it's becoming a bit easy"): every difficulty one notch
+-- harder - less head start, less time, a faster host that sees a little
+-- further and grabs from a little further, one clue fewer on Easy. Was:
+-- easy 30/600/13/26/4/5, normal 20/480/14/32/4.5/3, hard 12/360/16/40/5/2,
+-- nightmare 6/300/17/48/5.5/1 (grace/timer/hunt/sight/catch/clues)
 Config.DIFFICULTY = {
-	easy = { name = "Easy", grace = 30, timer = 600, hunt = 13, sight = 26, catch = 4, clues = 5, bonus = 1 },
-	normal = { name = "Normal", grace = 20, timer = 480, hunt = 14, sight = 32, catch = 4.5, clues = 3, bonus = 1.5 },
-	hard = { name = "Hard", grace = 12, timer = 360, hunt = 16, -- 17 Oct (Brent): 16 (was 15.5)
-		sight = 40, catch = 5, clues = 2, bonus = 2 },
-	nightmare = { name = "Nightmare", grace = 6, timer = 300, hunt = 17, sight = 48, catch = 5.5, clues = 1, bonus = 3 },
+	easy = { name = "Easy", grace = 25, timer = 540, hunt = 13.5, sight = 28, catch = 4.25, clues = 4, bonus = 1 },
+	normal = { name = "Normal", grace = 15, timer = 420, hunt = 14.5, sight = 34, catch = 4.75, clues = 3, bonus = 1.5 },
+	hard = { name = "Hard", grace = 10, timer = 330, hunt = 16.5, sight = 42, catch = 5.25, clues = 2, bonus = 2 },
+	nightmare = { name = "Nightmare", grace = 5, timer = 270, hunt = 17.5, sight = 50, catch = 5.75, clues = 1, bonus = 3 },
 }
 
 -- clues cost points earned in this game: the team's 1st, 2nd, 3rd+ clue
