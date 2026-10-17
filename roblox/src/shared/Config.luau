@@ -50,7 +50,7 @@ Config.STUDIO_TRY_MODEL = {}
 Config.TRY_MODEL_FOR_OWNER = true
 -- Studio testing: play the plain characters whatever skin your save wears
 -- (Brent's Patch kept coming up as the Halloween Nurse, 10 Oct)
-Config.STUDIO_NO_SKINS = true
+Config.STUDIO_NO_SKINS = false -- 16 Oct: off to test the skins (true = Studio plays plain characters)
 -- party map voting: the leader can Start once everyone has voted, or this
 -- many seconds after the last player joined (10 Oct, Brent)
 Config.VOTE_WINDOW = 30
