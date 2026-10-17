@@ -495,7 +495,7 @@ Config.ROBUX_PRODUCTS = {
 -- Lobby shows these in 3D; the Party House uses them for any character not
 -- imported there. 0 = not saved yet.
 Config.CHARACTER_ASSETS = {
-	Glow = 105479199903450, -- 16 Oct: the toon (switch-over; was 74307875851069)
+	Glow = 101230306547454, -- 16 Oct: the toon re-imported fresh (was 105479199903450, 74307875851069)
 	Patch = 134219247129487, -- 16 Oct: the toon re-saved after the paint fixes (switch-over; was 82716883621716)
 	Muscle = 130534216338914, -- 16 Oct: the toon (switch-over; was 95343724720766, before 116831403539618)
 	Tinker = 78501763696161, -- 16 Oct: the toon (switch-over; was 115806881502179)
