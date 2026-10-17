@@ -395,6 +395,20 @@ end)
 -- (the look Brent picked 9 Oct: art/ui-mockups/lobby-v2.png). The left has
 -- the play tiles, the right a bar of smaller ones. A tile shows its picture
 -- from Config.UI_ICONS once uploaded, its emoji until then.
+-- 16 Oct (Brent: on a phone the windows ran off the screen): a centred
+-- window shrinks to fit the screen (w x h: its full size)
+local function fitToScreen(f, w, h)
+	f.AnchorPoint = Vector2.new(0.5, 0.5)
+	f.Position = UDim2.fromScale(0.5, 0.5)
+	local fit = Instance.new("UIScale")
+	fit.Parent = f
+	local function refit()
+		local vs = workspace.CurrentCamera.ViewportSize
+		fit.Scale = math.min(1, (vs.Y - 20) / h, (vs.X - 20) / w)
+	end
+	workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(refit)
+	refit()
+end
 local menu = frame(gui, { Size = UDim2.fromOffset(310, 590), Position = UDim2.fromOffset(20, 136), BackgroundTransparency = 1 })
 local rightBar = frame(gui, { Size = UDim2.fromOffset(104, 520), AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 196), BackgroundTransparency = 1 })
 do
@@ -404,8 +418,9 @@ do
 	local function refit()
 		local cam = workspace.CurrentCamera
 		local vy = cam and cam.ViewportSize.Y or 900
-		fitL.Scale = math.clamp((vy - 70 - 16) / (590 + 66), 0.4, 1) -- the points chip sits above the tiles
-		fitR.Scale = math.clamp((vy - 196 - 60) / 520, 0.45, 1)
+		-- 16 Oct (Brent): a little smaller everywhere (at most 88%)
+		fitL.Scale = math.clamp((vy - 70 - 16) / (590 + 66), 0.4, 0.88) -- the points chip sits above the tiles
+		fitR.Scale = math.clamp((vy - 196 - 60) / 520, 0.45, 0.88)
 	end
 	refit()
 	if workspace.CurrentCamera then
@@ -657,8 +672,20 @@ list(joinList, 8)
 local joinEmpty = label(joinList, { Size = UDim2.new(1, 0, 0, 60), Text = "No parties yet - create one and invite a friend!", TextColor3 = Color3.fromRGB(185, 168, 207) })
 
 -- ---------- your party (middle) ----------
-local partyBox = frame(gui, { Size = UDim2.fromOffset(440, 560), Position = UDim2.new(0.5, -220, 0.5, -280), Visible = false })
+local partyBox = frame(gui, { Size = UDim2.fromOffset(440, 560), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Visible = false })
 corner(partyBox, 18)
+do
+	-- 16 Oct (Brent: on a phone Start was off the screen): the party window
+	-- shrinks to fit the screen, like the map screen
+	local fit = Instance.new("UIScale")
+	fit.Parent = partyBox
+	local function refit()
+		local vs = workspace.CurrentCamera.ViewportSize
+		fit.Scale = math.min(1, (vs.Y - 20) / 560, (vs.X - 20) / 440)
+	end
+	workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(refit)
+	refit()
+end
 local partyTitle = label(partyBox, { Size = UDim2.new(1, -20, 0, 40), Position = UDim2.fromOffset(10, 10), Text = "Your party", TextColor3 = PUMP })
 local slots = frame(partyBox, { Size = UDim2.new(1, -40, 0, 150), Position = UDim2.fromOffset(20, 56), BackgroundTransparency = 1 })
 local slotGrid = Instance.new("UIGridLayout")
@@ -1308,6 +1335,7 @@ do
 		itemPic(e, bannerHolder, 38, UDim2.fromOffset(0, 0), 6)
 		local banner = button(bannerHolder, "", { Position = UDim2.fromOffset(42, 0), Size = UDim2.new(1, -42, 1, 0), BackgroundColor3 = Color3.fromRGB(40, 22, 62), TextColor3 = Color3.fromRGB(255, 180, 70), ZIndex = 5 })
 		local cshop = frame(gui, { Size = UDim2.fromOffset(620, 676), Position = UDim2.new(0.5, -310, 0.5, -338), Visible = false, ZIndex = 10 })
+		fitToScreen(cshop, 620, 676)
 		corner(cshop, 18)
 		itemPic(e, cshop, 46, UDim2.fromOffset(16, 6), 11)
 		local title = label(cshop, { Size = UDim2.new(1, -90, 0, 40), Position = UDim2.fromOffset(70, 10), TextColor3 = PUMP, ZIndex = 11 })
@@ -1605,6 +1633,7 @@ end
 
 -- ---------- the shop ----------
 local shop = frame(gui, { Size = UDim2.fromOffset(620, 610), Position = UDim2.new(0.5, -310, 0.5, -305), Visible = false, ZIndex = 10 })
+fitToScreen(shop, 620, 610)
 corner(shop, 18)
 local shopTitle = label(shop, { Size = UDim2.new(1, -40, 0, 40), Position = UDim2.fromOffset(20, 10), Text = "\u{1F6D2} Boost Shop", TextColor3 = PUMP, ZIndex = 11 })
 label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "+ buys, - sells back. Equip up to " .. Progress.MAX_BOOSTS .. " (two of the same is fine) for your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
@@ -1719,6 +1748,7 @@ end)
 
 -- ---------- characters and the skill ladder ----------
 local chars = frame(gui, { Size = UDim2.fromOffset(900, 560), Position = UDim2.new(0.5, -450, 0.5, -280), Visible = false, ZIndex = 10 })
+fitToScreen(chars, 900, 560)
 corner(chars, 18)
 label(chars, { Size = UDim2.new(1, 0, 0, 40), Position = UDim2.fromOffset(0, 10), Text = "Characters & skill ladder", TextColor3 = PUMP, ZIndex = 11 })
 -- a red X in the corner closes the screen (like its Skills and Skins windows)
