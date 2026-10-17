@@ -2965,7 +2965,22 @@ do
 		local seconds = plr:GetAttribute("CloneTime") or Config.CLONE.seconds
 		local away = host and host.root and (hrp.Position - host.root.Position) or hrp.CFrame.LookVector
 		for i = 1, count do
-			local dir = i == 1 and away or CFrame.Angles(0, math.rad(i == 2 and 110 or -110), 0):VectorToWorldSpace(away)
+			-- 17 Oct (Brent: one clone barely moved): the first runs away from the
+			-- host, the second the opposite way, a third to the side; each turns a
+			-- little at a time until it finds a run longer than 8 studs
+			local base = i == 1 and 0 or i == 2 and 180 or 90
+			local dir = CFrame.Angles(0, math.rad(base), 0):VectorToWorldSpace(away)
+			do
+				local flat0 = Vector3.new(away.X, 0, away.Z)
+				flat0 = flat0.Magnitude > 0.01 and flat0.Unit or Vector3.new(0, 0, 1)
+				for _, turn in ipairs({ 0, 30, -30, 60, -60, 90, -90 }) do
+					local try = CFrame.Angles(0, math.rad(base + turn), 0):VectorToWorldSpace(flat0)
+					if (clearRun(hrp.Position, try, Config.CLONE.run) - hrp.Position).Magnitude >= 8 then
+						dir = try
+						break
+					end
+				end
+			end
 			local was = char.Archivable
 			char.Archivable = true
 			local c = char:Clone()
@@ -2988,7 +3003,9 @@ do
 				c.Name = "ShadowClone"
 				-- 17 Oct (Brent: the clones floated): its lowest point on the floor
 				-- under Shadow, whatever height his root part rides at
-				local lift = 0
+				-- the clone is placed by its pivot: the pivot's height above the clone's
+				-- lowest point, put that far above the floor
+				local pivotY = hrp.Position.Y
 				do
 					local fp = RaycastParams.new()
 					fp.FilterType = Enum.RaycastFilterType.Exclude
@@ -2996,11 +3013,12 @@ do
 					local floorHit = workspace:Raycast(hrp.Position, Vector3.new(0, -30, 0), fp)
 					if floorHit then
 						local ccf, csize = c:GetBoundingBox()
-						lift = floorHit.Position.Y - (ccf.Position.Y - csize.Y / 2)
+						pivotY = floorHit.Position.Y + (c:GetPivot().Position.Y - (ccf.Position.Y - csize.Y / 2))
 					end
 				end
-				local from = hrp.Position + Vector3.new(0, lift, 0)
-				local to = clearRun(hrp.Position, dir, Config.CLONE.run) + Vector3.new(0, lift, 0)
+				local from = Vector3.new(hrp.Position.X, pivotY, hrp.Position.Z)
+				local runTo = clearRun(hrp.Position, dir, Config.CLONE.run)
+				local to = Vector3.new(runTo.X, pivotY, runTo.Z)
 				decoy(c, from, to, seconds)
 			end
 		end
