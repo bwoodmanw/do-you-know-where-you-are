@@ -163,7 +163,8 @@ Config.DIFFICULTY_ORDER = { "easy", "normal", "hard", "nightmare" }
 Config.DIFFICULTY = {
 	easy = { name = "Easy", grace = 30, timer = 600, hunt = 13, sight = 26, catch = 4, clues = 5, bonus = 1 },
 	normal = { name = "Normal", grace = 20, timer = 480, hunt = 14, sight = 32, catch = 4.5, clues = 3, bonus = 1.5 },
-	hard = { name = "Hard", grace = 12, timer = 360, hunt = 15.5, sight = 40, catch = 5, clues = 2, bonus = 2 },
+	hard = { name = "Hard", grace = 12, timer = 360, hunt = 16, -- 17 Oct (Brent): 16 (was 15.5)
+		sight = 40, catch = 5, clues = 2, bonus = 2 },
 	nightmare = { name = "Nightmare", grace = 6, timer = 300, hunt = 17, sight = 48, catch = 5.5, clues = 1, bonus = 3 },
 }
 

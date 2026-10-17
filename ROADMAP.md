@@ -212,6 +212,8 @@ only when everyone presses Play.
   switch-over in progress (SESSION_HANDOFF "The toon model upgrade").
 
 ## Next
+
+- **Nightmare: a second host** (Brent, 17 Oct: later). Option (b): a second host joins when 2:00 are left. About half a day plus a test round (everything assumes one host). Decide in November from the Balance table's Nightmare escape rates.
 1. **Finish the toon switch-over, Patch first:** Brent re-imports Patch
    (files after commit 3c59e29 keep their normals); photos in Avatar Setup and
    in game; if clean, re-import all characters and skins, Save to Roblox, ids
