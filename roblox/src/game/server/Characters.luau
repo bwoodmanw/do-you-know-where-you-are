@@ -410,6 +410,44 @@ function Characters.apply(plr, name)
 	m:PivotTo(oldRoot and oldRoot.CFrame or CFrame.new(0, 5, 0))
 	m.Parent = workspace
 	plr.Character = m
+	-- 16 Oct (Glow floated a stud up): a skinned foot part's box can reach below
+	-- the boot's real sole, so the hip height (from the boxes) lifted her. Feel
+	-- for the real soles with short rays up at the feet, and lower her by the gap
+	do
+		local feet = {}
+		for _, n in ipairs({ "LeftFoot", "RightFoot" }) do
+			local f = m:FindFirstChild(n, true)
+			if f and f:IsA("BasePart") then
+				table.insert(feet, f)
+			end
+		end
+		if #feet > 0 then
+			local params = RaycastParams.new()
+			params.FilterType = Enum.RaycastFilterType.Include
+			params.FilterDescendantsInstances = feet
+			local bcf, bsize = m:GetBoundingBox()
+			local bottom = bcf.Position.Y - bsize.Y / 2
+			local sole = math.huge
+			for _, f in ipairs(feet) do
+				for _, fx in ipairs({ -0.3, 0, 0.3 }) do
+					for _, fz in ipairs({ -0.3, 0, 0.3 }) do
+						local o = f.CFrame:PointToWorldSpace(Vector3.new(fx * f.Size.X, 0, fz * f.Size.Z))
+						local hit = workspace:Raycast(Vector3.new(o.X, bottom - 3, o.Z), Vector3.new(0, 6 + f.Size.Y, 0), params)
+						if hit then
+							sole = math.min(sole, hit.Position.Y)
+						end
+					end
+				end
+			end
+			local gap = sole - bottom
+			if sole < math.huge and gap > 0.05 and gap < 3 then
+				hum.HipHeight = math.max(0.1, hum.HipHeight - gap)
+				if game:GetService("RunService"):IsStudio() then
+					print(string.format("[Characters] %s: the soles are %.2f above the feet's boxes - hip height now %.2f", name, gap, hum.HipHeight))
+				end
+			end
+		end
+	end
 	old:Destroy()
 	if game:GetService("RunService"):IsStudio() then
 		-- Studio's Output says which model each player now wears (testing toons)
