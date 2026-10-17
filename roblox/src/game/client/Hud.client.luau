@@ -2051,7 +2051,9 @@ RunService.RenderStepped:Connect(function(dt)
 		if wantRun and moving and not tired then
 			hum.WalkSpeed = Config.RUN * (player:GetAttribute("RunMult") or 1) * bonus
 			if not candy then
-				stamina = math.max(0, stamina - Config.STAMINA_DRAIN * dt / (player:GetAttribute("StaminaMult") or 1))
+				-- 17 Oct: Nightmare drains faster (Config.DIFFICULTY.staminaDrain)
+				local dd = Config.DIFFICULTY[RoundState:GetAttribute("Difficulty") or "normal"]
+				stamina = math.max(0, stamina - ((dd and dd.staminaDrain) or Config.STAMINA_DRAIN) * dt / (player:GetAttribute("StaminaMult") or 1))
 				if stamina <= 0 then
 					tired = true
 					toast("Puffed out! Walk for a bit.", 2)
@@ -2059,7 +2061,8 @@ RunService.RenderStepped:Connect(function(dt)
 			end
 		else
 			hum.WalkSpeed = Config.WALK * bonus
-			stamina = math.min(100, stamina + Config.STAMINA_REGEN * (player:GetAttribute("RegenMult") or 1) * dt)
+			local dd = Config.DIFFICULTY[RoundState:GetAttribute("Difficulty") or "normal"]
+			stamina = math.min(100, stamina + ((dd and dd.staminaRegen) or Config.STAMINA_REGEN) * (player:GetAttribute("RegenMult") or 1) * dt)
 			if tired and stamina >= 25 then
 				tired = false
 			end

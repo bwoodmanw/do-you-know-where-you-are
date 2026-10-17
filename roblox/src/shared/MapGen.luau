@@ -26,8 +26,11 @@ local function copy(t)
 	return c
 end
 
-function MapGen.make(plans, rng)
+-- extras (optional, the difficulty's): { decoys = n, search = n } more trick
+-- balloons and more search spots (most of them empty) anywhere on the floor
+function MapGen.make(plans, rng, extras)
 	rng = rng or Random.new()
+	extras = extras or {}
 	local plan = plans[rng:NextInteger(1, #plans)]
 	local map = {
 		id = plan.id,
@@ -143,6 +146,15 @@ function MapGen.make(plans, rng)
 	end
 	for i = 0, 2 do
 		add({ id = "x" .. i, kind = "balloon", decoy = true, n = rng:NextInteger(1, 3) }, pick(ZA, "balloon", 1))
+	end
+	-- 17 Oct: the harder difficulties add trick balloons and search spots
+	-- (make_housemap.py checks Nightmare's, the most, in every fill)
+	for i = 1, math.min(extras.decoys or 0, 3) do
+		add({ id = "x" .. (2 + i), kind = "balloon", decoy = true, n = rng:NextInteger(1, 3) }, pick(ZA, "balloon", 1))
+	end
+	for i = 1, math.min(extras.search or 0, 5) do
+		n += 1
+		add({ id = "s" .. n, kind = "search", look = SEARCH_LOOKS[rng:NextInteger(1, #SEARCH_LOOKS)] }, pick(ZA, "search", 2))
 	end
 	-- every two rooms joined by a doorway get at least one hiding place
 	-- between them. Done after everything the generator checks, so it can

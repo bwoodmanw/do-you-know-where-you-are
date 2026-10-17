@@ -214,6 +214,14 @@ local function applyMods(plr)
 	local data = Profile.get(plr)
 	local skill = plr:GetAttribute("Skill")
 	local m = Progress.mods(skill, data and data.picks[skill], data and data.xp[skill] or 0)
+	-- 17 Oct (Brent): on Nightmare the ladder's run / stamina / hold / cooldown
+	-- bonuses count half (a level-20 kid escaped with minutes to spare)
+	local dd = Config.DIFFICULTY[(state and state.diff) or RoundState:GetAttribute("Difficulty") or "normal"]
+	if dd and dd.ladderHalf then
+		for _, k in ipairs({ "staminaMult", "runMult", "holdMult", "cooldownMult" }) do
+			m[k] = 1 + (m[k] - 1) * 0.5
+		end
+	end
 	plr:SetAttribute("StaminaMult", m.staminaMult)
 	plr:SetAttribute("RunMult", m.runMult)
 	plr:SetAttribute("SightMult", m.sightMult)
@@ -3913,7 +3921,10 @@ function round.start()
 	local mapIdx = Progress.mapIndex(RoundState:GetAttribute("Map") or "partyhouse")
 	local mapInfo = mapIdx and Progress.MAPS[mapIdx]
 	local floors = Plans[mapInfo and mapInfo.building or "partyhouse"] or Plans.partyhouse
-	HouseMap = MapGen.make(floors[mapInfo and mapInfo.floor or 1] or Plans.partyhouse[1])
+	do
+		local d = Config.DIFFICULTY[RoundState:GetAttribute("Difficulty") or "normal"] or Config.DIFFICULTY.normal
+		HouseMap = MapGen.make(floors[mapInfo and mapInfo.floor or 1] or Plans.partyhouse[1], nil, { decoys = d.decoys, search = d.search })
+	end
 	-- one of the locked doors is a blocked passage instead: Muscle shoves the
 	-- junk away, or anyone plants the Confetti Cannon hidden in a search spot
 	local lockDefs = {}

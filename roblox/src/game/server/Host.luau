@@ -480,13 +480,27 @@ function Host:step(dt)
 		local char = plr.Character
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
 		local hidden = plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling")
-		if hrp and (not hidden or self.frenzy) and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
+		if hrp and (not hidden or self.frenzy or self.diff.peek) and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
 			and (plr:GetAttribute("SneakUntil") or 0) <= workspace:GetServerTimeNow() then
 			local flat = Vector3.new(hrp.Position.X - self.root.Position.X, 0, hrp.Position.Z - self.root.Position.Z)
 			-- in a frenzy it searches hiding places it walks right up to
 			-- it reaches up: standing on a table or furniture is no escape
 			local reach = (hidden and 3.5 or self.diff.catch) + (hrp.Position.Y > 4.5 and 4 or 0)
-			if flat.Magnitude < reach then
+			-- 17 Oct (Brent): on Hard / Nightmare the host may peek into a hiding
+			-- spot it walks right past (self.diff.peek; one roll every 4 s each)
+			if hidden and not self.frenzy and self.diff.peek and flat.Magnitude < reach then
+				self.peeked = self.peeked or {}
+				if now - (self.peeked[plr] or -math.huge) >= 4 then
+					self.peeked[plr] = now
+					if math.random() < self.diff.peek then
+						self.pause = 2.5
+						self.mode = "patrol"
+						self.round:hostCaught(plr)
+						return
+					end
+				end
+			end
+			if flat.Magnitude < reach and (not hidden or self.frenzy) then
 				self.pause = 2.5
 				self.mode = "patrol"
 				self.round:hostCaught(plr)

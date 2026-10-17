@@ -165,11 +165,17 @@ Config.DIFFICULTY_ORDER = { "easy", "normal", "hard", "nightmare" }
 -- further and grabs from a little further, one clue fewer on Easy. Was:
 -- easy 30/600/13/26/4/5, normal 20/480/14/32/4.5/3, hard 12/360/16/40/5/2,
 -- nightmare 6/300/17/48/5.5/1 (grace/timer/hunt/sight/catch/clues)
+-- decoys / search: extra trick balloons and extra (mostly empty) search spots
+-- on top of the floor's 3 and 11 (17 Oct, Brent: Nightmare too easy).
+-- peek: the chance the host looks into a hiding spot it walks past (once
+-- every 4 s each); ladderHalf: the ladder's run / stamina / hold / cooldown
+-- bonuses count half; staminaDrain / staminaRegen: instead of
+-- Config.STAMINA_DRAIN / STAMINA_REGEN
 Config.DIFFICULTY = {
-	easy = { name = "Easy", grace = 25, timer = 540, hunt = 13.5, sight = 28, catch = 4.25, clues = 4, bonus = 1 },
-	normal = { name = "Normal", grace = 15, timer = 420, hunt = 14.5, sight = 34, catch = 4.75, clues = 3, bonus = 1.5 },
-	hard = { name = "Hard", grace = 10, timer = 330, hunt = 16.5, sight = 42, catch = 5.25, clues = 2, bonus = 2 },
-	nightmare = { name = "Nightmare", grace = 5, timer = 270, hunt = 17.5, sight = 50, catch = 5.75, clues = 1, bonus = 3 },
+	easy = { name = "Easy", decoys = 0, search = 0, grace = 25, timer = 540, hunt = 13.5, sight = 28, catch = 4.25, clues = 4, bonus = 1 },
+	normal = { name = "Normal", decoys = 1, search = 2, grace = 15, timer = 420, hunt = 14.5, sight = 34, catch = 4.75, clues = 3, bonus = 1.5 },
+	hard = { name = "Hard", decoys = 2, search = 3, peek = 0.15, grace = 10, timer = 330, hunt = 16.5, sight = 42, catch = 5.25, clues = 2, bonus = 2 },
+	nightmare = { name = "Nightmare", decoys = 3, search = 5, peek = 0.3, ladderHalf = true, staminaDrain = 26, staminaRegen = 12, grace = 5, timer = 270, hunt = 17.5, sight = 50, catch = 5.75, clues = 1, bonus = 3 },
 }
 
 -- clues cost points earned in this game: the team's 1st, 2nd, 3rd+ clue

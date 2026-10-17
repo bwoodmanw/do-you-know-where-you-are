@@ -1191,7 +1191,9 @@ def pick_all(floor, wall, rnd):
 
     plan = ([('balloon', (1,), 1)] * 2 + [('balloon', (2,), 1)] + [('plant', (1,), None)] + [('present', (1,), 1)] * 2
             + [('present', (1, 2), 1)] * 2 + [('search', (1,), 1)] * 7 + [('search', (2,), 1)] * 3 + [('search', (3,), 1)]
-            + [('hide', (1, 2, 3), 1)] * 8 + [('decoy', (1, 2, 3), 1)] * 3)
+            + [('hide', (1, 2, 3), 1)] * 8 + [('decoy', (1, 2, 3), 1)] * 3
+            # 17 Oct: Nightmare's extra trick balloons and search spots (the most)
+            + [('decoy', (1, 2, 3), 1)] * 3 + [('search', (1, 2, 3), 2)] * 5)
     for kind, zones, limit in plan:
         k = 'balloon' if kind == 'decoy' else kind
         s = pick(floor, zones, k, limit)
