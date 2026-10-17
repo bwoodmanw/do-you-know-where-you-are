@@ -131,7 +131,9 @@ Config.ANIM = {
 	-- a character or host (by skill id or host kind) whose pack run looks odd
 	-- uses Roblox's plain run instead: the Ninja run holds the arms behind the
 	-- back without moving them (Shadow, 9 Oct); the Mage run is like it
-	plainRun = { shadow = true, brainy = true },
+	-- (by skill id, or by model name for one skin: Halloween Patch's arms
+	-- looked long and awkward in the cartoony run, 16 Oct)
+	plainRun = { shadow = true, brainy = true, PatchHalloween = true },
 	run = 507767714, -- Roblox's plain R15 run
 	-- the hosts
 	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie" },

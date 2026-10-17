@@ -398,7 +398,7 @@ function Characters.apply(plr, name)
 				skillId = skin.skill
 			end
 		end
-		setPack(animate, packFor(name), A and A.plainIdle[name] and A.plain or nil, A and skillId and A.plainRun[skillId] and A.run or nil)
+		setPack(animate, packFor(name), A and A.plainIdle[name] and A.plain or nil, A and ((skillId and A.plainRun[skillId]) or A.plainRun[name]) and A.run or nil)
 		animate.Parent = m
 	end
 	-- an Animator made here on the server lets everyone else see this
