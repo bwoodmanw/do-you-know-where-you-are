@@ -177,7 +177,7 @@ Config.POINT_SCALE = 0.67
 Config.RESET_POINTS = 800
 -- after a ladder change: each character's next reset is free, once (the
 -- save remembers it per change name; nil = no free resets)
-Config.FREE_RESET = "ladder-10oct"
+Config.FREE_RESET = "stealth-17oct" -- 17 Oct (Brent): one more free reset each, after the stealth picks shrank (was "ladder-10oct")
 -- seconds before the same player can crawl through a vent again
 Config.VENT_REUSE = 2.5
 -- the heartbeat that speeds up near the host (off: only the breathing tells)
