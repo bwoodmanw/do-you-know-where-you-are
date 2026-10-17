@@ -137,6 +137,9 @@ Config.ANIM = {
 	run = 507767714, -- Roblox's plain R15 run
 	-- the hosts
 	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie" },
+	-- hosts that play no body animation and glide (16 Oct: the Robot toon is a
+	-- lamp on wheels - a walk animation tied it in knots)
+	hostStill = { robot = true },
 }
 Config.CAGE_WALK = 5 -- a caged kid can shuffle round inside the cage (no jumping)
 Config.RUN = 20

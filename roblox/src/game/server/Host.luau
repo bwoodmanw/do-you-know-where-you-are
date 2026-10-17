@@ -127,8 +127,15 @@ function Host:spawn(diff)
 			return animator:LoadAnimation(a)
 		end
 		local A = Config.ANIM
-		local pack = A and A.packs[A.host[self.kind or "pumpkin"] or ""] or { walk = 507777826, run = 507767714, idle = 507766388 }
+		-- 16 Oct (Brent: the Robot toon tied itself in knots): a host listed in
+		-- Config.ANIM.hostStill plays no body animation - it keeps its shape and
+		-- glides (the Robot is on wheels)
+		local still = A and A.hostStill and A.hostStill[self.kind or "pumpkin"]
+		local pack = still and { walk = 0, run = 0, idle = 0 } or A and A.packs[A.host[self.kind or "pumpkin"] or ""] or { walk = 507777826, run = 507767714, idle = 507766388 }
 		local runId = A and A.plainRun[self.kind or "pumpkin"] and A.run or pack.run
+		if still then
+			-- no tracks at all: nothing to play
+		else
 		local walk, run, idle = track(pack.walk), track(runId), track(pack.idle)
 		idle.Looped = true
 		idle:Play()
@@ -147,6 +154,7 @@ function Host:spawn(diff)
 				if not idle.IsPlaying then idle:Play() end
 			end
 		end)
+		end
 	else
 		self.model, self.hum, self.root, self.face, self.arms = buildModel(pos)
 		-- no model imported for this host yet: the built one in its colour
