@@ -495,7 +495,7 @@ Config.ROBUX_PRODUCTS = {
 -- Lobby shows these in 3D; the Party House uses them for any character not
 -- imported there. 0 = not saved yet.
 Config.CHARACTER_ASSETS = {
-	Glow = 101230306547454, -- 16 Oct: the toon re-imported fresh (was 105479199903450, 74307875851069)
+	Glow = 93327081212167, -- 16 Oct: Avatar Setup redone (was 101230306547454, 105479199903450, 74307875851069)
 	Patch = 134219247129487, -- 16 Oct: the toon re-saved after the paint fixes (switch-over; was 82716883621716)
 	Muscle = 130534216338914, -- 16 Oct: the toon (switch-over; was 95343724720766, before 116831403539618)
 	Tinker = 78501763696161, -- 16 Oct: the toon (switch-over; was 115806881502179)
@@ -514,7 +514,7 @@ Config.CHARACTER_ASSETS = {
 	TinkerPumpkin = 109267063359948, -- 16 Oct: the toon (switch-over; was 107525785066601)
 	ShadowGhost = 101692193915974, -- 16 Oct: the toon (was 104153912502548)
 	BrambleAutumn = 80420392958646, -- 16 Oct: the toon (was 90429061895312)
-	PatchHalloween = 79353755988190, -- 16 Oct: the toon re-imported fresh (was 133530858867825, 108839284344455)
+	PatchHalloween = 82418054128738, -- 16 Oct: Avatar Setup redone (was 79353755988190, 133530858867825, 108839284344455)
 	EchoStar = 114691261070478, -- 16 Oct: the toon, headphones on her ears (was 78905373095211)
 	BrainySpace = 116325623350674, -- 16 Oct: the toon (was 110376512028941)
 	GlowCandy = 112507047824940, -- 16 Oct: the toon (switch-over; was 99155956475141)
