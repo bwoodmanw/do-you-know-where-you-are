@@ -20,6 +20,11 @@ local function strip(m)
 	for _, d in ipairs(m:GetDescendants()) do
 		if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("ModuleScript") then
 			d:Destroy()
+		elseif d:IsA("Humanoid") then
+			-- 16 Oct: Avatar Setup stores a small imported size as body scales,
+			-- and Roblox's automatic scaling then shrinks the model (Glow, Halloween
+			-- Patch looked tiny in the 3D views)
+			d.AutomaticScalingEnabled = false
 		elseif d:IsA("FaceControls") then
 			-- Avatar Setup's guessed face rig: when an emote moves the face it
 			-- drags skin and hair across it (Echo's smeared face, 10 Oct) -

@@ -133,9 +133,19 @@ local function fitHeight(model, height)
 			hum.AutomaticScalingEnabled = false
 		end
 	end
-	local _, size = ModelBounds(model, true)
-	if size.Y > 0.1 then
-		model:ScaleTo(model:GetScale() * height / size.Y)
+	-- 16 Oct (Glow: asked to grow, she shrank): measure, scale, measure again
+	-- and correct, up to 4 times; Studio's Output shows each step
+	for step = 1, 4 do
+		local _, size = ModelBounds(model, true)
+		if size.Y < 0.1 or math.abs(size.Y - height) / height < 0.03 then
+			break
+		end
+		local before = model:GetScale()
+		model:ScaleTo(before * height / size.Y)
+		if game:GetService("RunService"):IsStudio() then
+			print(string.format("[Characters] %s sizing step %d: body %.2f tall at scale %.3f -> asked scale %.3f, got scale %.3f, body now %.2f tall",
+				model.Name, step, size.Y, before, before * height / size.Y, model:GetScale(), select(2, ModelBounds(model, true)).Y))
+		end
 	end
 end
 
@@ -368,9 +378,10 @@ function Characters.apply(plr, name)
 		-- Studio's Output says which model each player now wears (testing toons)
 		print("[Characters] " .. plr.Name .. " is now wearing the model ServerStorage/Characters/" .. t.Name)
 		-- 16 Oct (Glow came out tiny): the sizes, to see why a model is the wrong size
-		print(string.format("[Characters] %s size: body %.1f tall before, model outline %.1f x %.1f x %.1f before; now body %.1f tall, scale %.2f, root %s, humanoid scales %s", t.Name,
+		print(string.format("[Characters] %s size: body %.1f tall before, model outline %.1f x %.1f x %.1f before; now body %.1f tall, scale %.2f, root %s, humanoid scales %s, hip height %.2f, feet %.2f below the root", t.Name,
 			sizeBefore.Y, extentsBefore.X, extentsBefore.Y, extentsBefore.Z, select(2, ModelBounds(m, true)).Y, m:GetScale(), tostring(hrp.Size),
-			tostring(hum:FindFirstChild("BodyHeightScale") and hum.BodyHeightScale.Value or "none")))
+			tostring(hum:FindFirstChild("BodyHeightScale") and hum.BodyHeightScale.Value or "none"), hum.HipHeight,
+			(hrp.Position.Y - hrp.Size.Y / 2) - (select(1, m:GetBoundingBox()).Position.Y - select(2, m:GetBoundingBox()).Y / 2)))
 	end
 	-- a character that dies within seconds of going on is broken: say why in
 	-- F9 (Server) and remember it, so a test model is not used again

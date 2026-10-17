@@ -2034,6 +2034,13 @@ local function showModel(sk)
 	local src = previews and previews:FindFirstChild(modelName)
 	if src then
 		shown = src:Clone()
+		-- 16 Oct: Roblox's automatic avatar scaling off (Avatar Setup's small body
+		-- scales shrank Halloween Patch after the view was fitted)
+		for _, d in ipairs(shown:GetDescendants()) do
+			if d:IsA("Humanoid") then
+				d.AutomaticScalingEnabled = false
+			end
+		end
 		shown.Parent = viewWorld
 		shown:PivotTo(CFrame.Angles(0, math.pi, 0))
 		do
