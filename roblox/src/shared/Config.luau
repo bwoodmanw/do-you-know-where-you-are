@@ -479,7 +479,7 @@ Config.STUDIO_MAP = "aquarium" -- partyhouse(_2, _3, _b = the secret Basement), 
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); nil = random
-Config.STUDIO_HOST = "pumpkin" -- 17 Oct: testing the Pumpkin host (back to nil afterwards)
+Config.STUDIO_HOST = nil
 -- characters' skin without the bumpy normal map (smoother faces); false to keep it
 Config.FLAT_CHARACTER_SKIN = true
 Config.MAX_PARTY = 6
