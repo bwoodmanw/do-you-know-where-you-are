@@ -425,8 +425,8 @@ function Characters.apply(plr, name)
 			local params = RaycastParams.new()
 			params.FilterType = Enum.RaycastFilterType.Include
 			params.FilterDescendantsInstances = feet
-			local bcf, bsize = m:GetBoundingBox()
-			local bottom = bcf.Position.Y - bsize.Y / 2
+			local fcf, fsize = m:GetBoundingBox()
+			local bottom = fcf.Position.Y - fsize.Y / 2
 			local sole = math.huge
 			for _, f in ipairs(feet) do
 				for _, fx in ipairs({ -0.3, 0, 0.3 }) do
