@@ -553,6 +553,21 @@ function Characters.host(name)
 	end
 	fitHeight(m, HOST_HEIGHT)
 	m.PrimaryPart = m.HumanoidRootPart
+	-- 16 Oct (Brent: every host floated): with Roblox's automatic scaling off,
+	-- the hip height no longer grew with the host - set it from the model
+	-- itself, as for the kids (the root's bottom to the lowest part)
+	do
+		local hum = m:FindFirstChildOfClass("Humanoid")
+		local root = m.HumanoidRootPart
+		local hcf, hsize = m:GetBoundingBox()
+		local hip = (root.Position.Y - root.Size.Y / 2) - (hcf.Position.Y - hsize.Y / 2)
+		if hum and hip > 0.1 then
+			hum.HipHeight = hip
+		end
+		if game:GetService("RunService"):IsStudio() then
+			print(string.format("[Characters] host %s: hip height %.2f, root %s", name, hum and hum.HipHeight or -1, tostring(root.Size)))
+		end
+	end
 	return m
 end
 
