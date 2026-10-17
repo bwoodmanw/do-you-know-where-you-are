@@ -321,7 +321,7 @@ Config.SKILL_STUN = { max = 2, nightmare = 1, gap = 8 }
 -- 16 Oct (Brent): +25% stamina (was 6) for Glow and every friend within range
 Config.GLOW_FLARE = { seconds = 8, mult = 2.2, range = 16, stamina = 25, speed = 1.05, speedTime = 3,
 	-- level 20 Beacon: the whole team, anywhere on the floor, at the moment she flares
-	beacon = { stamina = 25, speed = 1.05, speedTime = 5 } }
+	beacon = { stamina = 50, speed = 1.05, speedTime = 5 } } -- 16 Oct (Brent): +50% (was 25)
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
