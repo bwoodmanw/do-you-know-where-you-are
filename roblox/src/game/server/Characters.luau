@@ -410,6 +410,39 @@ function Characters.apply(plr, name)
 	m:PivotTo(oldRoot and oldRoot.CFrame or CFrame.new(0, 5, 0))
 	m.Parent = workspace
 	plr.Character = m
+	-- 16 Oct (Glow and Halloween Patch still floated): the mesh you see follows
+	-- the skeleton (bones), not the part boxes. A moment after she stands, the
+	-- lowest bone (the ball of the foot) is measured above the floor and she is
+	-- lowered to match (a sole's thickness left under it)
+	task.delay(1.5, function()
+		if not m.Parent or not hrp.Parent then
+			return
+		end
+		local lowest = math.huge
+		for _, d in ipairs(m:GetDescendants()) do
+			if d:IsA("Bone") then
+				lowest = math.min(lowest, d.TransformedWorldCFrame.Position.Y)
+			end
+		end
+		if lowest == math.huge then
+			return
+		end
+		local floorParams = RaycastParams.new()
+		floorParams.FilterType = Enum.RaycastFilterType.Exclude
+		floorParams.FilterDescendantsInstances = { m }
+		local floorHit = workspace:Raycast(hrp.Position, Vector3.new(0, -60, 0), floorParams)
+		if not floorHit then
+			return
+		end
+		local above = lowest - floorHit.Position.Y
+		local SOLE = 0.25
+		if game:GetService("RunService"):IsStudio() then
+			print(string.format("[Characters] %s: lowest bone %.2f above the floor (hip height %.2f)%s", name, above, hum.HipHeight, above > SOLE + 0.15 and (" - lowered by " .. string.format("%.2f", above - SOLE)) or ""))
+		end
+		if above > SOLE + 0.15 and above < 4 then
+			hum.HipHeight = math.max(0.1, hum.HipHeight - (above - SOLE))
+		end
+	end)
 	-- 16 Oct (Glow floated a stud up): a skinned foot part's box can reach below
 	-- the boot's real sole, so the hip height (from the boxes) lifted her. Feel
 	-- for the real soles with short rays up at the feet, and lower her by the gap
