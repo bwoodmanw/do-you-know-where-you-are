@@ -2986,8 +2986,22 @@ do
 				hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(40, 20, 70), Color3.fromRGB(150, 100, 220), 0.15
 				hl.Parent = c
 				c.Name = "ShadowClone"
-				local to = clearRun(hrp.Position, dir, Config.CLONE.run)
-				decoy(c, hrp.Position, to, seconds)
+				-- 17 Oct (Brent: the clones floated): its lowest point on the floor
+				-- under Shadow, whatever height his root part rides at
+				local lift = 0
+				do
+					local fp = RaycastParams.new()
+					fp.FilterType = Enum.RaycastFilterType.Exclude
+					fp.FilterDescendantsInstances = { char, c }
+					local floorHit = workspace:Raycast(hrp.Position, Vector3.new(0, -30, 0), fp)
+					if floorHit then
+						local ccf, csize = c:GetBoundingBox()
+						lift = floorHit.Position.Y - (ccf.Position.Y - csize.Y / 2)
+					end
+				end
+				local from = hrp.Position + Vector3.new(0, lift, 0)
+				local to = clearRun(hrp.Position, dir, Config.CLONE.run) + Vector3.new(0, lift, 0)
+				decoy(c, from, to, seconds)
 			end
 		end
 		say("info", plr.DisplayName .. "'s shadow clone runs off - the host goes after it!")
