@@ -276,6 +276,42 @@ local function setPack(animate, pack, plain, plainRun)
 	set("climb", "ClimbAnim", pack.climb)
 end
 
+-- a root part outside the body goes back to the hips, the body staying where
+-- it is (kids and hosts; 16-17 Oct: Avatar Setup misplaced it on a tiny import)
+local function fixRoot(m, hrp, name)
+	local lower = m:FindFirstChild("LowerTorso", true)
+	local bcf, bsize = ModelBounds(m, true)
+	local top, bottom = bcf.Position.Y + bsize.Y / 2, bcf.Position.Y - bsize.Y / 2
+	local flat = Vector3.new(1, 0, 1)
+	if lower and (hrp.Position.Y > top - bsize.Y * 0.25 or hrp.Position.Y < bottom + bsize.Y * 0.25
+		or ((hrp.Position - lower.Position) * flat).Magnitude > bsize.Y * 0.3) then
+		local was = hrp.Position
+		local saved, atts = {}, {}
+		for _, d in ipairs(m:GetDescendants()) do
+			if d:IsA("BasePart") and d ~= hrp then
+				saved[d] = d.CFrame
+			elseif d:IsA("Attachment") and d.Parent == hrp then
+				atts[d] = d.WorldCFrame
+			end
+		end
+		hrp.CFrame = CFrame.new(lower.Position) * hrp.CFrame.Rotation
+		for part, cf in pairs(saved) do
+			part.CFrame = cf
+		end
+		for att, wcf in pairs(atts) do
+			att.WorldCFrame = wcf
+		end
+		for _, j in ipairs(m:GetDescendants()) do
+			if j:IsA("JointInstance") and j.Part0 and j.Part1 and (j.Part0 == hrp or j.Part1 == hrp) then
+				j.C0 = j.Part0.CFrame:Inverse() * j.Part1.CFrame * j.C1
+			end
+		end
+		if game:GetService("RunService"):IsStudio() then
+			print(string.format("[Characters] %s: its root part was outside the body (%.1f above the feet on a %.1f-tall body) - moved to the hips", name, was.Y - bottom, bsize.Y))
+		end
+	end
+end
+
 -- name is the character's display name, e.g. "Glow"
 function Characters.apply(plr, name)
 	local t = template(name)
@@ -326,39 +362,7 @@ function Characters.apply(plr, name)
 	-- 5.4-tall body): Avatar Setup put her root part above her head. A root
 	-- part outside the body goes back to the hips; the body stays where it is
 	-- (every part and the root's attachments kept, the root's joints re-set)
-	do
-		local lower = m:FindFirstChild("LowerTorso", true)
-		local bcf, bsize = ModelBounds(m, true)
-		local top, bottom = bcf.Position.Y + bsize.Y / 2, bcf.Position.Y - bsize.Y / 2
-		local flat = Vector3.new(1, 0, 1)
-		if lower and (hrp.Position.Y > top - bsize.Y * 0.25 or hrp.Position.Y < bottom + bsize.Y * 0.25
-			or ((hrp.Position - lower.Position) * flat).Magnitude > bsize.Y * 0.3) then
-			local was = hrp.Position
-			local saved, atts = {}, {}
-			for _, d in ipairs(m:GetDescendants()) do
-				if d:IsA("BasePart") and d ~= hrp then
-					saved[d] = d.CFrame
-				elseif d:IsA("Attachment") and d.Parent == hrp then
-					atts[d] = d.WorldCFrame
-				end
-			end
-			hrp.CFrame = CFrame.new(lower.Position) * hrp.CFrame.Rotation
-			for part, cf in pairs(saved) do
-				part.CFrame = cf
-			end
-			for att, wcf in pairs(atts) do
-				att.WorldCFrame = wcf
-			end
-			for _, j in ipairs(m:GetDescendants()) do
-				if j:IsA("JointInstance") and j.Part0 and j.Part1 and (j.Part0 == hrp or j.Part1 == hrp) then
-					j.C0 = j.Part0.CFrame:Inverse() * j.Part1.CFrame * j.C1
-				end
-			end
-			if game:GetService("RunService"):IsStudio() then
-				print(string.format("[Characters] %s: its root part was outside the body (%.1f above the feet on a %.1f-tall body) - moved to the hips", name, was.Y - bottom, bsize.Y))
-			end
-		end
-	end
+	fixRoot(m, hrp, name)
 	-- a crisp face from the approved picture (Config.FACES)
 	require(game:GetService("ReplicatedStorage").Shared.Faces).try(m, name)
 	-- Brainy's beanie propeller, built on (Config.PROPELLER)
@@ -553,6 +557,7 @@ function Characters.host(name)
 	end
 	fitHeight(m, HOST_HEIGHT)
 	m.PrimaryPart = m.HumanoidRootPart
+	fixRoot(m, m.HumanoidRootPart, name) -- 17 Oct (Brent could not find the Pumpkin host)
 	-- 16 Oct (Brent: every host floated): with Roblox's automatic scaling off,
 	-- the hip height no longer grew with the host - set it from the model
 	-- itself, as for the kids (the root's bottom to the lowest part)
