@@ -1370,9 +1370,9 @@ do
 				label(r, { Size = UDim2.fromOffset(46, 46), Position = UDim2.fromOffset(8, 9), Text = iconText, ZIndex = 12 })
 			end
 			label(r, { Size = UDim2.fromOffset(230, 26), Position = UDim2.fromOffset(64, 6), Text = name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
-			label(r, { Size = UDim2.fromOffset(230, 22), Position = UDim2.fromOffset(64, 34), Text = say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
+			local sayLabel = label(r, { Size = UDim2.fromOffset(230, 22), Position = UDim2.fromOffset(64, 34), Text = say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
 			local owned = label(r, { Size = UDim2.fromOffset(64, 40), Position = UDim2.fromOffset(298, 12), Text = "", ZIndex = 12 })
-			return r, owned
+			return r, owned, sayLabel
 		end
 		-- 10 Oct (Brent): "Buy 9" read as buying 9 - the button says Buy, and
 		-- the cost (for the count chosen) sits beside the season's item
@@ -1429,11 +1429,18 @@ do
 			local price = skin[e.item]
 			if type(price) == "number" and not skin.hidden then
 				i += 1
-				local r, owned = row(i, skin.icon, "\u{2728}", skin.name .. " skin", "A " .. e.look .. " look for " .. string.upper(string.sub(skin.skill, 1, 1)) .. string.sub(skin.skill, 2) .. " - yours for good")
+				local r, owned, sayLabel = row(i, skin.icon, "\u{2728}", skin.name .. " skin", "A " .. e.look .. " look for " .. string.upper(string.sub(skin.skill, 1, 1)) .. string.sub(skin.skill, 2) .. " - yours for good")
+				-- 2 Nov (Brent): a skin that is also a Game Pass says so - 150
+				-- feathers from the bundles cost more Robux than the pass
+				local passNote = "A " .. e.look .. " look - yours for good. Or " .. Config.SKIN_PASS_ROBUX .. " Robux as a Game Pass: Characters \u{2192} Skins"
+				if (skin.pass or 0) > 0 then
+					sayLabel.Size = UDim2.fromOffset(396, 22)
+					sayLabel.Text = passNote
+				end
 				local b = buyButton(r, price, function()
 					remotes:WaitForChild("CornShop"):FireServer(e.id, "skin:" .. skin.id)
 				end)
-				skinRows[skin] = { owned = owned, buy = b, price = price }
+				skinRows[skin] = { owned = owned, buy = b, price = price, say = sayLabel, note = (skin.pass or 0) > 0 }
 			end
 		end
 		-- the season's item for Robux (Developer Products; 0 = not on sale)
@@ -1506,6 +1513,11 @@ do
 				local mine = earned[skin.id] == true
 				r.owned.Text = mine and "\u{2705} Yours!" or ""
 				r.buy.Visible = not mine
+				if r.note then
+					-- owned: the Game Pass note makes way for "Yours!"
+					r.say.Size = UDim2.fromOffset(mine and 230 or 396, 22)
+					r.say.Visible = not mine
+				end
 				if not mine then
 					skinGoal = skin
 				end
