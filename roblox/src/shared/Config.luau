@@ -786,19 +786,19 @@ Config.SKINS = {
 	-- hand (Halloween), kept for good. hidden = not shown until its model is
 	-- saved (CHARACTER_ASSETS.MuscleMummy)
 	{ id = "muscle_mummy", skill = "muscle", name = "Muscle Mummy", model = "MuscleMummy", corn = 100, icon = 74900057639675 }, -- icon: art/roblox-store/passes/skin-muscle-mummy.png (Lobby upload)
-	-- the Thanksgiving skins (2 Nov): 150 golden feathers in the Feather Shop
+	-- the Thanksgiving skins (2 Nov; pass ids checked on Roblox's API 2 Nov: 99 Robux, for sale): 150 golden feathers in the Feather Shop
 	-- during Thanksgiving, or the Game Pass (99 Robux) any time once `pass`
 	-- has its id. hidden = its model is not saved to Roblox yet (take it off
 	-- with the id in CHARACTER_ASSETS). Pictures: art/roblox-store/passes/
-	{ id = "patch_pie", skill = "patch", name = "Pie Baker Patch", model = "PatchPie", feather = 150, pass = 0 },
-	{ id = "brainy_chef", skill = "brainy", name = "Chef Brainy", model = "BrainyChef", feather = 150, pass = 0, hidden = true },
-	{ id = "shadow_gobble", skill = "shadow", name = "Gobble Shadow", model = "ShadowGobble", feather = 150, pass = 0, hidden = true },
-	{ id = "glow_harvest", skill = "glow", name = "Harvest Glow", model = "GlowHarvest", feather = 150, pass = 0, hidden = true },
-	{ id = "tinker_scarecrow", skill = "tinker", name = "Scarecrow Tinker", model = "TinkerScarecrow", feather = 150, pass = 0, hidden = true },
-	{ id = "muscle_gridiron", skill = "muscle", name = "Gridiron Muscle", model = "MuscleGridiron", feather = 150, pass = 0, hidden = true },
-	{ id = "echo_dj", skill = "echo", name = "Feast DJ Echo", model = "EchoDJ", feather = 150, pass = 0, hidden = true },
-	{ id = "echo_cocoa", skill = "echo", name = "Cozy Cocoa Echo", model = "EchoCocoa", feather = 150, pass = 0, hidden = true },
-	{ id = "bramble_acorn", skill = "bramble", name = "Acorn Bramble", model = "BrambleAcorn", feather = 150, pass = 0, hidden = true },
+	{ id = "patch_pie", skill = "patch", name = "Pie Baker Patch", model = "PatchPie", feather = 150, pass = 2064623004 },
+	{ id = "brainy_chef", skill = "brainy", name = "Chef Brainy", model = "BrainyChef", feather = 150, pass = 2064790665, hidden = true },
+	{ id = "shadow_gobble", skill = "shadow", name = "Gobble Shadow", model = "ShadowGobble", feather = 150, pass = 2064623010, hidden = true },
+	{ id = "glow_harvest", skill = "glow", name = "Harvest Glow", model = "GlowHarvest", feather = 150, pass = 2064736794, hidden = true },
+	{ id = "tinker_scarecrow", skill = "tinker", name = "Scarecrow Tinker", model = "TinkerScarecrow", feather = 150, pass = 2064586887, hidden = true },
+	{ id = "muscle_gridiron", skill = "muscle", name = "Gridiron Muscle", model = "MuscleGridiron", feather = 150, pass = 2064732949, hidden = true },
+	{ id = "echo_dj", skill = "echo", name = "Feast DJ Echo", model = "EchoDJ", feather = 150, pass = 2064403446, hidden = true },
+	{ id = "echo_cocoa", skill = "echo", name = "Cozy Cocoa Echo", model = "EchoCocoa", feather = 150, pass = 2064569161, hidden = true },
+	{ id = "bramble_acorn", skill = "bramble", name = "Acorn Bramble", model = "BrambleAcorn", feather = 150, pass = 2064942592, hidden = true },
 }
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true

@@ -49,6 +49,21 @@ off, same steps as above.
 
 Ids go in `Config.SKINS` as `pass = <id>` (Thanksgiving skins at the end).
 
+## Thanksgiving pass ids (all 9, checked on Roblox 2 Nov: 99 Robux, for sale)
+
+| Skin | Pass id |
+|---|---|
+| Pie Baker Patch | 2064623004 |
+| Chef Brainy | 2064790665 |
+| Gobble Shadow | 2064623010 |
+| Harvest Glow | 2064736794 |
+| Scarecrow Tinker | 2064586887 |
+| Gridiron Muscle | 2064732949 |
+| Feast DJ Echo | 2064403446 |
+| Cozy Cocoa Echo | 2064569161 |
+| Acorn Bramble | 2064942592 |
+
+
 ## Managed pricing: OFF (8 Oct)
 
 Creator Hub's **Managed pricing** lets Roblox test different prices on small

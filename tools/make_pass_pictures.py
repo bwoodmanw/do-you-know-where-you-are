@@ -35,7 +35,27 @@ def cut_background(img):
             continue
         seen[y, x] = True
         q.extend([(y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)])
-    alpha = Image.fromarray(np.where(seen, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))
+    # 2 Nov (Brent): gray left in the gaps of curly hair (Feast DJ and Cozy
+    # Cocoa Echo) - background pockets the fill can't reach. Any patch of
+    # background gray bigger than a few pixels goes too
+    pocket = near & ~seen
+    left = np.zeros((h, w), bool)
+    for sy, sx in zip(*np.nonzero(pocket)):
+        if left[sy, sx]:
+            continue
+        comp, q = [], deque([(sy, sx)])
+        left[sy, sx] = True
+        while q:
+            y, x = q.popleft()
+            comp.append((y, x))
+            for ny, nx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+                if 0 <= ny < h and 0 <= nx < w and pocket[ny, nx] and not left[ny, nx]:
+                    left[ny, nx] = True
+                    q.append((ny, nx))
+        if len(comp) >= 40:
+            for y, x in comp:
+                seen[y, x] = True
+    alpha = Image.fromarray(np.where(seen, 0, 255).astype(np.uint8)).filter(ImageFilter.MinFilter(5)).filter(ImageFilter.GaussianBlur(1.2))  # 2px off the outline: no pale fringe
     out = img.convert("RGBA")
     out.putalpha(alpha)
     return out, ~seen
