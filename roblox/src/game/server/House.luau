@@ -1367,7 +1367,29 @@ function House.buildObjects(world)
 		if o.kind == "door" then
 			entry.door = part(root, { Name = "BigDoor", Size = Vector3.new(T, 10, 1), Position = base + Vector3.new(0, 5, T / 2 - 0.6), Material = Enum.Material.Wood, Color = Color3.fromRGB(122, 74, 30) })
 			entry.keypad = part(root, { Name = "Keypad", Size = Vector3.new(1.6, 2, 0.3), Position = base + Vector3.new(2.6, 4.5, T / 2 + 0.05), Color = Color3.fromRGB(30, 30, 34) })
-			for i, col in ipairs(Config.COLORS) do
+			-- 1 Nov (Brent): the Harvest Barn has no code - no keypad to see (the
+			-- part stays hidden for the code that points at it), a sign over the
+			-- doors instead; Main turns it into EXIT when the last turkey is caught
+			if world.map.theme == "barn" then
+				entry.keypad.Transparency, entry.keypad.CanCollide = 1, false
+				local sign = part(root, { Name = "BarnExitSign", Size = Vector3.new(T - 1, 2.6, 0.25), Position = base + Vector3.new(0, 11.9, T / 2 + 0.13), Color = Color3.fromRGB(70, 42, 26), Material = Enum.Material.WoodPlanks })
+				local sg = Instance.new("SurfaceGui")
+				sg.Face = Enum.NormalId.Back
+				sg.CanvasSize = Vector2.new(420, 160)
+				sg.LightInfluence = 0
+				sg.Parent = sign
+				local words = Instance.new("TextLabel")
+				words.Size = UDim2.fromScale(0.94, 0.86)
+				words.Position = UDim2.fromScale(0.03, 0.07)
+				words.BackgroundTransparency = 1
+				words.TextScaled = true
+				words.Font = Enum.Font.FredokaOne
+				words.TextColor3 = Color3.fromRGB(255, 196, 70)
+				words.Text = "\u{1F983} Catch all the turkeys!"
+				words.Parent = sg
+				entry.exitSign = words
+			end
+			for i, col in ipairs(world.map.theme == "barn" and {} or Config.COLORS) do
 				part(root, { Name = "Key", Size = Vector3.new(0.5, 0.5, 0.1), Position = entry.keypad.Position + Vector3.new(((i - 1) % 2) * 0.7 - 0.35, 0.4 - math.floor((i - 1) / 2) * 0.7, 0.18), Material = Enum.Material.Neon, Color = Config.COLOR3[col], CanCollide = false })
 			end
 			entry.usePrompt = prompt(entry.keypad, "Use keypad", "Big door")

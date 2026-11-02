@@ -731,6 +731,11 @@ local function openDoor(plr, how)
 	door.CanCollide = false
 	TweenService:Create(door, TweenInfo.new(1.2), { Position = door.Position + Vector3.new(0, 9.5, 0) }):Play()
 	world.objects.door.usePrompt.Enabled = false
+	-- the Harvest Barn's sign over the doors
+	if world.objects.door.exitSign then
+		world.objects.door.exitSign.Text = "EXIT"
+		world.objects.door.exitSign.TextColor3 = Color3.fromRGB(90, 240, 120)
+	end
 	addPoints(plr, 25)
 	quest(plr, "door")
 	say("open", how == "turkeys" and "Every turkey caught! The big barn doors swing open - everybody out!"
