@@ -27,6 +27,28 @@ checked): `art/roblox-store/passes/`. `_all.png` shows all eight together.
 | Autumn Leaf Bramble | 2018084266 (checked: 99 Robux, for sale) |
 | Halloween Nurse Patch | 2019356268 (checked: 99 Robux, for sale) |
 
+## Thanksgiving skins (2 Nov): 9 more passes
+
+Pictures made by `tools/make_pass_pictures.py` from each skin's approved front
+picture (checked): `art/roblox-store/passes/`, all nine in `_thanksgiving.png`.
+Each skin is also 150 golden feathers in the Feather Shop during
+Thanksgiving; the pass sells it for Robux all year. Price 99, Managed pricing
+off, same steps as above.
+
+| # | Name (type exactly) | Picture | Price | Description |
+|---|---|---|---|---|
+| 9 | Pie Baker Patch | `pass-pie-baker-patch.png` | 99 | Patch fresh from the kitchen: an orange-and-cream apron, oven mitts and a little pumpkin-pie bag. Looks only - Patch's skills stay the same. Wear it from Characters in the Lobby. |
+| 10 | Chef Brainy | `pass-chef-brainy.png` | 99 | Brainy cooks up a plan: a tall chef's hat with his propeller, a white chef jacket and a wooden spoon behind his ear. Looks only - Brainy's skills stay the same. Wear it from Characters in the Lobby. |
+| 11 | Gobble Shadow | `pass-gobble-shadow.png` | 99 | Shadow in disguise: a cozy turkey-costume hoodie with a little beak, a wattle and a fan of tail feathers. Looks only - Shadow's skills stay the same. Wear it from Characters in the Lobby. |
+| 12 | Harvest Glow | `pass-harvest-glow.png` | 99 | Glow for harvest time: a corn-yellow raincoat, rain boots and a pumpkin-pie lantern. Looks only - Glow's skills stay the same. Wear it from Characters in the Lobby. |
+| 13 | Scarecrow Tinker | `pass-scarecrow-tinker.png` | 99 | Tinker as a friendly scarecrow: a straw hat with his goggles, a plaid shirt and patched overalls. Looks only - Tinker's skills stay the same. Wear it from Characters in the Lobby. |
+| 14 | Gridiron Muscle | `pass-gridiron-muscle.png` | 99 | Muscle ready for a backyard football game: a brown jersey, shoulder pads and cleats. Looks only - Muscle's skills stay the same. Wear it from Characters in the Lobby. |
+| 15 | Feast DJ Echo | `pass-dj-echo.png` | 99 | Echo plays the music at the feast: an orange hoodie and big purple headphones. Looks only - Echo's skills stay the same. Wear it from Characters in the Lobby. |
+| 16 | Cozy Cocoa Echo | `pass-cocoa-echo.png` | 99 | Echo all warm and cozy: a cream sweater with a cocoa mug, a checked scarf and earmuffs. Looks only - Echo's skills stay the same. Wear it from Characters in the Lobby. |
+| 17 | Acorn Bramble | `pass-acorn-bramble.png` | 99 | Bramble in the woods: an acorn-cap hat and a cape of green and golden leaves. Looks only - Bramble's skills stay the same. Wear it from Characters in the Lobby. |
+
+Ids go in `Config.SKINS` as `pass = <id>` (Thanksgiving skins at the end).
+
 ## Managed pricing: OFF (8 Oct)
 
 Creator Hub's **Managed pricing** lets Roblox test different prices on small

@@ -131,9 +131,10 @@ Config.ANIM = {
 	-- a character or host (by skill id or host kind) whose pack run looks odd
 	-- uses Roblox's plain run instead: the Ninja run holds the arms behind the
 	-- back without moving them (Shadow, 9 Oct); the Mage run is like it
-	-- (by skill id, or by model name for one skin: Halloween Patch's arms
-	-- looked long and awkward in the cartoony run, 16 Oct)
-	plainRun = { shadow = true, brainy = true, PatchHalloween = true },
+	-- (by skill id, or by model name for one skin. Halloween Patch had it on
+	-- 16 Oct for the long arms of her squeezed rig; 2 Nov, re-imported 5x
+	-- bigger, she bounced in it - back to Patch's cartoony run)
+	plainRun = { shadow = true, brainy = true },
 	run = 507767714, -- Roblox's plain R15 run
 	-- the hosts
 	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie" },
@@ -531,7 +532,7 @@ Config.CHARACTER_ASSETS = {
 	TinkerPumpkin = 109267063359948, -- 16 Oct: the toon (switch-over; was 107525785066601)
 	ShadowGhost = 101692193915974, -- 16 Oct: the toon (was 104153912502548)
 	BrambleAutumn = 80420392958646, -- 16 Oct: the toon (was 90429061895312)
-	PatchHalloween = 82418054128738, -- 16 Oct: Avatar Setup redone (was 79353755988190, 133530858867825, 108839284344455)
+	PatchHalloween = 96684425993638, -- 2 Nov: re-imported 5x bigger (was 82418054128738, 79353755988190, 133530858867825, 108839284344455)
 	EchoStar = 114691261070478, -- 16 Oct: the toon, headphones on her ears (was 78905373095211)
 	BrainySpace = 116325623350674, -- 16 Oct: the toon (was 110376512028941)
 	GlowCandy = 112507047824940, -- 16 Oct: the toon (switch-over; was 99155956475141)
@@ -783,6 +784,19 @@ Config.SKINS = {
 	-- hand (Halloween), kept for good. hidden = not shown until its model is
 	-- saved (CHARACTER_ASSETS.MuscleMummy)
 	{ id = "muscle_mummy", skill = "muscle", name = "Muscle Mummy", model = "MuscleMummy", corn = 100, icon = 74900057639675 }, -- icon: art/roblox-store/passes/skin-muscle-mummy.png (Lobby upload)
+	-- the Thanksgiving skins (2 Nov): 150 golden feathers in the Feather Shop
+	-- during Thanksgiving, or the Game Pass (99 Robux) any time once `pass`
+	-- has its id. hidden = its model is not saved to Roblox yet (take it off
+	-- with the id in CHARACTER_ASSETS). Pictures: art/roblox-store/passes/
+	{ id = "patch_pie", skill = "patch", name = "Pie Baker Patch", model = "PatchPie", feather = 150, pass = 0 },
+	{ id = "brainy_chef", skill = "brainy", name = "Chef Brainy", model = "BrainyChef", feather = 150, pass = 0, hidden = true },
+	{ id = "shadow_gobble", skill = "shadow", name = "Gobble Shadow", model = "ShadowGobble", feather = 150, pass = 0, hidden = true },
+	{ id = "glow_harvest", skill = "glow", name = "Harvest Glow", model = "GlowHarvest", feather = 150, pass = 0, hidden = true },
+	{ id = "tinker_scarecrow", skill = "tinker", name = "Scarecrow Tinker", model = "TinkerScarecrow", feather = 150, pass = 0, hidden = true },
+	{ id = "muscle_gridiron", skill = "muscle", name = "Gridiron Muscle", model = "MuscleGridiron", feather = 150, pass = 0, hidden = true },
+	{ id = "echo_dj", skill = "echo", name = "Feast DJ Echo", model = "EchoDJ", feather = 150, pass = 0, hidden = true },
+	{ id = "echo_cocoa", skill = "echo", name = "Cozy Cocoa Echo", model = "EchoCocoa", feather = 150, pass = 0, hidden = true },
+	{ id = "bramble_acorn", skill = "bramble", name = "Acorn Bramble", model = "BrambleAcorn", feather = 150, pass = 0, hidden = true },
 }
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true
