@@ -1432,7 +1432,7 @@ do
 				local r, owned, sayLabel = row(i, skin.icon, "\u{2728}", skin.name .. " skin", "A " .. e.look .. " look for " .. string.upper(string.sub(skin.skill, 1, 1)) .. string.sub(skin.skill, 2) .. " - yours for good")
 				-- 2 Nov (Brent): a skin that is also a Game Pass says so - 150
 				-- feathers from the bundles cost more Robux than the pass
-				local passNote = "A " .. e.look .. " look - yours for good. Or " .. Config.SKIN_PASS_ROBUX .. " Robux as a Game Pass: Characters \u{2192} Skins"
+				local passNote = "Yours for good - or " .. Config.SKIN_PASS_ROBUX .. " Robux as a Game Pass (Characters \u{2192} Skins)"
 				if (skin.pass or 0) > 0 then
 					sayLabel.Size = UDim2.fromOffset(396, 22)
 					sayLabel.Text = passNote
