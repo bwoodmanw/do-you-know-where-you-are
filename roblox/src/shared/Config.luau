@@ -331,9 +331,11 @@ Config.SKILL_STUN = { max = 2, nightmare = 1, gap = 8 }
 -- `seconds`. While it lasts, Glow and every friend who comes within `range`
 -- studs get `stamina`% stamina back and run `speed` faster for `speedTime` s (once each)
 -- 16 Oct (Brent): +25% stamina (was 6) for Glow and every friend within range
-Config.GLOW_FLARE = { seconds = 8, mult = 2.2, range = 16, stamina = 25, speed = 1.05, speedTime = 3,
+-- 2 Nov (Brent, buff): +30% stamina (was 25), the faster run 6 s (was 3)
+Config.GLOW_FLARE = { seconds = 8, mult = 2.2, range = 16, stamina = 30, speed = 1.05, speedTime = 6,
 	-- level 20 Beacon: the whole team, anywhere on the floor, at the moment she flares
-	beacon = { stamina = 50, speed = 1.05, speedTime = 5 } } -- 16 Oct (Brent): +50% (was 25)
+	-- (16 Oct: +50%, was 25; 2 Nov: the run 8 s, was 5 - longer than the Flare's)
+	beacon = { stamina = 50, speed = 1.05, speedTime = 8 } }
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
@@ -362,7 +364,7 @@ Config.SKILL_INFO = {
 	shadow = { about = "Harder for the host to spot than anyone.\nSneak: for a few seconds the host can't see or grab Shadow.", how = "Press the Sneak button. It recharges." },
 	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as many points.\nThink!: lights up the next thing to do, for free.", how = "Find the twisty invitation (behind the first locked door) and press E. Press Think! (R) when you're stuck." },
 	muscle = { about = "Shoves away junk heaped in blocked doorways (and the Junk Closet's bonus present), quietly.\nBarricade: slides a \u{1F4AA} crate into a doorway - friends squeeze through, the host has to smash it.", how = "Hold E at blocked doorways. Press Barricade next to a \u{1F4AA} crate." },
-	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.\nFlare: for 8 seconds her light reaches more than twice as far, and she and every friend who comes near her get 25% of their stamina back and run 5% faster for 3 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
+	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.\nFlare: for 8 seconds her light reaches more than twice as far, and she and every friend who comes near her get 30% of their stamina back and run 5% faster for 6 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
 	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). She frees every caged friend at once, faster than anyone.\nShield: gives the nearest friend without one a Party Shield (it lasts until a grab). If every friend nearby has one, or nobody is near, Patch shields herself for 30 seconds.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
 	echo = { about = "Hears the host coming from further away.\nNoise: throws a noise that sends the host to look somewhere else - then Echo runs 5% faster for 3 seconds.", how = "Press Noise, then tap where to throw it." },
 	bramble = { about = "Talks to plants: the big plant whispers the door code to Bramble.\nVines: grows vines across a doorway - the host wades through them slowly, kids walk straight through.", how = "Find the big plant (in a room open from the start) and press E. Stand in a doorway and press Vines (R)." },
