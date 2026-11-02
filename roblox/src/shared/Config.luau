@@ -644,6 +644,12 @@ Config.MUSIC = {
 		{ id = 118983463747469, name = "Unknown Caller" },
 		{ id = 133823482307151, name = "Misprint" },
 		{ id = 73347892612875, name = "Make One" },
+		-- 2 Nov (Brent; all five checked on Roblox: audio, his uploads)
+		{ id = 97196964435183, name = "The Part That Moves" },
+		{ id = 119831240319698, name = "The Arrival" },
+		{ id = 93118592964850, name = "The Building That Breathes" },
+		{ id = 119379869899615, name = "Red Ink" },
+		{ id = 74901900452356, name = "No Second Rescue" },
 	},
 }
 -- shown under the music button with the song's name
