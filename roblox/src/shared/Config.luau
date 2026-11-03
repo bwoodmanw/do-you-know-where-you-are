@@ -544,6 +544,12 @@ Config.CHARACTER_ASSETS = {
 	PatchPie = 139357223306899,
 	BrainyChef = 82544604458512, -- 2 Nov: the arms-out toon (chef-brainy-arms-toon-x5.glb)
 	BrambleAcorn = 135841043095619, -- 2 Nov
+	ShadowGobble = 82744663331421, -- 3 Nov
+	GlowHarvest = 132385404072757, -- 3 Nov
+	TinkerScarecrow = 115702745306476, -- 3 Nov
+	MuscleGridiron = 96695387987558, -- 3 Nov
+	EchoDJ = 118068209877496, -- 3 Nov
+	EchoCocoa = 113810829598769, -- 3 Nov
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
@@ -800,12 +806,12 @@ Config.SKINS = {
 	-- with the id in CHARACTER_ASSETS). Pictures: art/roblox-store/passes/
 	{ id = "patch_pie", skill = "patch", name = "Pie Baker Patch", model = "PatchPie", feather = 150, pass = 2064623004 },
 	{ id = "brainy_chef", skill = "brainy", name = "Chef Brainy", model = "BrainyChef", feather = 150, pass = 2064790665 },
-	{ id = "shadow_gobble", skill = "shadow", name = "Gobble Shadow", model = "ShadowGobble", feather = 150, pass = 2064623010, hidden = true },
-	{ id = "glow_harvest", skill = "glow", name = "Harvest Glow", model = "GlowHarvest", feather = 150, pass = 2064736794, hidden = true },
-	{ id = "tinker_scarecrow", skill = "tinker", name = "Scarecrow Tinker", model = "TinkerScarecrow", feather = 150, pass = 2064586887, hidden = true },
-	{ id = "muscle_gridiron", skill = "muscle", name = "Gridiron Muscle", model = "MuscleGridiron", feather = 150, pass = 2064732949, hidden = true },
-	{ id = "echo_dj", skill = "echo", name = "Feast DJ Echo", model = "EchoDJ", feather = 150, pass = 2064403446, hidden = true },
-	{ id = "echo_cocoa", skill = "echo", name = "Cozy Cocoa Echo", model = "EchoCocoa", feather = 150, pass = 2064569161, hidden = true },
+	{ id = "shadow_gobble", skill = "shadow", name = "Gobble Shadow", model = "ShadowGobble", feather = 150, pass = 2064623010 },
+	{ id = "glow_harvest", skill = "glow", name = "Harvest Glow", model = "GlowHarvest", feather = 150, pass = 2064736794 },
+	{ id = "tinker_scarecrow", skill = "tinker", name = "Scarecrow Tinker", model = "TinkerScarecrow", feather = 150, pass = 2064586887 },
+	{ id = "muscle_gridiron", skill = "muscle", name = "Gridiron Muscle", model = "MuscleGridiron", feather = 150, pass = 2064732949 },
+	{ id = "echo_dj", skill = "echo", name = "Feast DJ Echo", model = "EchoDJ", feather = 150, pass = 2064403446 },
+	{ id = "echo_cocoa", skill = "echo", name = "Cozy Cocoa Echo", model = "EchoCocoa", feather = 150, pass = 2064569161 },
 	{ id = "bramble_acorn", skill = "bramble", name = "Acorn Bramble", model = "BrambleAcorn", feather = 150, pass = 2064942592 },
 }
 -- every skin's Game Pass price (Managed pricing off - PASSES.md); the season
