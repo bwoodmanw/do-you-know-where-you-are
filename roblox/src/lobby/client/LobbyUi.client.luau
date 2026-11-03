@@ -1988,19 +1988,34 @@ local function paintSkins()
 		local price, ps = Seasons.skinPrice(skin)
 		local owned = skinOwned[skin.id] or (price and profile.skinsEarned and profile.skinsEarned[skin.id])
 		local found = price and Seasons.have(profile.stats, ps) or 0
-		local status = wearing == skin.id and "\u{2705} Wearing" or owned and "Tap to wear" or price and (price .. " " .. ps.many) or "Buy"
+		-- 3 Nov (Brent): a season skin is bought right here while its shop is
+		-- open - its season's item, or Robux for its Game Pass
+		local buyHere = not owned and price and Seasons.openWindow(ps.id)
+		local status = wearing == skin.id and "\u{2705} Wearing" or owned and "Tap to wear" or buyHere and "" or price and (price .. " " .. ps.many) or "Buy"
 		local image = skin.icon or (skin.pass and skinIcons[skin.pass])
 		local t = tile(image, skin.name, status, wearing == skin.id, function()
 			if owned then
 				remotes.EquipSkin:FireServer(selected, skin.id)
-			elseif price and Seasons.openWindow(ps.id) then
-				notice(ps.icon .. " " .. skin.name .. " costs " .. price .. " " .. ps.many .. " in the " .. ps.shopName .. " (the banner at the bottom). You have " .. found .. ".")
+			elseif buyHere then
+				notice(ps.icon .. " " .. skin.name .. ": " .. price .. " " .. ps.many .. " (you have " .. found .. ")" .. ((skin.pass or 0) > 0 and (", or " .. Config.SKIN_PASS_ROBUX .. " Robux as a Game Pass") or "") .. " - tap a price below.")
 			elseif price then
 				notice(ps.icon .. " " .. skin.name .. " comes back with the " .. ps.name .. " next year - " .. price .. " " .. ps.many .. ". You have " .. found .. ".")
 			else
 				MarketplaceService:PromptGamePassPurchase(player, skin.pass)
 			end
 		end)
+		if buyHere then
+			local hasPass = (skin.pass or 0) > 0
+			button(t, price .. " " .. ps.icon, { Size = UDim2.fromOffset(hasPass and 70 or 146, 26), Position = UDim2.fromOffset(5, 182), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 24 }, function()
+				remotes:WaitForChild("CornShop"):FireServer(ps.id, "skin:" .. skin.id)
+			end)
+			if hasPass then
+				local rb = button(t, tostring(Config.SKIN_PASS_ROBUX), { Size = UDim2.fromOffset(70, 26), Position = UDim2.fromOffset(81, 182), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 24 }, function()
+					MarketplaceService:PromptGamePassPurchase(player, skin.pass)
+				end)
+				robuxIcon(rb, 18) -- sits in the button's right padding, after the price
+			end
+		end
 		if not owned and not price then
 			-- for sale for Robux: the coin next to "Buy"
 			local coin = robuxIcon(t, 20)
