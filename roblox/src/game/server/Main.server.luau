@@ -698,8 +698,7 @@ local function checkEnd()
 		difficulty = diff.name,
 		seconds = math.floor(now - state.startedAt),
 		timeBonus = state.timeBonus or 0,
-		nextIn = Config.VOTE_SECONDS,
-		vote = true,
+		vote = true, -- the countdown: RoundState VoteEnds / VoteMode (round.startVote)
 		nextFloor = (won and not towerRun) and (nextFloor() or {}).name or nil,
 		floorName = (Progress.MAPS[Progress.mapIndex(mapId) or 0] or {}).name, -- 10 Oct: the title named the Party House everywhere
 		tower = towerRun and (state.towerFloor or 1) or nil,
@@ -3492,11 +3491,46 @@ LeaveToLobby.OnServerEvent:Connect(function(plr)
 end)
 
 
+-- 3 Nov (Brent): the results wait for a choice - nobody is moved on without
+-- choosing. Once someone picks Play again / Next floor, the rest have
+-- Config.END_WAIT.others seconds (then they go to the lobby); if nobody
+-- chooses, everyone goes to the lobby after END_WAIT.idle. Everyone chosen:
+-- the next game starts at once. RoundState VoteEnds / VoteMode feed the
+-- results screen's countdown.
 function round.startVote()
 	votes = {}
 	voting = true
-	task.delay(Config.VOTE_SECONDS, function()
+	local w = Config.END_WAIT
+	local began, firstChoice = os.clock(), nil
+	RoundState:SetAttribute("VoteMode", "idle")
+	RoundState:SetAttribute("VoteEnds", workspace:GetServerTimeNow() + w.idle)
+	task.spawn(function()
+		while voting do
+			task.wait(0.5)
+			local playing, undecided = 0, 0
+			for _, plr in ipairs(Players:GetPlayers()) do
+				local v = votes[plr.UserId]
+				if v == "again" or v == "next" then
+					playing += 1
+				elseif v ~= "lobby" then
+					undecided += 1
+				end
+			end
+			if playing > 0 and not firstChoice then
+				firstChoice = os.clock()
+				RoundState:SetAttribute("VoteMode", "others")
+				RoundState:SetAttribute("VoteEnds", workspace:GetServerTimeNow() + w.others)
+			end
+			if (playing > 0 and undecided == 0) or (firstChoice and os.clock() - firstChoice >= w.others)
+				or (not firstChoice and os.clock() - began >= w.idle) or (playing == 0 and undecided == 0) then
+				break
+			end
+		end
+		if not voting then
+			return
+		end
 		voting = false
+		RoundState:SetAttribute("VoteMode", nil)
 		local again, rest = {}, {}
 		local up, same = 0, 0
 		for _, plr in ipairs(Players:GetPlayers()) do
@@ -3508,10 +3542,12 @@ function round.startVote()
 					same += 1
 				end
 			elseif votes[plr.UserId] ~= "lobby" then
-				-- didn't choose in time: stays and plays on with the others
-				-- (only the Back to lobby button sends anyone to the Lobby)
-				table.insert(again, plr)
+				-- didn't choose in time: back to the lobby
+				table.insert(rest, plr)
 			end
+		end
+		if #again == 0 and #rest == 0 then
+			return -- everyone chose the lobby and is on the way there
 		end
 		-- most of those staying chose the floor above: go up (a tie goes up)
 		local nf = nextFloor()

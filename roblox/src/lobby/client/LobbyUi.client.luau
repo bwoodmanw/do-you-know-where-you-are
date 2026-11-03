@@ -564,7 +564,7 @@ task.spawn(function()
 	button(panel, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, 10, 1, -48), ZIndex = 31 }, function()
 		panel.Visible = false
 	end)
-	button(gui, "\u{1F4CA} Balance", { Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0.5, -230, 1, -96 - 46 * math.max(0, #Seasons.shops() - 1)), ZIndex = 5 }, function()
+	button(gui, "\u{1F4CA} Balance", { Name = "OwnerBalance", Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0.5, -230, 1, -96 - 46 * math.max(0, #Seasons.shops() - 1)), ZIndex = 5 }, function()
 		panel.Visible = not panel.Visible
 		if panel.Visible then
 			fill()
@@ -1496,6 +1496,18 @@ do
 				panel.Visible = false
 			end
 		end)
+		-- 3 Nov (Brent): the owner's Balance and Gift buttons sat on the party
+		-- panel's Start / Invite / Leave - they hide while it is open
+		local function ownerButtons()
+			local hide = partyBox.Visible
+			giftBtn.Visible = not hide
+			local bal = gui:FindFirstChild("OwnerBalance")
+			if bal then
+				bal.Visible = not hide
+			end
+		end
+		partyBox:GetPropertyChangedSignal("Visible"):Connect(ownerButtons)
+		ownerButtons()
 		giftBtn.Activated:Connect(function()
 			panel.Visible = not panel.Visible
 			showPicker(nil)
@@ -2062,6 +2074,10 @@ for _, sk in ipairs(Config.SKILLS) do
 		face.Parent = charBtns[sk.id]
 		corner(face, 10)
 	end
+	-- 3 Nov (Brent): a red dot with how many upgrades wait to be chosen
+	local dot = frame(charBtns[sk.id], { Name = "Waiting", Size = UDim2.fromOffset(30, 30), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -4, 0, 4), BackgroundColor3 = Color3.fromRGB(232, 60, 70), BackgroundTransparency = 0, Visible = false, ZIndex = 15 })
+	corner(dot, 15)
+	label(dot, { Name = "Count", Size = UDim2.fromScale(0.8, 0.8), Position = UDim2.fromScale(0.1, 0.1), Text = "", ZIndex = 16 })
 end
 local charTitle = label(right, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.fromOffset(10, 128), Text = "", ZIndex = 11 })
 local xpBack = frame(right, { Size = UDim2.new(1, -40, 0, 14), Position = UDim2.fromOffset(20, 164), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 11 })
@@ -2405,6 +2421,7 @@ end)
 
 repaintChars = function()
 	local sk
+	local allWaiting = 0
 	for _, x in ipairs(Config.SKILLS) do
 		if x.id == selected then
 			sk = x
@@ -2412,7 +2429,25 @@ repaintChars = function()
 		local stroke = charBtns[x.id]:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", charBtns[x.id])
 		stroke.Thickness = x.id == selected and 3 or 0
 		stroke.Color = Color3.new(1, 1, 1)
+		-- the red dot: upgrades this character has earned but not chosen
+		local xPicks = (profile.picks and profile.picks[x.id]) or {}
+		local n = 0
+		for level = 2, Progress.level((profile.xp and profile.xp[x.id]) or 0) do
+			local options = Progress.choices(x.id, level)
+			local p = xPicks[tostring(level)]
+			if options and p ~= options[1].id and p ~= options[2].id then
+				n += 1
+			end
+		end
+		allWaiting += n
+		local dot = charBtns[x.id]:FindFirstChild("Waiting")
+		if dot then
+			dot.Visible = n > 0
+			dot.Count.Text = tostring(n)
+		end
 	end
+	-- and on the Characters tile: all of them together
+	setBadge(charsBtn, allWaiting > 0 and tostring(allWaiting) or nil)
 	showModel(sk)
 	local xp = (profile.xp and profile.xp[selected]) or 0
 	local lvl = Progress.level(xp)

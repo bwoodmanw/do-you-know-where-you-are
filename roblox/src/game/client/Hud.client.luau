@@ -2550,17 +2550,29 @@ remotes.Results.OnClientEvent:Connect(function(r)
 	if r.won then
 		confetti()
 	end
-	local left = r.nextIn
+	-- 3 Nov (Brent): no rush - the screen waits for a choice; the countdown
+	-- only shows near the end, or once the rest of the crew has chosen
 	task.spawn(function()
-		while left > 0 and results.Visible do
+		while results.Visible do
+			local left = math.max(0, math.ceil((RoundState:GetAttribute("VoteEnds") or 0) - workspace:GetServerTimeNow()))
+			local clock = string.format("%d:%02d", math.floor(left / 60), left % 60)
+			local others = RoundState:GetAttribute("VoteMode") == "others"
 			if againBtn.Visible then
-				resNext.Text = "Choose in " .. left .. "... (no choice = back to the lobby)"
+				resNext.Text = others and ("Your crew is ready - choose in " .. clock .. " or it's back to the lobby")
+					or left <= 60 and ("Back to the lobby in " .. clock .. " unless you choose")
+					or "No rush - choose when you're ready"
+			elseif others then
+				resNext.Text = "Waiting for the others... starting in " .. clock
 			end
-			task.wait(1)
-			left -= 1
+			task.wait(0.5)
 		end
-		results.Visible = false
 	end)
+end)
+-- the next game is starting (the server stopped waiting): the results close
+RoundState:GetAttributeChangedSignal("VoteMode"):Connect(function()
+	if RoundState:GetAttribute("VoteMode") == nil then
+		results.Visible = false
+	end
 end)
 
 -- ---------- messages from the server ----------

@@ -483,6 +483,10 @@ Config.GAME_PLACE = "Party House"
 -- the two places' ids (Creator Hub), so each script can tell it is in the right one
 Config.PLACE_IDS = { lobby = 115501124890066, game = 110069561824739 }
 Config.VOTE_SECONDS = 10
+-- the end-of-game results wait for a choice (3 Nov, Brent): `idle` seconds
+-- with nobody choosing, then everyone to the lobby; once someone chooses to
+-- play on, the rest have `others` seconds, then they go to the lobby
+Config.END_WAIT = { idle = 180, others = 45 }
 -- the host waits until everyone has chosen a character, or this many seconds
 Config.PICK_WAIT = 120
 Config.ARRIVE_WAIT = 45 -- the first game waits this long at most for the rest of the party to arrive
