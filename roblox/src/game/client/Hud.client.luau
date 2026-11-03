@@ -1358,7 +1358,9 @@ local function split(s)
 end
 local function boostSlot(id, order, tag, onClick)
 	local b = Progress.BOOSTS[id]
-	local img = Config.BOOST_IMAGES[id] or 0
+	-- 3 Nov (Brent): the season's look while its shop is open (Apple Cider)
+	local look = require(ReplicatedStorage.Shared.Seasons).look(id)
+	local img = look and (look.image or 0) > 0 and look.image or (Config.BOOST_IMAGES[id] or 0)
 	local slot
 	if img > 0 then
 		slot = Instance.new("ImageButton")
@@ -1373,7 +1375,7 @@ local function boostSlot(id, order, tag, onClick)
 			slot.Activated:Connect(onClick)
 		end
 	else
-		slot = button(boostBar, b.icon, { Size = UDim2.fromOffset(52, 52), LayoutOrder = order }, onClick)
+		slot = button(boostBar, look and look.icon or b.icon, { Size = UDim2.fromOffset(52, 52), LayoutOrder = order }, onClick)
 	end
 	label(slot, { Size = UDim2.new(1, 0, 0, 16), Position = UDim2.new(0, 0, 1, -12), Text = tag, TextStrokeTransparency = 0.2 })
 	return slot

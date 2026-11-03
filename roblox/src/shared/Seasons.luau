@@ -166,6 +166,19 @@ function Seasons.openWindow(id, now)
 	return nil
 end
 
+-- a boost's look while a season's shop is open (Thanksgiving: Apple Cider for
+-- Second Wind; `name`, `icon`, `image`), the running season's first, or nil.
+-- The Lobby shop, the next-game bar and the boost buttons in a game use it
+function Seasons.look(boostId, now)
+	for _, w in ipairs(Seasons.shops(now)) do
+		local look = w.season.looks and w.season.looks[boostId]
+		if look then
+			return look
+		end
+	end
+	return nil
+end
+
 -- what a player has to spend of a season's currency (stats: the profile's)
 function Seasons.have(stats, s)
 	stats = stats or {}

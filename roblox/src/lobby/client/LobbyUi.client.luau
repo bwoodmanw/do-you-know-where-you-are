@@ -1516,7 +1516,7 @@ corner(shop, 18)
 do
 	local open = Seasons.shops()
 	local GREEN, ROBUX_GREEN, RED = Color3.fromRGB(47, 140, 70), Color3.fromRGB(0, 176, 111), Color3.fromRGB(150, 60, 70)
-	local shopTitle = label(shop, { Size = UDim2.new(1, -100, 0, 40), Position = UDim2.fromOffset(20, 10), Text = "\u{1F6D2} Shop", TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 11 })
+	label(shop, { Size = UDim2.fromOffset(140, 40), Position = UDim2.fromOffset(20, 10), Text = "\u{1F6D2} Shop", TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 11 })
 	button(shop, "X", { Size = UDim2.fromOffset(48, 40), Position = UDim2.new(1, -64, 0, 12), BackgroundColor3 = RED, ZIndex = 12 }, function()
 		shop.Visible = false
 	end)
@@ -1536,6 +1536,24 @@ do
 	end
 	local function seasonImage(e)
 		return Config.SEASON_IMAGES and Config.SEASON_IMAGES[e.item] or 0
+	end
+	-- the currencies after the name, each with its picture (3 Nov: Roblox
+	-- doesn't draw the feather emoji)
+	local wallet = frame(shop, { Size = UDim2.new(1, -250, 0, 40), Position = UDim2.fromOffset(170, 10), BackgroundTransparency = 1, ZIndex = 11 })
+	do
+		local wl = Instance.new("UIListLayout")
+		wl.FillDirection = Enum.FillDirection.Horizontal
+		wl.VerticalAlignment = Enum.VerticalAlignment.Center
+		wl.Padding = UDim.new(0, 16)
+		wl.SortOrder = Enum.SortOrder.LayoutOrder
+		wl.Parent = wallet
+	end
+	local pointsText = label(wallet, { Size = UDim2.fromOffset(150, 36), LayoutOrder = 1, Text = "", TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+	local seasonTexts = {}
+	for i, w in ipairs(open) do
+		local holder = frame(wallet, { Size = UDim2.fromOffset(120, 36), LayoutOrder = 1 + i, BackgroundTransparency = 1, ZIndex = 11 })
+		picture(holder, seasonImage(w.season), w.season.icon, 34, UDim2.fromOffset(0, 1))
+		seasonTexts[w.season] = label(holder, { Size = UDim2.fromOffset(82, 36), Position = UDim2.fromOffset(38, 0), Text = "", TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
 	end
 	-- a picture in a button's right padding, after its words (like robuxIcon)
 	local function coin(b, image)
@@ -1604,10 +1622,7 @@ do
 	local boostRows = {}
 	for i, id in ipairs(Progress.BOOST_ORDER) do
 		local b = Progress.BOOSTS[id]
-		local look
-		for _, w in ipairs(open) do
-			look = look or (w.season.looks and w.season.looks[id])
-		end
+		local look = Seasons.look(id)
 		local picId = look and (look.image or 0) > 0 and look.image or (Config.BOOST_IMAGES[id] or 0)
 		local r = row(boostList, i, picId, look and look.icon or b.icon, look and look.name or b.name, look and ("Works like " .. b.name .. ": " .. b.say) or b.say)
 		local have = label(r, { Size = UDim2.fromOffset(50, 40), Position = UDim2.fromOffset(318, 12), Text = "", ZIndex = 12 })
@@ -1670,16 +1685,28 @@ do
 		boostRows[id] = { have = have, take = take, minus = minus }
 	end
 
-	-- Skins: every skin for sale - a season's skins first while its shop is
-	-- open (its item, or Robux for the Game Pass), then the Game Pass skins.
-	-- The picture is the Game Pass picture (or the skin's icon); Wear puts it on
+	-- Skins (3 Nov, Brent: grouped by character): a heading for each character
+	-- - who they wear now and a Plain look button - then their skins for
+	-- sale: a season's first while its shop is open (its item, or Robux for
+	-- the Game Pass), then the Game Pass skins. A skin shows its picture and
+	-- prices until it's yours, then Wear / Wearing. One skin per character,
+	-- kept until you change it
 	local skinList = page("skins", "\u{1F3AD} Skins", 170)
-	local skinRows, passOwned = {}, {}
+	local skinRows, skinHeads, passOwned = {}, {}, {}
+	local function addHead(sk, order)
+		local h = frame(skinList, { Size = UDim2.new(1, -24, 0, 46), LayoutOrder = order, BackgroundTransparency = 1, ZIndex = 11 })
+		picture(h, Config.PORTRAITS and Config.PORTRAITS[sk.id], sk.icon, 42, UDim2.fromOffset(6, 2))
+		label(h, { Size = UDim2.fromOffset(150, 34), Position = UDim2.fromOffset(56, 6), Text = sk.name, TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+		local now = label(h, { Size = UDim2.fromOffset(400, 26), Position = UDim2.fromOffset(212, 10), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
+		local plain = button(h, "Plain look", { Size = UDim2.fromOffset(130, 38), Position = UDim2.new(1, -136, 0, 4), ZIndex = 12 }, function()
+			remotes.EquipSkin:FireServer(sk.id, "")
+		end)
+		skinHeads[sk.id] = { now = now, plain = plain }
+	end
 	local function addSkin(skin, order)
 		local price, ps = Seasons.skinPrice(skin)
 		local sw = price and Seasons.openWindow(ps.id) and ps or nil
-		local who = string.upper(string.sub(skin.skill, 1, 1)) .. string.sub(skin.skill, 2)
-		local r, pic = row(skinList, order, skin.icon, "", skin.name, "A skin for " .. who .. " - yours for good")
+		local r, pic = row(skinList, order, skin.icon, "", skin.name, sw and (sw.look .. " skin - yours for good") or "Yours for good")
 		local status = label(r, { Size = UDim2.fromOffset(120, 40), Position = UDim2.fromOffset(318, 12), Text = "", ZIndex = 12 })
 		local s = { skin = skin, status = status }
 		local x = 446
@@ -1706,28 +1733,42 @@ do
 				end
 			end)
 		end
-		s.wear = button(r, "Wear", { Size = UDim2.fromOffset(84, 40), Position = UDim2.new(1, -90, 0, 12), ZIndex = 12 }, function()
-			local wearing = profile.skins and profile.skins[skin.skill] == skin.id
-			remotes.EquipSkin:FireServer(skin.skill, wearing and "" or skin.id)
+		-- Wear puts it on; Wearing is already on (Plain look in the heading takes it off)
+		s.wear = button(r, "Wear", { Size = UDim2.fromOffset(110, 40), Position = UDim2.new(1, -116, 0, 12), ZIndex = 12 }, function()
+			if profile.skins and profile.skins[skin.skill] == skin.id then
+				notice(skin.name .. " is on. Tap Plain look above to go back to the plain look.")
+			else
+				remotes.EquipSkin:FireServer(skin.skill, skin.id)
+			end
 		end)
 		table.insert(skinRows, s)
 	end
 	do
-		local n, later = 0, {}
-		for _, skin in ipairs(Config.SKINS or {}) do
-			local price, ps = Seasons.skinPrice(skin)
-			if not skin.hidden then
-				if price and Seasons.openWindow(ps.id) then
-					n += 1
-					addSkin(skin, n)
-				elseif (skin.pass or 0) > 0 then
-					table.insert(later, skin)
+		local n = 0
+		for _, sk in ipairs(Config.SKILLS) do
+			local now, later = {}, {}
+			for _, skin in ipairs(Config.SKINS or {}) do
+				if skin.skill == sk.id and not skin.hidden then
+					local price, ps = Seasons.skinPrice(skin)
+					if price and Seasons.openWindow(ps.id) then
+						table.insert(now, skin)
+					elseif (skin.pass or 0) > 0 then
+						table.insert(later, skin)
+					end
 				end
 			end
-		end
-		for _, skin in ipairs(later) do
-			n += 1
-			addSkin(skin, n)
+			if #now + #later > 0 then
+				n += 1
+				addHead(sk, n)
+				for _, skin in ipairs(now) do
+					n += 1
+					addSkin(skin, n)
+				end
+				for _, skin in ipairs(later) do
+					n += 1
+					addSkin(skin, n)
+				end
+			end
 		end
 	end
 	local function refreshPasses()
@@ -1759,7 +1800,10 @@ do
 		end
 		if #bundles > 0 then
 			local e1 = bundles[1].e
-			local itemList = page("items", e1.icon .. " " .. string.upper(string.sub(e1.many, 1, 1)) .. string.sub(e1.many, 2), 230)
+			local itemList = page("items", string.upper(string.sub(e1.many, 1, 1)) .. string.sub(e1.many, 2), 230)
+			if seasonImage(e1) > 0 then
+				coin(tabs.items, "rbxassetid://" .. seasonImage(e1))
+			end
 			for i, x in ipairs(bundles) do
 				local r = row(itemList, i, seasonImage(x.e), x.e.icon, x.bd.amount .. " " .. x.e.many, "To spend in this shop - you also find them on every floor")
 				local buy = button(r, "", { Size = UDim2.fromOffset(110, 40), Position = UDim2.new(1, -116, 0, 12), BackgroundColor3 = ROBUX_GREEN, ZIndex = 12 }, function()
@@ -1781,6 +1825,21 @@ do
 	corner(packed, 12)
 	local packedText = label(packed, { Size = UDim2.new(1, -20, 1, -12), Position = UDim2.fromOffset(10, 6), ZIndex = 12 })
 	local receiptUntil = 0
+	-- 3 Nov (Brent): what's packed for the next game shows by your points too;
+	-- tap it for the shop
+	local packChip = button(menu, "", { Size = UDim2.fromOffset(100, 50), Position = UDim2.fromOffset(210, -62), BackgroundColor3 = NIGHT, Visible = false }, function()
+		openShop("boosts")
+	end)
+	local packPics = {}
+	for k = 1, Progress.MAX_BOOSTS do
+		local p = Instance.new("ImageLabel")
+		p.BackgroundTransparency = 1
+		p.ScaleType = Enum.ScaleType.Fit
+		p.Size = UDim2.fromOffset(38, 38)
+		p.Position = UDim2.fromOffset(-2 + (k - 1) * 42, 0)
+		p.Parent = packChip
+		packPics[k] = p
+	end
 	remotes:WaitForChild("CornBought").OnClientEvent:Connect(function(icon, name, count, total, isSkin, seasonId)
 		local e = Seasons.get(seasonId)
 		packedText.Text = "\u{2705} Bought " .. (isSkin and name or (icon .. " " .. count .. " x " .. name)) .. " for " .. total .. " " .. (e and e.many or "") .. (isSkin and " - wearing it next game!" or " - tap Equip")
@@ -1789,11 +1848,10 @@ do
 	end)
 
 	repaintShop = function()
-		local top = { "\u{1F6D2} Shop", "\u{2B50} " .. tostring(profile.points or 0) }
-		for _, w in ipairs(open) do
-			table.insert(top, w.season.icon .. " " .. Seasons.have(profile.stats, w.season))
+		pointsText.Text = "\u{2B50} " .. tostring(profile.points or 0)
+		for e, l in pairs(seasonTexts) do
+			l.Text = tostring(Seasons.have(profile.stats, e))
 		end
-		shopTitle.Text = table.concat(top, "    ")
 		for id, r in pairs(boostRows) do
 			local n = (profile.inv and profile.inv[id]) or 0
 			r.have.Text = "Have\n" .. n
@@ -1808,10 +1866,21 @@ do
 			r.take.Visible = n > 0
 			r.minus.Visible = n > 0
 		end
+		for skill, h in pairs(skinHeads) do
+			local worn = profile.skins and profile.skins[skill]
+			local wornName
+			for _, skin in ipairs(Config.SKINS or {}) do
+				if skin.id == worn then
+					wornName = skin.name
+				end
+			end
+			h.now.Text = wornName and ("Wearing " .. wornName) or "Wearing the plain look"
+			h.plain.Visible = wornName ~= nil
+		end
 		for _, s in ipairs(skinRows) do
 			local owned = passOwned[s.skin.id] or (profile.skinsEarned and profile.skinsEarned[s.skin.id])
 			local wearing = profile.skins and profile.skins[s.skin.skill] == s.skin.id
-			s.status.Text = wearing and "\u{2705} Wearing" or owned and "\u{2705} Yours" or ""
+			s.status.Text = owned and not wearing and "\u{2705} Yours" or ""
 			if s.season then
 				s.season.Visible = not owned
 			end
@@ -1819,8 +1888,19 @@ do
 				s.robux.Visible = not owned
 			end
 			s.wear.Visible = owned and true or false
-			s.wear.Text = wearing and "Take off" or "Wear"
+			s.wear.Text = wearing and "\u{2705} Wearing" or "Wear"
 			s.wear.BackgroundColor3 = wearing and Color3.fromRGB(47, 107, 58) or PLUM
+		end
+		-- the chip by the points: the packed boosts' pictures
+		local packList = profile.loadout or {}
+		packChip.Visible = #packList > 0
+		packChip.Size = UDim2.fromOffset(16 + 42 * math.max(1, #packList), 50)
+		for k, p in ipairs(packPics) do
+			local id = packList[k]
+			local look = id and Seasons.look(id)
+			local img = id and (look and (look.image or 0) > 0 and look.image or (Config.BOOST_IMAGES[id] or 0)) or 0
+			p.Visible = id ~= nil
+			p.Image = img > 0 and ("rbxassetid://" .. img) or ""
 		end
 		if os.clock() < receiptUntil then
 			return
@@ -1828,8 +1908,9 @@ do
 		local names = {}
 		for _, id in ipairs(profile.loadout or {}) do
 			local b = Progress.BOOSTS[id]
+			local look = Seasons.look(id)
 			if b then
-				table.insert(names, b.icon .. " " .. b.name)
+				table.insert(names, look and (look.icon .. " " .. look.name) or (b.icon .. " " .. b.name))
 			end
 		end
 		packedText.Text = #names > 0 and ("Next game: " .. table.concat(names, " + ") .. "  (tap Equipped to put back)") or "Next game: no boosts equipped yet"
@@ -2077,9 +2158,16 @@ local function paintSkins()
 		end)
 		if buyHere then
 			local hasPass = (skin.pass or 0) > 0
-			button(t, price .. " " .. ps.icon, { Size = UDim2.fromOffset(hasPass and 70 or 146, 26), Position = UDim2.fromOffset(5, 182), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 24 }, function()
+			local sb = button(t, tostring(price), { Size = UDim2.fromOffset(hasPass and 70 or 146, 26), Position = UDim2.fromOffset(5, 182), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 24 }, function()
 				remotes:WaitForChild("CornShop"):FireServer(ps.id, "skin:" .. skin.id)
 			end)
+			-- the season's item as a picture (Roblox doesn't draw the feather emoji)
+			local itemImg = Config.SEASON_IMAGES and Config.SEASON_IMAGES[ps.item] or 0
+			if itemImg > 0 then
+				robuxIcon(sb, 18).Image = "rbxassetid://" .. itemImg
+			else
+				sb.Text = price .. " " .. ps.icon
+			end
 			if hasPass then
 				local rb = button(t, tostring(Config.SKIN_PASS_ROBUX), { Size = UDim2.fromOffset(70, 26), Position = UDim2.fromOffset(81, 182), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 24 }, function()
 					MarketplaceService:PromptGamePassPurchase(player, skin.pass)

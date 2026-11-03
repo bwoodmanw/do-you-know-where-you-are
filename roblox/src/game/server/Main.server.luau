@@ -3871,7 +3871,10 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 	paintBag(plr)
 	applyBoost(plr, id)
 	Effects.at(plr, "boost", id == "candy" and "eat" or id == "energy" and "energy" or nil)
-	say("boost", plr.DisplayName .. " used " .. boost.name .. "!", { icon = boost.icon, userId = plr.UserId, item = boost.name })
+	-- 3 Nov (Brent): the season's look of it while its shop is open (Apple Cider)
+	local look = Seasons.look(id)
+	local shown = look and look.name or boost.name
+	say("boost", plr.DisplayName .. " used " .. shown .. "!", { icon = look and look.icon or boost.icon, userId = plr.UserId, item = shown })
 end)
 
 -- the party leader leaving hands the lead to someone still here
