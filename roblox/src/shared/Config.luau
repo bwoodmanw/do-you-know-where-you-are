@@ -542,6 +542,7 @@ Config.CHARACTER_ASSETS = {
 	MuscleMummy = 109676849849034, -- 16 Oct: the toon (Roblox's filter shows its name as ###; was 121243831267156)
 	-- the Thanksgiving skins (16 Oct; their Config.SKINS entries come with their Game Passes)
 	PatchPie = 139357223306899,
+	BrainyChef = 82544604458512, -- 2 Nov: the arms-out toon (chef-brainy-arms-toon-x5.glb)
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
@@ -797,7 +798,7 @@ Config.SKINS = {
 	-- has its id. hidden = its model is not saved to Roblox yet (take it off
 	-- with the id in CHARACTER_ASSETS). Pictures: art/roblox-store/passes/
 	{ id = "patch_pie", skill = "patch", name = "Pie Baker Patch", model = "PatchPie", feather = 150, pass = 2064623004 },
-	{ id = "brainy_chef", skill = "brainy", name = "Chef Brainy", model = "BrainyChef", feather = 150, pass = 2064790665, hidden = true },
+	{ id = "brainy_chef", skill = "brainy", name = "Chef Brainy", model = "BrainyChef", feather = 150, pass = 2064790665 },
 	{ id = "shadow_gobble", skill = "shadow", name = "Gobble Shadow", model = "ShadowGobble", feather = 150, pass = 2064623010, hidden = true },
 	{ id = "glow_harvest", skill = "glow", name = "Harvest Glow", model = "GlowHarvest", feather = 150, pass = 2064736794, hidden = true },
 	{ id = "tinker_scarecrow", skill = "tinker", name = "Scarecrow Tinker", model = "TinkerScarecrow", feather = 150, pass = 2064586887, hidden = true },
