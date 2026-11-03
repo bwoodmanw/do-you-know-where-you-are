@@ -404,7 +404,8 @@ Config.SEASONS = {
 		-- starts the moment Halloween ends (Brent, 10 Oct); the Turkey Roundup,
 		-- the Gobbler and the Feast Meter come with the Thanksgiving build
 		id = "thanksgiving", name = "Feather Hunt", shopName = "Feather Shop", item = "feather",
-		one = "golden feather", many = "golden feathers", icon = "\u{1FAB6}",
+		-- icon: the leaf in messages (3 Nov, Brent) - Roblox doesn't draw the feather emoji
+		one = "golden feather", many = "golden feathers", icon = "\u{1F342}",
 		from = { 11, 1 }, to = { 12, 1 }, shopDays = 7,
 		-- no badge for feathers: Thanksgiving's badge is for turkeys (Config.ROUNDUP).
 		-- share: a feather found counts for everyone in the party (Brent, 11 Oct)
