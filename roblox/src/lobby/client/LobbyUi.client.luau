@@ -701,6 +701,10 @@ end
 
 local current = nil
 local amLeader = false
+-- 3 Nov (Brent): anyone can open the map screen for themselves and close it;
+-- mine = this player's own open/close (nil: follow the leader's), shared =
+-- the leader's open-for-everyone; apply is set once the screen exists
+local mapView = { mine = nil, shared = false, apply = function() end }
 local function opt(key, value)
 	remotes.SetOption:FireServer(key, value)
 end
@@ -727,7 +731,8 @@ local mapBtn = button(partyBox, "", { Size = UDim2.new(1, -40, 0, 56), Position 
 	if amLeader then
 		opt("mapScreen", true)
 	else
-		notice("Your party leader opens the map screen - then everyone votes together.")
+		mapView.mine = true
+		mapView.apply()
 	end
 end)
 
@@ -794,6 +799,22 @@ Gamepad.panel(mapScreen, function()
 end, function() end)
 local msDone = button(mapScreen, "\u{2705} Done", { Size = UDim2.fromOffset(200, 48), Position = UDim2.new(1, -220, 1, -62), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 42 }, function()
 	opt("mapScreen", false)
+end)
+mapView.apply = function()
+	if mapView.mine ~= nil then
+		mapScreen.Visible = mapView.mine
+	else
+		mapScreen.Visible = mapView.shared
+	end
+end
+-- the close button: the leader's closes it for the whole party (as Done
+-- does), anyone else's just for them
+button(mapScreen, "\u{2715}", { Size = UDim2.fromOffset(48, 48), Position = UDim2.new(1, -60, 0, 12), BackgroundColor3 = Color3.fromRGB(232, 80, 91), ZIndex = 42 }, function()
+	if amLeader then
+		opt("mapScreen", false)
+	end
+	mapView.mine = false
+	mapView.apply()
 end)
 local msWait = label(mapScreen, { Size = UDim2.new(1, -500, 0, 40), Position = UDim2.new(0, 20, 1, -58), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
 -- Tower Run: every floor of the building in one game (the leader switches it on)
@@ -884,6 +905,8 @@ local function paintParty(p)
 	rightBar.Visible = p == nil
 	joinBox.Visible = p == nil and joinOpen
 	if not p then
+		mapView.mine, mapView.shared = nil, false
+		mapView.apply()
 		return
 	end
 	amLeader = p.leaderId == player.UserId
@@ -928,14 +951,19 @@ local function paintParty(p)
 		local wide = game:GetService("TextService"):GetTextSize(short, Config.UI_TEXT.body, mapBtn.Font, Vector2.new(10000, 100)).X
 		mapBtn.Text = wide > 384 * 0.95 and short or full
 	else
-		mapBtn.Text = (amLeader and "\u{1F5FA} Tap to choose a map" or "\u{1F5FA} The leader chooses a map") .. (p.tower and "  \u{00B7} \u{1F5FC} Tower Run" or "")
+		mapBtn.Text = (amLeader and "\u{1F5FA} Tap to choose a map" or "\u{1F5FA} Tap to see the maps and vote") .. (p.tower and "  \u{00B7} \u{1F5FC} Tower Run" or "")
 	end
 	-- the map screen, the same for everyone in the party
-	mapScreen.Visible = p.mapScreen == true
+	-- the leader opening or closing it for everyone overrides anyone's own choice
+	if (p.mapScreen == true) ~= mapView.shared then
+		mapView.shared = p.mapScreen == true
+		mapView.mine = nil
+	end
+	mapView.apply()
 	msDone.Visible = amLeader
 	towerBtn.Text = p.tower and "\u{1F5FC} Tower Run: ON" or "\u{1F5FC} Tower Run: off"
 	towerBtn.BackgroundColor3 = p.tower and Color3.fromRGB(70, 140, 220) or PLUM
-	msWait.Text = amLeader and "Tap Done when everyone has voted." or ("Waiting for " .. p.leader .. " to tap Done...")
+	msWait.Text = amLeader and "Tap Done when everyone has voted." or (mapView.shared and ("Waiting for " .. p.leader .. " to tap Done...") or ("Vote for a floor - " .. p.leader .. " picks the building."))
 	for _, bld in ipairs(Progress.BUILDINGS) do
 		local c = buildingCards[bld.id]
 		if not c then

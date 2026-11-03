@@ -2077,6 +2077,13 @@ RunService.RenderStepped:Connect(function(dt)
 				toast(below.Instance.Name == "WadeWater" and "\u{1F4A7} Wading through water - slow going!" or "\u{1F36B} Wading through chocolate - slow going! Use the bridge.", 3)
 			end
 		end
+	elseif player:GetAttribute("Hidden") then
+		-- 3 Nov (Brent): hiding is a rest - stamina refills as when walking
+		local dd = Config.DIFFICULTY[RoundState:GetAttribute("Difficulty") or "normal"]
+		stamina = math.min(100, stamina + ((dd and dd.staminaRegen) or Config.STAMINA_REGEN) * (player:GetAttribute("RegenMult") or 1) * dt)
+		if tired and stamina >= 25 then
+			tired = false
+		end
 	end
 	runBtn.BackgroundColor3 = (runToggle or shiftHeld) and PUMP or Color3.fromRGB(75, 58, 102)
 	-- the active boosts row
