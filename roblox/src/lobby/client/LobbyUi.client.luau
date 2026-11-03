@@ -1058,6 +1058,7 @@ do
 	pad.Parent = pointsLabel
 end
 local repaintShop, repaintChars
+local openShop -- (tab key): the one shop, on that tab
 
 local function readProfile()
 	local json = player:GetAttribute("ProfileJson")
@@ -1362,166 +1363,11 @@ do
 		bannerHolder.Parent = gui
 		itemPic(e, bannerHolder, 38, UDim2.fromOffset(0, 0), 6)
 		local banner = button(bannerHolder, "", { Position = UDim2.fromOffset(42, 0), Size = UDim2.new(1, -42, 1, 0), BackgroundColor3 = Color3.fromRGB(40, 22, 62), TextColor3 = Color3.fromRGB(255, 180, 70), ZIndex = 5 })
-		local cshop = frame(gui, { Size = UDim2.fromOffset(620, 676), Position = UDim2.new(0.5, -310, 0.5, -338), Visible = false, ZIndex = 10 })
-		fitToScreen(cshop, 620, 676)
-		corner(cshop, 18)
-		itemPic(e, cshop, 46, UDim2.fromOffset(16, 6), 11)
-		local title = label(cshop, { Size = UDim2.new(1, -90, 0, 40), Position = UDim2.fromOffset(70, 10), TextColor3 = PUMP, ZIndex = 11 })
-		label(cshop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 52), Text = "Pick how many with - and +, then Buy. Boosts go to your Boost Shop - tap Equip there.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
-		local dates = (Seasons.clock() < w.ends and ("Find them on every floor through " .. Seasons.untilText(w.ends) .. ". ") or ("The hunt is over. "))
-			.. "The shop is open through " .. Seasons.untilText(w.shopUntil) .. "."
-		label(cshop, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 76), Text = dates, TextColor3 = Color3.fromRGB(255, 210, 120), ZIndex = 11 })
-		-- the rows scroll (boosts, skins, bundles: more than fit)
-		local rowList = Instance.new("ScrollingFrame")
-		rowList.BackgroundTransparency = 1
-		rowList.BorderSizePixel = 0
-		rowList.Position = UDim2.fromOffset(0, 102)
-		rowList.Size = UDim2.new(1, 0, 1, -218)
-		rowList.CanvasSize = UDim2.new()
-		rowList.AutomaticCanvasSize = Enum.AutomaticSize.Y
-		rowList.ScrollBarThickness = 6
-		rowList.ZIndex = 11
-		rowList.Parent = cshop
-		local rows, skinRows = {}, {}
-		local function row(i, picId, iconText, name, say)
-			local r = frame(rowList, { Size = UDim2.new(1, -30, 0, 64), Position = UDim2.fromOffset(12, (i - 1) * 70), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 11 })
-			corner(r, 12)
-			if (picId or 0) > 0 then
-				local pic = Instance.new("ImageLabel")
-				pic.BackgroundTransparency = 1
-				pic.Image = "rbxassetid://" .. picId
-				pic.Size = UDim2.fromOffset(52, 52)
-				pic.Position = UDim2.fromOffset(5, 6)
-				pic.ZIndex = 12
-				pic.Parent = r
-			else
-				label(r, { Size = UDim2.fromOffset(46, 46), Position = UDim2.fromOffset(8, 9), Text = iconText, ZIndex = 12 })
-			end
-			label(r, { Size = UDim2.fromOffset(230, 26), Position = UDim2.fromOffset(64, 6), Text = name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
-			local sayLabel = label(r, { Size = UDim2.fromOffset(230, 22), Position = UDim2.fromOffset(64, 34), Text = say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
-			local owned = label(r, { Size = UDim2.fromOffset(64, 40), Position = UDim2.fromOffset(298, 12), Text = "", ZIndex = 12 })
-			return r, owned, sayLabel
-		end
-		-- 10 Oct (Brent): "Buy 9" read as buying 9 - the button says Buy, and
-		-- the cost (for the count chosen) sits beside the season's item
-		local function buyButton(r, price, onClick)
-			local b = button(r, "Buy", { Size = UDim2.fromOffset(60, 40), Position = UDim2.fromOffset(466, 12), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, onClick)
-			local cost = label(r, { Size = UDim2.fromOffset(36, 32), Position = UDim2.fromOffset(528, 16), Text = tostring(price), TextColor3 = PUMP, ZIndex = 12 })
-			local pic = itemPic(e, r, 24, UDim2.fromOffset(564, 20), 12)
-			b:GetPropertyChangedSignal("Visible"):Connect(function()
-				cost.Visible = b.Visible
-				pic.Visible = b.Visible
-			end)
-			return b, cost
-		end
-		local i = 0
-		for _, id in ipairs(Progress.BOOST_ORDER) do
-			local price = e.shop and e.shop[id]
-			local boost = Progress.BOOSTS[id]
-			if price and boost then
-				i += 1
-				-- a season's look of the boost (Thanksgiving: Pumpkin Pie for Candy Corn)
-				local look = e.looks and e.looks[id]
-				local r, owned
-				if look then
-					r, owned = row(i, (look.image or 0) > 0 and look.image or (Config.BOOST_IMAGES and Config.BOOST_IMAGES[id]), look.icon, look.name, "Works like " .. boost.name .. ": " .. boost.say)
-				else
-					r, owned = row(i, Config.BOOST_IMAGES and Config.BOOST_IMAGES[id], boost.icon, boost.name, boost.say)
-				end
-				-- 10 Oct (Brent): like the Boost Shop - how many, then Buy
-				local count = 1
-				local qty = label(r, { Size = UDim2.fromOffset(30, 40), Position = UDim2.fromOffset(398, 12), Text = "1", ZIndex = 12 })
-				local cost
-				local function show()
-					qty.Text = tostring(count)
-					cost.Text = tostring(price * count)
-				end
-				button(r, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(34, 40), Position = UDim2.fromOffset(362, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
-					count = math.max(1, count - 1)
-					show()
-				end)
-				button(r, "+", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(34, 40), Position = UDim2.fromOffset(430, 12), BackgroundColor3 = Color3.fromRGB(47, 140, 70), ZIndex = 12 }, function()
-					count = math.min(10, count + 1)
-					show()
-				end)
-				_, cost = buyButton(r, price, function()
-					remotes:WaitForChild("CornShop"):FireServer(e.id, id, count)
-					count = 1
-					show()
-				end)
-				show()
-				rows[id] = owned
-			end
-		end
-		for _, skin in ipairs(Config.SKINS or {}) do
-			local price = skin[e.item]
-			if type(price) == "number" and not skin.hidden then
-				i += 1
-				local r, owned, sayLabel = row(i, skin.icon, "\u{2728}", skin.name .. " skin", "A " .. e.look .. " look for " .. string.upper(string.sub(skin.skill, 1, 1)) .. string.sub(skin.skill, 2) .. " - yours for good")
-				-- 2 Nov (Brent): a skin that is also a Game Pass says so - 150
-				-- feathers from the bundles cost more Robux than the pass
-				local passNote = "Yours for good - or " .. Config.SKIN_PASS_ROBUX .. " Robux as a Game Pass (Characters \u{2192} Skins)"
-				if (skin.pass or 0) > 0 then
-					sayLabel.Size = UDim2.fromOffset(396, 22)
-					sayLabel.Text = passNote
-				end
-				local b = buyButton(r, price, function()
-					remotes:WaitForChild("CornShop"):FireServer(e.id, "skin:" .. skin.id)
-				end)
-				skinRows[skin] = { owned = owned, buy = b, price = price, say = sayLabel, note = (skin.pass or 0) > 0 }
-			end
-		end
-		-- the season's item for Robux (Developer Products; 0 = not on sale)
-		for _, bd in ipairs(e.bundles or {}) do
-			if (bd.product or 0) > 0 then
-				i += 1
-				local r = row(i, Config.SEASON_IMAGES and Config.SEASON_IMAGES[e.item], e.icon, bd.amount .. " " .. e.many, "Only to spend - finding them counts for the badge")
-				local buy = button(r, "", { Size = UDim2.fromOffset(110, 40), Position = UDim2.fromOffset(466, 12), BackgroundColor3 = Color3.fromRGB(0, 140, 100), ZIndex = 12 }, function()
-					MarketplaceService:PromptProductPurchase(player, bd.product)
-				end)
-				local coin = Instance.new("ImageLabel")
-				coin.BackgroundTransparency = 1
-				coin.Image = "rbxasset://textures/ui/common/robux.png"
-				coin.Size = UDim2.fromOffset(22, 22)
-				coin.Position = UDim2.new(0, 8, 0.5, -11)
-				coin.ZIndex = 13
-				coin.Parent = buy
-				task.spawn(function()
-					local ok, info = pcall(function()
-						return MarketplaceService:GetProductInfo(bd.product, Enum.InfoType.Product)
-					end)
-					buy.Text = "     " .. ((ok and info and info.PriceInRobux) and tostring(info.PriceInRobux) or "Buy")
-				end)
-			end
-		end
-		button(cshop, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -54), ZIndex = 11 }, function()
-			cshop.Visible = false
-		end)
-		-- what you just bought, and where it went (10 Oct, Brent)
-		local receipt = frame(cshop, { Size = UDim2.new(1, -24, 0, 44), Position = UDim2.new(0, 12, 1, -106), BackgroundColor3 = Color3.fromRGB(47, 107, 58), BackgroundTransparency = 0.2, Visible = false, ZIndex = 11 })
-		corner(receipt, 12)
-		local receiptText = label(receipt, { Size = UDim2.new(1, -20, 1, -8), Position = UDim2.fromOffset(10, 4), ZIndex = 12 })
-		local receiptAt = 0
-		remotes:WaitForChild("CornBought").OnClientEvent:Connect(function(icon, name, count, total, isSkin, seasonId)
-			if seasonId ~= e.id then
-				return
-			end
-			if isSkin then
-				receiptText.Text = "\u{2705} Bought " .. name .. " (" .. total .. " " .. e.many .. ") - it's yours! Pick it in Characters."
-			else
-				receiptText.Text = "\u{2705} Bought " .. icon .. " " .. count .. " x " .. name .. " (" .. total .. " " .. e.many .. "). In your \u{1F6D2} Boost Shop - tap Equip there."
-			end
-			receipt.Visible = true
-			receiptAt += 1
-			local mine = receiptAt
-			task.delay(10, function()
-				if receiptAt == mine then
-					receipt.Visible = false
-				end
-			end)
-		end)
+		-- 3 Nov (Brent): the season's own shop window is gone - the banner opens
+		-- the one Shop (its Skins while a season skin is still to get)
+		local skinGoal
 		banner.Activated:Connect(function()
-			cshop.Visible = not cshop.Visible
+			openShop(skinGoal and "skins" or "boosts")
 		end)
 		local function paint()
 			local ok, data = pcall(function()
@@ -1532,29 +1378,16 @@ do
 			local n = st[e.item] or 0
 			local have = Seasons.have(st, e)
 			local earned = data.skinsEarned or {}
-			local inv = data.inv or {}
-			for id, owned in pairs(rows) do
-				owned.Text = "Have\n" .. (inv[id] or 0)
-			end
-			local skinGoal
-			for skin, r in pairs(skinRows) do
-				local mine = earned[skin.id] == true
-				r.owned.Text = mine and "\u{2705} Yours!" or ""
-				r.buy.Visible = not mine
-				if r.note then
-					-- owned: the Game Pass note makes way for "Yours!"
-					r.say.Size = UDim2.fromOffset(mine and 230 or 396, 22)
-					r.say.Visible = not mine
-				end
-				if not mine then
-					skinGoal = skin
+			skinGoal = nil
+			for _, skin in ipairs(Config.SKINS or {}) do
+				if type(skin[e.item]) == "number" and not skin.hidden and not earned[skin.id] then
+					skinGoal = skinGoal or skin
 				end
 			end
-			title.Text = e.shopName .. "  \u{00B7}  " .. have .. " " .. e.many .. " to spend"
 			if Seasons.clock() >= w.ends then
-				banner.Text = e.shopName .. ": " .. have .. " " .. e.many .. " to spend (open through " .. Seasons.untilText(w.shopUntil) .. ")"
+				banner.Text = e.shopName .. ": " .. have .. " " .. e.many .. " to spend (open through " .. Seasons.untilText(w.shopUntil) .. ")  \u{00B7}  Shop"
 			elseif skinGoal then
-				banner.Text = Many .. ": " .. have .. " to spend  \u{00B7}  " .. skinGoal.name .. " " .. skinRows[skinGoal].price .. "  \u{00B7}  Shop"
+				banner.Text = Many .. ": " .. have .. " to spend  \u{00B7}  " .. skinGoal.name .. " " .. skinGoal[e.item] .. "  \u{00B7}  Shop"
 			else
 				banner.Text = Many .. ": " .. n .. " found, " .. have .. " to spend  \u{00B7}  Shop"
 			end
@@ -1672,118 +1505,356 @@ local function robuxIcon(b, size)
 end
 
 -- ---------- the shop ----------
-local shop = frame(gui, { Size = UDim2.fromOffset(620, 610), Position = UDim2.new(0.5, -310, 0.5, -305), Visible = false, ZIndex = 10 })
-fitToScreen(shop, 620, 610)
+-- 3 Nov (Brent): one shop for everything, in tabs by what you buy - Boosts,
+-- Skins, and the season's item for Robux. Every row shows each way to pay
+-- (points, an open season's item, Robux) beside Have and Equip / Wear, so a
+-- boost bought with feathers is the row you equip it from. The season
+-- banners at the bottom open it (their own shop windows are gone).
+local shop = frame(gui, { Size = UDim2.fromOffset(820, 640), Position = UDim2.new(0.5, -410, 0.5, -320), Visible = false, ZIndex = 10 })
+fitToScreen(shop, 820, 640)
 corner(shop, 18)
-local shopTitle = label(shop, { Size = UDim2.new(1, -40, 0, 40), Position = UDim2.fromOffset(20, 10), Text = "\u{1F6D2} Boost Shop", TextColor3 = PUMP, ZIndex = 11 })
-label(shop, { Size = UDim2.new(1, -20, 0, 22), Position = UDim2.fromOffset(10, 50), Text = "+ buys, - sells back. Equip up to " .. Progress.MAX_BOOSTS .. " (two of the same is fine) for your next game.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
-local shopRows = {}
-for i, id in ipairs(Progress.BOOST_ORDER) do
-	local b = Progress.BOOSTS[id]
-	local row = frame(shop, { Size = UDim2.new(1, -24, 0, 64), Position = UDim2.fromOffset(12, 78 + (i - 1) * 70), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 11 })
-	corner(row, 12)
-	local img = Config.BOOST_IMAGES[id] or 0
-	if img > 0 then
-		local pic = Instance.new("ImageLabel")
-		pic.BackgroundTransparency = 1
-		pic.Image = "rbxassetid://" .. img
-		pic.Size = UDim2.fromOffset(52, 52)
-		pic.Position = UDim2.fromOffset(5, 6)
-		pic.ZIndex = 12
-		pic.Parent = row
-	else
-		label(row, { Size = UDim2.fromOffset(46, 46), Position = UDim2.fromOffset(8, 9), Text = b.icon, ZIndex = 12 })
-	end
-	label(row, { Size = UDim2.fromOffset(205, 26), Position = UDim2.fromOffset(60, 6), Text = b.name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
-	label(row, { Size = UDim2.fromOffset(205, 22), Position = UDim2.fromOffset(60, 34), Text = b.say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
-	-- everything on the right sits inside the row: have, price, + (buy), - (sell), Robux, Equip
-	local owned = label(row, { Size = UDim2.fromOffset(56, 40), Position = UDim2.fromOffset(268, 12), Text = "", ZIndex = 12 })
-	label(row, { Size = UDim2.fromOffset(60, 40), Position = UDim2.fromOffset(326, 12), Text = b.price .. " \u{2B50}", TextColor3 = Color3.fromRGB(255, 210, 63), ZIndex = 12 })
-	button(row, "+", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(388, 12), BackgroundColor3 = Color3.fromRGB(47, 140, 70), ZIndex = 12 }, function()
-		remotes.BuyBoost:FireServer(id)
+do
+	local open = Seasons.shops()
+	local GREEN, ROBUX_GREEN, RED = Color3.fromRGB(47, 140, 70), Color3.fromRGB(0, 176, 111), Color3.fromRGB(150, 60, 70)
+	local shopTitle = label(shop, { Size = UDim2.new(1, -100, 0, 40), Position = UDim2.fromOffset(20, 10), Text = "\u{1F6D2} Shop", TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 11 })
+	button(shop, "X", { Size = UDim2.fromOffset(48, 40), Position = UDim2.new(1, -64, 0, 12), BackgroundColor3 = RED, ZIndex = 12 }, function()
+		shop.Visible = false
 	end)
-	local minus = button(row, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(40, 40), Position = UDim2.fromOffset(430, 12), BackgroundColor3 = Color3.fromRGB(150, 60, 70), ZIndex = 12 }, function()
-		remotes.SellBoost:FireServer(id)
-	end)
-	local productId = Config.ROBUX_PRODUCTS[id] or 0
-	if productId > 0 then
-		local rb = button(row, "", { Size = UDim2.fromOffset(44, 40), Position = UDim2.fromOffset(472, 12), BackgroundColor3 = Color3.fromRGB(0, 176, 111), ZIndex = 12 }, function()
-			MarketplaceService:PromptProductPurchase(player, productId)
-		end)
-		local pic = robuxIcon(rb, 26)
-		pic.Position = UDim2.new(0.5, -13, 0.5, -13) -- the icon alone, in the middle
-		rb:FindFirstChildOfClass("UIPadding").PaddingRight = UDim.new(0, 8)
-	end
-	-- Equip: each tap packs one more (up to what you have and the limit); then empties
-	local take = button(row, "", { Size = UDim2.fromOffset(72, 40), Position = UDim2.fromOffset(518, 12), ZIndex = 12 }, function()
-		local list, mine = {}, 0
-		for _, x in ipairs(profile.loadout or {}) do
-			if x == id then
-				mine += 1
-			end
-			table.insert(list, x)
+	local function picture(parent, id, emoji, size, pos)
+		if (id or 0) > 0 then
+			local p = Instance.new("ImageLabel")
+			p.BackgroundTransparency = 1
+			p.Image = "rbxassetid://" .. id
+			p.ScaleType = Enum.ScaleType.Fit
+			p.Size = UDim2.fromOffset(size, size)
+			p.Position = pos
+			p.ZIndex = 12
+			p.Parent = parent
+			return p
 		end
-		local have = (profile.inv and profile.inv[id]) or 0
-		if mine < have and #list < Progress.MAX_BOOSTS then
-			table.insert(list, id)
-		elseif mine > 0 then
-			local kept = {}
-			for _, x in ipairs(list) do
-				if x ~= id then
-					table.insert(kept, x)
+		return label(parent, { Size = UDim2.fromOffset(size, size), Position = pos, Text = emoji or "", ZIndex = 12 })
+	end
+	local function seasonImage(e)
+		return Config.SEASON_IMAGES and Config.SEASON_IMAGES[e.item] or 0
+	end
+	-- a picture in a button's right padding, after its words (like robuxIcon)
+	local function coin(b, image)
+		b:FindFirstChildOfClass("UIPadding").PaddingRight = UDim.new(0, 32)
+		local c = Instance.new("ImageLabel")
+		c.BackgroundTransparency = 1
+		c.Image = image
+		c.Size = UDim2.fromOffset(24, 24)
+		c.Position = UDim2.new(1, 4, 0.5, -12)
+		c.ZIndex = b.ZIndex + 1
+		c.Parent = b
+	end
+	-- a season price button: the amount and the season's item
+	local function seasonPrice(r, x, w, e, price, onClick)
+		local b = button(r, tostring(price), { Size = UDim2.fromOffset(w, 40), Position = UDim2.fromOffset(x, 12), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 12 }, onClick)
+		if seasonImage(e) > 0 then
+			coin(b, "rbxassetid://" .. seasonImage(e))
+		else
+			b.Text = price .. " " .. e.icon
+		end
+		return b
+	end
+
+	-- the tabs, each a scrolling list of rows
+	local tabs, pages, tabOrder = {}, {}, {}
+	local function page(key, text, w)
+		local list = Instance.new("ScrollingFrame")
+		list.BackgroundTransparency = 1
+		list.BorderSizePixel = 0
+		list.Position = UDim2.fromOffset(0, 112)
+		list.Size = UDim2.new(1, 0, 1, -178)
+		list.CanvasSize = UDim2.new()
+		list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		list.ScrollBarThickness = 6
+		list.ZIndex = 11
+		list.Visible = false
+		list.Parent = shop
+		local layout = Instance.new("UIListLayout")
+		layout.Padding = UDim.new(0, 6)
+		layout.SortOrder = Enum.SortOrder.LayoutOrder
+		layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+		layout.Parent = list
+		local x = 20
+		for _, k in ipairs(tabOrder) do
+			x += tabs[k].Size.X.Offset + 10
+		end
+		pages[key] = list
+		table.insert(tabOrder, key)
+		tabs[key] = button(shop, text, { Size = UDim2.fromOffset(w, 44), Position = UDim2.fromOffset(x, 58), ZIndex = 12 }, function()
+			openShop(key)
+		end)
+		return list
+	end
+	local function row(list, order, picId, emoji, name, say)
+		local r = frame(list, { Size = UDim2.new(1, -24, 0, 64), LayoutOrder = order, BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 11 })
+		corner(r, 12)
+		local p = picture(r, picId, emoji, 52, UDim2.fromOffset(6, 6))
+		label(r, { Size = UDim2.fromOffset(250, 26), Position = UDim2.fromOffset(64, 6), Text = name, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+		label(r, { Size = UDim2.fromOffset(250, 22), Position = UDim2.fromOffset(64, 34), Text = say, TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
+		return r, p
+	end
+
+	-- Boosts: one row per boost. A running season's look of it (Thanksgiving:
+	-- Apple Cider for Second Wind) shows while its shop is open - the same boost
+	local boostList = page("boosts", "\u{26A1} Boosts", 170)
+	local boostRows = {}
+	for i, id in ipairs(Progress.BOOST_ORDER) do
+		local b = Progress.BOOSTS[id]
+		local look
+		for _, w in ipairs(open) do
+			look = look or (w.season.looks and w.season.looks[id])
+		end
+		local picId = look and (look.image or 0) > 0 and look.image or (Config.BOOST_IMAGES[id] or 0)
+		local r = row(boostList, i, picId, look and look.icon or b.icon, look and look.name or b.name, look and ("Works like " .. b.name .. ": " .. b.say) or b.say)
+		local have = label(r, { Size = UDim2.fromOffset(50, 40), Position = UDim2.fromOffset(318, 12), Text = "", ZIndex = 12 })
+		-- - sells one back for points (the ones bought with points)
+		local minus = button(r, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(34, 40), Position = UDim2.fromOffset(370, 12), BackgroundColor3 = RED, ZIndex = 12 }, function()
+			remotes.SellBoost:FireServer(id)
+		end)
+		button(r, b.price .. " \u{2B50}", { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(408, 12), BackgroundColor3 = GREEN, ZIndex = 12 }, function()
+			remotes.BuyBoost:FireServer(id)
+		end)
+		local x = 496
+		for _, w in ipairs(open) do
+			local e = w.season
+			local price = e.shop and e.shop[id]
+			if price then
+				seasonPrice(r, x, 70, e, price, function()
+					remotes:WaitForChild("CornShop"):FireServer(e.id, id, 1)
+				end)
+				x += 74
+			end
+		end
+		local productId = Config.ROBUX_PRODUCTS[id] or 0
+		if productId > 0 then
+			local rb = button(r, "", { Size = UDim2.fromOffset(48, 40), Position = UDim2.fromOffset(x, 12), BackgroundColor3 = ROBUX_GREEN, ZIndex = 12 }, function()
+				MarketplaceService:PromptProductPurchase(player, productId)
+			end)
+			local pic = robuxIcon(rb, 26)
+			pic.Position = UDim2.new(0.5, -13, 0.5, -13) -- the icon alone, in the middle
+			rb:FindFirstChildOfClass("UIPadding").PaddingRight = UDim.new(0, 8)
+		end
+		-- Equip: each tap packs one more (up to what you have and the limit); then empties
+		local take = button(r, "", { Size = UDim2.fromOffset(84, 40), Position = UDim2.new(1, -90, 0, 12), ZIndex = 12 }, function()
+			local list, mine = {}, 0
+			for _, x2 in ipairs(profile.loadout or {}) do
+				if x2 == id then
+					mine += 1
+				end
+				table.insert(list, x2)
+			end
+			local n = (profile.inv and profile.inv[id]) or 0
+			if mine < n and #list < Progress.MAX_BOOSTS then
+				table.insert(list, id)
+			elseif mine > 0 then
+				local kept = {}
+				for _, x2 in ipairs(list) do
+					if x2 ~= id then
+						table.insert(kept, x2)
+					end
+				end
+				list = kept
+			else
+				notice("You can take " .. Progress.MAX_BOOSTS .. " boosts. Tap Equip on one to put it back first.")
+				return
+			end
+			-- show the change straight away; the server's copy follows
+			profile.loadout = list
+			repaintShop()
+			remotes.SetLoadout:FireServer(list)
+		end)
+		boostRows[id] = { have = have, take = take, minus = minus }
+	end
+
+	-- Skins: every skin for sale - a season's skins first while its shop is
+	-- open (its item, or Robux for the Game Pass), then the Game Pass skins.
+	-- The picture is the Game Pass picture (or the skin's icon); Wear puts it on
+	local skinList = page("skins", "\u{1F3AD} Skins", 170)
+	local skinRows, passOwned = {}, {}
+	local function addSkin(skin, order)
+		local price, ps = Seasons.skinPrice(skin)
+		local sw = price and Seasons.openWindow(ps.id) and ps or nil
+		local who = string.upper(string.sub(skin.skill, 1, 1)) .. string.sub(skin.skill, 2)
+		local r, pic = row(skinList, order, skin.icon, "", skin.name, "A skin for " .. who .. " - yours for good")
+		local status = label(r, { Size = UDim2.fromOffset(120, 40), Position = UDim2.fromOffset(318, 12), Text = "", ZIndex = 12 })
+		local s = { skin = skin, status = status }
+		local x = 446
+		if sw then
+			s.season = seasonPrice(r, x, 100, sw, price, function()
+				remotes:WaitForChild("CornShop"):FireServer(sw.id, "skin:" .. skin.id)
+			end)
+			x += 106
+		end
+		if (skin.pass or 0) > 0 then
+			s.robux = button(r, "", { Size = UDim2.fromOffset(100, 40), Position = UDim2.fromOffset(x, 12), BackgroundColor3 = ROBUX_GREEN, ZIndex = 12 }, function()
+				MarketplaceService:PromptGamePassPurchase(player, skin.pass)
+			end)
+			robuxIcon(s.robux, 24)
+			-- the pass's own price and picture, fetched once
+			task.spawn(function()
+				local ok, info = pcall(function()
+					return MarketplaceService:GetProductInfo(skin.pass, Enum.InfoType.GamePass)
+				end)
+				s.robux.Text = (ok and info and info.PriceInRobux) and tostring(info.PriceInRobux) or "Buy"
+				if not skin.icon and ok and info and (info.IconImageAssetId or 0) > 0 and pic:IsA("TextLabel") then
+					pic:Destroy()
+					picture(r, info.IconImageAssetId, "", 52, UDim2.fromOffset(6, 6))
+				end
+			end)
+		end
+		s.wear = button(r, "Wear", { Size = UDim2.fromOffset(84, 40), Position = UDim2.new(1, -90, 0, 12), ZIndex = 12 }, function()
+			local wearing = profile.skins and profile.skins[skin.skill] == skin.id
+			remotes.EquipSkin:FireServer(skin.skill, wearing and "" or skin.id)
+		end)
+		table.insert(skinRows, s)
+	end
+	do
+		local n, later = 0, {}
+		for _, skin in ipairs(Config.SKINS or {}) do
+			local price, ps = Seasons.skinPrice(skin)
+			if not skin.hidden then
+				if price and Seasons.openWindow(ps.id) then
+					n += 1
+					addSkin(skin, n)
+				elseif (skin.pass or 0) > 0 then
+					table.insert(later, skin)
 				end
 			end
-			list = kept
-		else
-			notice("You can take " .. Progress.MAX_BOOSTS .. " boosts. Tap Equip on one to put it back first.")
-			return
 		end
-		-- show the change straight away; the server's copy follows
-		profile.loadout = list
-		repaintShop()
-		remotes.SetLoadout:FireServer(list)
+		for _, skin in ipairs(later) do
+			n += 1
+			addSkin(skin, n)
+		end
+	end
+	local function refreshPasses()
+		task.spawn(function()
+			local ok, got = pcall(function()
+				return remotes:WaitForChild("OwnedSkins"):InvokeServer()
+			end)
+			if ok and type(got) == "table" then
+				passOwned = got
+				repaintShop()
+			end
+		end)
+	end
+	MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(_, _, bought)
+		if bought then
+			task.delay(1, refreshPasses)
+		end
 	end)
-	shopRows[id] = { owned = owned, take = take, minus = minus }
-end
--- what is packed for the next game
-local packed = frame(shop, { Size = UDim2.new(1, -24, 0, 46), Position = UDim2.fromOffset(12, 502), BackgroundColor3 = Color3.fromRGB(47, 107, 58), BackgroundTransparency = 0.4, ZIndex = 11 })
-corner(packed, 12)
-local packedText = label(packed, { Size = UDim2.new(1, -20, 1, -12), Position = UDim2.fromOffset(10, 6), ZIndex = 12 })
-button(shop, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -54), ZIndex = 11 }, function()
-	shop.Visible = false
-end)
-repaintShop = function()
-	shopTitle.Text = "\u{1F6D2} Boost Shop  \u{00B7}  \u{2B50} " .. tostring(profile.points or 0) .. " points"
-	for id, r in pairs(shopRows) do
-		local n = (profile.inv and profile.inv[id]) or 0
-		r.owned.Text = "Have\n" .. n
-		local mine = 0
-		for _, x in ipairs(profile.loadout or {}) do
-			if x == id then
-				mine += 1
+
+	-- the season's item for Robux (Developer Products; 0 = not on sale)
+	do
+		local bundles = {}
+		for _, w in ipairs(open) do
+			for _, bd in ipairs(w.season.bundles or {}) do
+				if (bd.product or 0) > 0 then
+					table.insert(bundles, { e = w.season, bd = bd })
+				end
 			end
 		end
-		r.take.Text = mine == 0 and "Equip" or mine == 1 and "\u{2705} Equipped" or ("\u{2705} x" .. mine)
-		r.take.BackgroundColor3 = mine > 0 and Color3.fromRGB(47, 107, 58) or PLUM
-		r.take.Visible = n > 0
-		r.minus.Visible = n > 0
-	end
-	local names = {}
-	for _, id in ipairs(profile.loadout or {}) do
-		local b = Progress.BOOSTS[id]
-		if b then
-			table.insert(names, b.icon .. " " .. b.name)
+		if #bundles > 0 then
+			local e1 = bundles[1].e
+			local itemList = page("items", e1.icon .. " " .. string.upper(string.sub(e1.many, 1, 1)) .. string.sub(e1.many, 2), 230)
+			for i, x in ipairs(bundles) do
+				local r = row(itemList, i, seasonImage(x.e), x.e.icon, x.bd.amount .. " " .. x.e.many, "To spend in this shop - you also find them on every floor")
+				local buy = button(r, "", { Size = UDim2.fromOffset(110, 40), Position = UDim2.new(1, -116, 0, 12), BackgroundColor3 = ROBUX_GREEN, ZIndex = 12 }, function()
+					MarketplaceService:PromptProductPurchase(player, x.bd.product)
+				end)
+				robuxIcon(buy, 24)
+				task.spawn(function()
+					local ok, info = pcall(function()
+						return MarketplaceService:GetProductInfo(x.bd.product, Enum.InfoType.Product)
+					end)
+					buy.Text = (ok and info and info.PriceInRobux) and tostring(info.PriceInRobux) or "Buy"
+				end)
+			end
 		end
 	end
-	packedText.Text = #names > 0 and ("Next game: " .. table.concat(names, " + ") .. "  (tap Equipped to put back)") or "Next game: nothing equipped yet"
 
+	-- what is packed for the next game (and, for a moment, what was just bought)
+	local packed = frame(shop, { Size = UDim2.new(1, -24, 0, 46), Position = UDim2.new(0, 12, 1, -58), BackgroundColor3 = Color3.fromRGB(47, 107, 58), BackgroundTransparency = 0.4, ZIndex = 11 })
+	corner(packed, 12)
+	local packedText = label(packed, { Size = UDim2.new(1, -20, 1, -12), Position = UDim2.fromOffset(10, 6), ZIndex = 12 })
+	local receiptUntil = 0
+	remotes:WaitForChild("CornBought").OnClientEvent:Connect(function(icon, name, count, total, isSkin, seasonId)
+		local e = Seasons.get(seasonId)
+		packedText.Text = "\u{2705} Bought " .. (isSkin and name or (icon .. " " .. count .. " x " .. name)) .. " for " .. total .. " " .. (e and e.many or "") .. (isSkin and " - wearing it next game!" or " - tap Equip")
+		receiptUntil = os.clock() + 5
+		task.delay(5.1, repaintShop)
+	end)
+
+	repaintShop = function()
+		local top = { "\u{1F6D2} Shop", "\u{2B50} " .. tostring(profile.points or 0) }
+		for _, w in ipairs(open) do
+			table.insert(top, w.season.icon .. " " .. Seasons.have(profile.stats, w.season))
+		end
+		shopTitle.Text = table.concat(top, "    ")
+		for id, r in pairs(boostRows) do
+			local n = (profile.inv and profile.inv[id]) or 0
+			r.have.Text = "Have\n" .. n
+			local mine = 0
+			for _, x in ipairs(profile.loadout or {}) do
+				if x == id then
+					mine += 1
+				end
+			end
+			r.take.Text = mine == 0 and "Equip" or mine == 1 and "\u{2705} Equipped" or ("\u{2705} x" .. mine)
+			r.take.BackgroundColor3 = mine > 0 and Color3.fromRGB(47, 107, 58) or PLUM
+			r.take.Visible = n > 0
+			r.minus.Visible = n > 0
+		end
+		for _, s in ipairs(skinRows) do
+			local owned = passOwned[s.skin.id] or (profile.skinsEarned and profile.skinsEarned[s.skin.id])
+			local wearing = profile.skins and profile.skins[s.skin.skill] == s.skin.id
+			s.status.Text = wearing and "\u{2705} Wearing" or owned and "\u{2705} Yours" or ""
+			if s.season then
+				s.season.Visible = not owned
+			end
+			if s.robux then
+				s.robux.Visible = not owned
+			end
+			s.wear.Visible = owned and true or false
+			s.wear.Text = wearing and "Take off" or "Wear"
+			s.wear.BackgroundColor3 = wearing and Color3.fromRGB(47, 107, 58) or PLUM
+		end
+		if os.clock() < receiptUntil then
+			return
+		end
+		local names = {}
+		for _, id in ipairs(profile.loadout or {}) do
+			local b = Progress.BOOSTS[id]
+			if b then
+				table.insert(names, b.icon .. " " .. b.name)
+			end
+		end
+		packedText.Text = #names > 0 and ("Next game: " .. table.concat(names, " + ") .. "  (tap Equipped to put back)") or "Next game: no boosts equipped yet"
+	end
+
+	openShop = function(key)
+		key = pages[key] and key or "boosts"
+		for k, p in pairs(pages) do
+			p.Visible = k == key
+			tabs[k].BackgroundColor3 = k == key and PUMP or PLUM
+			tabs[k].TextColor3 = k == key and NIGHT or CREAM
+		end
+		repaintShop()
+		shop.Visible = true
+		if key == "skins" then
+			refreshPasses()
+		end
+	end
 end
 shopBtn.Activated:Connect(function()
-	shop.Visible = true
+	openShop("boosts")
 end)
 Gamepad.panel(shop)
 remotes.OpenShop.OnClientEvent:Connect(function()
-	shop.Visible = true
+	openShop("boosts")
 end)
 
 -- ---------- characters and the skill ladder ----------

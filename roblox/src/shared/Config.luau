@@ -814,8 +814,8 @@ Config.SKINS = {
 	{ id = "echo_cocoa", skill = "echo", name = "Cozy Cocoa Echo", model = "EchoCocoa", feather = 150, pass = 2064569161 },
 	{ id = "bramble_acorn", skill = "bramble", name = "Acorn Bramble", model = "BrambleAcorn", feather = 150, pass = 2064942592 },
 }
--- every skin's Game Pass price (Managed pricing off - PASSES.md); the season
--- shops say a skin is also this many Robux as a pass
+-- every Thanksgiving skin's Game Pass price (Managed pricing off - PASSES.md);
+-- the Skins window's Robux button shows it (the Shop reads each pass's price)
 Config.SKIN_PASS_ROBUX = 99
 -- the owner can try every skin in Studio without buying it
 Config.SKINS_FREE_IN_STUDIO = true
