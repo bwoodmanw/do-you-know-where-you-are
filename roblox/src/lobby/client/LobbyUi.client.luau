@@ -1401,10 +1401,10 @@ do
 	local gs = open[1] and open[1].season
 	if game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId then
 		local giftBtn = button(gui, "\u{1F381} Gift", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0.5, 50, 1, -58 - 46 * math.max(0, #open - 1)), Size = UDim2.fromOffset(96, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
-		local panel = frame(gui, { Size = UDim2.fromOffset(560, 420), Position = UDim2.new(0.5, -280, 0.5, -210), Visible = false, ZIndex = 10 })
+		local panel = frame(gui, { Size = UDim2.fromOffset(660, 420), Position = UDim2.new(0.5, -330, 0.5, -210), Visible = false, ZIndex = 10 })
 		corner(panel, 18)
 		label(panel, { Size = UDim2.new(1, -20, 0, 36), Position = UDim2.fromOffset(10, 8), Text = "\u{1F381} Gifts (only you see this)", TextColor3 = PUMP, ZIndex = 11 })
-		label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = gs and ("For players in this Lobby server. " .. string.upper(string.sub(gs.many, 1, 1)) .. string.sub(gs.many, 2) .. " go to spend (not the badge).") or "For players in this Lobby server.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+		local giftSub = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = gs and ("For players in this Lobby server. " .. string.upper(string.sub(gs.many, 1, 1)) .. string.sub(gs.many, 2) .. " go to spend (not the badge).") or "For players in this Lobby server.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 		local giftList = Instance.new("ScrollingFrame")
 		giftList.BackgroundTransparency = 1
 		giftList.Position = UDim2.fromOffset(10, 70)
@@ -1417,6 +1417,49 @@ do
 		local ll = Instance.new("UIListLayout")
 		ll.Padding = UDim.new(0, 6)
 		ll.Parent = giftList
+		-- 3 Nov (Brent): give a skin - every skin, by character; tap one to give it
+		local skinPick = Instance.new("ScrollingFrame")
+		skinPick.BackgroundTransparency = 1
+		skinPick.Position = UDim2.fromOffset(10, 70)
+		skinPick.Size = UDim2.new(1, -20, 1, -130)
+		skinPick.AutomaticCanvasSize = Enum.AutomaticSize.Y
+		skinPick.CanvasSize = UDim2.new()
+		skinPick.ScrollBarThickness = 6
+		skinPick.ZIndex = 11
+		skinPick.Visible = false
+		skinPick.Parent = panel
+		do
+			local g = Instance.new("UIGridLayout")
+			g.CellSize = UDim2.fromOffset(196, 40)
+			g.CellPadding = UDim2.fromOffset(8, 6)
+			g.SortOrder = Enum.SortOrder.LayoutOrder
+			g.Parent = skinPick
+		end
+		local pickFor -- the player being given a skin
+		local pickTitle = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = "", TextColor3 = Color3.fromRGB(255, 210, 120), Visible = false, ZIndex = 12 })
+		do
+			local n = 0
+			for _, sk in ipairs(Config.SKILLS) do
+				for _, skin in ipairs(Config.SKINS or {}) do
+					if skin.skill == sk.id and not skin.hidden then
+						n += 1
+						button(skinPick, sk.icon .. " " .. skin.name, { LayoutOrder = n, BackgroundColor3 = PLUM, ZIndex = 13 }, function()
+							if pickFor then
+								remotes:WaitForChild("OwnerGift"):FireServer(pickFor.UserId, "skin", skin.id)
+							end
+						end)
+					end
+				end
+			end
+		end
+		local function showPicker(p)
+			pickFor = p
+			skinPick.Visible = p ~= nil
+			pickTitle.Visible = p ~= nil
+			giftList.Visible = p == nil
+			giftSub.Visible = p == nil
+			pickTitle.Text = p and ("Tap a skin to give it to " .. p.DisplayName .. " (theirs for good). Close goes back.") or ""
+		end
 		local function fill()
 			for _, c in ipairs(giftList:GetChildren()) do
 				if c:IsA("GuiObject") then
@@ -1440,13 +1483,22 @@ do
 					end)
 					x += 92
 				end
+				button(r, "\u{1F3AD} Skin", { Size = UDim2.fromOffset(88, 34), Position = UDim2.fromOffset(x, 5), BackgroundColor3 = Color3.fromRGB(140, 46, 112), ZIndex = 13 }, function()
+					showPicker(p)
+				end)
 			end
 		end
 		button(panel, "Close", { Size = UDim2.fromOffset(160, 44), Position = UDim2.new(0.5, -80, 1, -54), ZIndex = 11 }, function()
-			panel.Visible = false
+			-- from the skin list: back to the players; from there: closed
+			if pickFor then
+				showPicker(nil)
+			else
+				panel.Visible = false
+			end
 		end)
 		giftBtn.Activated:Connect(function()
 			panel.Visible = not panel.Visible
+			showPicker(nil)
 			if panel.Visible then
 				fill()
 			end

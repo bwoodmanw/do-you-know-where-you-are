@@ -319,9 +319,10 @@ local function ownsSkin(plr, skin)
 	if Config.SKINS_FREE_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId then
 		return true
 	end
-	if Seasons.skinPrice(skin) then
-		-- a season skin (priced in candy corns, feathers...): yours once bought
-		-- in its shop; one that is also a Game Pass is yours either way
+	-- a skin bought in a season's shop, or given by the owner (3 Nov: any
+	-- skin, Game Pass ones too): yours for good; a Game Pass one is yours
+	-- either way
+	do
 		local d = Profile.get(plr)
 		if d ~= nil and d.skinsEarned ~= nil and d.skinsEarned[skin.id] == true then
 			return true

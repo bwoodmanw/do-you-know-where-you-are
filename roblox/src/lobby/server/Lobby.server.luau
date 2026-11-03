@@ -1162,6 +1162,34 @@ do
 		if not (game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId) then
 			return
 		end
+		-- 3 Nov (Brent): a skin, theirs for good and worn straight away
+		-- (kind "skin", amount = the skin's id)
+		if kind == "skin" then
+			local to = typeof(userId) == "number" and Players:GetPlayerByUserId(userId)
+			local data = to and Profile.get(to)
+			if not data then
+				return Notice:FireClient(plr, "That player isn't in this Lobby any more.")
+			end
+			for _, skin in ipairs(Config.SKINS or {}) do
+				if skin.id == amount and not skin.hidden then
+					data.skinsEarned = data.skinsEarned or {}
+					if data.skinsEarned[skin.id] then
+						return Notice:FireClient(plr, to.DisplayName .. " already has " .. skin.name .. ".")
+					end
+					data.skinsEarned[skin.id] = true
+					data.skins = data.skins or {}
+					data.skins[skin.skill] = skin.id
+					Profile.publish(to)
+					Profile.save(to)
+					Notice:FireClient(plr, "\u{1F381} Gave " .. to.DisplayName .. " " .. skin.name .. ".")
+					if to ~= plr then
+						Notice:FireClient(to, "\u{1F381} A gift from " .. plr.DisplayName .. ": the " .. skin.name .. " skin! You're wearing it - change it in the Shop's Skins.")
+					end
+					return
+				end
+			end
+			return
+		end
 		local w = kind ~= "points" and typeof(kind) == "string" and Seasons.openWindow(kind)
 		local e = w and w.season
 		local allowed = kind == "points" and Config.GIFT_POINTS or e and e.gift or {}
@@ -1645,9 +1673,10 @@ local function ownsSkin(plr, skin)
 	if Config.SKINS_FREE_FOR_OWNER and game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId then
 		return true
 	end
-	if Seasons.skinPrice(skin) then
-		-- a season skin (priced in candy corns, feathers...): yours once bought
-		-- in its shop; one that is also a Game Pass is yours either way
+	-- a skin bought in a season's shop, or given by the owner (3 Nov: any
+	-- skin, Game Pass ones too): yours for good; a Game Pass one is yours
+	-- either way
+	do
 		local d = Profile.get(plr)
 		if d ~= nil and d.skinsEarned ~= nil and d.skinsEarned[skin.id] == true then
 			return true
