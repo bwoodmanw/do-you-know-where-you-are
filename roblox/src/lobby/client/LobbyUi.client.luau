@@ -1429,25 +1429,67 @@ do
 		skinPick.Visible = false
 		skinPick.Parent = panel
 		do
-			local g = Instance.new("UIGridLayout")
-			g.CellSize = UDim2.fromOffset(196, 40)
-			g.CellPadding = UDim2.fromOffset(8, 6)
-			g.SortOrder = Enum.SortOrder.LayoutOrder
-			g.Parent = skinPick
+			local l = Instance.new("UIListLayout")
+			l.Padding = UDim.new(0, 4)
+			l.SortOrder = Enum.SortOrder.LayoutOrder
+			l.Parent = skinPick
 		end
 		local pickFor -- the player being given a skin
 		local pickTitle = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = "", TextColor3 = Color3.fromRGB(255, 210, 120), Visible = false, ZIndex = 12 })
 		do
+			-- 3 Nov (Brent): a section per character - its portrait and name,
+			-- then its skins as tiles with their pictures (the Game Pass's own,
+			-- fetched once, or the skin's icon)
+			local function pic(parent, id, size, pos)
+				local p = Instance.new("ImageLabel")
+				p.BackgroundTransparency = 1
+				p.ScaleType = Enum.ScaleType.Fit
+				p.Size = UDim2.fromOffset(size, size)
+				p.Position = pos
+				p.Image = (id or 0) > 0 and ("rbxassetid://" .. id) or ""
+				p.ZIndex = 14
+				p.Parent = parent
+				return p
+			end
 			local n = 0
 			for _, sk in ipairs(Config.SKILLS) do
+				local mine = {}
 				for _, skin in ipairs(Config.SKINS or {}) do
 					if skin.skill == sk.id and not skin.hidden then
-						n += 1
-						button(skinPick, sk.icon .. " " .. skin.name, { LayoutOrder = n, BackgroundColor3 = PLUM, ZIndex = 13 }, function()
+						table.insert(mine, skin)
+					end
+				end
+				if #mine > 0 then
+					n += 1
+					local head = frame(skinPick, { Size = UDim2.new(1, -10, 0, 40), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
+					corner(pic(head, Config.PORTRAITS and Config.PORTRAITS[sk.id], 36, UDim2.fromOffset(2, 2)), 18)
+					label(head, { Size = UDim2.fromOffset(300, 32), Position = UDim2.fromOffset(46, 4), Text = sk.name, TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 13 })
+					n += 1
+					local tiles = frame(skinPick, { Size = UDim2.new(1, -10, 0, 76), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
+					local tl = Instance.new("UIListLayout")
+					tl.FillDirection = Enum.FillDirection.Horizontal
+					tl.Padding = UDim.new(0, 8)
+					tl.SortOrder = Enum.SortOrder.LayoutOrder
+					tl.Parent = tiles
+					for i, skin in ipairs(mine) do
+						local b = button(tiles, "", { Size = UDim2.fromOffset(200, 72), LayoutOrder = i, BackgroundColor3 = PLUM, ZIndex = 13 }, function()
 							if pickFor then
 								remotes:WaitForChild("OwnerGift"):FireServer(pickFor.UserId, "skin", skin.id)
 							end
 						end)
+						local face = pic(b, skin.icon, 60, UDim2.fromOffset(-2, 1))
+						corner(face, 30)
+						label(b, { Size = UDim2.fromOffset(118, 56), Position = UDim2.fromOffset(64, 3), Text = skin.name, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 14 })
+						if not skin.icon and (skin.pass or 0) > 0 then
+							task.spawn(function()
+								local ok, info = pcall(function()
+									return MarketplaceService:GetProductInfo(skin.pass, Enum.InfoType.GamePass)
+								end)
+								if ok and info and (info.IconImageAssetId or 0) > 0 then
+									face.Image = "rbxassetid://" .. info.IconImageAssetId
+								end
+							end)
+						end
 					end
 				end
 			end
