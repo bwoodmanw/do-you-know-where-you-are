@@ -543,6 +543,7 @@ Config.CHARACTER_ASSETS = {
 	-- the Thanksgiving skins (16 Oct; their Config.SKINS entries come with their Game Passes)
 	PatchPie = 139357223306899,
 	BrainyChef = 82544604458512, -- 2 Nov: the arms-out toon (chef-brainy-arms-toon-x5.glb)
+	BrambleAcorn = 135841043095619, -- 2 Nov
 }
 
 -- Boost pictures: the Image asset id of each uploaded boost icon
@@ -805,7 +806,7 @@ Config.SKINS = {
 	{ id = "muscle_gridiron", skill = "muscle", name = "Gridiron Muscle", model = "MuscleGridiron", feather = 150, pass = 2064732949, hidden = true },
 	{ id = "echo_dj", skill = "echo", name = "Feast DJ Echo", model = "EchoDJ", feather = 150, pass = 2064403446, hidden = true },
 	{ id = "echo_cocoa", skill = "echo", name = "Cozy Cocoa Echo", model = "EchoCocoa", feather = 150, pass = 2064569161, hidden = true },
-	{ id = "bramble_acorn", skill = "bramble", name = "Acorn Bramble", model = "BrambleAcorn", feather = 150, pass = 2064942592, hidden = true },
+	{ id = "bramble_acorn", skill = "bramble", name = "Acorn Bramble", model = "BrambleAcorn", feather = 150, pass = 2064942592 },
 }
 -- every skin's Game Pass price (Managed pricing off - PASSES.md); the season
 -- shops say a skin is also this many Robux as a pass
