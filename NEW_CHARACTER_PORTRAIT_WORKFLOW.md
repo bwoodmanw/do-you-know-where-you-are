@@ -24,7 +24,47 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 [PORTRAIT of Harmony, a warm, musical girl: warm golden-tan skin, big dark-brown eyes, long straight black hair past her shoulders with straight bangs, two small yellow music-note hair clips on one side, a lavender hoodie with the hood down and three wavy darker-purple bands across the chest, a small round gold music-box pendant on a short gold chain, a black-and-white piano-key wristband on her right wrist. Eyes softly smiling as she hums, one hand raised near her shoulder with a few small gold music notes floating up from it. Behind her a soft glowing circle in lavender and gold with a few small floating music notes inside it, on a deep purple background. NO headphones. Badge: a purple circle with a gold rim and a small gold music box inside.] | [model-input\harmony\front-toon.png, roblox-store\portraits\Nutmeg.png] | [roblox-store\portraits\Harmony.png]
 ```
 
-## After ChatGPT makes them
+## Reusable generation workflow
+
+Structured workflow: [new-character-portraits.json](tools/workflows/new-character-portraits.json).
+Resolve `reference_root` and `output_root` relative to this project root.
+
+1. Process `assets` in table order: Cloud, Holly, Clone, then Harmony.
+2. For every asset, concatenate `picture_standard` verbatim, two newlines,
+   and its `picture` verbatim. Include the full standard with every call.
+3. Check and inspect every reference, then attach every `references` entry
+   in its listed order, without sorting or deduplicating. The first fixes
+   character identity; the second fixes the portrait layout and finish.
+4. Use one built-in image generation call per asset. Request an opaque,
+   square portrait. Inspect the result against both references and the
+   character-specific prompt, including the bottom-right gold-rimmed badge.
+5. Create the destination parent folder if needed, then copy the selected
+   PNG to `output_root/file_name`. Preserve existing files on reruns unless
+   replacement is requested; otherwise use a versioned sibling filename.
+6. Verify PNG format, square dimensions and an opaque background. Record
+   the full submitted prompt, ordered reference paths, generated source,
+   actual destination, dimensions and visual checks in
+   `art/roblox-store/portraits/new-character-generation-report.json`.
+
+To add pictures, append assets with `picture`, `references` and `file_name`.
+
+## Execution record (4 Nov 2026)
+
+All four portraits were generated with the built-in image tool, using the
+unmodified Picture Standard and each Picture prompt. Every call attached
+the approved character front first and Nutmeg's finished portrait second.
+The four selected originals are opaque 1254 x 1254 PNGs saved as
+`Cloud.png`, `Holly.png`, `Clone.png` and `Harmony.png` in
+`art/roblox-store/portraits/`.
+
+Visual checks covered likeness, clothing and accessories, glowing circles,
+corner badges, and absence of visible words or logos. Clone's jacket is
+teal on the viewer's left and orange on the viewer's right; his friendly
+copy is a translucent background outline. Harmony has three purple bands,
+her piano-key wristband and no headphones. Full prompts and generation
+provenance are in the report linked above. No Roblox upload was performed.
+
+## After generation
 
 1. Tell Claude when the four pictures are saved. Claude checks each one
    (it looks like its model, no look-alikes or logos, the badge is in the

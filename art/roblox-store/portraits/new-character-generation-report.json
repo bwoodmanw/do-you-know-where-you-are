@@ -1,0 +1,69 @@
+{
+  "workflow": "tools/workflows/new-character-portraits.json",
+  "generated_on": "2026-11-04",
+  "generation_tool": "built-in image_gen",
+  "status": "complete",
+  "shared_visual_check": "All four inspected: chest-up framing, warm expression, glowing circle, bottom-right gold-rimmed badge; no visible text, logos, or recognizable existing character likeness.",
+  "assets": [
+    {
+      "file_name": "roblox-store\\portraits\\Cloud.png",
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Cloud.png",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-c94b044f-38b1-47c2-b8d0-915f35aca7cd.png",
+      "prompt": "A square character portrait for a kids' co-op escape game for ages 8 and up. The FIRST attached picture is the character's approved full-body look: keep their face, skin tone, eye color, hair and clothes exactly the same, only in a richer, polished 3D animated-movie style with soft light, big clear eyes and a warm smile. The SECOND attached picture is another character's finished portrait: copy its layout exactly - chest up, turned slightly toward the camera, the same size of head, a soft glowing circle behind the character on a dark background, and a round badge with a gold rim in the bottom-right corner - but it is a different character, so take nothing else from it (no antlers, no hood, no scarf, no bell, no mitten). No logos, brand marks, printed words, letters or numbers anywhere. Not a copy of any existing cartoon, film or game character. Bright, friendly and right for young kids. One character only, no text.\n\nPORTRAIT of Cloud, a cheerful, dreamy girl: warm light-brown skin, light-blue eyes, an almost-white chin-length rounded bob with a faint pale-blue tint and a soft side-swept fringe, eyebrows the same almost-white as her hair, a sunny-yellow raincoat with big round white buttons and the hood down, the white straps of her backpack on her shoulders. One hand raised beside her face with a small puff of soft white cloud floating just above her open palm. Behind her a soft glowing circle in pale sky-blue and white with a few small fluffy clouds inside it, on a deep navy-blue background. Badge: a sky-blue circle with a gold rim and a small fluffy white cloud inside.",
+      "references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\cloud\\front-toon.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Nutmeg.png"
+      ],
+      "format": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "opaque": true,
+      "visual_check": "Approved hair, blue eyes, yellow raincoat, white buttons and straps; floating cloud; sky-blue/white circle; navy background; cloud badge."
+    },
+    {
+      "file_name": "roblox-store\\portraits\\Holly.png",
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Holly.png",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-a5ad6796-d3cf-4a2a-9da0-fa7da2bea25a.png",
+      "prompt": "A square character portrait for a kids' co-op escape game for ages 8 and up. The FIRST attached picture is the character's approved full-body look: keep their face, skin tone, eye color, hair and clothes exactly the same, only in a richer, polished 3D animated-movie style with soft light, big clear eyes and a warm smile. The SECOND attached picture is another character's finished portrait: copy its layout exactly - chest up, turned slightly toward the camera, the same size of head, a soft glowing circle behind the character on a dark background, and a round badge with a gold rim in the bottom-right corner - but it is a different character, so take nothing else from it (no antlers, no hood, no scarf, no bell, no mitten). No logos, brand marks, printed words, letters or numbers anywhere. Not a copy of any existing cartoon, film or game character. Bright, friendly and right for young kids. One character only, no text.\n\nPORTRAIT of Holly, a cheerful, kind girl: warm light-peach skin, bright green eyes, long straight golden-blonde hair worn loose over her shoulders (not in pigtails), a round red-and-white peppermint candy with a little red bow on each side of her head, a red-and-green striped sweater with a round white collar, a small sprig of two holly leaves and three red berries at the collar. One hand holding up a round red-and-white peppermint candy beside her cheek, smiling. Behind her a soft glowing circle in red and white with a few small peppermint swirls and snowflakes inside it, on a deep pine-green background. Badge: a red circle with a gold rim and two green holly leaves with three red berries inside.",
+      "references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\holly\\front-toon.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Nutmeg.png"
+      ],
+      "format": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "opaque": true,
+      "visual_check": "Loose blonde hair, green eyes, peppermint bows, striped sweater and holly collar; held peppermint; red/white circle; pine-green background; holly badge."
+    },
+    {
+      "file_name": "roblox-store\\portraits\\Clone.png",
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Clone.png",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-9a58f9a0-aa8e-4d62-9ded-38675bb77963.png",
+      "prompt": "A square character portrait for a kids' co-op escape game for ages 8 and up. The FIRST attached picture is the character's approved full-body look: keep their face, skin tone, eye color, hair and clothes exactly the same, only in a richer, polished 3D animated-movie style with soft light, big clear eyes and a warm smile. The SECOND attached picture is another character's finished portrait: copy its layout exactly - chest up, turned slightly toward the camera, the same size of head, a soft glowing circle behind the character on a dark background, and a round badge with a gold rim in the bottom-right corner - but it is a different character, so take nothing else from it (no antlers, no hood, no scarf, no bell, no mitten). No logos, brand marks, printed words, letters or numbers anywhere. Not a copy of any existing cartoon, film or game character. Bright, friendly and right for young kids. One character only, no text.\n\nPORTRAIT of Clone, a clever, cheeky boy: warm brown skin with a few freckles on his cheeks, big brown eyes, short curly black hair, round orange goggles with dark lenses pushed up on his forehead, a zip-up jacket split down the middle - teal on his right side (the left of the picture) and orange on his left side - with a plain gray zipper and a white T-shirt at the neck, a chunky round gray wrist gadget with a plain dark screen on his left wrist. A sly, friendly grin, one hand raised in a small wave showing the wrist gadget. Behind him a soft glowing circle that is half teal and half orange, on a deep charcoal-gray background, with a faint see-through outline of his own shape beside him like a friendly copy. Badge: a teal circle with a gold rim and two simple matching person shapes side by side inside, one teal and one orange.",
+      "references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\clone\\front-toon.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Nutmeg.png"
+      ],
+      "format": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "opaque": true,
+      "visual_check": "Brown eyes, freckles, curls and goggles; teal on viewer left, orange on viewer right; left-wrist gadget and wave; translucent copy outline; matching person badge."
+    },
+    {
+      "file_name": "roblox-store\\portraits\\Harmony.png",
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Harmony.png",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-73fd8cbc-19cd-4371-b2f5-6eee0c594bb1.png",
+      "prompt": "A square character portrait for a kids' co-op escape game for ages 8 and up. The FIRST attached picture is the character's approved full-body look: keep their face, skin tone, eye color, hair and clothes exactly the same, only in a richer, polished 3D animated-movie style with soft light, big clear eyes and a warm smile. The SECOND attached picture is another character's finished portrait: copy its layout exactly - chest up, turned slightly toward the camera, the same size of head, a soft glowing circle behind the character on a dark background, and a round badge with a gold rim in the bottom-right corner - but it is a different character, so take nothing else from it (no antlers, no hood, no scarf, no bell, no mitten). No logos, brand marks, printed words, letters or numbers anywhere. Not a copy of any existing cartoon, film or game character. Bright, friendly and right for young kids. One character only, no text.\n\nPORTRAIT of Harmony, a warm, musical girl: warm golden-tan skin, big dark-brown eyes, long straight black hair past her shoulders with straight bangs, two small yellow music-note hair clips on one side, a lavender hoodie with the hood down and three wavy darker-purple bands across the chest, a small round gold music-box pendant on a short gold chain, a black-and-white piano-key wristband on her right wrist. Eyes softly smiling as she hums, one hand raised near her shoulder with a few small gold music notes floating up from it. Behind her a soft glowing circle in lavender and gold with a few small floating music notes inside it, on a deep purple background. NO headphones. Badge: a purple circle with a gold rim and a small gold music box inside.",
+      "references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\harmony\\front-toon.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Nutmeg.png"
+      ],
+      "format": "PNG",
+      "width": 1254,
+      "height": 1254,
+      "opaque": true,
+      "visual_check": "Dark-brown eyes, black hair and bangs, two note clips; exactly three purple bands; pendant and right-wrist piano keys; floating notes; music-box badge; no headphones."
+    }
+  ]
+}
