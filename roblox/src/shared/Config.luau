@@ -899,9 +899,9 @@ Config.SKINS_FREE_FOR_OWNER = true
 -- (CHARACTER_UNLOCK); everyone else's are free as before
 Config.STUDIO_NEW_CHARACTERS = true
 Config.NEW_SKILLS = {
-	-- release: when she appears in the live game (1 Dec 2026, midnight US
-	-- Eastern = 05:00 UTC, as the Christmas shop opens); a server already
-	-- running then shows her once it restarts
+	-- release: when she goes on sale (1 Dec 2026, midnight US Eastern = 05:00
+	-- UTC, as the Christmas shop opens); until then she shows locked, "arrives
+	-- Dec 1", and only the owner and friends the owner gifts her to play her
 	{ id = "nutmeg", name = "Nutmeg", icon = "\u{1F514}", say = "Sniffs out keys", color = Color3.fromRGB(196, 120, 60), unlock = true, release = 1796101200 },
 	-- Cloud (4 Nov): free like the first eight; live once her model is saved
 	{ id = "cloud", name = "Cloud", icon = "\u{2601}", say = "Hides the crew in fog", color = Color3.fromRGB(150, 200, 255) },
@@ -909,7 +909,9 @@ Config.NEW_SKILLS = {
 do
 	local studio = game:GetService("RunService"):IsStudio()
 	for _, sk in ipairs(Config.NEW_SKILLS) do
-		if ((Config.CHARACTER_ASSETS[sk.name] or 0) > 0 and os.time() >= (sk.release or 0)) or (studio and Config.STUDIO_NEW_CHARACTERS) then
+		-- 4 Nov (Brent): in as soon as the model is saved - before `release` she
+		-- shows locked ("arrives Dec 1") except to the owner and anyone gifted her
+		if (Config.CHARACTER_ASSETS[sk.name] or 0) > 0 or (studio and Config.STUDIO_NEW_CHARACTERS) then
 			table.insert(Config.SKILLS, sk)
 		end
 	end

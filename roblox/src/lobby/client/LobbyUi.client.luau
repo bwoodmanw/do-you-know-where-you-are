@@ -1455,6 +1455,36 @@ do
 				return p
 			end
 			local n = 0
+			-- 4 Nov (Brent): characters you unlock (Nutmeg) can be given too,
+			-- even before they go on sale - first, under "Characters"
+			do
+				local chars = {}
+				for _, sk in ipairs(Config.SKILLS) do
+					if Config.CHARACTER_UNLOCK[sk.id] then
+						table.insert(chars, sk)
+					end
+				end
+				if #chars > 0 then
+					n += 1
+					local head = frame(skinPick, { Size = UDim2.new(1, -10, 0, 40), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
+					label(head, { Size = UDim2.fromOffset(300, 32), Position = UDim2.fromOffset(6, 4), Text = "\u{2B50} Characters", TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 13 })
+					n += 1
+					local tiles = frame(skinPick, { Size = UDim2.new(1, -10, 0, 76), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
+					local tl = Instance.new("UIListLayout")
+					tl.FillDirection = Enum.FillDirection.Horizontal
+					tl.Padding = UDim.new(0, 8)
+					tl.Parent = tiles
+					for _, sk in ipairs(chars) do
+						local b = button(tiles, "", { Size = UDim2.fromOffset(200, 72), BackgroundColor3 = PLUM, ZIndex = 13 }, function()
+							if pickFor then
+								remotes:WaitForChild("OwnerGift"):FireServer(pickFor.UserId, "char", sk.id)
+							end
+						end)
+						corner(pic(b, Config.PORTRAITS and Config.PORTRAITS[sk.id], 60, UDim2.fromOffset(-2, 1)), 30)
+						label(b, { Size = UDim2.fromOffset(118, 56), Position = UDim2.fromOffset(64, 3), Text = sk.name .. " (character)", TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 14 })
+					end
+				end
+			end
 			for _, sk in ipairs(Config.SKILLS) do
 				local mine = {}
 				for _, skin in ipairs(Config.SKINS or {}) do
@@ -1503,7 +1533,7 @@ do
 			pickTitle.Visible = p ~= nil
 			giftList.Visible = p == nil
 			giftSub.Visible = p == nil
-			pickTitle.Text = p and ("Tap a skin to give it to " .. p.DisplayName .. " (theirs for good). Close goes back.") or ""
+			pickTitle.Text = p and ("Tap a character or skin to give it to " .. p.DisplayName .. " (theirs for good). Close goes back.") or ""
 		end
 		local function fill()
 			for _, c in ipairs(giftList:GetChildren()) do
@@ -1981,7 +2011,9 @@ do
 		local u = Config.CHARACTER_UNLOCK[sk.id]
 		local e = Seasons.get(u.season)
 		local open = e and Seasons.openWindow(e.id)
-		local r = row(skinList, order, Config.PORTRAITS and Config.PORTRAITS[sk.id], sk.icon, sk.name, (e and (e.look .. " character - ") or "") .. sk.say)
+		-- before she goes on sale (release): "arrives Dec 1", no buttons
+		local early = sk.release and os.time() < sk.release
+		local r = row(skinList, order, Config.PORTRAITS and Config.PORTRAITS[sk.id], sk.icon, sk.name, early and (sk.name .. " arrives Dec 1 - " .. sk.say) or ((e and (e.look .. " character - ") or "") .. sk.say))
 		previewTap(r, sk.name, sk.id, sk.name)
 		local c = { id = sk.id, status = label(r, { Size = UDim2.fromOffset(120, 40), Position = UDim2.fromOffset(318, 12), Text = "", ZIndex = 12 }) }
 		local x = 446
@@ -1991,7 +2023,7 @@ do
 			end)
 			x += 106
 		end
-		if (u.pass or 0) > 0 then
+		if (u.pass or 0) > 0 and not early then
 			c.robux = button(r, "", { Size = UDim2.fromOffset(100, 40), Position = UDim2.fromOffset(x, 12), BackgroundColor3 = ROBUX_GREEN, ZIndex = 12 }, function()
 				MarketplaceService:PromptGamePassPurchase(player, u.pass)
 			end)

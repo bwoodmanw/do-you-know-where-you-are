@@ -1202,6 +1202,30 @@ do
 		if not (game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId) then
 			return
 		end
+		-- 4 Nov (Brent): a character you unlock (Nutmeg), theirs for good - also
+		-- before she goes on sale (kind "char", amount = the character's id)
+		if kind == "char" then
+			local to = typeof(userId) == "number" and Players:GetPlayerByUserId(userId)
+			local data = to and Profile.get(to)
+			local u = typeof(amount) == "string" and Config.CHARACTER_UNLOCK[amount]
+			if not data or not u then
+				return Notice:FireClient(plr, "That player isn't in this Lobby any more.")
+			end
+			local name = string.upper(string.sub(amount, 1, 1)) .. string.sub(amount, 2)
+			data.charsEarned = data.charsEarned or {}
+			if data.charsEarned[amount] then
+				return Notice:FireClient(plr, to.DisplayName .. " already has " .. name .. ".")
+			end
+			data.charsEarned[amount] = true
+			Profile.publish(to)
+			Profile.save(to)
+			paintUnlocked(to)
+			Notice:FireClient(plr, "\u{1F381} Gave " .. to.DisplayName .. " " .. name .. ".")
+			if to ~= plr then
+				Notice:FireClient(to, "\u{1F381} A gift from " .. plr.DisplayName .. ": " .. name .. "! Pick her in your next game.")
+			end
+			return
+		end
 		-- 3 Nov (Brent): a skin, theirs for good and worn straight away
 		-- (kind "skin", amount = the skin's id)
 		if kind == "skin" then
