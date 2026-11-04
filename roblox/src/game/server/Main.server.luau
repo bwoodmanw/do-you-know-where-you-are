@@ -92,6 +92,7 @@ local Press = remote("Press") -- client -> server: colour
 local PickSkill = remote("PickSkill") -- client -> server: skill id
 local ReadyUp = remote("Ready") -- client -> server: pressed Play on the character screen
 local UseSkill = remote("UseSkill") -- client -> server: optional position (Echo)
+local RingBells = remote("RingBells") -- client -> server: Nutmeg's Jingle Bells (level 20), once a game
 local AskClue = remote("AskClue")
 local Say = remote("Say") -- client -> server: phrase index
 local Bubble = remote("Bubble") -- server -> clients: player, phrase index
@@ -3460,14 +3461,6 @@ do
 				end
 				say("info", best and ("\u{2744} Snow Sense: the nearest key is in the " .. roomOf(best) .. "!") or "\u{2744} Snow Sense: no keys left to find!", nil, plr)
 			end
-			-- Jingle Bells (level 20): once a game, the first dash with the host out
-			-- freezes him for Config.NUTMEG.bells seconds, wherever he is
-			if p20 == "bells" and host and host.model and not once["bells" .. plr.UserId] then
-				once["bells" .. plr.UserId] = true
-				host:stun(nm.bells)
-				RoundState:SetAttribute("FrozenUntil", now + nm.bells)
-				say("info", "\u{1F514}\u{1F514} Jingle Bells! The host is frozen for " .. nm.bells .. " seconds!")
-			end
 			return true
 		end
 		return nil -- not a new button
@@ -3880,6 +3873,29 @@ ReadyUp.OnServerEvent:Connect(function(plr)
 	if plr:GetAttribute("Skill") then
 		plr:SetAttribute("Ready", true)
 	end
+end)
+
+-- Nutmeg's Jingle Bells (level 20; 4 Nov, Brent: her choice when, not her first
+-- dash): its own button, once a game - the host freezes for Config.NUTMEG.bells
+-- seconds wherever he is. Not used up while the host isn't out yet
+RingBells.OnServerEvent:Connect(function(plr)
+	if plr:GetAttribute("Skill") ~= "nutmeg" or plr:GetAttribute("Power20") ~= "bells" or plr:GetAttribute("BellsUsed")
+		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
+		return
+	end
+	if not (host and host.model) then
+		return say("info", "\u{1F514} The host isn't out yet - save your Jingle Bells for when he is.", nil, plr)
+	end
+	local seconds = Config.NUTMEG.bells
+	plr:SetAttribute("BellsUsed", true)
+	host:stun(seconds)
+	RoundState:SetAttribute("FrozenUntil", workspace:GetServerTimeNow() + seconds)
+	local h = hrpOf(plr)
+	if h then
+		Effects.sound(h.Position, "bell", 1)
+		Effects.at(plr, "reveal")
+	end
+	say("info", "\u{1F514}\u{1F514} " .. plr.DisplayName .. " rang the Jingle Bells! The host is frozen for " .. seconds .. " seconds!")
 end)
 
 UseSkill.OnServerEvent:Connect(function(plr, pos)
@@ -4470,6 +4486,12 @@ function round.start()
 		diff = diffKey, earned = {}, startedAt = now, endsAt = now + diff.timer, frenzy = false }
 	-- Tower Run: the next floor of the climb keeps the points, the clock and the host
 	local carry = towerCarry
+	if not carry then
+		-- a new game (not the next floor of a Tower Run): Nutmeg's Jingle Bells is back
+		for _, p in ipairs(Players:GetPlayers()) do
+			p:SetAttribute("BellsUsed", false)
+		end
+	end
 	towerCarry = nil
 	if RoundState:GetAttribute("Tower") then
 		state.towerFloor = carry and carry.floor or 1

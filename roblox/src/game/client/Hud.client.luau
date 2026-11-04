@@ -573,6 +573,30 @@ local runBtn = button(acts, "\u{1F3C3} Run", { LayoutOrder = 1 }, function()
 	runToggle = not runToggle
 end)
 local skillBtn = button(acts, "\u{2B50} Skill", { LayoutOrder = 2, BackgroundColor3 = Color3.fromRGB(47, 107, 58) })
+do
+	-- Nutmeg's Jingle Bells (level 20; 4 Nov, Brent): its own button, once a
+	-- game, used whenever she chooses - B on a keyboard, R2 on a controller
+	local bellsBtn = button(acts, "\u{1F514} Jingle Bells" .. ((not TOUCH and UserInputService.KeyboardEnabled) and " (B)" or ""), { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(190, 40, 50), Visible = false })
+	local function ring()
+		if bellsBtn.Visible then
+			remotes.RingBells:FireServer()
+		end
+	end
+	bellsBtn.Activated:Connect(ring)
+	local function paintBells()
+		bellsBtn.Visible = player:GetAttribute("Skill") == "nutmeg" and player:GetAttribute("Power20") == "bells" and not player:GetAttribute("BellsUsed")
+	end
+	for _, a in ipairs({ "Skill", "Power20", "BellsUsed" }) do
+		player:GetAttributeChangedSignal(a):Connect(paintBells)
+	end
+	paintBells()
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if not processed and input.KeyCode == Enum.KeyCode.B then
+			ring()
+		end
+	end)
+	Gamepad.bind(Enum.KeyCode.ButtonR2, ring)
+end
 local sayBtn = button(acts, (not TOUCH and UserInputService.KeyboardEnabled) and "\u{1F4AC} Say (T)" or "\u{1F4AC} Say", { LayoutOrder = 3 })
 local outBtn = button(acts, "\u{1F440} Come out", { LayoutOrder = 4, Visible = false }, function()
 	remotes.Unhide:FireServer()

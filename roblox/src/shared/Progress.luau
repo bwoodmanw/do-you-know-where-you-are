@@ -611,7 +611,7 @@ local SPECIAL = {
 			{ id = "nimble19", name = "Nimble Hooves", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[20] = {
-			{ id = "bells20", name = "Jingle Bells", say = "Once a game, your first Sleigh Dash after the host comes out freezes him 7 s, wherever he is", mods = { p20 = "bells" } },
+			{ id = "bells20", name = "Jingle Bells", say = "A Jingle Bells button: once a game, when you choose, the host freezes 7 s, wherever he is", mods = { p20 = "bells" } },
 			{ id = "riders20", name = "Two Riders", say = "Sleigh Dash pulls the two nearest friends along", mods = { p20 = "riders" } },
 		},
 	},

@@ -331,7 +331,7 @@ Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, 
 -- screen only); Sleigh Dash runs `dashMult` times as fast for `dash` seconds and
 -- pulls the nearest friend within `pull` studs along. Level 10 Jingle Dash: a
 -- host within `jingleRange` freezes `jingleStun` s after each dash; level 20
--- Jingle Bells: once a game the host freezes `bells` s, anywhere
+-- Jingle Bells: its own button, once a game, the host freezes `bells` s, anywhere
 Config.NUTMEG = { nose = 20, dash = 1.5, dashMult = 2, pull = 12, jingleRange = 20, jingleStun = 2, bells = 7, snowSense = 5 }
 -- characters you unlock (3 Nov): earned with a season's item in its shop
 -- (`price` of it), or a Game Pass (`pass`, 0 = not on sale yet; 399 Robux)
