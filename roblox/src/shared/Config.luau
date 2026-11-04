@@ -417,20 +417,66 @@ Config.COACH_GAMES = 2
 Config.BARRICADE = { crates = 6, reach = 16, stands = 10, hold = 4 }
 
 -- what each skill does, and how you use it, for the character select screen
+-- each character's skills, one part per skill (4 Nov, Brent: shown by
+-- shared/SkillCard with a tag - kind: passive = ALWAYS ON, hold = HOLD E
+-- (or `key`) at something in the house, press = PRESS R, the skill button)
 Config.SKILL_INFO = {
-	tinker = { about = "Picks the locked doors inside the house, so the team never needs to hunt for their keys - the Store Room too. Once a game Tinker can pick the big door's keypad to learn one color of the code.\nToolkit: the next lock or keypad picks in an instant.", how = "Hold F at a locked door, or at the big door's keypad. Press Toolkit (R) first to make it instant." },
-	shadow = { about = "Harder for the host to spot than anyone.\nSneak: for a few seconds the host can't see or grab Shadow.", how = "Press the Sneak button. It recharges." },
-	brainy = { about = "Reads the twisty party invitation and cracks the whole door code. Clues cost Brainy half as many points.\nThink!: lights up the next thing to do, for free.", how = "Find the twisty invitation (behind the first locked door) and press E. Press Think! (R) when you're stuck." },
-	muscle = { about = "Shoves away junk heaped in blocked doorways (and the Junk Closet's bonus present), quietly.\nBarricade: slides a \u{1F4AA} crate into a doorway - friends squeeze through, the host has to smash it.", how = "Hold E at blocked doorways. Press Barricade next to a \u{1F4AA} crate." },
-	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.\nFlare: for 8 seconds her light reaches more than twice as far, and she and every friend who comes near her get 30% of their stamina back and run 5% faster for 6 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
-	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). She frees every caged friend at once, faster than anyone.\nShield: gives the nearest friend without one a Party Shield (it lasts until a grab). If every friend nearby has one, or nobody is near, Patch shields herself for 30 seconds.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
-	echo = { about = "Hears the host coming from further away.\nNoise: throws a noise that sends the host to look somewhere else - then Echo runs 5% faster for 3 seconds.", how = "Press Noise, then tap where to throw it." },
-	harmony = { about = "Music Box: the music box in the room you start in plays the door code for Harmony.\nIn Tune: friends near her get their stamina back faster.\nLullaby: the host near her walks at half speed for 6 seconds.", how = "Find the music box in the first room and hold E to listen. Press Lullaby (R) when the host is near." },
-	clone = { about = "Look-alike: the host stops for a second before grabbing Clone - is it really him?\nCopycat: copies the skill of the nearest friend - it becomes a second button for Clone, recharging like the friend's. Alone, a wheel picks one.", how = "Stand near a friend and press Copycat (R). Then use the copied skill's button (V)." },
-	holly = { about = "Peppermint Trail: a minty scent throws the host off - when he loses sight of Holly, he gives up at once.\nPeppermint Slide: scatters peppermints on the floor where she stands - the host slips and spins on them.", how = "Press Peppermint Slide (R) and lead the host over the peppermints. Break his line of sight to lose him." },
-	cloud = { about = "Float Up: only Cloud can float up to the high shelves with a little cloud on the wall - a free clue or points for everyone up there.\nFog: breathes out a fog cloud for 8 seconds - anyone inside is hidden from the host, who loses track of them.", how = "Look for shelves with a cloud mark and hold E under them. Press Fog (R) to hide yourself and friends near you." },
-	nutmeg = { about = "Good Nose: drawers and boxes nearby that hold a key or a Confetti Cannon sparkle through the walls - only Nutmeg sees it.\nSleigh Dash: a burst of double speed that pulls the nearest friend along with her.", how = "Walk near drawers and boxes to sniff them out. Press Sleigh Dash (R) to zoom off - stand near a friend to take them too." },
-	bramble = { about = "Talks to plants: the big plant whispers the door code to Bramble.\nVines: grows vines across a doorway - the host wades through them slowly, kids walk straight through.", how = "Find the big plant (in a room open from the start) and press E. Stand in a doorway and press Vines (R)." },
+	tinker = { parts = {
+		{ kind = "hold", name = "Pick Locks", text = "Opens the locked doors inside the house (the Store Room too) - no key hunt. Once a game, picks the big door's keypad to learn one color of the code.", key = "F" },
+		{ kind = "press", name = "Toolkit", text = "The next lock or keypad picks in an instant." },
+	} },
+	shadow = { parts = {
+		{ kind = "passive", name = "Hard to Spot", text = "The host has a harder time spotting Shadow than anyone." },
+		{ kind = "press", name = "Sneak", text = "For a few seconds the host can't see or grab Shadow." },
+	} },
+	brainy = { parts = {
+		{ kind = "hold", name = "Read the Invitation", text = "Reads the twisty party invitation (behind the first locked door) and works out the door code." },
+		{ kind = "passive", name = "Clever Buyer", text = "Clues cost Brainy half as many points." },
+		{ kind = "press", name = "Think!", text = "Lights up the next thing to do, for free." },
+	} },
+	muscle = { parts = {
+		{ kind = "hold", name = "Shove Junk", text = "Clears junk heaped in blocked doorways (and the Junk Closet's bonus present), quietly." },
+		{ kind = "press", name = "Barricade", text = "Next to a \u{1F4AA} crate: slides it into a doorway - friends squeeze through, the host has to smash it." },
+	} },
+	glow = { parts = {
+		{ kind = "passive", name = "Glow Light", text = "Her light brightens dark rooms." },
+		{ kind = "hold", name = "Secret Paint", text = "Lights up the painted wall (behind the first locked door) that shows the door code." },
+		{ kind = "press", name = "Flare", text = "For 8 seconds her light reaches more than twice as far, and she and every friend who comes near get 30% of their stamina back and run 5% faster for 6 seconds." },
+	} },
+	patch = { parts = {
+		{ kind = "passive", name = "Cheer Up", text = "Friends near Patch get half their stamina back (once every 10 seconds each)." },
+		{ kind = "hold", name = "Rescue", text = "Frees every caged friend at once, faster than anyone." },
+		{ kind = "press", name = "Shield", text = "Gives the nearest friend without one a Party Shield (it lasts until a grab). If nobody near needs one, Patch shields herself for 30 seconds." },
+	} },
+	echo = { parts = {
+		{ kind = "passive", name = "Sharp Ears", text = "Hears the host coming from further away." },
+		{ kind = "press", name = "Noise", text = "Tap where to throw a noise - the host goes to look there, and Echo runs 5% faster for 3 seconds." },
+	} },
+	harmony = { parts = {
+		{ kind = "hold", name = "Music Box", text = "The music box in the room you start in plays the door code - only Harmony hears it." },
+		{ kind = "passive", name = "In Tune", text = "Friends near her get their stamina back faster." },
+		{ kind = "press", name = "Lullaby", text = "The host near her walks at half speed for 6 seconds." },
+	} },
+	clone = { parts = {
+		{ kind = "passive", name = "Look-alike", text = "The host stops for a second before grabbing Clone - is it really him?" },
+		{ kind = "press", name = "Copycat", text = "Copies the skill of the nearest friend - it becomes a second button for Clone (V), recharging like the friend's. Alone, a wheel picks one." },
+	} },
+	holly = { parts = {
+		{ kind = "passive", name = "Peppermint Trail", text = "A minty scent throws the host off - when he loses sight of Holly, he gives up at once." },
+		{ kind = "press", name = "Peppermint Slide", text = "Scatters peppermints where she stands - the host slips and spins on them. Lead him over them." },
+	} },
+	cloud = { parts = {
+		{ kind = "hold", name = "Float Up", text = "Floats up to the high shelves with a little cloud on the wall - a free clue or points for everyone up there." },
+		{ kind = "press", name = "Fog", text = "A fog cloud for 8 seconds - anyone inside is hidden from the host, who loses track of them." },
+	} },
+	nutmeg = { parts = {
+		{ kind = "passive", name = "Good Nose", text = "Drawers and boxes nearby that hold a key or a Confetti Cannon sparkle through the walls - only Nutmeg sees it." },
+		{ kind = "press", name = "Sleigh Dash", text = "A burst of double speed - stand near a friend to pull them along." },
+	} },
+	bramble = { parts = {
+		{ kind = "hold", name = "Talk to Plants", text = "The big plant (in a room open from the start) whispers the door code to Bramble." },
+		{ kind = "press", name = "Vines", text = "Stand in a doorway: vines grow across it - the host wades through slowly, kids walk straight through." },
+	} },
 }
 
 Config.PHRASES = {
@@ -636,6 +682,7 @@ Config.CHARACTER_ASSETS = {
 	BrambleAcorn = 135841043095619, -- 2 Nov
 	Nutmeg = 119497536712339, -- 4 Nov: Nutmeg, the Christmas reindeer (checked on Roblox: Model, Brent's upload)
 	Cloud = 85591900941622, -- 4 Nov: Cloud, the arms-out toon (checked on Roblox: Model, Brent's upload)
+	Holly = 72564808468304, -- 4 Nov: Holly, hair cleaned (checked on Roblox: Model 'Holly', Brent's upload)
 	ShadowGobble = 82744663331421, -- 3 Nov
 	GlowHarvest = 132385404072757, -- 3 Nov
 	TinkerScarecrow = 115702745306476, -- 3 Nov

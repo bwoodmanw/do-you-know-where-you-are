@@ -2294,13 +2294,10 @@ viewCam.Parent = view
 view.CurrentCamera = viewCam
 local noModel = label(view, { Size = UDim2.fromScale(1, 0.7), Position = UDim2.fromScale(0, 0.12), Text = "", ZIndex = 12 })
 label(view, { Size = UDim2.new(1, 0, 0, 20), Position = UDim2.new(0, 0, 1, -24), Text = "drag to turn", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 12 })
-local skillAbout = label(chars, { Size = UDim2.fromOffset(610, 104), Position = UDim2.fromOffset(266, 188), TextScaled = true, TextWrapped = true,
-	TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 11 })
-do
-	local fit = Instance.new("UITextSizeConstraint")
-	fit.MaxTextSize = 22
-	fit.Parent = skillAbout
-end
+-- 4 Nov (Brent): one text size for every character, each skill tagged
+-- ALWAYS ON / HOLD E / PRESS R (shared/SkillCard; scrolls if it runs long)
+local SkillCard = require(ReplicatedStorage.Shared.SkillCard)
+local skillAbout = SkillCard.list(chars, UDim2.fromOffset(616, 116), UDim2.fromOffset(262, 186), 11, 17, Enum.Font.GothamMedium)
 -- right: picking a character, their level and the skill ladder
 local right = frame(chars, { Size = UDim2.new(1, -256, 1, -60), Position = UDim2.fromOffset(250, 0), BackgroundTransparency = 1, ZIndex = 11 })
 -- 4 Nov (Brent): the faces stay big and the row scrolls left and right
@@ -2662,8 +2659,7 @@ local function showModel(sk)
 		noModel.Visible = true
 		noModel.Text = sk.icon .. "\n3D model coming soon"
 	end
-	local info = Config.SKILL_INFO[sk.id]
-	skillAbout.Text = sk.say .. (info and (": " .. info.about) or "")
+	SkillCard.fill(skillAbout, sk.id)
 end
 -- models load in the background: show one as soon as it arrives
 task.spawn(function()

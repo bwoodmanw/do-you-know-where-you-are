@@ -910,15 +910,9 @@ local function para(y, h)
 	return label(info, { Size = UDim2.new(1, -28, 0, h), Position = UDim2.fromOffset(14, y), TextScaled = false, TextSize = 18, TextWrapped = true,
 		TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 22 })
 end
-local infoAbout = para(96, 78)
-infoAbout.TextScaled = true
-do
-	local fit = Instance.new("UITextSizeConstraint")
-	fit.MaxTextSize = 18
-	fit.Parent = infoAbout
-end
-local infoHow = para(178, 46)
-infoHow.TextColor3 = Color3.fromRGB(123, 227, 107)
+-- 4 Nov (Brent): the skills in one text size, each tagged ALWAYS ON /
+-- HOLD E / PRESS R (shared/SkillCard; scrolls if it runs long)
+local infoAbout = require(ReplicatedStorage.Shared.SkillCard).list(info, UDim2.new(1, -20, 0, 124), UDim2.fromOffset(10, 92), 22, 15, Enum.Font.GothamMedium)
 local infoLevel = para(220, 48)
 -- the boosts you are bringing into this game
 local infoBag = para(272, 24)
@@ -1019,9 +1013,7 @@ local function showChar()
 	infoIcon.Text = portrait > 0 and "" or sk.icon
 	infoName.Text = sk.name
 	infoSay.Text = sk.say
-	infoAbout.Text = si.about or ""
 	-- this floor's real room for the invitation, the painted wall and the plant
-	local how = si.how
 	local function roomOf(id)
 		for _, o in ipairs(HouseMap.objects or {}) do
 			if o.id == id then
@@ -1035,13 +1027,18 @@ local function showChar()
 		end
 		return nil
 	end
-	local where = { brainy = { "invite", "Find the twisty invitation in the %s and press E. Press Think! (R) when you're stuck." }, glow = { "uv", "Press E at the painted wall in the %s. Press Flare (R) to light up far around you and give friends near you a lift." }, bramble = { "plant", "Find the big plant in the %s and press E. Stand in a doorway and press Vines (R)." } }
-	local w = where[sk.id]
-	local room = w and roomOf(w[1])
+	local extra = {}
+	local where = { brainy = "invite", glow = "uv", bramble = "plant" }
+	local room = where[sk.id] and roomOf(where[sk.id])
 	if room then
-		how = string.format(w[2], room)
+		for i, part in ipairs(si.parts or {}) do
+			if part.kind == "hold" then
+				extra[i] = "On this floor: the " .. room .. "."
+				break
+			end
+		end
 	end
-	infoHow.Text = how and ("\u{1F3AE} " .. how) or ""
+	require(ReplicatedStorage.Shared.SkillCard).fill(infoAbout, sk.id, extra)
 	local data = profileData()
 	local xp = data and data.xp and data.xp[sk.id] or 0
 	local level = Progress.level(xp)
