@@ -1,0 +1,40 @@
+{
+  "name": "Cloud, Holly, Clone and Harmony portraits",
+  "reference_root": "art",
+  "output_root": "art",
+  "picture_standard": "A square character portrait for a kids' co-op escape game for ages 8 and up. The FIRST attached picture is the character's approved full-body look: keep their face, skin tone, eye color, hair and clothes exactly the same, only in a richer, polished 3D animated-movie style with soft light, big clear eyes and a warm smile. The SECOND attached picture is another character's finished portrait: copy its layout exactly - chest up, turned slightly toward the camera, the same size of head, a soft glowing circle behind the character on a dark background, and a round badge with a gold rim in the bottom-right corner - but it is a different character, so take nothing else from it (no antlers, no hood, no scarf, no bell, no mitten). No logos, brand marks, printed words, letters or numbers anywhere. Not a copy of any existing cartoon, film or game character. Bright, friendly and right for young kids. One character only, no text.",
+  "assets": [
+    {
+      "file_name": "roblox-store\\portraits\\Cloud.png",
+      "picture": "PORTRAIT of Cloud, a cheerful, dreamy girl: warm light-brown skin, light-blue eyes, an almost-white chin-length rounded bob with a faint pale-blue tint and a soft side-swept fringe, eyebrows the same almost-white as her hair, a sunny-yellow raincoat with big round white buttons and the hood down, the white straps of her backpack on her shoulders. One hand raised beside her face with a small puff of soft white cloud floating just above her open palm. Behind her a soft glowing circle in pale sky-blue and white with a few small fluffy clouds inside it, on a deep navy-blue background. Badge: a sky-blue circle with a gold rim and a small fluffy white cloud inside.",
+      "references": [
+        "model-input\\cloud\\front-toon.png",
+        "roblox-store\\portraits\\Nutmeg.png"
+      ]
+    },
+    {
+      "file_name": "roblox-store\\portraits\\Holly.png",
+      "picture": "PORTRAIT of Holly, a cheerful, kind girl: warm light-peach skin, bright green eyes, long straight golden-blonde hair worn loose over her shoulders (not in pigtails), a round red-and-white peppermint candy with a little red bow on each side of her head, a red-and-green striped sweater with a round white collar, a small sprig of two holly leaves and three red berries at the collar. One hand holding up a round red-and-white peppermint candy beside her cheek, smiling. Behind her a soft glowing circle in red and white with a few small peppermint swirls and snowflakes inside it, on a deep pine-green background. Badge: a red circle with a gold rim and two green holly leaves with three red berries inside.",
+      "references": [
+        "model-input\\holly\\front-toon.png",
+        "roblox-store\\portraits\\Nutmeg.png"
+      ]
+    },
+    {
+      "file_name": "roblox-store\\portraits\\Clone.png",
+      "picture": "PORTRAIT of Clone, a clever, cheeky boy: warm brown skin with a few freckles on his cheeks, big brown eyes, short curly black hair, round orange goggles with dark lenses pushed up on his forehead, a zip-up jacket split down the middle - teal on his right side (the left of the picture) and orange on his left side - with a plain gray zipper and a white T-shirt at the neck, a chunky round gray wrist gadget with a plain dark screen on his left wrist. A sly, friendly grin, one hand raised in a small wave showing the wrist gadget. Behind him a soft glowing circle that is half teal and half orange, on a deep charcoal-gray background, with a faint see-through outline of his own shape beside him like a friendly copy. Badge: a teal circle with a gold rim and two simple matching person shapes side by side inside, one teal and one orange.",
+      "references": [
+        "model-input\\clone\\front-toon.png",
+        "roblox-store\\portraits\\Nutmeg.png"
+      ]
+    },
+    {
+      "file_name": "roblox-store\\portraits\\Harmony.png",
+      "picture": "PORTRAIT of Harmony, a warm, musical girl: warm golden-tan skin, big dark-brown eyes, long straight black hair past her shoulders with straight bangs, two small yellow music-note hair clips on one side, a lavender hoodie with the hood down and three wavy darker-purple bands across the chest, a small round gold music-box pendant on a short gold chain, a black-and-white piano-key wristband on her right wrist. Eyes softly smiling as she hums, one hand raised near her shoulder with a few small gold music notes floating up from it. Behind her a soft glowing circle in lavender and gold with a few small floating music notes inside it, on a deep purple background. NO headphones. Badge: a purple circle with a gold rim and a small gold music box inside.",
+      "references": [
+        "model-input\\harmony\\front-toon.png",
+        "roblox-store\\portraits\\Nutmeg.png"
+      ]
+    }
+  ]
+}
