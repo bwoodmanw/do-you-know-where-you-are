@@ -1407,7 +1407,7 @@ do
 		local panel = frame(gui, { Size = UDim2.fromOffset(660, 420), Position = UDim2.new(0.5, -330, 0.5, -210), Visible = false, ZIndex = 10 })
 		corner(panel, 18)
 		label(panel, { Size = UDim2.new(1, -20, 0, 36), Position = UDim2.fromOffset(10, 8), Text = "\u{1F381} Gifts (only you see this)", TextColor3 = PUMP, ZIndex = 11 })
-		local giftSub = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = gs and ("For players in this Lobby server. " .. string.upper(string.sub(gs.many, 1, 1)) .. string.sub(gs.many, 2) .. " go to spend (not the badge).") or "For players in this Lobby server.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+		local giftSub = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = gs and ("Players in this Lobby, or anyone by username (characters, skins). " .. string.upper(string.sub(gs.many, 1, 1)) .. string.sub(gs.many, 2) .. " go to spend.") or "Players in this Lobby, or anyone by username (characters and skins).", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 		local giftList = Instance.new("ScrollingFrame")
 		giftList.BackgroundTransparency = 1
 		giftList.Position = UDim2.fromOffset(10, 70)
@@ -1454,37 +1454,11 @@ do
 				p.Parent = parent
 				return p
 			end
+			-- 4 Nov (Brent): one section per character - its portrait and name,
+			-- then the character itself (one you unlock: Nutmeg, Cloud, ...) and
+			-- its skins, as tiles that wrap onto new rows (the Characters row ran
+			-- off the right edge)
 			local n = 0
-			-- 4 Nov (Brent): characters you unlock (Nutmeg) can be given too,
-			-- even before they go on sale - first, under "Characters"
-			do
-				local chars = {}
-				for _, sk in ipairs(Config.SKILLS) do
-					if Config.CHARACTER_UNLOCK[sk.id] then
-						table.insert(chars, sk)
-					end
-				end
-				if #chars > 0 then
-					n += 1
-					local head = frame(skinPick, { Size = UDim2.new(1, -10, 0, 40), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
-					label(head, { Size = UDim2.fromOffset(300, 32), Position = UDim2.fromOffset(6, 4), Text = "\u{2B50} Characters", TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 13 })
-					n += 1
-					local tiles = frame(skinPick, { Size = UDim2.new(1, -10, 0, 76), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
-					local tl = Instance.new("UIListLayout")
-					tl.FillDirection = Enum.FillDirection.Horizontal
-					tl.Padding = UDim.new(0, 8)
-					tl.Parent = tiles
-					for _, sk in ipairs(chars) do
-						local b = button(tiles, "", { Size = UDim2.fromOffset(200, 72), BackgroundColor3 = PLUM, ZIndex = 13 }, function()
-							if pickFor then
-								remotes:WaitForChild("OwnerGift"):FireServer(pickFor.UserId, "char", sk.id)
-							end
-						end)
-						corner(pic(b, Config.PORTRAITS and Config.PORTRAITS[sk.id], 60, UDim2.fromOffset(-2, 1)), 30)
-						label(b, { Size = UDim2.fromOffset(118, 56), Position = UDim2.fromOffset(64, 3), Text = sk.name .. " (character)", TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 14 })
-					end
-				end
-			end
 			for _, sk in ipairs(Config.SKILLS) do
 				local mine = {}
 				for _, skin in ipairs(Config.SKINS or {}) do
@@ -1492,20 +1466,30 @@ do
 						table.insert(mine, skin)
 					end
 				end
-				if #mine > 0 then
+				local unlockable = Config.CHARACTER_UNLOCK[sk.id] ~= nil
+				if #mine > 0 or unlockable then
 					n += 1
 					local head = frame(skinPick, { Size = UDim2.new(1, -10, 0, 40), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
 					corner(pic(head, Config.PORTRAITS and Config.PORTRAITS[sk.id], 36, UDim2.fromOffset(2, 2)), 18)
 					label(head, { Size = UDim2.fromOffset(300, 32), Position = UDim2.fromOffset(46, 4), Text = sk.name, TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 13 })
 					n += 1
-					local tiles = frame(skinPick, { Size = UDim2.new(1, -10, 0, 76), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
-					local tl = Instance.new("UIListLayout")
-					tl.FillDirection = Enum.FillDirection.Horizontal
-					tl.Padding = UDim.new(0, 8)
-					tl.SortOrder = Enum.SortOrder.LayoutOrder
-					tl.Parent = tiles
+					local tiles = frame(skinPick, { Size = UDim2.new(1, -10, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
+					local grid = Instance.new("UIGridLayout")
+					grid.CellSize = UDim2.fromOffset(200, 72)
+					grid.CellPadding = UDim2.fromOffset(8, 8)
+					grid.SortOrder = Enum.SortOrder.LayoutOrder
+					grid.Parent = tiles
+					if unlockable then
+						local b = button(tiles, "", { LayoutOrder = 0, BackgroundColor3 = Color3.fromRGB(110, 70, 30), ZIndex = 13 }, function()
+							if pickFor then
+								remotes:WaitForChild("OwnerGift"):FireServer(pickFor.UserId, "char", sk.id)
+							end
+						end)
+						corner(pic(b, Config.PORTRAITS and Config.PORTRAITS[sk.id], 60, UDim2.fromOffset(-2, 1)), 30)
+						label(b, { Size = UDim2.fromOffset(118, 56), Position = UDim2.fromOffset(64, 3), Text = "\u{2B50} " .. sk.name .. " (character)", TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 14 })
+					end
 					for i, skin in ipairs(mine) do
-						local b = button(tiles, "", { Size = UDim2.fromOffset(200, 72), LayoutOrder = i, BackgroundColor3 = PLUM, ZIndex = 13 }, function()
+						local b = button(tiles, "", { LayoutOrder = i, BackgroundColor3 = PLUM, ZIndex = 13 }, function()
 							if pickFor then
 								remotes:WaitForChild("OwnerGift"):FireServer(pickFor.UserId, "skin", skin.id)
 							end
@@ -1533,13 +1517,49 @@ do
 			pickTitle.Visible = p ~= nil
 			giftList.Visible = p == nil
 			giftSub.Visible = p == nil
-			pickTitle.Text = p and ("Tap a character or skin to give it to " .. p.DisplayName .. " (theirs for good). Close goes back.") or ""
+			pickTitle.Text = p and ("Tap a character or skin to give it to " .. p.DisplayName .. " (theirs for good" .. (p.away and ", when they next come to the Lobby" or "") .. "). Close goes back.") or ""
 		end
 		local function fill()
 			for _, c in ipairs(giftList:GetChildren()) do
 				if c:IsA("GuiObject") then
 					c:Destroy()
 				end
+			end
+			-- 4 Nov (Brent): anyone by their Roblox username - characters and
+			-- skins, kept for them if they aren't in this Lobby
+			do
+				local r = frame(giftList, { Size = UDim2.new(1, -8, 0, 44), LayoutOrder = -1, BackgroundColor3 = Color3.fromRGB(47, 107, 58), BackgroundTransparency = 0.3, ZIndex = 12 })
+				corner(r, 10)
+				local box = Instance.new("TextBox")
+				box.Size = UDim2.fromOffset(300, 34)
+				box.Position = UDim2.fromOffset(8, 5)
+				box.BackgroundColor3 = Color3.fromRGB(255, 244, 222)
+				box.TextColor3 = NIGHT
+				box.PlaceholderText = "Roblox username"
+				box.Text = ""
+				box.Font = BODY_FONT
+				box.TextSize = 18
+				box.ClearTextOnFocus = false
+				box.ZIndex = 13
+				box.Parent = r
+				corner(box, 8)
+				local findBtn
+				findBtn = button(r, "\u{1F50E} Find & gift", { Size = UDim2.fromOffset(150, 34), Position = UDim2.fromOffset(316, 5), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 13 }, function()
+					local name = string.gsub(box.Text, "%s", "")
+					if #name < 3 then
+						return notice("Type their Roblox username first.")
+					end
+					findBtn.Text = "Looking..."
+					local ok, found = pcall(function()
+						return remotes:WaitForChild("OwnerFindUser"):InvokeServer(name)
+					end)
+					findBtn.Text = "\u{1F50E} Find & gift"
+					if not ok or type(found) ~= "table" then
+						return notice("No Roblox player called " .. name .. ".")
+					end
+					local here = Players:GetPlayerByUserId(found.userId)
+					showPicker(here or { UserId = found.userId, DisplayName = found.name, away = true })
+				end)
 			end
 			for _, p in ipairs(Players:GetPlayers()) do
 				local r = frame(giftList, { Size = UDim2.new(1, -8, 0, 44), BackgroundColor3 = PLUM, BackgroundTransparency = 0.3, ZIndex = 12 })

@@ -1194,6 +1194,107 @@ do
 	end)
 end
 
+-- 4 Nov (Brent): gifts kept for a player who isn't in this Lobby - a
+-- character or a skin, handed over the next time they come to the Lobby
+local GiftStore
+pcall(function()
+	GiftStore = game:GetService("DataStoreService"):GetDataStore("EscapeCrew_Gifts_v1")
+end)
+-- what a gift is called ("Cloud", "the Gridiron Muscle skin"), or nil if unknown
+local function giftName(kind, id)
+	if kind == "char" and typeof(id) == "string" and Config.CHARACTER_UNLOCK[id] then
+		return string.upper(string.sub(id, 1, 1)) .. string.sub(id, 2)
+	elseif kind == "skin" then
+		for _, skin in ipairs(Config.SKINS or {}) do
+			if skin.id == id and not skin.hidden then
+				return "the " .. skin.name .. " skin", skin
+			end
+		end
+	end
+	return nil
+end
+local function queueGift(userId, item)
+	if not GiftStore then
+		return false
+	end
+	local ok = pcall(function()
+		GiftStore:UpdateAsync("g" .. userId, function(old)
+			local list = type(old) == "table" and old or {}
+			if #list < 50 then
+				table.insert(list, item)
+			end
+			return list
+		end)
+	end)
+	return ok
+end
+-- on joining: hand over every kept gift (then the list is cleared)
+local function claimGifts(plr, data)
+	if not GiftStore then
+		return
+	end
+	local waiting = {}
+	local ok = pcall(function()
+		GiftStore:UpdateAsync("g" .. plr.UserId, function(old)
+			waiting = type(old) == "table" and old or {}
+			if #waiting == 0 then
+				return nil
+			end
+			return {}
+		end)
+	end)
+	if not ok or #waiting == 0 then
+		return
+	end
+	local got = {}
+	for _, g in ipairs(waiting) do
+		local name, skin = giftName(g.kind, g.id)
+		if name and g.kind == "char" then
+			data.charsEarned = data.charsEarned or {}
+			if not data.charsEarned[g.id] then
+				data.charsEarned[g.id] = true
+				table.insert(got, name)
+			end
+		elseif name and skin then
+			data.skinsEarned = data.skinsEarned or {}
+			if not data.skinsEarned[skin.id] then
+				data.skinsEarned[skin.id] = true
+				data.skins = data.skins or {}
+				data.skins[skin.skill] = skin.id
+				table.insert(got, name)
+			end
+		end
+	end
+	if #got > 0 then
+		Profile.publish(plr)
+		Profile.save(plr)
+		paintUnlocked(plr)
+		local from = tostring(waiting[1].from or "the game's maker")
+		Notice:FireClient(plr, "\u{1F381} A gift from " .. from .. ": " .. table.concat(got, ", ") .. "! Yours for good.")
+	end
+end
+do
+	-- the owner types a username: its user id and proper name (owner only)
+	local find = Instance.new("RemoteFunction")
+	find.Name = "OwnerFindUser"
+	find.Parent = remotes
+	find.OnServerInvoke = function(plr, name)
+		if not isOwner(plr) or typeof(name) ~= "string" or #name < 3 or #name > 20 then
+			return nil
+		end
+		local ok, id = pcall(function()
+			return Players:GetUserIdFromNameAsync(name)
+		end)
+		if not ok or not id then
+			return nil
+		end
+		local ok2, proper = pcall(function()
+			return Players:GetNameFromUserIdAsync(id)
+		end)
+		return { userId = id, name = ok2 and proper or name }
+	end
+end
+
 -- the owner's gifts: a season's item (to spend - not towards the badge) or
 -- points, to a player in this Lobby server. Only the experience's owner.
 do
@@ -1201,6 +1302,20 @@ do
 	OwnerGift.OnServerEvent:Connect(function(plr, userId, kind, amount)
 		if not (game.CreatorType == Enum.CreatorType.User and plr.UserId == game.CreatorId) then
 			return
+		end
+		-- 4 Nov (Brent): a character or skin for someone not in this Lobby
+		-- (found by username): kept, and theirs when they next come
+		if (kind == "char" or kind == "skin") and typeof(userId) == "number" and not Players:GetPlayerByUserId(userId) then
+			local what = giftName(kind, amount)
+			if not what then
+				return
+			end
+			local saved = queueGift(userId, { kind = kind, id = amount, from = plr.DisplayName, t = os.time() })
+			local okName, who = pcall(function()
+				return Players:GetNameFromUserIdAsync(userId)
+			end)
+			who = okName and who or "They"
+			return Notice:FireClient(plr, saved and ("\u{1F381} Saved: " .. who .. " gets " .. what .. " the next time they come to the Lobby.") or "Couldn't save that gift just now - try again in a moment.")
 		end
 		-- 4 Nov (Brent): a character you unlock (Nutmeg), theirs for good - also
 		-- before she goes on sale (kind "char", amount = the character's id)
@@ -1937,6 +2052,7 @@ Players.PlayerAdded:Connect(function(plr)
 		task.spawn(function()
 			checkInvite(plr, data)
 			claimInvites(plr, data)
+			claimGifts(plr, data) -- (4 Nov) gifts kept while they were away
 		end)
 	end
 	if data then
