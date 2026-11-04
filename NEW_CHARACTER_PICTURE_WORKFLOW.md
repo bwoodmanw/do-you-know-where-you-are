@@ -1,8 +1,7 @@
 # New characters picture workflow: Cloud and the Reindeer (3 Nov 2026)
 
-Front and back toon pictures for **Cloud** (a girl) and **the Reindeer**
-(drawn as a boy, working name Nutmeg - say before running it if the Reindeer
-should be a girl named Juniper instead). Each front view attaches Glow's
+Front and back toon pictures for **Cloud** and **Nutmeg** (the Christmas
+reindeer), both girls (Brent, 3 Nov). Each front view attaches Glow's
 approved front picture only as a style guide; each back view attaches the
 front made just before it.
 
@@ -14,8 +13,8 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 [Picture] | [Reference] | [file name]
 [FRONT view of Cloud, a cheerful, dreamy girl: almost-white hair in a soft, rounded chin-length bob with a faint pale-blue tint, a little rounded fringe, light-blue eyes, warm light-brown skin, a solid sunny-yellow raincoat with the hood down and big round buttons, a small rounded white backpack shaped like a puffy cloud (worn on her back, its straps showing at the front), sky-blue leggings, sky-blue rain boots. Soft and round everywhere - no spiky hair, nothing sharp, no weapon.] | [model-input\glow\front-toon.png] | [cloud\front-toon.png]
 [BACK view of Cloud, matching the reference exactly: the back of the almost-white rounded bob, the yellow raincoat with its hood lying flat on the back, the puffy white cloud backpack close against her back, sky-blue leggings and rain boots.] | [model-input\cloud\front-toon.png] | [cloud\back-toon.png]
-[FRONT view of Nutmeg, a cheerful boy dressed as a reindeer: warm brown skin, big brown eyes, a fuzzy-looking (but solid flat color) light-brown reindeer hoodie with the hood UP - two SHORT, chunky, rounded cream antlers on top of the hood (stubby, close to the head, nothing thin), two small round brown ears on the sides of the hood - a cream patch on the front of the hoodie, a green scarf wrapped once around his neck with a small round brass bell at the front, red mittens, dark brown pants, chunky brown boots. A normal kid's nose - NO red nose.] | [model-input\glow\front-toon.png] | [reindeer\front-toon.png]
-[BACK view of Nutmeg, matching the reference exactly: the back of the light-brown hood with the two short cream antlers and the small ears, a short round cream tail-puff sewn flat on the back of the hoodie, the green scarf ends tucked in, dark brown pants, brown boots.] | [model-input\reindeer\front-toon.png] | [reindeer\back-toon.png]
+[FRONT view of Nutmeg, a cheerful girl dressed as a reindeer: warm brown skin, big brown eyes, two short dark-brown braids coming out from under the hood at the front, a fuzzy-looking (but solid flat color) light-brown reindeer hoodie with the hood UP - two SHORT, chunky, rounded cream antlers on top of the hood (stubby, close to the head, nothing thin), two small round brown ears on the sides of the hood - a cream patch on the front of the hoodie, a green scarf wrapped once around her neck with a small round brass bell at the front, red mittens, dark brown leggings, chunky brown boots. A normal kid's nose - NO red nose.] | [model-input\glow\front-toon.png] | [nutmeg\front-toon.png]
+[BACK view of Nutmeg, matching the reference exactly: the back of the light-brown hood with the two short cream antlers and the small ears, a short round cream tail-puff sewn flat on the back of the hoodie, the green scarf ends tucked in, dark brown leggings, brown boots.] | [model-input\nutmeg\front-toon.png] | [nutmeg\back-toon.png]
 ```
 
 Send Claude the 4 pictures to check (look-alikes, logos, arms clear of the
