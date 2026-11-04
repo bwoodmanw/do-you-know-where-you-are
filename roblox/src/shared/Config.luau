@@ -175,8 +175,19 @@ Config.DIFFICULTY_ORDER = { "easy", "normal", "hard", "nightmare" }
 Config.DIFFICULTY = {
 	easy = { name = "Easy", decoys = 0, search = 0, grace = 25, timer = 540, hunt = 13.5, sight = 28, catch = 4.25, clues = 4, bonus = 1 },
 	normal = { name = "Normal", decoys = 1, search = 2, grace = 15, timer = 420, hunt = 14.5, sight = 34, catch = 4.75, clues = 3, bonus = 1.5 },
-	hard = { name = "Hard", decoys = 2, search = 3, peek = 0.15, grace = 10, timer = 330, hunt = 16.5, sight = 42, catch = 5.25, clues = 2, bonus = 2 },
-	nightmare = { name = "Nightmare", decoys = 3, search = 5, peek = 0.3, ladderHalf = true, staminaDrain = 26, staminaRegen = 12, grace = 5, timer = 270, hunt = 17.5, sight = 50, catch = 5.75, clues = 1, bonus = 3 },
+	-- 3 Nov (Brent, the Balance table: Hard won 68% of 47 games, Nightmare 67% of
+	-- 21 - aims 35% and 20%): half the step up for everyone (was hunt 16.5 /
+	-- 17.5, sight 42 / 50, timer 330 / 270, Nightmare peek 0.3), the other half
+	-- by the party's level (DIFFICULTY_LEVEL)
+	hard = { name = "Hard", decoys = 2, search = 3, peek = 0.15, grace = 10, timer = 315, hunt = 17, sight = 44, catch = 5.25, clues = 2, bonus = 2 },
+	nightmare = { name = "Nightmare", decoys = 3, search = 5, peek = 0.35, ladderHalf = true, staminaDrain = 26, staminaRegen = 12, grace = 5, timer = 255, hunt = 18, sight = 52, catch = 5.75, clues = 1, bonus = 3 },
+}
+-- harder for experienced parties (3 Nov, Brent chose "B"): added in full when
+-- the party's average character level is 20, nothing at level 1, in between
+-- in step (Main's diffFor; the level is each player's chosen character's)
+Config.DIFFICULTY_LEVEL = {
+	hard = { hunt = 0.5, sight = 2, timer = -15 },
+	nightmare = { hunt = 0.5, sight = 3, timer = -15, peek = 0.05 },
 }
 
 -- clues cost points earned in this game: the team's 1st, 2nd, 3rd+ clue

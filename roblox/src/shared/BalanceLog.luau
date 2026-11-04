@@ -16,7 +16,9 @@ local function store()
 	return DataStoreService:GetDataStore("EscapeCrewBalance")
 end
 
-function BalanceLog.record(mapId, diff, kids, escaped, seconds, won)
+-- level: the party's average character level (3 Nov) - each row keeps the
+-- sum, `lvl`, so the panel shows the average level of its games
+function BalanceLog.record(mapId, diff, kids, escaped, seconds, won, level)
 	-- 3 Nov: Studio test games no longer count (59 "Aquarium: Main Hall"
 	-- Normal games, every one lost, were Studio Plays - Config.STUDIO_MAP)
 	if game:GetService("RunService"):IsStudio() then
@@ -29,6 +31,10 @@ function BalanceLog.record(mapId, diff, kids, escaped, seconds, won)
 				local k = mapId .. "|" .. diff
 				local r = old[k] or { games = 0, won = 0, kids = 0, escaped = 0, secs = 0 }
 				r.games += 1
+				if level then
+					r.lvl = (r.lvl or 0) + level
+					r.lvlGames = (r.lvlGames or 0) + 1
+				end
 				r.kids += kids
 				r.escaped += escaped
 				if won then

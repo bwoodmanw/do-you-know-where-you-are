@@ -191,6 +191,48 @@ local function returnBag(plr)
 	bags[plr.UserId] = nil
 end
 
+-- the party's average character level: each player's chosen character's
+-- level (before choosing, their highest)
+local function partyLevel()
+	local sum, n = 0, 0
+	for _, plr in ipairs(Players:GetPlayers()) do
+		local pd = Profile.get(plr)
+		if pd and pd.xp then
+			local skill = plr:GetAttribute("Skill")
+			local lvl = 1
+			if skill and pd.xp[skill] then
+				lvl = Progress.level(pd.xp[skill])
+			else
+				for _, xp in pairs(pd.xp) do
+					lvl = math.max(lvl, Progress.level(xp))
+				end
+			end
+			sum += lvl
+			n += 1
+		end
+	end
+	return n > 0 and sum / n or 1
+end
+-- a difficulty for this party (3 Nov, Brent: Hard / Nightmare too easy for
+-- experienced crews): Config.DIFFICULTY plus Config.DIFFICULTY_LEVEL scaled
+-- by the party's level - the full step at level 20, none at level 1
+local function diffFor(key)
+	local base = Config.DIFFICULTY[key] or Config.DIFFICULTY.normal
+	local add = Config.DIFFICULTY_LEVEL and Config.DIFFICULTY_LEVEL[key]
+	if not add then
+		return base
+	end
+	local f = math.clamp((partyLevel() - 1) / 19, 0, 1)
+	local d = table.clone(base)
+	d.hunt = base.hunt + (add.hunt or 0) * f
+	d.sight = base.sight + (add.sight or 0) * f
+	d.timer = math.floor(base.timer + (add.timer or 0) * f + 0.5)
+	if base.peek then
+		d.peek = base.peek + (add.peek or 0) * f
+	end
+	return d
+end
+
 local function savePlayer(plr)
 	returnBag(plr)
 	Profile.release(plr)
@@ -641,7 +683,7 @@ local function checkEnd()
 		end
 		table.insert(rows, row)
 	end
-	require(ReplicatedStorage.Shared.BalanceLog).record(mapId, state.diff, #list, escaped, seconds, won)
+	require(ReplicatedStorage.Shared.BalanceLog).record(mapId, state.diff, #list, escaped, seconds, won, partyLevel())
 	-- badges (each only if made in Creator Hub: Config.BADGES)
 	task.spawn(function()
 		local BadgeService = game:GetService("BadgeService")
@@ -4557,17 +4599,20 @@ function round.start()
 		if reveals > 0 or bonusClues > 0 then
 			say("info", (reveals > 0 and "Your upgrades showed a color of the code! " or "") .. (bonusClues > 0 and ("+" .. bonusClues .. " free " .. (bonusClues == 1 and "clue" or "clues") .. " from your upgrades.") or ""))
 		end
-		-- the escape timer starts now
+		-- the escape timer starts now (the characters are chosen: the party's
+		-- level sets Hard / Nightmare's timer and host - diffFor)
 		local t0 = workspace:GetServerTimeNow()
+		local partyDiff = diffFor(state.diff)
+		state.hostDiff = partyDiff
 		state.startedAt = t0
-		state.endsAt = t0 + diff.timer
+		state.endsAt = t0 + partyDiff.timer
 		if carry then
 			-- climbing on: the same clock
 			state.endsAt = carry.endsAt
 			state.towerStarted = carry.startedAt
 		elseif RoundState:GetAttribute("Tower") then
 			-- a Tower Run: one clock for the whole climb
-			state.endsAt = t0 + diff.timer * Config.TOWER.timeMult
+			state.endsAt = t0 + partyDiff.timer * Config.TOWER.timeMult
 			state.towerStarted = t0
 		end
 		RoundState:SetAttribute("EndsAt", state.endsAt)
@@ -4575,7 +4620,7 @@ function round.start()
 		task.wait(grace)
 		hostTimer = nil
 		if state.status == "playing" then
-			host:spawn(Config.DIFFICULTY[state.diff])
+			host:spawn(state.hostDiff or diffFor(state.diff))
 			RoundState:SetAttribute("HostOut", true)
 			say("appear", "Ding dong! Who came to my party? (Tonight's host: " .. Config.HOSTS[host.kind or "pumpkin"].name .. ")")
 		end

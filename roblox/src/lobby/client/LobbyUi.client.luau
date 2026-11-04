@@ -552,7 +552,9 @@ task.spawn(function()
 					n += 1
 					local avg = r.won > 0 and math.floor(r.secs / r.won) or 0
 					label(scroll, { Size = UDim2.new(1, -12, 0, 24), LayoutOrder = mi * 10 + di, TextScaled = false, TextSize = 16, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 32,
-						Text = string.format("%s \u{00B7} %s: %d games, won %d (%d%%), kids out %d of %d, a win takes %d:%02d", m.name, Config.DIFFICULTY[d].name, r.games, r.won, math.floor(r.won / r.games * 100 + 0.5), r.escaped, r.kids, math.floor(avg / 60), avg % 60) })
+						Text = string.format("%s \u{00B7} %s: %d games, won %d (%d%%), kids out %d of %d, a win takes %d:%02d", m.name, Config.DIFFICULTY[d].name, r.games, r.won, math.floor(r.won / r.games * 100 + 0.5), r.escaped, r.kids, math.floor(avg / 60), avg % 60)
+							-- 3 Nov: the average character level of the games that logged it
+							.. ((r.lvlGames or 0) > 0 and string.format(", level %d", math.floor(r.lvl / r.lvlGames + 0.5)) or "") })
 				end
 			end
 		end
@@ -1810,28 +1812,131 @@ do
 		boostRows[id] = { have = have, take = take, minus = minus }
 	end
 
-	-- Skins (3 Nov, Brent: grouped by character): a heading for each character
-	-- - who they wear now and a Plain look button - then their skins for
-	-- sale: a season's first while its shop is open (its item, or Robux for
-	-- the Game Pass), then the Game Pass skins. A skin shows its picture and
-	-- prices until it's yours, then Wear / Wearing. One skin per character,
-	-- kept until you change it
+	-- Skins (3 Nov, Brent: grouped by character): a heading with each
+	-- character's name, its Default Outfit, then its skins for sale - a
+	-- season's first while its shop is open (its item, or Robux for the Game
+	-- Pass), then the Game Pass skins. Every row has Wear / Wearing once it's
+	-- owned (one outfit per character, kept until you change it). Tap a
+	-- picture to see the outfit in 3D and turn it
 	local skinList = page("skins", "\u{1F3AD} Skins", 170)
-	local skinRows, skinHeads, passOwned = {}, {}, {}
+	local skinRows, defaultRows, passOwned = {}, {}, {}
+	-- the 3D look: a panel over the shop (inside it, so the shop stays open)
+	local preview = { spin = 0 }
+	do
+		local pv = frame(shop, { Size = UDim2.fromOffset(440, 560), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.52), BackgroundTransparency = 0, Visible = false, ZIndex = 40 })
+		corner(pv, 18)
+		local edge = Instance.new("UIStroke")
+		edge.Color, edge.Thickness = CREAM, 3
+		edge.Parent = pv
+		local title = label(pv, { Size = UDim2.new(1, -90, 0, 40), Position = UDim2.fromOffset(16, 10), Text = "", TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 41 })
+		button(pv, "X", { Size = UDim2.fromOffset(48, 40), Position = UDim2.new(1, -60, 0, 10), BackgroundColor3 = RED, ZIndex = 42 }, function()
+			pv.Visible = false
+		end)
+		local vp = Instance.new("ViewportFrame")
+		vp.Size = UDim2.new(1, -24, 1, -100)
+		vp.Position = UDim2.fromOffset(12, 56)
+		vp.BackgroundColor3 = Color3.fromRGB(40, 26, 58)
+		vp.Ambient = Color3.fromRGB(170, 160, 190)
+		vp.LightColor = Color3.fromRGB(255, 240, 220)
+		vp.LightDirection = Vector3.new(-0.4, -1, -0.6)
+		vp.ZIndex = 41
+		vp.Parent = pv
+		corner(vp, 14)
+		local world = Instance.new("WorldModel")
+		world.Parent = vp
+		local cam = Instance.new("Camera")
+		cam.FieldOfView = 40
+		cam.Parent = vp
+		vp.CurrentCamera = cam
+		local none = label(vp, { Size = UDim2.fromScale(1, 1), Text = "", ZIndex = 42 })
+		label(pv, { Size = UDim2.new(1, -24, 0, 30), Position = UDim2.new(0, 12, 1, -38), Text = "\u{1F504} Drag to turn", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 41 })
+		local model, dragging, lastX
+		preview.show = function(modelName, skillId, name)
+			title.Text = name
+			if model then
+				model:Destroy()
+				model = nil
+			end
+			preview.spin = 0
+			local previews = ReplicatedStorage:FindFirstChild("Previews")
+			local src = previews and previews:FindFirstChild(modelName)
+			if src then
+				model = src:Clone()
+				for _, d in ipairs(model:GetDescendants()) do
+					if d:IsA("Humanoid") then
+						d.AutomaticScalingEnabled = false
+					end
+				end
+				model.Parent = world
+				model:PivotTo(CFrame.Angles(0, math.pi, 0))
+				local _, standing = require(ReplicatedStorage.Shared.ModelBounds)(model, "nohead")
+				model:SetAttribute("FitH", standing.Y / 0.72 / ((Config.PREVIEW_SCALE or {})[model.Name] or 1))
+				pcall(require(ReplicatedStorage.Shared.Faces).try, model, modelName)
+				pcall(require(ReplicatedStorage.Shared.PreviewPose), model, skillId, modelName)
+				none.Text = ""
+			else
+				none.Text = "3D model coming soon"
+			end
+			pv.Visible = true
+		end
+		vp.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging, lastX = true, input.Position.X
+			end
+		end)
+		UserInputService.InputChanged:Connect(function(input)
+			if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+				preview.spin += (input.Position.X - lastX) * 0.012
+				lastX = input.Position.X
+			end
+		end)
+		UserInputService.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = false
+			end
+		end)
+		RunService.RenderStepped:Connect(function()
+			if not model or not pv.Visible or not shop.Visible then
+				return
+			end
+			model:PivotTo(CFrame.Angles(0, math.pi + preview.spin, 0))
+			local cf = require(ReplicatedStorage.Shared.ModelBounds)(model)
+			local h = model:GetAttribute("FitH") or 5
+			local dist = h * 0.54 / math.tan(math.rad(cam.FieldOfView / 2))
+			cam.CFrame = CFrame.lookAt(cf.Position + Vector3.new(0, h * 0.05, dist), cf.Position)
+		end)
+	end
+	-- a see-through button over a row's picture: the 3D look, with a small "3D" tag
+	local function previewTap(r, modelName, skillId, name)
+		local tap = button(r, "", { Size = UDim2.fromOffset(56, 56), Position = UDim2.fromOffset(4, 4), BackgroundTransparency = 1, ZIndex = 14 }, function()
+			preview.show(modelName, skillId, name)
+		end)
+		local edge = tap:FindFirstChildOfClass("UIStroke")
+		if edge then
+			edge.Enabled = false
+		end
+		label(tap, { Size = UDim2.fromOffset(26, 16), Position = UDim2.new(1, -18, 1, -10), Text = "3D", BackgroundTransparency = 0.1, BackgroundColor3 = NIGHT, TextColor3 = PUMP, ZIndex = 15 })
+	end
 	local function addHead(sk, order)
-		local h = frame(skinList, { Size = UDim2.new(1, -24, 0, 46), LayoutOrder = order, BackgroundTransparency = 1, ZIndex = 11 })
-		picture(h, Config.PORTRAITS and Config.PORTRAITS[sk.id], sk.icon, 42, UDim2.fromOffset(6, 2))
-		label(h, { Size = UDim2.fromOffset(150, 34), Position = UDim2.fromOffset(56, 6), Text = sk.name, TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
-		local now = label(h, { Size = UDim2.fromOffset(400, 26), Position = UDim2.fromOffset(212, 10), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(205, 190, 225), ZIndex = 12 })
-		local plain = button(h, "Plain look", { Size = UDim2.fromOffset(130, 38), Position = UDim2.new(1, -136, 0, 4), ZIndex = 12 }, function()
+		local h = frame(skinList, { Size = UDim2.new(1, -24, 0, 40), LayoutOrder = order, BackgroundTransparency = 1, ZIndex = 11 })
+		label(h, { Size = UDim2.fromOffset(300, 34), Position = UDim2.fromOffset(8, 4), Text = sk.name, TextColor3 = PUMP, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 12 })
+	end
+	-- the character's own look, worn when no skin is
+	local function addDefault(sk, order)
+		local r = row(skinList, order, Config.PORTRAITS and Config.PORTRAITS[sk.id], sk.icon, "Default Outfit", sk.name .. "'s everyday look")
+		previewTap(r, sk.name, sk.id, sk.name .. " - Default Outfit")
+		local d = { skill = sk.id }
+		d.wear = button(r, "Wear", { Size = UDim2.fromOffset(110, 40), Position = UDim2.new(1, -116, 0, 12), ZIndex = 12 }, function()
 			remotes.EquipSkin:FireServer(sk.id, "")
 		end)
-		skinHeads[sk.id] = { now = now, plain = plain }
+		table.insert(defaultRows, d)
 	end
 	local function addSkin(skin, order)
 		local price, ps = Seasons.skinPrice(skin)
 		local sw = price and Seasons.openWindow(ps.id) and ps or nil
-		local r, pic = row(skinList, order, skin.icon, "", skin.name, sw and (sw.look .. " skin - yours for good") or "Yours for good")
+		-- the event it came from stays on it ("Thanksgiving skin")
+		local r, pic = row(skinList, order, skin.icon, "", skin.name, ps and (ps.look .. " skin") or "")
+		previewTap(r, skin.model, skin.skill, skin.name)
 		local status = label(r, { Size = UDim2.fromOffset(120, 40), Position = UDim2.fromOffset(318, 12), Text = "", ZIndex = 12 })
 		local s = { skin = skin, status = status }
 		local x = 446
@@ -1858,10 +1963,10 @@ do
 				end
 			end)
 		end
-		-- Wear puts it on; Wearing is already on (Plain look in the heading takes it off)
+		-- Wear puts it on; Wearing is already on (Wear on the Default Outfit takes it off)
 		s.wear = button(r, "Wear", { Size = UDim2.fromOffset(110, 40), Position = UDim2.new(1, -116, 0, 12), ZIndex = 12 }, function()
 			if profile.skins and profile.skins[skin.skill] == skin.id then
-				notice(skin.name .. " is on. Tap Plain look above to go back to the plain look.")
+				notice(skin.name .. " is on. Tap Wear on the Default Outfit to change back.")
 			else
 				remotes.EquipSkin:FireServer(skin.skill, skin.id)
 			end
@@ -1885,6 +1990,8 @@ do
 			if #now + #later > 0 then
 				n += 1
 				addHead(sk, n)
+				n += 1
+				addDefault(sk, n)
 				for _, skin in ipairs(now) do
 					n += 1
 					addSkin(skin, n)
@@ -1995,21 +2102,22 @@ do
 				r.minus.Visible = n > 0
 			end
 		end
-		for skill, h in pairs(skinHeads) do
-			local worn = profile.skins and profile.skins[skill]
-			local wornName
+		for _, d in ipairs(defaultRows) do
+			-- wearing the default unless a real skin is worn
+			local worn = profile.skins and profile.skins[d.skill]
+			local skinOn = false
 			for _, skin in ipairs(Config.SKINS or {}) do
 				if skin.id == worn then
-					wornName = skin.name
+					skinOn = true
 				end
 			end
-			h.now.Text = wornName and ("Wearing " .. wornName) or "Wearing the plain look"
-			h.plain.Visible = wornName ~= nil
+			d.wear.Text = skinOn and "Wear" or "\u{2705} Wearing"
+			d.wear.BackgroundColor3 = skinOn and PLUM or Color3.fromRGB(47, 107, 58)
 		end
 		for _, s in ipairs(skinRows) do
 			local owned = passOwned[s.skin.id] or (profile.skinsEarned and profile.skinsEarned[s.skin.id])
 			local wearing = profile.skins and profile.skins[s.skin.skill] == s.skin.id
-			s.status.Text = owned and not wearing and "\u{2705} Yours" or ""
+			s.status.Text = owned and not wearing and "\u{2705} Owned" or ""
 			if s.season then
 				s.season.Visible = not owned
 			end
