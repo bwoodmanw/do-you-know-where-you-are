@@ -121,7 +121,7 @@ Config.ANIM = {
 		levitation = { idle = 616006778, idle2 = 616008087, walk = 616013216, run = 616010382, jump = 616008936, fall = 616005863, climb = 616003713 },
 	},
 	-- the kids (their skins use the same pack unless listed under model)
-	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy", nutmeg = "bubbly", cloud = "levitation" },
+	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy", nutmeg = "bubbly", cloud = "levitation", holly = "cartoony" },
 	model = { MuscleMummy = "zombie" }, -- (a "...Toon" test model walks like its character)
 	-- models saved in a T-pose whose pack idle swings the arms behind the back
 	-- (Echo, 9 Oct): they keep the pack's walk and run but stand in Roblox's
@@ -325,7 +325,14 @@ Config.SKILLS = {
 -- seconds Patch's shield on herself lasts (shields she gives friends last
 -- until a grab) - 10 Oct, Brent: a solo Patch was shielded all the time
 Config.SELF_SHIELD = 30
-Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30, nutmeg = 25, cloud = 35 }
+Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30, nutmeg = 25, cloud = 35, holly = 30 }
+-- Holly (4 Nov, Brent; free). Peppermint Trail (always on): losing her, the host
+-- gives up at once. Peppermint Slide: a patch `radius` studs round where she
+-- stands for `patch` seconds - the host slips `slipStun` s (once a patch; Holly
+-- Trap at 10: caught `trapStun` s; Candy Storm at 20: `stormRadius`). Holly
+-- Hedge (20): its own button, once a game - a hedge across the nearest doorway
+-- for `hedge` seconds the host can't get past (kids squeeze through)
+Config.HOLLY = { radius = 4, stormRadius = 8, patch = 20, slipStun = 2, trapStun = 3, hedge = 10 }
 -- Cloud (4 Nov, NEW_CHARACTERS.md). Fog: a cloud `radius` studs round for `fog`
 -- seconds - anyone inside is hidden from the host's eyes (it loses track, as at
 -- a hiding spot). Storm Cloud (level 20): thrown up to `throw` studs where you
@@ -402,6 +409,7 @@ Config.SKILL_INFO = {
 	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.\nFlare: for 8 seconds her light reaches more than twice as far, and she and every friend who comes near her get 30% of their stamina back and run 5% faster for 6 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
 	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). She frees every caged friend at once, faster than anyone.\nShield: gives the nearest friend without one a Party Shield (it lasts until a grab). If every friend nearby has one, or nobody is near, Patch shields herself for 30 seconds.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
 	echo = { about = "Hears the host coming from further away.\nNoise: throws a noise that sends the host to look somewhere else - then Echo runs 5% faster for 3 seconds.", how = "Press Noise, then tap where to throw it." },
+	holly = { about = "Peppermint Trail: a minty scent throws the host off - when he loses sight of Holly, he gives up at once.\nPeppermint Slide: scatters peppermints on the floor where she stands - the host slips and spins on them.", how = "Press Peppermint Slide (R) and lead the host over the peppermints. Break his line of sight to lose him." },
 	cloud = { about = "Float Up: only Cloud can float up to the high shelves with a little cloud on the wall - a free clue or points for everyone up there.\nFog: breathes out a fog cloud for 8 seconds - anyone inside is hidden from the host, who loses track of them.", how = "Look for shelves with a cloud mark and hold E under them. Press Fog (R) to hide yourself and friends near you." },
 	nutmeg = { about = "Good Nose: drawers and boxes nearby that hold a key or a Confetti Cannon sparkle through the walls - only Nutmeg sees it.\nSleigh Dash: a burst of double speed that pulls the nearest friend along with her.", how = "Walk near drawers and boxes to sniff them out. Press Sleigh Dash (R) to zoom off - stand near a friend to take them too." },
 	bramble = { about = "Talks to plants: the big plant whispers the door code to Bramble.\nVines: grows vines across a doorway - the host wades through them slowly, kids walk straight through.", how = "Find the big plant (in a room open from the start) and press E. Stand in a doorway and press Vines (R)." },
@@ -905,6 +913,8 @@ Config.NEW_SKILLS = {
 	{ id = "nutmeg", name = "Nutmeg", icon = "\u{1F514}", say = "Sniffs out keys", color = Color3.fromRGB(196, 120, 60), unlock = true, release = 1796101200 },
 	-- Cloud (4 Nov): free like the first eight; live once her model is saved
 	{ id = "cloud", name = "Cloud", icon = "\u{2601}", say = "Hides the crew in fog", color = Color3.fromRGB(150, 200, 255) },
+	-- Holly (4 Nov): free; live once her model is saved
+	{ id = "holly", name = "Holly", icon = "\u{1F36C}", say = "Peppermint trap-setter", color = Color3.fromRGB(220, 60, 70) },
 }
 do
 	local studio = game:GetService("RunService"):IsStudio()

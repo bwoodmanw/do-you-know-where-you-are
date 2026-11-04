@@ -6,7 +6,7 @@
 	split by which level-10 and level-20 power was chosen.
 	Run: .tools/luau.exe tools/check_ladder_waste.luau ]]
 local Progress = require("../roblox/src/shared/Progress")
-local skills = { "tinker", "shadow", "brainy", "muscle", "glow", "patch", "echo", "bramble", "nutmeg", "cloud" }
+local skills = { "tinker", "shadow", "brainy", "muscle", "glow", "patch", "echo", "bramble", "nutmeg", "cloud", "holly" }
 local N = 3000
 local XP = Progress.LEVEL_XP[Progress.MAX_LEVEL]
 

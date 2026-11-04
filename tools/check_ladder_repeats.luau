@@ -3,7 +3,7 @@
 	option is no bigger than one already offered at an earlier level.
 	Run: .tools/luau.exe tools/check_ladder_repeats.luau ]]
 local Progress = require("../roblox/src/shared/Progress")
-local skills = { "tinker", "shadow", "brainy", "muscle", "glow", "patch", "echo", "bramble", "nutmeg", "cloud" }
+local skills = { "tinker", "shadow", "brainy", "muscle", "glow", "patch", "echo", "bramble", "nutmeg", "cloud", "holly" }
 local FLAGS = { shield = true, revealOne = true, trickSight = true, twoStep = true, keyMap = true, longRead = true, healShield = true, mastermind = true, freeAll = true }
 -- (since 9 Oct the timed / distance values add up - Progress.ADDS - so only
 -- healAmount is still "biggest wins")

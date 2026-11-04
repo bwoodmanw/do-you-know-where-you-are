@@ -567,6 +567,54 @@ local SPECIAL = {
 			{ id = "overgrowth20", name = "Overgrowth", say = "Vines grow across two doorways at once", mods = { p20 = "overgrowth" } },
 		},
 	},
+	-- Holly (4 Nov, Brent): Peppermint Trail, Peppermint Slide; patchTime /
+	-- patchSize (studs wider round) / slipTime add to Config.HOLLY
+	holly = {
+		[3] = {
+			{ id = "fresh3", name = "Fresh Mints", say = "Your peppermints stay 5 s longer", mods = { patchTime = 5 } },
+			{ id = "cocoa3", name = "Warm Mittens", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[5] = {
+			{ id = "quick5", name = "Quick Hands", say = "Peppermint Slide recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "quiet5", name = "Snowy Steps", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[7] = {
+			{ id = "wide7", name = "Handful", say = "Your peppermint patch is 1 stud wider all round", mods = { patchSize = 1 } },
+			{ id = "tip7", name = "Candy Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+		},
+		[9] = {
+			{ id = "fresh9", name = "Long-lasting", say = "Your peppermints stay 5 s longer", mods = { patchTime = 5 } },
+			{ id = "hands9", name = "Nimble Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+		},
+		[10] = {
+			{ id = "trap10", name = "Holly Trap", say = "A ring of holly round your peppermints: the host is caught 3 s instead of slipping 2 s", mods = { p10 = "hollytrap" } },
+			{ id = "pockets10", name = "Peppermint Pockets", say = "Start every game with a free Candy Corn boost", mods = { p10 = "pockets" } },
+		},
+		[11] = {
+			{ id = "quick11", name = "Sweet Rush", say = "Peppermint Slide recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "lungs11", name = "Minty Breath", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+		},
+		[13] = {
+			{ id = "wide13", name = "Big Handful", say = "Your peppermint patch is 1 stud wider all round", mods = { patchSize = 1 } },
+			{ id = "quiet13", name = "Tinsel Cloak", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[15] = {
+			{ id = "slip15", name = "Extra Slippery", say = "The host slips 1 s longer", mods = { slipTime = 1 } },
+			{ id = "shield15", name = "Candy Armor", say = "Start every game with a Party Shield", mods = { shield = true } },
+		},
+		[17] = {
+			{ id = "tip17", name = "Holiday Hint", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "hands17", name = "Gift Wrapper", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[19] = {
+			{ id = "quick19", name = "Peppermint Pro", say = "Peppermint Slide recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "slip19", name = "Ice Mints", say = "The host slips 1 s longer", mods = { slipTime = 1 } },
+		},
+		[20] = {
+			{ id = "hedge20", name = "Holly Hedge", say = "A Holly Hedge button: once a game, a prickly hedge fills a doorway 10 s - the host can't get past, kids squeeze through", mods = { p20 = "hedge" } },
+			{ id = "storm20", name = "Candy Storm", say = "Your peppermint patch is twice as big", mods = { p20 = "candystorm" } },
+		},
+	},
 	-- Cloud (4 Nov, NEW_CHARACTERS.md): Float Up, Fog; fogSize (studs wider) /
 	-- fogTime add to Config.CLOUD; floatMult times her Float Up hold
 	cloud = {
@@ -674,7 +722,8 @@ local SPECIAL = {
 Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRange = true, barricadeHold = true,
 	burstMult = true, burstTime = true, flareTime = true, flareRange = true, flareStamina = true, vineTime = true, thinkTime = true,
 	noseRange = true, dashTime = true, pullRange = true, -- Nutmeg (3 Nov)
-	fogSize = true, fogTime = true } -- Cloud (4 Nov)
+	fogSize = true, fogTime = true, -- Cloud (4 Nov)
+	patchTime = true, patchSize = true, slipTime = true } -- Holly (4 Nov)
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

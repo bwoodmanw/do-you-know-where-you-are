@@ -438,8 +438,15 @@ function Host:step(dt)
 				self.nextSkill = now + 1
 			end
 		end
-	elseif self.mode == "hunt" and now - self.lastSeen > Config.HOST.lostAfter then
-		self.mode = "search"
+	elseif self.mode == "hunt" and now - self.lastSeen > Config.HOST.lostAfter * ((self.target and self.target:GetAttribute("Skill") == "holly") and 0.5 or 1) then
+		-- 4 Nov: Holly's Peppermint Trail - the minty scent throws him off: losing
+		-- her, he gives up twice as fast and goes straight back to his rounds
+		if self.target and self.target:GetAttribute("Skill") == "holly" then
+			self.mode = "patrol"
+			self.pause = 1
+		else
+			self.mode = "search"
+		end
 		self.round:hostLost()
 	end
 	setFace(self, self.mode == "hunt")
@@ -476,6 +483,13 @@ function Host:step(dt)
 				below.Instance:SetAttribute("Snapper", nil)
 				self.round:skillStun(2, "SNAP! Bramble's snapper plant has the host by the foot!")
 			end
+		elseif below and below.Instance.Name == "Peppermints" and not below.Instance:GetAttribute("Used") then
+			-- 4 Nov: Holly's peppermints - he slips and spins (Holly Trap: caught in
+			-- a ring of holly a little longer), once a patch
+			below.Instance:SetAttribute("Used", true)
+			local trap = below.Instance:GetAttribute("Holly")
+			self.round:skillStun(below.Instance:GetAttribute("Stun") or (trap and Config.HOLLY.trapStun or Config.HOLLY.slipStun),
+				trap and "Ouch! The host is caught in Holly's holly!" or "Whoops! The host slipped on Holly's peppermints!")
 		end
 	end
 

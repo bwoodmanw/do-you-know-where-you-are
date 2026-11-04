@@ -76,6 +76,7 @@ JOBS = {
     "cloud": "cloud-toon.glb",
     "clone": "clone-toon.glb",
     "harmony": "harmony-toon.glb",
+    "holly": "holly-toon.glb",  # 4 Nov: Holly (Christmas, free)
 }
 TEXTURE = 1024  # one 1024 x 1024 picture: plenty for flat cartoon colors
 VERTICES = 4000  # about 8,000 triangles

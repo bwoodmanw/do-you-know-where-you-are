@@ -93,6 +93,7 @@ local PickSkill = remote("PickSkill") -- client -> server: skill id
 local ReadyUp = remote("Ready") -- client -> server: pressed Play on the character screen
 local UseSkill = remote("UseSkill") -- client -> server: optional position (Echo)
 local RingBells = remote("RingBells") -- client -> server: Nutmeg's Jingle Bells (level 20), once a game
+local GrowHedge = remote("GrowHedge") -- client -> server: Holly's Holly Hedge (level 20), once a game
 local AskClue = remote("AskClue")
 local Say = remote("Say") -- client -> server: phrase index
 local Bubble = remote("Bubble") -- server -> clients: player, phrase index
@@ -315,6 +316,10 @@ local function applyMods(plr)
 	plr:SetAttribute("FogTime", Config.CLOUD.fog + (m.fogTime or 0))
 	plr:SetAttribute("FloatMult", m.floatMult or 1)
 	plr:SetAttribute("FogBankUsed", false)
+	-- Holly (4 Nov): how long her peppermints stay, how wide (round), how long he slips
+	plr:SetAttribute("PatchTime", Config.HOLLY.patch + (m.patchTime or 0))
+	plr:SetAttribute("PatchRadius", (m.p20 == "candystorm" and Config.HOLLY.stormRadius or Config.HOLLY.radius) + (m.patchSize or 0))
+	plr:SetAttribute("SlipTime", m.slipTime or 0)
 	-- Muscle's Iron Lungs: stamina refills twice as fast
 	plr:SetAttribute("RegenMult", m.p10 == "ironlungs" and Config.IRON_LUNGS_REGEN or 1)
 	plr:SetAttribute("ToolkitReady", false)
@@ -3390,6 +3395,69 @@ do
 		return found
 	end
 
+	-- Holly's Hedge (level 20, 4 Nov): once a game, a prickly holly hedge across
+	-- the nearest doorway for Config.HOLLY.hedge seconds. Kids squeeze through;
+	-- the host is held at it. Returns true if it grew
+	function round.hollyHedge(plr)
+		local hrp = hrpOf(plr)
+		local spots = hrp and doorwaysNear(hrp.Position, Config.VINES.reach) or {}
+		local spot = spots[1]
+		if not spot then
+			say("info", "\u{1F33F} Stand in or next to a doorway to grow your Holly Hedge there.", nil, plr)
+			return false
+		end
+		local c = House.at(spot.x, spot.y, 0)
+		local m = Instance.new("Model")
+		m.Name = "HollyHedge"
+		local across = spot.across == "x" and Vector3.new(1, 0, 0) or Vector3.new(0, 0, 1)
+		for k = -2, 2 do
+			for lvl = 0, 2 do
+				local bush = Instance.new("Part")
+				bush.Name = "Hedge"
+				bush.Shape = Enum.PartType.Ball
+				bush.Size = Vector3.new(2.4, 2.4, 2.4)
+				bush.Position = c + across * k * 1.4 + Vector3.new(0, 1 + lvl * 1.8, 0)
+				bush.Anchored, bush.CanCollide, bush.CanQuery, bush.CanTouch = true, false, false, false
+				bush.Color = Color3.fromRGB(28, 100, 45)
+				bush.Material = Enum.Material.LeafyGrass
+				bush.Parent = m
+				if (k + lvl) % 2 == 0 then
+					local berry = Instance.new("Part")
+					berry.Name = "HedgeBerry"
+					berry.Shape = Enum.PartType.Ball
+					berry.Size = Vector3.new(0.45, 0.45, 0.45)
+					berry.Position = bush.Position + Vector3.new(0, 0.9, 0) + (across:Cross(Vector3.yAxis)) * 1
+					berry.Anchored, berry.CanCollide, berry.CanQuery, berry.CanTouch = true, false, false, false
+					berry.Color = Color3.fromRGB(215, 30, 40)
+					berry.Material = Enum.Material.SmoothPlastic
+					berry.Parent = m
+				end
+			end
+		end
+		m.Parent = world.root
+		Effects.burst(c + Vector3.new(0, 2, 0), "plant")
+		say("info", "\u{1F33F} " .. plr.DisplayName .. " grew a prickly Holly Hedge - the host can't get through!")
+		local myWorld = world
+		task.spawn(function()
+			local stopAt = os.clock() + Config.HOLLY.hedge
+			local told = false
+			while os.clock() < stopAt and world == myWorld and state.status == "playing" do
+				if host and host.model and host.root and (Vector3.new(host.root.Position.X, 0, host.root.Position.Z) - Vector3.new(c.X, 0, c.Z)).Magnitude < 6 then
+					host:stun(0.4) -- held at the hedge
+					if not told then
+						told = true
+						say("info", "Ouch! The host can't get past Holly's hedge!")
+					end
+				end
+				task.wait(0.3)
+			end
+			if m.Parent then
+				m:Destroy()
+			end
+		end)
+		return true
+	end
+
 	local function growVines(plr, spot, seconds, snapper)
 		local c = House.at(spot.x, spot.y, 0)
 		local m = Instance.new("Model")
@@ -3643,6 +3711,67 @@ do
 				end
 				plr:SetAttribute("FogBankUsed", false)
 			end
+			return true
+		elseif skill == "holly" then
+			-- Peppermint Slide (4 Nov): peppermints scattered on the floor where she
+			-- stands - the host slips on them once (Holly Trap: a ring of holly)
+			local H = Config.HOLLY
+			local r = plr:GetAttribute("PatchRadius") or H.radius
+			local seconds = plr:GetAttribute("PatchTime") or H.patch
+			local trap = p10 == "hollytrap"
+			local ground = hrp.Position - Vector3.new(0, 2.9, 0)
+			local m = Instance.new("Model")
+			m.Name = "HollyPeppermints"
+			-- the patch the host's feet find (Host: "Peppermints")
+			local pad = Instance.new("Part")
+			pad.Name = "Peppermints"
+			pad.Shape = Enum.PartType.Cylinder
+			pad.Size = Vector3.new(0.1, r * 2, r * 2)
+			pad.CFrame = CFrame.new(ground + Vector3.new(0, 0.05, 0)) * CFrame.Angles(0, 0, math.rad(90))
+			pad.Anchored, pad.CanCollide, pad.CanTouch, pad.CastShadow = true, false, false, false
+			pad.CanQuery = true
+			pad.Transparency = 0.6
+			pad.Color = Color3.fromRGB(255, 225, 230)
+			pad.Material = Enum.Material.SmoothPlastic
+			pad:SetAttribute("Holly", trap or nil)
+			pad:SetAttribute("Stun", (trap and H.trapStun or H.slipStun) + (plr:GetAttribute("SlipTime") or 0))
+			pad.Parent = m
+			local rng = Random.new()
+			for _ = 1, math.floor(r * r * 1.2) do
+				local a, d = rng:NextNumber(0, math.pi * 2), math.sqrt(rng:NextNumber()) * (r - 0.4)
+				local at = ground + Vector3.new(math.cos(a) * d, 0.15, math.sin(a) * d)
+				for k, col in ipairs({ Color3.fromRGB(250, 250, 250), Color3.fromRGB(215, 30, 45) }) do
+					local candy = Instance.new("Part")
+					candy.Name = "Peppermint"
+					candy.Shape = Enum.PartType.Cylinder
+					candy.Size = k == 1 and Vector3.new(0.18, 0.7, 0.7) or Vector3.new(0.2, 0.32, 0.32)
+					candy.CFrame = CFrame.new(at + Vector3.new(0, (k - 1) * 0.02, 0)) * CFrame.Angles(0, 0, math.rad(90))
+					candy.Anchored, candy.CanCollide, candy.CanQuery, candy.CanTouch, candy.CastShadow = true, false, false, false, false
+					candy.Color = col
+					candy.Material = Enum.Material.SmoothPlastic
+					candy.Parent = m
+				end
+			end
+			if trap then
+				-- the ring of holly round the edge: leaves and red berries
+				for k = 0, 15 do
+					local a = k / 16 * math.pi * 2
+					local leaf = Instance.new("Part")
+					leaf.Name = k % 2 == 0 and "HollyLeaf" or "HollyBerry"
+					leaf.Shape = k % 2 == 0 and Enum.PartType.Block or Enum.PartType.Ball
+					leaf.Size = k % 2 == 0 and Vector3.new(0.9, 0.15, 0.5) or Vector3.new(0.35, 0.35, 0.35)
+					leaf.CFrame = CFrame.new(ground + Vector3.new(math.cos(a) * r, 0.2, math.sin(a) * r)) * CFrame.Angles(0, -a, 0)
+					leaf.Anchored, leaf.CanCollide, leaf.CanQuery, leaf.CanTouch = true, false, false, false
+					leaf.Color = k % 2 == 0 and Color3.fromRGB(30, 110, 50) or Color3.fromRGB(210, 30, 40)
+					leaf.Material = Enum.Material.SmoothPlastic
+					leaf.Parent = m
+				end
+			end
+			m.Parent = world.root
+			game:GetService("Debris"):AddItem(m, seconds)
+			Effects.burst(ground + Vector3.new(0, 1, 0), "boost", "collect")
+			plr:SetAttribute("PeppermintUntil", workspace:GetServerTimeNow() + seconds)
+			say("info", "\u{1F36C} " .. plr.DisplayName .. " scattered peppermints - lead the host over them!")
 			return true
 		end
 		return nil -- not a new button
@@ -4034,6 +4163,14 @@ PickSkill.OnServerEvent:Connect(function(plr, id)
 			end
 			plr:SetAttribute("Skill", id)
 			applyMods(plr)
+			-- Holly's Peppermint Pockets (level 10): a free Candy Corn, once a game
+			if id == "holly" and plr:GetAttribute("Power10") == "pockets" and not plr:GetAttribute("PocketsGiven") then
+				plr:SetAttribute("PocketsGiven", true)
+				bags[plr.UserId] = bags[plr.UserId] or {}
+				table.insert(bags[plr.UserId], "candy")
+				paintBag(plr)
+				say("info", "\u{1F36C} Peppermint Pockets: a free Candy Corn in your bag!", nil, plr)
+			end
 			if not Characters.apply(plr, modelFor(plr, s)) then
 				local char = plr.Character
 				if char and char:GetAttribute("EscapeCrewChar") then
@@ -4199,6 +4336,18 @@ RingBells.OnServerEvent:Connect(function(plr)
 		Effects.at(plr, "reveal")
 	end
 	say("info", "\u{1F514}\u{1F514} " .. plr.DisplayName .. " rang the Jingle Bells! The host is frozen for " .. seconds .. " seconds!")
+end)
+
+-- Holly's Holly Hedge (level 20; 4 Nov): its own button, once a game, at the
+-- nearest doorway (not used up when there's no doorway close by)
+GrowHedge.OnServerEvent:Connect(function(plr)
+	if plr:GetAttribute("Skill") ~= "holly" or plr:GetAttribute("Power20") ~= "hedge" or plr:GetAttribute("HedgeUsed")
+		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
+		return
+	end
+	if round.hollyHedge(plr) then
+		plr:SetAttribute("HedgeUsed", true)
+	end
 end)
 
 UseSkill.OnServerEvent:Connect(function(plr, pos)
@@ -4795,6 +4944,8 @@ function round.start()
 		-- a new game (not the next floor of a Tower Run): Nutmeg's Jingle Bells is back
 		for _, p in ipairs(Players:GetPlayers()) do
 			p:SetAttribute("BellsUsed", false)
+			p:SetAttribute("HedgeUsed", false) -- Holly's Holly Hedge too
+			p:SetAttribute("PocketsGiven", false) -- and Holly's Peppermint Pockets
 		end
 	end
 	towerCarry = nil

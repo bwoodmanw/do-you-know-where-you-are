@@ -574,19 +574,35 @@ local runBtn = button(acts, "\u{1F3C3} Run", { LayoutOrder = 1 }, function()
 end)
 local skillBtn = button(acts, "\u{2B50} Skill", { LayoutOrder = 2, BackgroundColor3 = Color3.fromRGB(47, 107, 58) })
 do
-	-- Nutmeg's Jingle Bells (level 20; 4 Nov, Brent): its own button, once a
-	-- game, used whenever she chooses - B on a keyboard, R2 on a controller
-	local bellsBtn = button(acts, "\u{1F514} Jingle Bells" .. ((not TOUCH and UserInputService.KeyboardEnabled) and " (B)" or ""), { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(190, 40, 50), Visible = false })
+	-- the once-a-game level-20 buttons, used whenever you choose - B on a
+	-- keyboard, R2 on a controller (4 Nov, Brent): Nutmeg's Jingle Bells and
+	-- Holly's Holly Hedge (a player is only ever one of them)
+	local KEY = (not TOUCH and UserInputService.KeyboardEnabled) and " (B)" or ""
+	local POWERS = {
+		nutmeg = { power = "bells", used = "BellsUsed", text = "\u{1F514} Jingle Bells", remote = "RingBells", color = Color3.fromRGB(190, 40, 50) },
+		holly = { power = "hedge", used = "HedgeUsed", text = "\u{1F33F} Holly Hedge", remote = "GrowHedge", color = Color3.fromRGB(40, 120, 60) },
+	}
+	local bellsBtn = button(acts, "", { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(190, 40, 50), Visible = false })
+	local function current()
+		local p = POWERS[player:GetAttribute("Skill") or ""]
+		return p and player:GetAttribute("Power20") == p.power and not player:GetAttribute(p.used) and p or nil
+	end
 	local function ring()
-		if bellsBtn.Visible then
-			remotes.RingBells:FireServer()
+		local p = current()
+		if p and bellsBtn.Visible then
+			remotes[p.remote]:FireServer()
 		end
 	end
 	bellsBtn.Activated:Connect(ring)
 	local function paintBells()
-		bellsBtn.Visible = player:GetAttribute("Skill") == "nutmeg" and player:GetAttribute("Power20") == "bells" and not player:GetAttribute("BellsUsed")
+		local p = current()
+		bellsBtn.Visible = p ~= nil
+		if p then
+			bellsBtn.Text = p.text .. KEY
+			bellsBtn.BackgroundColor3 = p.color
+		end
 	end
-	for _, a in ipairs({ "Skill", "Power20", "BellsUsed" }) do
+	for _, a in ipairs({ "Skill", "Power20", "BellsUsed", "HedgeUsed" }) do
 		player:GetAttributeChangedSignal(a):Connect(paintBells)
 	end
 	paintBells()
@@ -1264,7 +1280,7 @@ Gamepad.panel(keypad)
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
 local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare",
-	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog" }
+	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog", holly = "\u{1F36C} Peppermints" }
 local KEYS = not TOUCH and UserInputService.KeyboardEnabled -- show the R key on the button
 do
 local function paintSkill()
@@ -2239,7 +2255,7 @@ RunService.RenderStepped:Connect(function(dt)
 		-- while a skill is working: its own countdown; then the recharge countdown
 		local ACTIVE = { shadow = { "SneakUntil", "\u{1F319} Sneaking" }, glow = { "FlareUntil", "\u{2728} Flare" }, bramble = { "VinesUntil", "\u{1F33F} Vines" },
 			echo = { "EchoBurstUntil", "\u{1F3A7} Burst" }, muscle = { "BarricadeUntil", "\u{1F4AA} Barricade" }, brainy = { "ThinkUntil", "\u{1F9E0} Thinking" },
-			nutmeg = { "DashUntil", "\u{1F514} Dashing" }, cloud = { "FogUntil", "\u{2601} Fog" } }
+			nutmeg = { "DashUntil", "\u{1F514} Dashing" }, cloud = { "FogUntil", "\u{2601} Fog" }, holly = { "PeppermintUntil", "\u{1F36C} Peppermints" } }
 		local a = ACTIVE[skill]
 		local active = a and ((player:GetAttribute(a[1]) or 0) - serverNow) or 0
 		local cool = (player:GetAttribute("CoolUntil") or 0) - serverNow
