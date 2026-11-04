@@ -71,6 +71,11 @@ JOBS = {
     "acorn-bramble": "acorn-bramble-toon.glb",
     "host-gobbler": "host-gobbler-toon.glb",
     "turkey": "turkey-toon.glb",
+    # the new characters (3 Nov): Nutmeg (Christmas), Cloud, Clone, Harmony
+    "nutmeg": "nutmeg-toon.glb",
+    "cloud": "cloud-toon.glb",
+    "clone": "clone-toon.glb",
+    "harmony": "harmony-toon.glb",
 }
 TEXTURE = 1024  # one 1024 x 1024 picture: plenty for flat cartoon colors
 VERTICES = 4000  # about 8,000 triangles
