@@ -720,12 +720,160 @@ function Scene.thanksgiving(folder)
 	end
 end
 
+-- Christmas in the Lobby (Brent, 3 Nov): red, green and white lights over
+-- the lane, giant candy canes and presents at the gate, a big tree with a
+-- star, baubles and presents, snowmen where the tombstones stood, snow
+-- patches and falling snow, a sleigh circling over the lawn, a cool haze
+function Scene.christmas(folder)
+	local RED, GREEN, WHITE, GOLD = Color3.fromRGB(210, 35, 45), Color3.fromRGB(40, 140, 70), Color3.fromRGB(250, 250, 255), Color3.fromRGB(255, 205, 70)
+	local function deco(props)
+		props.CanCollide = props.CanCollide or false
+		return part(folder, props)
+	end
+	-- lights across the lane
+	local LIGHTS = { RED, GREEN, WHITE }
+	for z = 30, -50, -20 do
+		local a, b = Vector3.new(-11, 9.6, z), Vector3.new(11, 9.6, z)
+		for k = 0, 14 do
+			local p = a:Lerp(b, k / 14) - Vector3.new(0, math.sin(k / 14 * math.pi) * 1.6, 0)
+			deco({ Name = "LaneLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 0.5, 0.5), Position = p, Color = LIGHTS[k % 3 + 1], Material = Enum.Material.Neon })
+		end
+	end
+	-- a present: a box with a ribbon both ways and a bow on top
+	local function present(pos, size, box, ribbon)
+		part(folder, { Name = "Present", Size = size, Position = pos + Vector3.new(0, size.Y / 2, 0), Color = box, Material = Enum.Material.SmoothPlastic })
+		deco({ Name = "Ribbon", Size = Vector3.new(size.X + 0.05, size.Y + 0.05, size.Z * 0.18), Position = pos + Vector3.new(0, size.Y / 2, 0), Color = ribbon })
+		deco({ Name = "Ribbon", Size = Vector3.new(size.X * 0.18, size.Y + 0.05, size.Z + 0.05), Position = pos + Vector3.new(0, size.Y / 2, 0), Color = ribbon })
+		deco({ Name = "Bow", Shape = Enum.PartType.Ball, Size = Vector3.new(size.X * 0.4, size.Y * 0.25, size.Z * 0.4), Position = pos + Vector3.new(0, size.Y + 0.1, 0), Color = ribbon })
+	end
+	-- a giant candy cane standing by the gate (the hook turned toward the lane)
+	local function bigCane(base, hookDir)
+		deco({ Name = "CaneStick", Shape = Enum.PartType.Cylinder, Size = Vector3.new(8, 1, 1), CFrame = CFrame.new(base + Vector3.new(0, 4, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = WHITE, Material = Enum.Material.SmoothPlastic })
+		for k = 0, 5 do
+			deco({ Name = "CaneStripe", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.45, 1.08, 1.08), CFrame = CFrame.new(base + Vector3.new(0, 0.8 + k * 1.25, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = RED, Material = Enum.Material.SmoothPlastic })
+		end
+		for k = 0, 6 do
+			local a = math.pi - k / 6 * math.pi * 1.15
+			local p = base + Vector3.new(0, 8, 0) + hookDir * (1 + math.cos(a)) + Vector3.new(0, math.sin(a) * 1, 0)
+			deco({ Name = "CaneHook", Shape = Enum.PartType.Ball, Size = Vector3.new(1.05, 1.05, 1.05), Position = p, Color = k % 2 == 0 and WHITE or RED, Material = Enum.Material.SmoothPlastic })
+		end
+	end
+	for _, x in ipairs({ -15, 15 }) do
+		bigCane(Vector3.new(x + (x < 0 and -3.5 or 3.5), 0, -62), Vector3.new(x < 0 and 1 or -1, 0, 0))
+		present(Vector3.new(x - 1.2, 0, -62), Vector3.new(2.4, 2, 2.4), RED, GOLD)
+		present(Vector3.new(x + 1.4, 0, -61.5), Vector3.new(1.8, 1.5, 1.8), GREEN, RED)
+		present(Vector3.new(x + 0.2, 0, -63.4), Vector3.new(1.4, 1.2, 1.4), WHITE, GREEN)
+	end
+	-- the big tree on the lawn
+	local treeAt = Vector3.new(30, 0, 72)
+	part(folder, { Name = "TreeTrunk", Size = Vector3.new(2, 3, 2), Position = treeAt + Vector3.new(0, 1.5, 0), Color = Color3.fromRGB(110, 70, 40), Material = Enum.Material.Wood })
+	for k = 0, 5 do
+		local dia = 13 - k * 2.1
+		part(folder, { Name = "TreeTier", Shape = Enum.PartType.Cylinder, Size = Vector3.new(2.6, dia, dia), CFrame = CFrame.new(treeAt + Vector3.new(0, 4 + k * 2.2, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(30, 115, 55), Material = Enum.Material.SmoothPlastic })
+		for j = 0, 7 do
+			local a = j / 8 * math.pi * 2 + k * 0.4
+			deco({ Name = "Bauble", Shape = Enum.PartType.Ball, Size = Vector3.new(0.7, 0.7, 0.7), Position = treeAt + Vector3.new(math.cos(a) * dia / 2, 3.2 + k * 2.2, math.sin(a) * dia / 2), Color = ({ RED, GOLD, WHITE, Color3.fromRGB(70, 140, 255) })[(j + k) % 4 + 1], Material = Enum.Material.Neon })
+		end
+	end
+	local star = deco({ Name = "TreeStar", Shape = Enum.PartType.Ball, Size = Vector3.new(1.8, 1.8, 1.8), Position = treeAt + Vector3.new(0, 17, 0), Color = GOLD, Material = Enum.Material.Neon })
+	local starLight = Instance.new("PointLight")
+	starLight.Color, starLight.Range, starLight.Brightness = Color3.fromRGB(255, 210, 130), 24, 1.4
+	starLight.Parent = star
+	for k, off in ipairs({ Vector3.new(-5, 0, -4), Vector3.new(4.5, 0, -4.5), Vector3.new(-2, 0, -6.5), Vector3.new(2.5, 0, -7), Vector3.new(6, 0, -1) }) do
+		local boxes = { RED, GREEN, WHITE, GOLD, Color3.fromRGB(70, 140, 255) }
+		present(treeAt + off, Vector3.new(1.6 + (k % 2) * 0.8, 1.2 + (k % 3) * 0.5, 1.6 + (k % 2) * 0.8), boxes[k], boxes[(k + 1) % 5 + 1])
+	end
+	-- snowmen where the tombstones stood, facing the lane
+	for i, p in ipairs({ Vector3.new(-40, 0, 30), Vector3.new(-48, 0, 12), Vector3.new(44, 0, -40), Vector3.new(-44, 0, -60), Vector3.new(62, 0, 40), Vector3.new(-60, 0, 70) }) do
+		local face = CFrame.lookAt(p, Vector3.new(0, 0, p.Z)) * CFrame.Angles(0, math.rad((i * 37) % 30 - 15), 0)
+		local function at(x, y, z)
+			return face * CFrame.new(x, y, z)
+		end
+		part(folder, { Name = "SnowBottom", Shape = Enum.PartType.Ball, Size = Vector3.new(3.4, 3.2, 3.4), CFrame = at(0, 1.5, 0), Color = WHITE, Material = Enum.Material.Snow })
+		part(folder, { Name = "SnowMiddle", Shape = Enum.PartType.Ball, Size = Vector3.new(2.5, 2.3, 2.5), CFrame = at(0, 3.8, 0), Color = WHITE, Material = Enum.Material.Snow })
+		part(folder, { Name = "SnowHead", Shape = Enum.PartType.Ball, Size = Vector3.new(1.8, 1.7, 1.8), CFrame = at(0, 5.5, 0), Color = WHITE, Material = Enum.Material.Snow })
+		deco({ Name = "Scarf", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.45, 1.9, 1.9), CFrame = at(0, 4.75, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = i % 2 == 0 and RED or GREEN, Material = Enum.Material.Fabric })
+		deco({ Name = "CarrotNose", Size = Vector3.new(0.22, 0.22, 0.8), CFrame = at(0, 5.5, -1.1), Color = Color3.fromRGB(255, 130, 30), Material = Enum.Material.SmoothPlastic })
+		for _, sx in ipairs({ -0.35, 0.35 }) do
+			deco({ Name = "CoalEye", Shape = Enum.PartType.Ball, Size = Vector3.new(0.25, 0.25, 0.12), CFrame = at(sx, 5.8, -0.82), Color = Color3.fromRGB(25, 25, 30) })
+		end
+		for k = -2, 2 do
+			deco({ Name = "CoalSmile", Shape = Enum.PartType.Ball, Size = Vector3.new(0.16, 0.16, 0.1), CFrame = at(k * 0.17, 5.12 + math.abs(k) * 0.07, -0.83), Color = Color3.fromRGB(25, 25, 30) })
+		end
+		for _, sx in ipairs({ -1, 1 }) do
+			deco({ Name = "StickArm", Size = Vector3.new(2.2, 0.15, 0.15), CFrame = at(sx * 2, 4.3, 0) * CFrame.Angles(0, 0, math.rad(sx * 25)), Color = Color3.fromRGB(100, 65, 35), Material = Enum.Material.Wood })
+		end
+		deco({ Name = "HatBrim", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.12, 1.8, 1.8), CFrame = at(0, 6.3, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(30, 30, 35) })
+		deco({ Name = "HatTop", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1, 1.2, 1.2), CFrame = at(0, 6.85, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(30, 30, 35) })
+	end
+	-- snow patches on the lawn (where Thanksgiving's leaf piles were)
+	for _, c in ipairs({ Vector3.new(-26, 0, 30), Vector3.new(26, 0, 36), Vector3.new(-30, 0, 70), Vector3.new(-8, 0, 84), Vector3.new(50, 0, 60), Vector3.new(-55, 0, 45) }) do
+		deco({ Name = "SnowPatch", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.3, 9, 7), CFrame = CFrame.new(c + Vector3.new(0, 0.12, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = WHITE, Material = Enum.Material.Snow })
+		deco({ Name = "SnowMound", Shape = Enum.PartType.Ball, Size = Vector3.new(4, 1.2, 3), Position = c + Vector3.new(0.5, 0.3, 0.4), Color = WHITE, Material = Enum.Material.Snow })
+	end
+	-- snow falling over the whole Lobby
+	local sky = deco({ Name = "SnowSky", Size = Vector3.new(170, 1, 170), Position = Vector3.new(0, 45, 15), Transparency = 1, CanQuery = false, CanTouch = false })
+	local snow = Instance.new("ParticleEmitter")
+	snow.Name = "Snow"
+	snow.Color = ColorSequence.new(WHITE)
+	snow.LightEmission = 0.3
+	snow.Size = NumberSequence.new(0.35)
+	snow.Rate = 120
+	snow.Lifetime = NumberRange.new(14, 18)
+	snow.Speed = NumberRange.new(2.5, 3.5)
+	snow.SpreadAngle = Vector2.new(15, 15)
+	snow.EmissionDirection = Enum.NormalId.Bottom
+	snow.RotSpeed = NumberRange.new(-40, 40)
+	snow.Parent = sky
+	-- a sleigh circling over the lawn (where the turkey balloon flew)
+	local sleigh = Instance.new("Model")
+	sleigh.Name = "Sleigh"
+	local function bit(props)
+		props.CanCollide, props.CanQuery, props.CanTouch = false, false, false
+		return part(sleigh, props)
+	end
+	local body = bit({ Name = "SleighBody", Size = Vector3.new(3, 1.6, 5), Color = RED, Material = Enum.Material.SmoothPlastic })
+	bit({ Name = "SleighBack", Size = Vector3.new(3, 1.4, 0.6), CFrame = CFrame.new(0, 1.2, 2.2), Color = RED, Material = Enum.Material.SmoothPlastic })
+	bit({ Name = "SleighTrim", Size = Vector3.new(3.1, 0.25, 5.1), CFrame = CFrame.new(0, 0.85, 0), Color = GOLD, Material = Enum.Material.SmoothPlastic })
+	for _, sx in ipairs({ -1.3, 1.3 }) do
+		bit({ Name = "Runner", Size = Vector3.new(0.25, 0.25, 6), CFrame = CFrame.new(sx, -1.3, -0.3), Color = GOLD, Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "RunnerCurl", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 0.9, 0.5), CFrame = CFrame.new(sx, -0.9, -3.3), Color = GOLD, Material = Enum.Material.SmoothPlastic })
+	end
+	bit({ Name = "PresentSack", Shape = Enum.PartType.Ball, Size = Vector3.new(2.2, 2.4, 2.2), CFrame = CFrame.new(0, 1.6, 1), Color = Color3.fromRGB(150, 100, 60), Material = Enum.Material.Fabric })
+	sleigh.PrimaryPart = body
+	sleigh.Parent = folder
+	task.spawn(function()
+		local t = 0
+		while sleigh.Parent do
+			t += 0.05
+			local p = Vector3.new(math.sin(t * 0.3) * 30, 22 + math.sin(t * 1.4) * 1.2, 50 + math.cos(t * 0.3) * 20)
+			local d = Vector3.new(math.cos(t * 0.3) * 0.3 * 30, 0, -math.sin(t * 0.3) * 0.3 * 20)
+			sleigh:PivotTo(CFrame.lookAt(p, p + d))
+			task.wait(0.05)
+		end
+	end)
+	-- a cool, snowy haze
+	local Lighting = game:GetService("Lighting")
+	local atm = Lighting:FindFirstChildOfClass("Atmosphere")
+	if not atm or atm.Name == "SeasonAtmosphere" then
+		atm = atm or Instance.new("Atmosphere")
+		atm.Name = "SeasonAtmosphere"
+		atm.Density = 0.26
+		atm.Offset = 0.1
+		atm.Color = Color3.fromRGB(190, 210, 240)
+		atm.Decay = Color3.fromRGB(110, 130, 170)
+		atm.Glare, atm.Haze = 0, 1.2
+		atm.Parent = Lighting
+	end
+end
+
 -- the season's decorations (Seasons.decor: Halloween's in October,
--- Thanksgiving's in November, none otherwise), checked every minute so a
--- Lobby server running at midnight swaps them by itself
+-- Thanksgiving's in November, Christmas's in December, none otherwise),
+-- checked every minute so a Lobby server running at midnight swaps them by
+-- itself
 function Scene.seasons()
 	local Seasons = require(game:GetService("ReplicatedStorage").Shared.Seasons)
-	local builders = { halloween = Scene.halloween, thanksgiving = Scene.thanksgiving }
+	local builders = { halloween = Scene.halloween, thanksgiving = Scene.thanksgiving, christmas = Scene.christmas }
 	local shown, folder = nil, nil
 	task.spawn(function()
 		while true do

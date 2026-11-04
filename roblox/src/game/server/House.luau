@@ -1880,6 +1880,8 @@ local DECOR = { Color3.fromRGB(255, 77, 94), Color3.fromRGB(61, 139, 255), Color
 local HOSPITAL_PICTURES = { "\u{1FA7A}", "\u{1F48A}", "\u{1FA79}", "\u{1F9F8}", "\u{1F3E5}", "\u{1F47B}", "\u{1F987}", "\u{1F383}" }
 -- Thanksgiving bunting: autumn leaves' colors
 local AUTUMN_DECOR = { Color3.fromRGB(230, 120, 30), Color3.fromRGB(190, 50, 40), Color3.fromRGB(240, 190, 60), Color3.fromRGB(130, 80, 45) }
+-- Christmas bunting (3 Nov): red, green, white and gold
+local CHRISTMAS_DECOR = { Color3.fromRGB(210, 35, 45), Color3.fromRGB(40, 140, 70), Color3.fromRGB(245, 245, 250), Color3.fromRGB(240, 190, 60) }
 local HALLOWEEN_DECOR = { Color3.fromRGB(255, 138, 31), Color3.fromRGB(110, 60, 160), Color3.fromRGB(30, 24, 34), Color3.fromRGB(150, 220, 60) }
 local CANDY_PICTURES = { "\u{1F36C}", "\u{1F36D}", "\u{1F9C1}", "\u{1F369}", "\u{1F36B}", "\u{1F370}", "\u{1F366}", "\u{1F388}" }
 local PICTURES = { "\u{1F383}", "\u{1F47B}", "\u{1F987}", "\u{1F578}", "\u{1F382}", "\u{1F388}", "\u{1F315}", "\u{1F36D}" }
@@ -1967,7 +1969,7 @@ function House.decorate(world)
 			for i = 0, n do
 				local t = i / n
 				local p = a:Lerp(b, t) - Vector3.new(0, math.sin(t * math.pi) * 2.5, 0)
-				local flags = (decorSeason == "halloween" and not candy) and HALLOWEEN_DECOR or (decorSeason == "thanksgiving" and not candy) and AUTUMN_DECOR or DECOR
+				local flags = (decorSeason == "halloween" and not candy) and HALLOWEEN_DECOR or (decorSeason == "thanksgiving" and not candy) and AUTUMN_DECOR or (decorSeason == "christmas" and not candy) and CHRISTMAS_DECOR or DECOR
 				deco({ Name = "Flag", Size = Vector3.new(1.3, 1.5, 0.08), CFrame = CFrame.lookAt(p, p + side), Color = flags[(i + r) % #flags + 1], Material = Enum.Material.Fabric })
 			end
 		end
@@ -1995,6 +1997,38 @@ function House.decorate(world)
 						body.CFrame = turn
 						wings[1].CFrame = turn * rel[1]
 						wings[2].CFrame = turn * rel[2]
+						task.wait(0.1)
+					end
+				end)
+			end
+		end
+		-- Christmas (3 Nov): two paper snowflakes hanging from the ceiling,
+		-- slowly turning (where Halloween's bats hang)
+		if decorSeason == "christmas" then
+			local srng = Random.new(r * 7)
+			for _ = 1, 2 do
+				local sx = srng:NextNumber(x0 + 3, math.max(x0 + 3.1, x1 - 3))
+				local sz = srng:NextNumber(z0 + 3, math.max(z0 + 3.1, z1 - 3))
+				local top = (f.tall and HT or H)
+				local sy = top - srng:NextNumber(2.5, 4)
+				deco({ Name = "SnowflakeString", Size = Vector3.new(0.05, top - sy, 0.05), Position = Vector3.new(sx, (top + sy) / 2, sz), Color = Color3.fromRGB(220, 220, 230) })
+				local centre = CFrame.new(sx, sy, sz)
+				local arms = {}
+				for k = 0, 2 do
+					table.insert(arms, deco({ Name = "PaperSnowflake", Size = Vector3.new(0.18, 1.8, 0.05), CFrame = centre * CFrame.Angles(0, 0, math.rad(k * 60)), Color = Color3.fromRGB(250, 252, 255), Material = Enum.Material.SmoothPlastic }))
+				end
+				local rel = {}
+				for k, a in ipairs(arms) do
+					rel[k] = centre:ToObjectSpace(a.CFrame)
+				end
+				task.spawn(function()
+					local a, speed = srng:NextNumber(0, 6), srng:NextNumber(0.3, 0.6)
+					while arms[1].Parent do
+						a += speed * 0.1
+						local turn = centre * CFrame.Angles(0, a, 0)
+						for k, arm in ipairs(arms) do
+							arm.CFrame = turn * rel[k]
+						end
 						task.wait(0.1)
 					end
 				end)
@@ -2285,7 +2319,25 @@ function House.decorate(world)
 				placed += 1
 				busy[c[1] .. "," .. c[2]] = true
 				local base = at(c[1], c[2], 0)
-				if placed == 1 then
+				if placed == 1 and decorSeason == "christmas" and not candy then
+					-- Christmas (3 Nov): a little Christmas tree with a glowing star
+					-- and a few bright baubles, in place of the pumpkin
+					deco({ Name = "TreeTrunk", Size = Vector3.new(0.6, 0.8, 0.6), Position = base + Vector3.new(0, 0.4, 0), Color = Color3.fromRGB(110, 70, 40), Material = Enum.Material.Wood })
+					for k = 0, 3 do
+						local dia = 3 - k * 0.65
+						deco({ Name = "TreeTier", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1, dia, dia), CFrame = CFrame.new(base + Vector3.new(0, 1.2 + k * 0.9, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(35, 120, 60), Material = Enum.Material.SmoothPlastic })
+					end
+					local star = deco({ Name = "TreeStar", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.6, 0.6), Position = base + Vector3.new(0, 4.6, 0), Color = Color3.fromRGB(255, 215, 80), Material = Enum.Material.Neon })
+					local l = Instance.new("PointLight")
+					l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 200, 120), 9, 1
+					l.Parent = star
+					for k = 0, 5 do
+						local a = k * 1.05 + r
+						local y = 1.3 + (k % 3) * 0.9
+						local rad = (3 - (k % 3) * 0.65) / 2
+						deco({ Name = "Bauble", Shape = Enum.PartType.Ball, Size = Vector3.new(0.35, 0.35, 0.35), Position = base + Vector3.new(math.cos(a) * rad, y, math.sin(a) * rad), Color = CHRISTMAS_DECOR[k % 2 == 0 and 1 or 4], Material = Enum.Material.Neon })
+					end
+				elseif placed == 1 then
 					-- a glowing pumpkin, or in the Gummy Bounce House a giant gumdrop
 					local pk = deco({ Name = candy and "Gumdrop" or "Pumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2, 2.4), Position = base + Vector3.new(0, 1, 0),
 						Color = candy and Color3.fromRGB(120, 220, 140) or Color3.fromRGB(240, 120, 20), Material = candy and Enum.Material.Glass or Enum.Material.SmoothPlastic })

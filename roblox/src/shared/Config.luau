@@ -265,6 +265,7 @@ Config.BADGES = {
 	untouched = 1991556459225776, -- Untouchable: escaped without being caught
 	nightmare = 1282994468042939, -- Nightmare Escaper: escaped on Nightmare
 	plushies = 4046817833899589, -- Plushie Collector: found every lost plushie
+	cane = 0, -- Candy Cane Collector: found the Christmas goal of candy canes (3 Nov; picture art/roblox-store/badges/badge-cane.png) - 0 until made in Creator Hub
 }
 
 -- the collectibles book: one lost plushie hidden on every floor (by map id).
@@ -431,11 +432,11 @@ Config.SEASONS = {
 		-- a week more). Nutmeg the reindeer costs 400 candy canes (or a 399
 		-- Robux Game Pass) once she's built. There is no candy cane emoji:
 		-- the tree stands in for it in words, SEASON_IMAGES.cane once uploaded.
-		-- No badge yet (goal / badge / badgeName once one is made in Creator Hub)
+		-- The badge: Candy Cane Collector for 50 found (BADGES.cane)
 		id = "christmas", name = "Candy Cane Hunt", shopName = "Christmas Shop", item = "cane",
 		one = "candy cane", many = "candy canes", icon = "\u{1F384}",
 		from = { 12, 1 }, to = { 1, 1 }, shopDays = 7,
-		perFloor = 6, points = 3, near = 4, look = "Christmas", share = true,
+		perFloor = 6, points = 3, goal = 50, near = 4, badge = "cane", badgeName = "Candy Cane Collector", look = "Christmas", share = true,
 		shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 },
 		-- the Christmas looks of the boosts (image 0: the boost's own picture
 		-- with the Christmas name until a picture is uploaded)

@@ -1,0 +1,63 @@
+{
+  "name": "Christmas store images",
+  "reference_root": "art",
+  "output_root": "art/roblox-store",
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and cozy. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes). A SQUARE round game icon: the object inside a glowing ring on a deep purple background with a few small sparkles and swooshes - exactly the same layout, ring, glow and style as the FIRST attached picture (the candy corn icon), only the ring's glow is icy blue and white with a touch of red instead of orange and gold. The object fills most of the circle; nothing else inside. No text, no letters, no numbers, no logos, brand marks or emblems, no famous characters (no Santa, no elves from films, no famous snowmen or reindeer).",
+  "assets": [
+    {
+      "file_name": "cane-icon.png",
+      "picture": "ONE classic CANDY CANE, laid across the icon at an angle: glossy white with bold red stripes spiraling around it, the hook at the top, a tiny sprig of holly with two red berries tied on with a little red ribbon.",
+      "references": [
+        "roblox-store\\boost-candy-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-gingerbread-512.png",
+      "picture": "A GINGERBREAD COOKIE shaped like a smiling little person, with white icing swirls on its arms and legs, two round icing buttons and a cheerful icing smile, slightly glowing and tempting. The second attached picture is the regular Candy Corn boost, for the idea only.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-candy-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-snowman-512.png",
+      "picture": "A cheerful little SNOWMAN holding up a round shield made of packed snow with a red mitten print on it, a carrot nose, a red scarf and a small black top hat, with a soft protective glow around the shield. The second attached picture is the regular Party Shield boost, for the idea only.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-shield-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-elfmap-512.png",
+      "picture": "A rolled-open paper MAP with a winding dotted path through little snowy pine trees to a small red X, a tiny pointed green felt hat with a bell lying on its corner. The second attached picture is the regular Extra Clue boost, for the idea only.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-clue-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-cocoa-512.png",
+      "picture": "A big red MUG of HOT COCOA topped with whipped cream and three little marshmallows, a peppermint stick in it and a curl of steam. The second attached picture is the regular Second Wind boost, for the idea only.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-energy-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-sled-512.png",
+      "picture": "A small wooden SLED with red runners zooming forward on snow, speed lines and a little spray of snow behind it, a small stopwatch floating beside it. The second attached picture is the regular Head Start boost, for the idea only.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-headstart-512.png"
+      ]
+    },
+    {
+      "file_name": "boost-snowball-512.png",
+      "picture": "A round, sparkly, frosty SNOWBALL with little ice crystals and a few snowflakes swirling around it, a cold blue shimmer. The second attached picture is the regular Frozen Pop boost, for the idea only.",
+      "references": [
+        "roblox-store\\boost-candy-512.png",
+        "roblox-store\\boost-freeze-512.png"
+      ]
+    }
+  ]
+}

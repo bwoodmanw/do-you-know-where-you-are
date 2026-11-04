@@ -6,14 +6,14 @@
   "assets": [
     {
       "file_name": "cloud\\front-toon.png",
-      "picture": "FRONT view of Cloud, a cheerful, dreamy girl: almost-white hair in a soft, rounded chin-length bob with a faint pale-blue tint, a little rounded fringe, light-blue eyes, warm light-brown skin, a solid sunny-yellow raincoat with the hood down and big round buttons, a small rounded white backpack shaped like a puffy cloud (worn on her back, its straps showing at the front), sky-blue leggings, sky-blue rain boots. Soft and round everywhere - no spiky hair, nothing sharp, no weapon.",
+      "picture": "FRONT view of Cloud, a cheerful, dreamy girl: almost-white hair in a soft, rounded chin-length bob with a faint pale-blue tint, a little rounded fringe, eyebrows the same almost-white color as her hair, light-blue eyes, warm light-brown skin, a solid sunny-yellow raincoat with the hood down and big round buttons, a small rounded white backpack shaped like a puffy cloud (worn on her back, its straps showing at the front), sky-blue leggings, sky-blue rain boots. Soft and round everywhere - no spiky hair, nothing sharp, no weapon.",
       "references": [
         "model-input\\glow\\front-toon.png"
       ]
     },
     {
       "file_name": "cloud\\back-toon.png",
-      "picture": "BACK view of Cloud, matching the reference exactly: the back of the almost-white rounded bob, the yellow raincoat with its hood lying flat on the back, the puffy white cloud backpack close against her back, sky-blue leggings and rain boots.",
+      "picture": "BACK view of Cloud, matching the reference exactly (her eyebrows are the same almost-white as her hair): the back of the almost-white rounded bob, the yellow raincoat with its hood lying flat on the back, the puffy white cloud backpack close against her back, sky-blue leggings and rain boots.",
       "references": [
         "model-input\\cloud\\front-toon.png"
       ]

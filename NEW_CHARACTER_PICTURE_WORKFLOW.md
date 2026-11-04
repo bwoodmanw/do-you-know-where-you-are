@@ -5,6 +5,45 @@ reindeer), both girls (Brent, 3 Nov). Each front view attaches Glow's
 approved front picture only as a style guide; each back view attaches the
 front made just before it.
 
+## Reusable execution
+
+The structured version of this exact prompt set is
+[`tools/workflows/cloud-nutmeg-toon-pictures.json`](tools/workflows/cloud-nutmeg-toon-pictures.json).
+Paths in that file are relative to this project: resolve `references` against
+`reference_root` (`art`) and `file_name` against `output_root`
+(`art/model-input`). Preserve the order of both the assets and each reference
+array.
+
+1. Use the built-in image generation tool, one image per asset in table order.
+2. For each image, concatenate `picture_standard`, a blank line, and `picture`.
+   Attach every resolved reference in its listed order. Inspect local references
+   before using them. Use an opaque background.
+3. Create the destination parent folder if necessary. Copy the generated PNG
+   to its resolved destination before starting the next asset. Each back view
+   must attach the front image saved by the immediately preceding step.
+4. Check the full-body framing, arm gaps, requested colors and details, simple
+   surfaces, and front/back consistency. Keep existing outputs unless replacement
+   is explicitly requested; use a versioned sibling otherwise and use that actual
+   new front file as the back-view reference.
+
+## Generated outputs (3 Nov 2026)
+
+All four images were regenerated with the built-in tool using the standard and
+picture prompts below, without extra prompt text, in the listed order. Each
+back used only its newly saved front image. All PNGs are 1024 x 1536.
+Cloud's regenerated front has almost-white eyebrows matching her hair, as
+specified in the updated prompt. The outputs replace the previous four images
+at the requested paths.
+
+| Order | Output | Attached reference |
+| --- | --- | --- |
+| 1 | `art/model-input/cloud/front-toon.png` | `art/model-input/glow/front-toon.png` |
+| 2 | `art/model-input/cloud/back-toon.png` | `art/model-input/cloud/front-toon.png` |
+| 3 | `art/model-input/nutmeg/front-toon.png` | `art/model-input/glow/front-toon.png` |
+| 4 | `art/model-input/nutmeg/back-toon.png` | `art/model-input/nutmeg/front-toon.png` |
+
+## Prompt set
+
 ```
 create new workflow to create images based on the [Picture Standard], [Reference] and [Picture]. For each picture, attach every [Reference] picture listed, in that order, then save to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\cloud\front-toon.png. Create the folder if it does not exist.
 The [Picture Standard] will be included with every picture prompt. The [Picture] prompt is added to [Picture Standard] and changes per prompt. The [Reference] and [file name] are defined per picture. Make the pictures in the order of the table: each back view uses the front view made just before it as its reference.
