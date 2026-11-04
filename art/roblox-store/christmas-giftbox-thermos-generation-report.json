@@ -1,0 +1,33 @@
+{
+  "workflow": "tools/workflows/christmas-giftbox-thermos-images.json",
+  "generation_mode": "built-in image_gen",
+  "assets": [
+    {
+      "file_name": "boost-giftbox-512.png",
+      "submitted_prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and cozy. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes). A SQUARE round game icon: the object inside a glowing ring on a deep purple background with a few small sparkles and swooshes - exactly the same layout, ring, glow and style as the FIRST attached picture (the candy cane icon). The object fills most of the circle; nothing else inside. No text, no letters, no numbers, no logos, brand marks or emblems, no famous characters.\n\nA big wrapped Christmas PRESENT, red with a wide gold ribbon both ways and a big shiny gold bow on top; its lid is lifted a tiny crack, and a pair of curious cartoon eyes peeks out from the dark gap under the lid - a kid hiding inside. Playful and cheeky, not scary.\n\nUse case: stylized-concept. Asset type: opaque square game store icon. Image 1 is the reference for composition, circular ring placement and scale, icy blue-white glow with red accents, deep purple background, sparse sparkles and swooshes, and glossy rounded 3D style. Replace the candy cane with the requested giftbox only. The child remains hidden apart from the pair of eyes. Keep the entire subject inside the ring.",
+      "ordered_references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\cane-icon.png"
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a448-8abe-7f23-8183-90e6748842f7\\exec-bfc1f7c2-a0fd-4327-ac1d-2a2d0bb326f5.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\boost-giftbox-512.png",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "visual_review": "Passed: glossy red giftbox, gold ribbon in both directions and large gold bow; curious cartoon eyes in a narrow lid gap, no visible body. Large subject inside matching glowing ring on purple background; no text or branding. Details remain distinct at icon scale."
+    },
+    {
+      "file_name": "boost-thermos-512.png",
+      "submitted_prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and cozy. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes). A SQUARE round game icon: the object inside a glowing ring on a deep purple background with a few small sparkles and swooshes - exactly the same layout, ring, glow and style as the FIRST attached picture (the candy cane icon). The object fills most of the circle; nothing else inside. No text, no letters, no numbers, no logos, brand marks or emblems, no famous characters.\n\nA cozy red THERMOS flask with a white snowflake shape on it, its cup-lid off and filled with steaming hot cocoa topped with whipped cream and little marshmallows, two more small mugs beside it as if to share with friends, a curl of steam rising.\n\nUse case: stylized-concept. Asset type: opaque square game store icon. Image 1 is the reference for composition, circular ring placement and scale, icy blue-white glow with red accents, deep purple background, sparse sparkles and swooshes, and glossy rounded 3D style. Replace the candy cane with the requested thermos and sharing cups only. Include exactly three drinking vessels beside the flask: its detached cup-lid of cocoa and two additional small mugs. The white snowflake is a simple decorative shape, not a brand mark. Keep the subject and specified accessories inside the ring.",
+      "ordered_references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\cane-icon.png"
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a448-8abe-7f23-8183-90e6748842f7\\exec-ad535c8b-bab5-498a-824d-1d5bdefed944.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\boost-thermos-512.png",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "visual_review": "Passed: red thermos with decorative white snowflake, detached cup-lid and two additional mugs, cocoa with cream and marshmallows, visible steam. Group contained within matching ring and purple backdrop; no text or branding. Main flask and cups remain readable at icon scale."
+    }
+  ],
+  "completed_at_utc": "2026-11-04T02:05:18.8609063Z"
+}

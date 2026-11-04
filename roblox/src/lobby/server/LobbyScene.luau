@@ -859,15 +859,146 @@ function Scene.christmas(folder)
 			task.wait(0.05)
 		end
 	end)
-	-- glowing baubles along the fence where the jack-o'-lanterns stand the
-	-- rest of the year (Scene.seasons takes the pumpkins away)
+	-- Christmas toys and ornaments along the fence where the jack-o'-lanterns
+	-- stand the rest of the year (Scene.seasons takes the pumpkins away), in
+	-- turn: a glowing bauble, a stack of presents, a little snowman, a toy
+	-- drum, a candy cane, a toy train engine
+	local function glowIn(p, col, range)
+		local l = Instance.new("PointLight")
+		l.Color, l.Range, l.Brightness = col, range or 10, 1
+		l.Parent = p
+	end
 	for i, p in ipairs(Scene.fenceGlowSpots or {}) do
+		local kind = (i - 1) % 6
 		local col = ({ RED, GOLD, GREEN })[i % 3 + 1]
-		local ball = deco({ Name = "FenceBauble", Shape = Enum.PartType.Ball, Size = Vector3.new(2.2, 2.2, 2.2), Position = p + Vector3.new(0, 1.1, 0), Color = col, Material = Enum.Material.Neon })
-		deco({ Name = "BaubleCap", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 0.7, 0.7), CFrame = CFrame.new(p + Vector3.new(0, 2.3, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = GOLD, Material = Enum.Material.Metal })
-		local glow = Instance.new("PointLight")
-		glow.Color, glow.Range, glow.Brightness = col, 10, 1
-		glow.Parent = ball
+		local face = CFrame.lookAt(p, Vector3.new(0, 0, p.Z)) -- toward the middle of the lawn
+		if kind == 0 then
+			local ball = deco({ Name = "FenceBauble", Shape = Enum.PartType.Ball, Size = Vector3.new(2.2, 2.2, 2.2), Position = p + Vector3.new(0, 1.1, 0), Color = col, Material = Enum.Material.Neon })
+			deco({ Name = "BaubleCap", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 0.7, 0.7), CFrame = CFrame.new(p + Vector3.new(0, 2.3, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = GOLD, Material = Enum.Material.Metal })
+			glowIn(ball, col)
+		elseif kind == 1 then
+			present(p, Vector3.new(2.2, 1.6, 2.2), RED, GOLD)
+			present(p + Vector3.new(0.2, 1.6, 0.1), Vector3.new(1.5, 1.1, 1.5), GREEN, WHITE)
+			present(p + Vector3.new(-0.1, 2.7, 0), Vector3.new(0.9, 0.7, 0.9), GOLD, RED)
+		elseif kind == 2 then
+			deco({ Name = "MiniSnowBottom", Shape = Enum.PartType.Ball, Size = Vector3.new(1.8, 1.7, 1.8), CFrame = face * CFrame.new(0, 0.8, 0), Color = WHITE, Material = Enum.Material.Snow })
+			deco({ Name = "MiniSnowHead", Shape = Enum.PartType.Ball, Size = Vector3.new(1.2, 1.15, 1.2), CFrame = face * CFrame.new(0, 2.1, 0), Color = WHITE, Material = Enum.Material.Snow })
+			deco({ Name = "MiniScarf", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.3, 1.25, 1.25), CFrame = face * CFrame.new(0, 1.6, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = RED, Material = Enum.Material.Fabric })
+			deco({ Name = "MiniNose", Size = Vector3.new(0.15, 0.15, 0.5), CFrame = face * CFrame.new(0, 2.1, -0.7), Color = Color3.fromRGB(255, 130, 30) })
+			for _, sx in ipairs({ -0.22, 0.22 }) do
+				deco({ Name = "MiniEye", Shape = Enum.PartType.Ball, Size = Vector3.new(0.16, 0.16, 0.08), CFrame = face * CFrame.new(sx, 2.3, -0.55), Color = Color3.fromRGB(25, 25, 30) })
+			end
+		elseif kind == 3 then
+			-- a toy drum: red with gold rims and two drumsticks crossed on top
+			deco({ Name = "DrumBody", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.6, 2, 2), CFrame = CFrame.new(p + Vector3.new(0, 0.8, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = RED, Material = Enum.Material.SmoothPlastic, CanCollide = true })
+			for _, y in ipairs({ 0.05, 1.55 }) do
+				deco({ Name = "DrumRim", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.18, 2.12, 2.12), CFrame = CFrame.new(p + Vector3.new(0, y, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = GOLD, Material = Enum.Material.Metal })
+			end
+			for _, a in ipairs({ 30, -30 }) do
+				deco({ Name = "Drumstick", Size = Vector3.new(0.15, 0.15, 1.8), CFrame = CFrame.new(p + Vector3.new(0, 1.75, 0)) * CFrame.Angles(0, math.rad(a), 0), Color = Color3.fromRGB(230, 200, 150), Material = Enum.Material.Wood })
+			end
+			glowIn(deco({ Name = "DrumGlow", Size = Vector3.new(0.1, 0.1, 0.1), Position = p + Vector3.new(0, 2.2, 0), Transparency = 1 }), GOLD, 8)
+		elseif kind == 4 then
+			-- a candy cane, half as tall as the gate's
+			local s = 0.45
+			deco({ Name = "CaneStick", Shape = Enum.PartType.Cylinder, Size = Vector3.new(8 * s, 1 * s, 1 * s), CFrame = CFrame.new(p + Vector3.new(0, 4 * s, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = WHITE, Material = Enum.Material.SmoothPlastic })
+			for k = 0, 5 do
+				deco({ Name = "CaneStripe", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.45 * s, 1.08 * s, 1.08 * s), CFrame = CFrame.new(p + Vector3.new(0, (0.8 + k * 1.25) * s, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = RED, Material = Enum.Material.SmoothPlastic })
+			end
+			local hookDir = face.RightVector
+			for k = 0, 6 do
+				local a = math.pi - k / 6 * math.pi * 1.15
+				local q = p + Vector3.new(0, 8 * s, 0) + hookDir * (1 + math.cos(a)) * s + Vector3.new(0, math.sin(a) * s, 0)
+				deco({ Name = "CaneHook", Shape = Enum.PartType.Ball, Size = Vector3.new(1.05, 1.05, 1.05) * s, Position = q, Color = k % 2 == 0 and WHITE or RED, Material = Enum.Material.SmoothPlastic })
+			end
+		else
+			-- a toy train engine: a green boiler, a red cab, a gold funnel, black wheels
+			deco({ Name = "TrainBoiler", Shape = Enum.PartType.Cylinder, Size = Vector3.new(2, 1.2, 1.2), CFrame = face * CFrame.new(0, 1.1, -0.4) * CFrame.Angles(0, math.rad(90), 0), Color = GREEN, Material = Enum.Material.SmoothPlastic, CanCollide = true })
+			deco({ Name = "TrainCab", Size = Vector3.new(1.4, 1.6, 1), CFrame = face * CFrame.new(0, 1.3, 0.9), Color = RED, Material = Enum.Material.SmoothPlastic, CanCollide = true })
+			deco({ Name = "TrainRoof", Size = Vector3.new(1.6, 0.2, 1.2), CFrame = face * CFrame.new(0, 2.2, 0.9), Color = GOLD, Material = Enum.Material.Metal })
+			deco({ Name = "TrainFunnel", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.8, 0.5, 0.5), CFrame = face * CFrame.new(0, 2, -1) * CFrame.Angles(0, 0, math.rad(90)), Color = GOLD, Material = Enum.Material.Metal })
+			for _, w in ipairs({ { -0.65, -1 }, { 0.65, -1 }, { -0.65, 0.2 }, { 0.65, 0.2 }, { -0.65, 1 }, { 0.65, 1 } }) do
+				deco({ Name = "TrainWheel", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.2, 0.75, 0.75), CFrame = face * CFrame.new(w[1], 0.38, w[2]), Color = Color3.fromRGB(30, 30, 35), Material = Enum.Material.SmoothPlastic })
+			end
+			glowIn(deco({ Name = "TrainLamp", Shape = Enum.PartType.Ball, Size = Vector3.new(0.35, 0.35, 0.35), CFrame = face * CFrame.new(0, 1.1, -1.45), Color = Color3.fromRGB(255, 240, 180), Material = Enum.Material.Neon }), Color3.fromRGB(255, 220, 150), 8)
+		end
+	end
+	-- the house dressed for Christmas (Brent, 3 Nov): strings of colored lights
+	-- across its front and along its roof line, snow on the roof, a wreath on
+	-- the door. The house is an imported model (LobbyProps/House), so every
+	-- light is placed where a ray finds its real front or roof
+	local house = workspace:FindFirstChild("LobbyHouse")
+	if house then
+		local lo, hi = Vector3.new(math.huge, math.huge, math.huge), Vector3.new(-math.huge, -math.huge, -math.huge)
+		for _, d in ipairs(house:GetDescendants()) do
+			if d:IsA("BasePart") and d.Transparency < 1 then
+				local h = d.Size / 2
+				for _, sx in ipairs({ -1, 1 }) do
+					for _, sy in ipairs({ -1, 1 }) do
+						for _, sz in ipairs({ -1, 1 }) do
+							local c = d.CFrame * Vector3.new(sx * h.X, sy * h.Y, sz * h.Z)
+							lo, hi = lo:Min(c), hi:Max(c)
+						end
+					end
+				end
+			end
+		end
+		if lo.X < hi.X then
+			local hp = RaycastParams.new()
+			hp.FilterType = Enum.RaycastFilterType.Include
+			hp.FilterDescendantsInstances = { house }
+			local centre = (lo + hi) / 2
+			-- its front faces the lane (toward the middle of the Lobby)
+			local s = centre.Z > 0 and -1 or 1
+			local frontZ = s > 0 and hi.Z or lo.Z
+			local height = hi.Y - lo.Y
+			local BULBS = { RED, GREEN, GOLD, WHITE, Color3.fromRGB(70, 140, 255) }
+			local n = 0
+			local function bulb(at)
+				n += 1
+				deco({ Name = "HouseLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.55, 0.55, 0.55), Position = at, Color = BULBS[n % #BULBS + 1], Material = Enum.Material.Neon, CanQuery = false, CanTouch = false })
+			end
+			-- three rows across the front, each bulb on the wall itself
+			for _, f in ipairs({ 0.33, 0.6, 0.82 }) do
+				for x = lo.X + 1, hi.X - 1, 2 do
+					local hit = workspace:Raycast(Vector3.new(x, lo.Y + height * f, frontZ + s * 20), Vector3.new(0, 0, -s * 60), hp)
+					if hit and hit.Normal.Y < 0.7 then
+						bulb(hit.Position + hit.Normal * 0.3)
+					end
+				end
+			end
+			-- the roof line seen from the front, and snow on the roof
+			for x = lo.X + 1, hi.X - 1, 1.6 do
+				local hit = workspace:Raycast(Vector3.new(x, hi.Y + 10, centre.Z), Vector3.new(0, -(height + 20), 0), hp)
+				if hit then
+					bulb(hit.Position + Vector3.new(0, 0.35, 0))
+				end
+			end
+			for x = lo.X + 1.5, hi.X - 1.5, 3 do
+				for z = lo.Z + 1.5, hi.Z - 1.5, 3 do
+					local hit = workspace:Raycast(Vector3.new(x, hi.Y + 10, z), Vector3.new(0, -(height + 20), 0), hp)
+					if hit and hit.Normal.Y > 0.45 and hit.Position.Y > lo.Y + height * 0.45 then
+						deco({ Name = "RoofSnow", Size = Vector3.new(3.4, 0.35, 3.4), CFrame = CFrame.lookAt(hit.Position, hit.Position + hit.Normal) * CFrame.Angles(math.rad(-90), 0, 0) + hit.Normal * 0.15, Color = WHITE, Material = Enum.Material.Snow, CanQuery = false, CanTouch = false })
+					end
+				end
+			end
+			-- a wreath on the front door: a ring of green with red berries and a red bow
+			local door = workspace:Raycast(Vector3.new(centre.X, lo.Y + 5, frontZ + s * 20), Vector3.new(0, 0, -s * 60), hp)
+			if door then
+				local at = door.Position + door.Normal * 0.35 + Vector3.new(0, 1.5, 0)
+				local turn = CFrame.lookAt(at, at + door.Normal)
+				for k = 0, 13 do
+					local a = k / 14 * math.pi * 2
+					deco({ Name = "Wreath", Shape = Enum.PartType.Ball, Size = Vector3.new(0.9, 0.9, 0.6), CFrame = turn * CFrame.new(math.cos(a) * 1.4, math.sin(a) * 1.4, 0), Color = GREEN, Material = Enum.Material.SmoothPlastic })
+					if k % 3 == 0 then
+						deco({ Name = "WreathBerry", Shape = Enum.PartType.Ball, Size = Vector3.new(0.3, 0.3, 0.3), CFrame = turn * CFrame.new(math.cos(a) * 1.4, math.sin(a) * 1.4, -0.35), Color = RED, Material = Enum.Material.Neon })
+					end
+				end
+				for _, sx in ipairs({ -1, 1 }) do
+					deco({ Name = "WreathBow", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.5, 0.3), CFrame = turn * CFrame.new(sx * 0.4, -1.4, -0.35), Color = RED, Material = Enum.Material.SmoothPlastic })
+				end
+			end
+		end
 	end
 	-- a cool, snowy haze
 	local Lighting = game:GetService("Lighting")
@@ -899,6 +1030,17 @@ function Scene.seasons()
 			-- time, as the fence may be built after this starts)
 			if Scene.fencePumpkins then
 				Scene.fencePumpkins.Parent = want ~= "christmas" and Scene.fenceEdge or nil
+			end
+			-- the pokeable giant pumpkin: a giant red bauble with a gold cap at Christmas
+			local gp = Scene.giantPumpkin
+			if gp then
+				local xmas = want == "christmas"
+				gp.ball.Color = xmas and Color3.fromRGB(210, 35, 45) or Color3.fromRGB(240, 120, 20)
+				gp.ball.Material = xmas and Enum.Material.Glass or Enum.Material.SmoothPlastic
+				gp.stem.Color = xmas and Color3.fromRGB(255, 205, 70) or Color3.fromRGB(70, 110, 40)
+				gp.stem.Material = xmas and Enum.Material.Metal or Enum.Material.Plastic
+				gp.poke.ObjectText = xmas and "Giant bauble" or "Giant pumpkin"
+				gp.glow.Color = xmas and Color3.fromRGB(255, 90, 90) or Color3.fromRGB(255, 140, 40)
 			end
 			if want ~= shown then
 				if folder then
@@ -1218,6 +1360,8 @@ function Scene.fun()
 	glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 140, 40), 14, 0
 	glow.Parent = pumpkin
 	local poke = promptOn(pumpkin, "Poke", "Giant pumpkin")
+	-- 3 Nov (Brent): at Christmas it's a giant red bauble (Scene.seasons)
+	Scene.giantPumpkin = { ball = pumpkin, stem = stem, poke = poke, glow = glow }
 	local busy = false
 	poke.Triggered:Connect(function()
 		if busy then

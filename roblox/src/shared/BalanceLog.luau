@@ -17,6 +17,11 @@ local function store()
 end
 
 function BalanceLog.record(mapId, diff, kids, escaped, seconds, won)
+	-- 3 Nov: Studio test games no longer count (59 "Aquarium: Main Hall"
+	-- Normal games, every one lost, were Studio Plays - Config.STUDIO_MAP)
+	if game:GetService("RunService"):IsStudio() then
+		return
+	end
 	task.spawn(function()
 		local ok, err = pcall(function()
 			store():UpdateAsync(KEY, function(old)

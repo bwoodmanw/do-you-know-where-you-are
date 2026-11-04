@@ -1,0 +1,22 @@
+{
+  "name": "Christmas giftbox and thermos store images",
+  "reference_root": "art",
+  "output_root": "art/roblox-store",
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and cozy. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes). A SQUARE round game icon: the object inside a glowing ring on a deep purple background with a few small sparkles and swooshes - exactly the same layout, ring, glow and style as the FIRST attached picture (the candy cane icon). The object fills most of the circle; nothing else inside. No text, no letters, no numbers, no logos, brand marks or emblems, no famous characters.",
+  "assets": [
+    {
+      "file_name": "boost-giftbox-512.png",
+      "picture": "A big wrapped Christmas PRESENT, red with a wide gold ribbon both ways and a big shiny gold bow on top; its lid is lifted a tiny crack, and a pair of curious cartoon eyes peeks out from the dark gap under the lid - a kid hiding inside. Playful and cheeky, not scary.",
+      "references": [
+        "roblox-store\\cane-icon.png"
+      ]
+    },
+    {
+      "file_name": "boost-thermos-512.png",
+      "picture": "A cozy red THERMOS flask with a white snowflake shape on it, its cup-lid off and filled with steaming hot cocoa topped with whipped cream and little marshmallows, two more small mugs beside it as if to share with friends, a curl of steam rising.",
+      "references": [
+        "roblox-store\\cane-icon.png"
+      ]
+    }
+  ]
+}
