@@ -697,7 +697,7 @@ Config.CHARACTER_ASSETS = {
 	ShadowGobble = 82744663331421, -- 3 Nov
 	GlowHarvest = 132385404072757, -- 3 Nov
 	TinkerScarecrow = 115702745306476, -- 3 Nov
-	MuscleGridiron = 96695387987558, -- 3 Nov
+	MuscleGridiron = 87093382338552, -- 4 Nov: chest repainted (jersey, not skin; checked on Roblox: Model, Brent's upload; was 96695387987558)
 	EchoDJ = 118068209877496, -- 3 Nov
 	EchoCocoa = 113810829598769, -- 3 Nov
 }
