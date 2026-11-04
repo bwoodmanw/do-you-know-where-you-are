@@ -686,6 +686,7 @@ Config.CHARACTER_ASSETS = {
 	Cloud = 85591900941622, -- 4 Nov: Cloud, the arms-out toon (checked on Roblox: Model, Brent's upload)
 	Holly = 72564808468304, -- 4 Nov: Holly, hair cleaned (checked on Roblox: Model 'Holly', Brent's upload)
 	Clone = 117482183355972, -- 4 Nov: Clone, hair cleaned (checked on Roblox: Model 'Clone', Brent's upload)
+	Harmony = 84493995501378, -- 4 Nov: Harmony (checked on Roblox: Model 'Harmony', Brent's upload)
 	ShadowGobble = 82744663331421, -- 3 Nov
 	GlowHarvest = 132385404072757, -- 3 Nov
 	TinkerScarecrow = 115702745306476, -- 3 Nov
