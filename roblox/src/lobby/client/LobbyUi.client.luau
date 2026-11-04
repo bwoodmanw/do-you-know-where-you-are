@@ -1081,6 +1081,7 @@ local function readProfile()
 	end
 end
 player:GetAttributeChangedSignal("ProfileJson"):Connect(readProfile)
+player:GetAttributeChangedSignal("Unlocked"):Connect(readProfile) -- a character just unlocked (3 Nov)
 do
 	-- every pop-up panel: dark glass with a cream border, and only one open at
 	-- a time (opening one closes the others). A pop-up is a panel on the
@@ -1973,8 +1974,53 @@ do
 		end)
 		table.insert(skinRows, s)
 	end
+	-- characters you unlock (3 Nov, Nutmeg): at the top, with their season's
+	-- item price while its shop is open and the Game Pass once it's on sale
+	local charRows = {}
+	local function addCharacter(sk, order)
+		local u = Config.CHARACTER_UNLOCK[sk.id]
+		local e = Seasons.get(u.season)
+		local open = e and Seasons.openWindow(e.id)
+		local r = row(skinList, order, Config.PORTRAITS and Config.PORTRAITS[sk.id], sk.icon, sk.name, (e and (e.look .. " character - ") or "") .. sk.say)
+		previewTap(r, sk.name, sk.id, sk.name)
+		local c = { id = sk.id, status = label(r, { Size = UDim2.fromOffset(120, 40), Position = UDim2.fromOffset(318, 12), Text = "", ZIndex = 12 }) }
+		local x = 446
+		if open then
+			c.season = seasonPrice(r, x, 100, e, u.price, function()
+				remotes:WaitForChild("CornShop"):FireServer(e.id, "char:" .. sk.id)
+			end)
+			x += 106
+		end
+		if (u.pass or 0) > 0 then
+			c.robux = button(r, "", { Size = UDim2.fromOffset(100, 40), Position = UDim2.fromOffset(x, 12), BackgroundColor3 = ROBUX_GREEN, ZIndex = 12 }, function()
+				MarketplaceService:PromptGamePassPurchase(player, u.pass)
+			end)
+			robuxIcon(c.robux, 24)
+			task.spawn(function()
+				local ok, info = pcall(function()
+					return MarketplaceService:GetProductInfo(u.pass, Enum.InfoType.GamePass)
+				end)
+				c.robux.Text = (ok and info and info.PriceInRobux) and tostring(info.PriceInRobux) or "Buy"
+			end)
+		end
+		table.insert(charRows, c)
+	end
 	do
 		local n = 0
+		local unlockable = {}
+		for _, sk in ipairs(Config.SKILLS) do
+			if Config.CHARACTER_UNLOCK[sk.id] then
+				table.insert(unlockable, sk)
+			end
+		end
+		if #unlockable > 0 then
+			n += 1
+			addHead({ name = "\u{2B50} New characters" }, n)
+			for _, sk in ipairs(unlockable) do
+				n += 1
+				addCharacter(sk, n)
+			end
+		end
 		for _, sk in ipairs(Config.SKILLS) do
 			local now, later = {}, {}
 			for _, skin in ipairs(Config.SKINS or {}) do
@@ -2102,6 +2148,16 @@ do
 				r.minus.Visible = n > 0
 			end
 		end
+		for _, c in ipairs(charRows) do
+			local owned = table.find(string.split(player:GetAttribute("Unlocked") or "", ","), c.id) ~= nil
+			c.status.Text = owned and "\u{2705} Owned" or ""
+			if c.season then
+				c.season.Visible = not owned
+			end
+			if c.robux then
+				c.robux.Visible = not owned
+			end
+		end
 		for _, d in ipairs(defaultRows) do
 			-- wearing the default unless a real skin is worn
 			local worn = profile.skins and profile.skins[d.skill]
@@ -2217,7 +2273,8 @@ end
 local right = frame(chars, { Size = UDim2.new(1, -256, 1, -60), Position = UDim2.fromOffset(250, 0), BackgroundTransparency = 1, ZIndex = 11 })
 local charRow = frame(right, { Size = UDim2.new(1, -20, 0, 50), Position = UDim2.fromOffset(10, 56), BackgroundTransparency = 1, ZIndex = 11 })
 local charGrid = Instance.new("UIGridLayout")
-charGrid.CellSize = UDim2.fromOffset(72, 64)
+-- 3 Nov: narrower as characters are added (eight fit at 72; the row is 624)
+charGrid.CellSize = UDim2.fromOffset(math.min(72, math.floor((624 - (#Config.SKILLS - 1) * 6) / #Config.SKILLS)), 64)
 charGrid.CellPadding = UDim2.fromOffset(6, 0)
 charGrid.Parent = charRow
 local selected = Config.SKILLS[1].id
@@ -2249,6 +2306,8 @@ for _, sk in ipairs(Config.SKILLS) do
 		face.Parent = charBtns[sk.id]
 		corner(face, 10)
 	end
+	-- 3 Nov: a lock on a character you unlock (Nutmeg) until it's yours
+	label(charBtns[sk.id], { Name = "Lock", Size = UDim2.fromScale(0.5, 0.5), Position = UDim2.fromScale(0.25, 0.25), Text = "\u{1F512}", Visible = false, ZIndex = 16 })
 	-- 3 Nov (Brent): a red dot with how many upgrades wait to be chosen
 	local dot = frame(charBtns[sk.id], { Name = "Waiting", Size = UDim2.fromOffset(30, 30), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(1, -4, 0, 4), BackgroundColor3 = Color3.fromRGB(232, 60, 70), BackgroundTransparency = 0, Visible = false, ZIndex = 15 })
 	corner(dot, 15)
@@ -2615,6 +2674,10 @@ repaintChars = function()
 			end
 		end
 		allWaiting += n
+		local lock = charBtns[x.id]:FindFirstChild("Lock")
+		if lock then
+			lock.Visible = Config.CHARACTER_UNLOCK[x.id] ~= nil and not table.find(string.split(player:GetAttribute("Unlocked") or "", ","), x.id)
+		end
 		local dot = charBtns[x.id]:FindFirstChild("Waiting")
 		if dot then
 			dot.Visible = n > 0

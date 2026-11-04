@@ -18,6 +18,17 @@ end
 local Places = require(ReplicatedStorage.Shared.Places)
 local offerRejoin, queueReminder, Quests -- set further down
 local Profile = require(ReplicatedStorage.Shared.Profile)
+local Unlocks = require(ReplicatedStorage.Shared.Unlocks) -- characters you buy or earn (Nutmeg)
+-- the characters you unlock that are yours, for the Lobby screen (Unlocked)
+local function paintUnlocked(plr)
+	local owned = {}
+	for id, yes in pairs(Unlocks.all(plr)) do
+		if yes then
+			table.insert(owned, id)
+		end
+	end
+	plr:SetAttribute("Unlocked", table.concat(owned, ","))
+end
 local Progress = require(ReplicatedStorage.Shared.Progress)
 local Seasons = require(ReplicatedStorage.Shared.Seasons) -- the yearly events (Config.SEASONS)
 
@@ -1043,6 +1054,30 @@ do
 		end
 		local have = Seasons.have(data.stats, e)
 		local spentKey = e.item .. "Spent"
+		-- a character you unlock (3 Nov, Nutmeg: "char:nutmeg"): its price in the
+		-- season's item, and she's yours for good
+		if string.sub(id, 1, 5) == "char:" then
+			local cid = string.sub(id, 6)
+			local u = Config.CHARACTER_UNLOCK[cid]
+			if not u or u.season ~= e.id then
+				return
+			end
+			local name = string.upper(string.sub(cid, 1, 1)) .. string.sub(cid, 2)
+			data.charsEarned = data.charsEarned or {}
+			if data.charsEarned[cid] then
+				return Notice:FireClient(plr, name .. " is already yours!")
+			end
+			if have < u.price then
+				return Notice:FireClient(plr, "You need " .. u.price .. " " .. e.many .. " for " .. name .. " (you have " .. have .. ").")
+			end
+			data.stats[spentKey] = (data.stats[spentKey] or 0) + u.price
+			data.charsEarned[cid] = true
+			Profile.publish(plr)
+			Profile.save(plr)
+			paintUnlocked(plr)
+			CornBought:FireClient(plr, "\u{1F389}", name, 1, u.price, true, e.id)
+			return Notice:FireClient(plr, "\u{1F389} " .. name .. " is yours - pick her in your next game!")
+		end
 		-- a season skin: its price on hand, spent, and it is yours for good
 		for _, skin in ipairs(Config.SKINS or {}) do
 			local price = skin[e.item]
@@ -1712,6 +1747,14 @@ end
 MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, passId, bought)
 	if bought then
 		skinOwned[plr.UserId .. ":" .. passId] = true
+		-- a character's pass (Config.CHARACTER_UNLOCK; Nutmeg)
+		for cid, u in pairs(Config.CHARACTER_UNLOCK) do
+			if (u.pass or 0) > 0 and u.pass == passId then
+				Unlocks.passBought(plr, passId)
+				paintUnlocked(plr)
+				Notice:FireClient(plr, "\u{1F389} " .. string.upper(string.sub(cid, 1, 1)) .. string.sub(cid, 2) .. " is yours - pick her in your next game!")
+			end
+		end
 		for _, skin in ipairs(Config.SKINS or {}) do
 			if skin.pass == passId then
 				local data = Profile.get(plr)
@@ -1863,6 +1906,7 @@ end
 
 Players.PlayerAdded:Connect(function(plr)
 	local data = Profile.load(plr)
+	task.spawn(paintUnlocked, plr) -- the characters you unlock that are yours
 	dailyReward(plr, data)
 	if data then
 		task.spawn(function()

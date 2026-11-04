@@ -567,6 +567,54 @@ local SPECIAL = {
 			{ id = "overgrowth20", name = "Overgrowth", say = "Vines grow across two doorways at once", mods = { p20 = "overgrowth" } },
 		},
 	},
+	-- Nutmeg, the Christmas reindeer (3 Nov, NEW_CHARACTERS.md): Good Nose,
+	-- Sleigh Dash; noseRange / dashTime / pullRange add to Config.NUTMEG
+	nutmeg = {
+		[3] = {
+			{ id = "nose3", name = "Keen Nose", say = "Good Nose reaches 5 studs further", mods = { noseRange = 5 } },
+			{ id = "scarf3", name = "Warm Scarf", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[5] = {
+			{ id = "hooves5", name = "Quick Hooves", say = "Sleigh Dash recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "coat5", name = "Snowy Coat", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[7] = {
+			{ id = "dash7", name = "Long Dash", say = "Sleigh Dash lasts 0.25 s longer", mods = { dashTime = 0.25 } },
+			{ id = "hunter7", name = "Present Hunter", say = "+1 free clue for the team", mods = { clues = 1 } },
+		},
+		[9] = {
+			{ id = "nose9", name = "Keener Nose", say = "Good Nose reaches 5 studs further", mods = { noseRange = 5 } },
+			{ id = "mittens9", name = "Mittens", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+		},
+		[10] = {
+			{ id = "jingledash10", name = "Jingle Dash", say = "Every Sleigh Dash rings your bell: a host within 20 studs freezes 2 s", mods = { p10 = "jingledash" } },
+			{ id = "snowsense10", name = "Snow Sense", say = "After a Sleigh Dash, you learn the room of the nearest key", mods = { p10 = "snowsense" } },
+		},
+		[11] = {
+			{ id = "sleigh11", name = "Swift Sleigh", say = "Sleigh Dash recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "lungs11", name = "Reindeer Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+		},
+		[13] = {
+			{ id = "dash13", name = "Longer Dash", say = "Sleigh Dash lasts 0.25 s longer", mods = { dashTime = 0.25 } },
+			{ id = "hooves13", name = "Soft Hooves", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[15] = {
+			{ id = "nose15", name = "Super Nose", say = "Good Nose reaches 10 studs further", mods = { noseRange = 10 } },
+			{ id = "cocoa15", name = "Hot Cocoa", say = "Start every game with a Party Shield", mods = { shield = true } },
+		},
+		[17] = {
+			{ id = "team17", name = "Team Sleigh", say = "Pull a friend from 4 studs further away", mods = { pullRange = 4 } },
+			{ id = "tip17", name = "Holiday Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+		},
+		[19] = {
+			{ id = "turbo19", name = "Turbo Sleigh", say = "Sleigh Dash recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "nimble19", name = "Nimble Hooves", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[20] = {
+			{ id = "bells20", name = "Jingle Bells", say = "Once a game, your first Sleigh Dash after the host comes out freezes him 7 s, wherever he is", mods = { p20 = "bells" } },
+			{ id = "riders20", name = "Two Riders", say = "Sleigh Dash pulls the two nearest friends along", mods = { p20 = "riders" } },
+		},
+	},
 }
 
 -- (10 Oct, ladder fix B: each character's own picks of one kind fit under
@@ -576,7 +624,8 @@ local SPECIAL = {
 -- game's base value (Main.server applyMods), so no later pick wipes out an
 -- earlier one. Taking every step gives the old best number (or a little more).
 Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRange = true, barricadeHold = true,
-	burstMult = true, burstTime = true, flareTime = true, flareRange = true, flareStamina = true, vineTime = true, thinkTime = true }
+	burstMult = true, burstTime = true, flareTime = true, flareRange = true, flareStamina = true, vineTime = true, thinkTime = true,
+	noseRange = true, dashTime = true, pullRange = true } -- Nutmeg (3 Nov)
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

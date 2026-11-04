@@ -166,11 +166,28 @@ applyLook("party", false)
 
 -- ---------- saved progress (shared with the Lobby) ----------
 local Profile = require(ReplicatedStorage.Shared.Profile)
+local Unlocks = require(ReplicatedStorage.Shared.Unlocks) -- characters you buy or earn (Nutmeg)
 local Progress = require(ReplicatedStorage.Shared.Progress)
 
 local function setupPlayer(plr)
 	Profile.load(plr)
 	plr:SetAttribute("Energy", 100)
+	-- the characters you unlock that are yours (the picker reads it)
+	task.spawn(function()
+		for _ = 1, 40 do
+			if Profile.get(plr) or not plr.Parent then
+				break
+			end
+			task.wait(0.25)
+		end
+		local owned = {}
+		for id, yes in pairs(Unlocks.all(plr)) do
+			if yes then
+				table.insert(owned, id)
+			end
+		end
+		plr:SetAttribute("Unlocked", table.concat(owned, ","))
+	end)
 end
 
 -- Tap-to-use boosts brought from the Lobby wait in a bag for the whole visit
@@ -288,6 +305,10 @@ local function applyMods(plr)
 	plr:SetAttribute("VineTime", Config.VINES.seconds + (m.vineTime or 0))
 	plr:SetAttribute("CloneTime", Config.CLONE.seconds + (m.cloneTime or 0))
 	plr:SetAttribute("ThinkTime", Config.THINK_SECONDS + (m.thinkTime or 0))
+	-- Nutmeg (3 Nov): how far Good Nose reaches, how long a dash lasts, how far it pulls a friend
+	plr:SetAttribute("NoseRange", Config.NUTMEG.nose + (m.noseRange or 0))
+	plr:SetAttribute("DashTime", Config.NUTMEG.dash + (m.dashTime or 0))
+	plr:SetAttribute("PullRange", Config.NUTMEG.pull + (m.pullRange or 0))
 	-- Muscle's Iron Lungs: stamina refills twice as fast
 	plr:SetAttribute("RegenMult", m.p10 == "ironlungs" and Config.IRON_LUNGS_REGEN or 1)
 	plr:SetAttribute("ToolkitReady", false)
@@ -3382,6 +3403,72 @@ do
 			say("info", "\u{1F33F} " .. plr.DisplayName .. " grew vines across the doorway - the host will wade through slowly!")
 			plr:SetAttribute("VinesUntil", workspace:GetServerTimeNow() + seconds)
 			return true
+		elseif skill == "nutmeg" then
+			-- Sleigh Dash (3 Nov): double speed for DashTime seconds; the nearest
+			-- friend within PullRange (two with Two Riders) is pulled along - their
+			-- screens steer them beside Nutmeg (DashFollow), no aiming
+			local nm = Config.NUTMEG
+			local now = workspace:GetServerTimeNow()
+			local seconds = plr:GetAttribute("DashTime") or nm.dash
+			local untilT = now + seconds
+			plr:SetAttribute("TeamBurstMult", nm.dashMult)
+			plr:SetAttribute("TeamBurstUntil", untilT)
+			plr:SetAttribute("DashUntil", untilT)
+			Effects.aura(plr, "speed", seconds)
+			Effects.sound(hrp.Position, "bell", 0.8)
+			local riders = {}
+			for _, p in ipairs(Players:GetPlayers()) do
+				local h = hrpOf(p)
+				if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and not p:GetAttribute("Hidden") and not p:GetAttribute("Crawling") then
+					local d = (h.Position - hrp.Position).Magnitude
+					if d <= (plr:GetAttribute("PullRange") or nm.pull) then
+						table.insert(riders, { p = p, d = d })
+					end
+				end
+			end
+			table.sort(riders, function(a, b)
+				return a.d < b.d
+			end)
+			local names = {}
+			for i = 1, math.min(#riders, p20 == "riders" and 2 or 1) do
+				local p = riders[i].p
+				p:SetAttribute("TeamBurstMult", nm.dashMult)
+				p:SetAttribute("TeamBurstUntil", untilT)
+				p:SetAttribute("DashFollow", plr.UserId)
+				p:SetAttribute("DashUntil", untilT)
+				p:SetAttribute("DashSide", i == 1 and 1 or -1)
+				Effects.aura(p, "speed", seconds)
+				table.insert(names, p.DisplayName)
+			end
+			say("info", "\u{1F6F7} " .. plr.DisplayName .. " dashed off" .. (#names > 0 and (" with " .. table.concat(names, " and ")) or "") .. "!")
+			-- Jingle Dash (level 10): the bell freezes a host close by
+			if p10 == "jingledash" and host and host.model and host.root and (host.root.Position - hrp.Position).Magnitude <= nm.jingleRange then
+				host:stun(nm.jingleStun)
+				say("info", "\u{1F514} Jingle! The host froze for " .. nm.jingleStun .. " s.")
+			end
+			-- Snow Sense (level 10): the room of the nearest key still hidden
+			if p10 == "snowsense" then
+				local best, bestD
+				for sid, lock in pairs(world.keyIn or {}) do
+					local e = world.objects[sid]
+					if e and e.def and not e.searched and not world.unlocked[lock] and not world.keys[lock] then
+						local d = (at(e.def.x, e.def.y, 0) - hrp.Position).Magnitude
+						if not bestD or d < bestD then
+							best, bestD = sid, d
+						end
+					end
+				end
+				say("info", best and ("\u{2744} Snow Sense: the nearest key is in the " .. roomOf(best) .. "!") or "\u{2744} Snow Sense: no keys left to find!", nil, plr)
+			end
+			-- Jingle Bells (level 20): once a game, the first dash with the host out
+			-- freezes him for Config.NUTMEG.bells seconds, wherever he is
+			if p20 == "bells" and host and host.model and not once["bells" .. plr.UserId] then
+				once["bells" .. plr.UserId] = true
+				host:stun(nm.bells)
+				RoundState:SetAttribute("FrozenUntil", now + nm.bells)
+				say("info", "\u{1F514}\u{1F514} Jingle Bells! The host is frozen for " .. nm.bells .. " seconds!")
+			end
+			return true
 		end
 		return nil -- not a new button
 	end
@@ -3764,6 +3851,12 @@ PickSkill.OnServerEvent:Connect(function(plr, id)
 	end
 	for _, s in ipairs(Config.SKILLS) do
 		if s.id == id then
+			-- a character you unlock (Nutmeg): only once it's yours
+			if not Unlocks.owns(plr, id) then
+				local u = Config.CHARACTER_UNLOCK[id]
+				local e = u and Seasons.get(u.season)
+				return say("info", s.icon .. " " .. s.name .. " is a " .. (e and e.look or "special") .. " character - get her in the Lobby's Shop" .. (e and (" for " .. u.price .. " " .. e.many) or "") .. ".", nil, plr)
+			end
 			plr:SetAttribute("Skill", id)
 			applyMods(plr)
 			if not Characters.apply(plr, modelFor(plr, s)) then
@@ -4311,6 +4404,41 @@ function round.start()
 		RoundState:SetAttribute("Lock_" .. lock[1], false)
 		RoundState:SetAttribute("Key_" .. lock[1], false)
 	end
+	-- Nutmeg's Good Nose (3 Nov): twice a second, each Nutmeg's screen gets the
+	-- drawers and boxes within her NoseRange that still hold a key or a
+	-- Confetti Cannon (NoseSpots: "x,y,z;x,y,z") - it sparkles them through walls
+	do
+		local myWorld = world
+		task.spawn(function()
+			while world == myWorld do
+				for _, plr in ipairs(Players:GetPlayers()) do
+					if plr:GetAttribute("Skill") == "nutmeg" then
+						local h = hrpOf(plr)
+						local found = {}
+						if h and state.status == "playing" and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped") then
+							local reach = plr:GetAttribute("NoseRange") or Config.NUTMEG.nose
+							for sid, lock in pairs(world.keyIn or {}) do
+								local e = world.objects[sid]
+								if e and e.def and not e.searched and not world.unlocked[lock] and not world.keys[lock] then
+									local p = (e.part and e.part.Position) or at(e.def.x, e.def.y, 2)
+									if (p - h.Position).Magnitude <= reach then
+										table.insert(found, string.format("%.1f,%.1f,%.1f", p.X, p.Y, p.Z))
+									end
+								end
+							end
+						end
+						local text = table.concat(found, ";")
+						if plr:GetAttribute("NoseSpots") ~= text then
+							plr:SetAttribute("NoseSpots", text)
+						end
+					elseif plr:GetAttribute("NoseSpots") then
+						plr:SetAttribute("NoseSpots", nil)
+					end
+				end
+				task.wait(0.5)
+			end
+		end)
+	end
 	-- this floor's items (Candy Corn, a Party Shield and one more) each hide in
 	-- a random present or search spot of any look - never one holding a key
 	world.lootIn = {}
@@ -4497,7 +4625,14 @@ function round.start()
 		-- still undecided after the wait: a random character each
 		for _, p in ipairs(Players:GetPlayers()) do
 			if not p:GetAttribute("Skill") then
-				local s = Config.SKILLS[math.random(1, #Config.SKILLS)]
+				-- (only characters they may play)
+				local mine = {}
+				for _, sk in ipairs(Config.SKILLS) do
+					if Unlocks.owns(p, sk.id) then
+						table.insert(mine, sk)
+					end
+				end
+				local s = mine[math.random(1, #mine)]
 				pickFor(p, s)
 				say("info", "Time's up for choosing - you're " .. s.name .. " this game!", nil, p)
 			end

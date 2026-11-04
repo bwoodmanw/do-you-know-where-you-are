@@ -1009,9 +1009,16 @@ local function showChar()
 	end
 	infoLevel.Text = "\u{2B50} Level " .. level .. "  (" .. xp .. " XP)\n" .. (n > 0 and (n .. " upgrade" .. (n == 1 and "" or "s") .. " chosen") or "Level up by playing as " .. sk.name .. " - choose upgrades in the Lobby.")
 	local mine = player:GetAttribute("Skill") == sk.id
-	chooseBtn.Text = mine and ("\u{2705} You are " .. sk.name) or ("Choose " .. sk.name)
-	chooseBtn.BackgroundColor3 = mine and Color3.fromRGB(47, 107, 58) or PUMP
+	-- 3 Nov: a character you unlock (Nutmeg) shows a lock until it's yours
+	local locked = Config.CHARACTER_UNLOCK[sk.id] ~= nil and not table.find(string.split(player:GetAttribute("Unlocked") or "", ","), sk.id)
+	chooseBtn.Text = mine and ("\u{2705} You are " .. sk.name) or locked and ("\u{1F512} Get " .. sk.name .. " in the Lobby Shop") or ("Choose " .. sk.name)
+	chooseBtn.BackgroundColor3 = mine and Color3.fromRGB(47, 107, 58) or locked and Color3.fromRGB(90, 80, 105) or PUMP
 end
+player:GetAttributeChangedSignal("Unlocked"):Connect(function()
+	if picker.Visible then
+		showChar()
+	end
+end)
 
 button(picker, "\u{25C0}", { Size = UDim2.fromOffset(70, 48), Position = UDim2.fromOffset(20, 384), ZIndex = 22 }, function()
 	viewIndex = (viewIndex - 2) % #Config.SKILLS + 1
@@ -1232,7 +1239,7 @@ Gamepad.panel(keypad)
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
 local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare",
-	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines" }
+	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash" }
 local KEYS = not TOUCH and UserInputService.KeyboardEnabled -- show the R key on the button
 do
 local function paintSkill()
@@ -1913,6 +1920,63 @@ local candySlot, candyText = activeSlot("candy", "\u{1F36C}")
 local freezeSlot, freezeText = activeSlot("freeze", "\u{1F9CA}")
 local speedSlot, speedText = activeSlot("speed", "\u{26A1}") -- a burst of speed (it always runs out)
 do
+	-- Nutmeg (3 Nov). Sleigh Dash: while DashUntil runs she keeps going the way
+	-- she faces even with no key held; a friend she pulls (DashFollow = her
+	-- UserId) is steered to her side - their own controls rest meanwhile.
+	-- After the player's controls each frame, so this move wins
+	RunService:BindToRenderStep("NutmegDash", Enum.RenderPriority.Character.Value + 1, function()
+		local untilT = player:GetAttribute("DashUntil") or 0
+		if untilT <= workspace:GetServerTimeNow() then
+			return
+		end
+		local char = player.Character
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		if not hum or not hrp then
+			return
+		end
+		local leaderId = player:GetAttribute("DashFollow")
+		local leader = leaderId and Players:GetPlayerByUserId(leaderId)
+		local lh = leader and leader.Character and leader.Character:FindFirstChild("HumanoidRootPart")
+		if lh then
+			local side = player:GetAttribute("DashSide") or 1
+			local target = lh.Position + lh.CFrame.RightVector * 3 * side
+			local d = Vector3.new(target.X - hrp.Position.X, 0, target.Z - hrp.Position.Z)
+			if d.Magnitude > 20 then
+				return -- left behind (a wall): back to their own controls
+			end
+			hum:Move(d.Magnitude > 1.5 and d.Unit or Vector3.new(lh.CFrame.LookVector.X, 0, lh.CFrame.LookVector.Z), false)
+		elseif not leaderId and hum.MoveDirection.Magnitude < 0.1 then
+			local look = hrp.CFrame.LookVector
+			hum:Move(Vector3.new(look.X, 0, look.Z), false)
+		end
+	end)
+	-- Good Nose: the drawers and boxes the server says hold a key or a Confetti
+	-- Cannon nearby (NoseSpots) sparkle through the walls - only on her screen
+	local noseFolder = Instance.new("Folder")
+	noseFolder.Name = "GoodNose"
+	noseFolder.Parent = workspace
+	local function paintNose()
+		noseFolder:ClearAllChildren()
+		for spot in string.gmatch(player:GetAttribute("NoseSpots") or "", "[^;]+") do
+			local x, y, z = string.match(spot, "([%-%d%.]+),([%-%d%.]+),([%-%d%.]+)")
+			if x then
+				local p = Instance.new("Part")
+				p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.Transparency = true, false, false, false, 1
+				p.Size = Vector3.new(0.2, 0.2, 0.2)
+				p.Position = Vector3.new(tonumber(x), tonumber(y) + 1.5, tonumber(z))
+				p.Parent = noseFolder
+				local bb = Instance.new("BillboardGui")
+				bb.Size = UDim2.fromOffset(46, 46)
+				bb.AlwaysOnTop = true
+				bb.LightInfluence = 0
+				bb.Parent = p
+				local t = label(bb, { Size = UDim2.fromScale(1, 1), Text = "\u{2728}", TextStrokeTransparency = 0.4 })
+				TweenService:Create(t, TweenInfo.new(0.6, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { TextTransparency = 0.5 }):Play()
+			end
+		end
+	end
+	player:GetAttributeChangedSignal("NoseSpots"):Connect(paintNose)
 	-- 3 Nov (Brent): the Gift Box Hideout's countdown - a slot in the boosts
 	-- row and big numbers in the middle of the screen while you're in the box
 	-- (the server sets GiftBoxUntil, server time)
@@ -2140,7 +2204,8 @@ RunService.RenderStepped:Connect(function(dt)
 	if SKILL_TEXT[skill] then
 		-- while a skill is working: its own countdown; then the recharge countdown
 		local ACTIVE = { shadow = { "SneakUntil", "\u{1F319} Sneaking" }, glow = { "FlareUntil", "\u{2728} Flare" }, bramble = { "VinesUntil", "\u{1F33F} Vines" },
-			echo = { "EchoBurstUntil", "\u{1F3A7} Burst" }, muscle = { "BarricadeUntil", "\u{1F4AA} Barricade" }, brainy = { "ThinkUntil", "\u{1F9E0} Thinking" } }
+			echo = { "EchoBurstUntil", "\u{1F3A7} Burst" }, muscle = { "BarricadeUntil", "\u{1F4AA} Barricade" }, brainy = { "ThinkUntil", "\u{1F9E0} Thinking" },
+			nutmeg = { "DashUntil", "\u{1F514} Dashing" } }
 		local a = ACTIVE[skill]
 		local active = a and ((player:GetAttribute(a[1]) or 0) - serverNow) or 0
 		local cool = (player:GetAttribute("CoolUntil") or 0) - serverNow

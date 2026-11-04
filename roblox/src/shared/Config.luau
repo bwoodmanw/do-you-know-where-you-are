@@ -121,7 +121,7 @@ Config.ANIM = {
 		levitation = { idle = 616006778, idle2 = 616008087, walk = 616013216, run = 616010382, jump = 616008936, fall = 616005863, climb = 616003713 },
 	},
 	-- the kids (their skins use the same pack unless listed under model)
-	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy" },
+	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy", nutmeg = "bubbly" },
 	model = { MuscleMummy = "zombie" }, -- (a "...Toon" test model walks like its character)
 	-- models saved in a T-pose whose pack idle swings the arms behind the back
 	-- (Echo, 9 Oct): they keep the pack's walk and run but stand in Roblox's
@@ -325,7 +325,19 @@ Config.SKILLS = {
 -- seconds Patch's shield on herself lasts (shields she gives friends last
 -- until a grab) - 10 Oct, Brent: a solo Patch was shielded all the time
 Config.SELF_SHIELD = 30
-Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30 }
+Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30, nutmeg = 25 }
+-- Nutmeg, the Christmas reindeer (3 Nov, NEW_CHARACTERS.md): Good Nose shows
+-- drawers and boxes holding a key or a Confetti Cannon within `nose` studs (her
+-- screen only); Sleigh Dash runs `dashMult` times as fast for `dash` seconds and
+-- pulls the nearest friend within `pull` studs along. Level 10 Jingle Dash: a
+-- host within `jingleRange` freezes `jingleStun` s after each dash; level 20
+-- Jingle Bells: once a game the host freezes `bells` s, anywhere
+Config.NUTMEG = { nose = 20, dash = 1.5, dashMult = 2, pull = 12, jingleRange = 20, jingleStun = 2, bells = 7, snowSense = 5 }
+-- characters you unlock (3 Nov): earned with a season's item in its shop
+-- (`price` of it), or a Game Pass (`pass`, 0 = not on sale yet; 399 Robux)
+Config.CHARACTER_UNLOCK = {
+	nutmeg = { season = "christmas", price = 400, pass = 0 },
+}
 -- skills version 2 (SKILLS_V2.md): every character has a button
 Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise
 Config.VINES = { seconds = 6, slow = 0.28, reach = 2 } -- Bramble: the host wades through them (kids don't)
@@ -379,6 +391,7 @@ Config.SKILL_INFO = {
 	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.\nFlare: for 8 seconds her light reaches more than twice as far, and she and every friend who comes near her get 30% of their stamina back and run 5% faster for 6 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
 	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). She frees every caged friend at once, faster than anyone.\nShield: gives the nearest friend without one a Party Shield (it lasts until a grab). If every friend nearby has one, or nobody is near, Patch shields herself for 30 seconds.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
 	echo = { about = "Hears the host coming from further away.\nNoise: throws a noise that sends the host to look somewhere else - then Echo runs 5% faster for 3 seconds.", how = "Press Noise, then tap where to throw it." },
+	nutmeg = { about = "Good Nose: drawers and boxes nearby that hold a key or a Confetti Cannon sparkle through the walls - only Nutmeg sees it.\nSleigh Dash: a burst of double speed that pulls the nearest friend along with her.", how = "Walk near drawers and boxes to sniff them out. Press Sleigh Dash (R) to zoom off - stand near a friend to take them too." },
 	bramble = { about = "Talks to plants: the big plant whispers the door code to Bramble.\nVines: grows vines across a doorway - the host wades through them slowly, kids walk straight through.", how = "Find the big plant (in a room open from the start) and press E. Stand in a doorway and press Vines (R)." },
 }
 
@@ -454,7 +467,7 @@ Config.SEASONS = {
 		newBoosts = { { id = "giftbox", price = 20 }, { id = "thermos", price = 25 } },
 		gift = { 25, 100 },
 		-- 50 and 150 candy canes for Robux: Developer Products to make (0 = not on sale)
-		bundles = { { amount = 50, product = 0 }, { amount = 150, product = 0 } },
+		bundles = { { amount = 50, product = 3728099519 }, { amount = 150, product = 3728099593 } }, -- 99 / 249 Robux (3 Nov, Brent)
 	},
 }
 -- Studio only: pretend it is this date for the seasons ({ 2026, 11, 5 } tries
@@ -861,5 +874,23 @@ Config.SKINS_FREE_IN_STUDIO = true
 -- the experience's owner can wear every skin in the live game too (owning a
 -- game does not count as owning its Game Passes)
 Config.SKINS_FREE_FOR_OWNER = true
+
+-- characters still being made (3 Nov): each joins Config.SKILLS once its
+-- model is saved to Roblox (CHARACTER_ASSETS[name] above 0) - or in Studio
+-- while STUDIO_NEW_CHARACTERS is on (its model in Party House
+-- ServerStorage/Characters). `unlock`: bought or earned first
+-- (CHARACTER_UNLOCK); everyone else's are free as before
+Config.STUDIO_NEW_CHARACTERS = true
+Config.NEW_SKILLS = {
+	{ id = "nutmeg", name = "Nutmeg", icon = "\u{1F514}", say = "Sniffs out keys", color = Color3.fromRGB(196, 120, 60), unlock = true },
+}
+do
+	local studio = game:GetService("RunService"):IsStudio()
+	for _, sk in ipairs(Config.NEW_SKILLS) do
+		if (Config.CHARACTER_ASSETS[sk.name] or 0) > 0 or (studio and Config.STUDIO_NEW_CHARACTERS) then
+			table.insert(Config.SKILLS, sk)
+		end
+	end
+end
 
 return Config
