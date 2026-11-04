@@ -113,3 +113,20 @@ portrait; the skill (server and HUD); floor-job props on every floor (Cloud
 and Harmony); a 20-level skill ladder; the pickers widened from 8 to 12.
 The Reindeer also needs the Christmas season (its item, shop, dates) and a
 Game Pass.
+
+## Decided 3 Nov (Brent) and open questions
+
+- **Reindeer:** Juniper or Nutmeg (open; pictures drawn as Nutmeg, a boy, to
+  keep the crew 6 girls / 6 boys). **299 Robux** Game Pass or **400 candy
+  canes**; the Christmas item is **candy canes**.
+- **Build Clone and Cloud.** But Shadow's skill ladder already has the
+  decoy: Shadow Clone (level 10, the host chases a dark copy for 4 s, +1 s
+  at levels 11, 15 and 19) and Double Clone (level 20). Clone as designed
+  repeats it - proposed instead: **Copycat** (uses the nearest friend's
+  button skill). Waiting for Brent.
+- **Harmony's look:** Echo already wears headphones - Harmony gets music-note
+  hair clips and a small music-box pendant instead.
+- **Storm Cloud (Brent's idea):** at level 20 Fog can be thrown where you tap
+  (like Echo's Noise); lightning in it; a host it lands on stops 3 s; it
+  still hides kids; friends near Cloud when she throws get 25% stamina and
+  10% speed for 5 s (25% speed would outrun everything else in the game).
