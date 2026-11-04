@@ -3920,7 +3920,7 @@ do
 		elseif skill == "clone" then
 			-- Copycat (4 Nov): the button skill of the nearest friend within
 			-- CopyReach (the two nearest with Copy Two) becomes his own extra
-			-- button; alone, a wheel picks one. Full Copy: the friend's own numbers
+			-- button; alone, one is picked at random. Full Copy: the friend's own numbers
 			local reach = plr:GetAttribute("CopyReach") or Config.CLONE_COPY.reach
 			local near = {}
 			for _, p in ipairs(Players:GetPlayers()) do
@@ -3988,7 +3988,7 @@ do
 				end
 			end
 			Effects.at(plr, "reveal")
-			say("info", (wheel and "\u{1F3A1} The wheel spun: " or "\u{1F465} ") .. plr.DisplayName .. " copied " .. table.concat(names, " and ") .. "'s skill" .. (#names > 1 and "s" or "") .. "!")
+			say("info", (wheel and "\u{1F3B2} Picked at random: " or "\u{1F465} ") .. plr.DisplayName .. " copied " .. table.concat(names, " and ") .. "'s skill" .. (#names > 1 and "s" or "") .. "!")
 			-- Quick Change (level 20): once a game, Copycat is ready again at once
 			if p20 == "quickchange" and not once["quickchange" .. plr.UserId] then
 				once["quickchange" .. plr.UserId] = true

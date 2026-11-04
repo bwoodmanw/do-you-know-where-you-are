@@ -337,7 +337,7 @@ Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, 
 Config.HARMONY = { listen = 3, tune = 12, tuneRegen = 1.5, range = 25, slow = 0.5, seconds = 6, chorus = 5, encore = 8 }
 -- Clone (4 Nov, NEW_CHARACTERS.md). Copycat (90 s, the longest - it brings a
 -- whole skill): copies the button of the nearest friend within `reach` studs (two
--- with Copy Two); alone, a wheel picks one. Each copy is its own button with the
+-- with Copy Two); alone, one is picked at random. Each copy is its own button with the
 -- friend's recharge. Look-alike (always on): the host hesitates `lookAlike` s
 -- before grabbing him
 Config.CLONE_COPY = { reach = 20, lookAlike = 1 }
@@ -459,7 +459,7 @@ Config.SKILL_INFO = {
 	} },
 	clone = { parts = {
 		{ kind = "passive", name = "Look-alike", text = "The host stops for a second before grabbing Clone - is it really him?" },
-		{ kind = "press", name = "Copycat", text = "Copies the skill of the nearest friend - it becomes a second button for Clone (V), recharging like the friend's. Alone, a wheel picks one." },
+		{ kind = "press", name = "Copycat", text = "Copies the skill of the nearest friend - it becomes a second button for Clone (V), recharging like the friend's. With no friend near, one is picked at random." },
 	} },
 	holly = { parts = {
 		{ kind = "passive", name = "Peppermint Trail", text = "A minty scent throws the host off - when he loses sight of Holly, he gives up at once." },
