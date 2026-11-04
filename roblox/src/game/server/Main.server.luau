@@ -4001,7 +4001,10 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 	-- 3 Nov (Brent): the season's look of it while its shop is open (Apple Cider)
 	local look = Seasons.look(id)
 	local shown = look and look.name or boost.name
-	say("boost", plr.DisplayName .. " used " .. shown .. "!", { icon = look and look.icon or boost.icon, userId = plr.UserId, item = shown })
+	-- 3 Nov (Brent): what it did, in the same line
+	local did = ({ energy = " +100% stamina!", thermos = " +100% stamina for everyone nearby!", giftbox = " Hidden for " .. Config.GIFTBOX.seconds .. " s!",
+		candy = " No tiring for 20 s!", freeze = " The host is frozen for 10 s!", clue = " +1 clue for the team!" })[id] or ""
+	say("boost", plr.DisplayName .. " used " .. shown .. "!" .. did, { icon = look and look.icon or boost.icon, userId = plr.UserId, item = shown })
 end)
 
 -- the party leader leaving hands the lead to someone still here

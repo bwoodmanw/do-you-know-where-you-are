@@ -1958,7 +1958,7 @@ do
 		elseif kind == "half" then
 			float("\u{1F49A} +50% stamina", GREEN)
 		elseif kind == "stamina" then
-			float("\u{1F49A} Full stamina!", GREEN)
+			float("\u{1F49A} +100% stamina", GREEN)
 		elseif kind == "candy" then
 			float("\u{1F36C} No tiring for 20 s", GREEN)
 		elseif kind == "shake" then

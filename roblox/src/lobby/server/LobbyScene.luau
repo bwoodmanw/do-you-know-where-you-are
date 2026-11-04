@@ -376,11 +376,18 @@ function Scene.perimeter()
 	for i, p in ipairs(spots) do
 		tree(p + Vector3.new(rng:NextNumber(-2, 2), 0, rng:NextNumber(-3, 3)), i % 3 == 0)
 	end
-	-- jack-o'-lanterns along the fence, glowing
+	-- jack-o'-lanterns along the fence, glowing. 3 Nov (Brent: still pumpkins
+	-- at Christmas): they sit in their own folder, which Scene.seasons takes
+	-- away for Christmas, when glowing baubles stand in the same spots
+	local pumpkins = Instance.new("Folder")
+	pumpkins.Name = "FencePumpkins"
+	pumpkins.Parent = folder
+	Scene.fencePumpkins, Scene.fenceEdge, Scene.fenceGlowSpots = pumpkins, folder, {}
 	for i = 1, #spots, 3 do
 		local p = spots[i] + Vector3.new(spots[i].X < 0 and 3 or spots[i].X > 0 and -3 or 0, 0, spots[i].Z > E - 10 and -3 or 7)
-		local pumpkin = part(folder, { Name = "JackOLantern", Shape = Enum.PartType.Ball, Size = Vector3.new(2.6, 2.2, 2.6), Position = p + Vector3.new(0, 1.1, 0), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
-		jackFace(folder, pumpkin, Vector3.new(0, p.Y + 1.1, 0))
+		table.insert(Scene.fenceGlowSpots, p)
+		local pumpkin = part(pumpkins, { Name = "JackOLantern", Shape = Enum.PartType.Ball, Size = Vector3.new(2.6, 2.2, 2.6), Position = p + Vector3.new(0, 1.1, 0), Color = Color3.fromRGB(240, 120, 20), Material = Enum.Material.SmoothPlastic })
+		jackFace(pumpkins, pumpkin, Vector3.new(0, p.Y + 1.1, 0))
 		local glow = Instance.new("PointLight")
 		glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 140, 40), 12, 1.2
 		glow.Parent = pumpkin
@@ -852,6 +859,16 @@ function Scene.christmas(folder)
 			task.wait(0.05)
 		end
 	end)
+	-- glowing baubles along the fence where the jack-o'-lanterns stand the
+	-- rest of the year (Scene.seasons takes the pumpkins away)
+	for i, p in ipairs(Scene.fenceGlowSpots or {}) do
+		local col = ({ RED, GOLD, GREEN })[i % 3 + 1]
+		local ball = deco({ Name = "FenceBauble", Shape = Enum.PartType.Ball, Size = Vector3.new(2.2, 2.2, 2.2), Position = p + Vector3.new(0, 1.1, 0), Color = col, Material = Enum.Material.Neon })
+		deco({ Name = "BaubleCap", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 0.7, 0.7), CFrame = CFrame.new(p + Vector3.new(0, 2.3, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = GOLD, Material = Enum.Material.Metal })
+		local glow = Instance.new("PointLight")
+		glow.Color, glow.Range, glow.Brightness = col, 10, 1
+		glow.Parent = ball
+	end
 	-- a cool, snowy haze
 	local Lighting = game:GetService("Lighting")
 	local atm = Lighting:FindFirstChildOfClass("Atmosphere")
@@ -878,6 +895,11 @@ function Scene.seasons()
 	task.spawn(function()
 		while true do
 			local want = Seasons.decor()
+			-- the fence's jack-o'-lanterns: not at Christmas (checked every
+			-- time, as the fence may be built after this starts)
+			if Scene.fencePumpkins then
+				Scene.fencePumpkins.Parent = want ~= "christmas" and Scene.fenceEdge or nil
+			end
 			if want ~= shown then
 				if folder then
 					folder:Destroy()
