@@ -4527,6 +4527,14 @@ function round.makeFog(owner, center, r, seconds, opts)
 	place()
 	f.place = place
 	table.insert(fogs, f)
+	-- 4 Nov: everyone already inside is hidden at once (not at the next check)
+	for _, p in ipairs(Players:GetPlayers()) do
+		local h = hrpOf(p)
+		if h and state.status == "playing" and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped")
+			and (Vector3.new(h.Position.X, 0, h.Position.Z) - Vector3.new(center.X, 0, center.Z)).Magnitude <= r + (Config.CLOUD.edge or 0) then
+			p:SetAttribute("Fogged", true)
+		end
+	end
 	Effects.sound(center, "sneak", 0.8)
 	return f
 end
@@ -4584,7 +4592,8 @@ task.spawn(function()
 			local inside
 			if h and state.status == "playing" and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
 				for _, f in ipairs(fogs) do
-					if (Vector3.new(h.Position.X, 0, h.Position.Z) - Vector3.new(f.pos.X, 0, f.pos.Z)).Magnitude <= f.r then
+					-- (+ edge: the cloud drawn reaches about a stud past its radius)
+					if (Vector3.new(h.Position.X, 0, h.Position.Z) - Vector3.new(f.pos.X, 0, f.pos.Z)).Magnitude <= f.r + (Config.CLOUD.edge or 0) then
 						inside = f
 						break
 					end

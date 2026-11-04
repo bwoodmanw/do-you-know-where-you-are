@@ -500,9 +500,14 @@ function Host:step(dt)
 
 	-- catch anyone close enough who is not hidden
 	for _, plr in ipairs(Players:GetPlayers()) do
+		-- 4 Nov (Brent): nobody in Cloud's fog is grabbed - not by a peek on
+		-- Hard / Nightmare, not in a frenzy, whatever they're doing in it
+		if plr:GetAttribute("Fogged") then
+			continue
+		end
 		local char = plr.Character
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
-		local hidden = plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling") or plr:GetAttribute("Fogged") -- (Cloud's fog: like a hiding spot)
+		local hidden = plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling")
 		if hrp and (not hidden or self.frenzy or self.diff.peek) and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
 			and (plr:GetAttribute("SneakUntil") or 0) <= workspace:GetServerTimeNow() then
 			local flat = Vector3.new(hrp.Position.X - self.root.Position.X, 0, hrp.Position.Z - self.root.Position.Z)
