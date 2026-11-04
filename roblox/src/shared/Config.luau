@@ -699,6 +699,10 @@ Config.PORTRAITS = {
 	echo = 78989824967295,
 	bramble = 127007527181153,
 	nutmeg = 114076866248414, -- 4 Nov (art/roblox-store/portraits/Nutmeg-512.png)
+	cloud = 128519524784824, -- 4 Nov (Cloud-512.png, one upload for both places; checked on Roblox)
+	holly = 127667366689511, -- 4 Nov (Holly-512.png, one upload for both places; checked on Roblox)
+	clone = 92508398113695, -- 4 Nov (Clone-512.png, one upload for both places; checked on Roblox)
+	harmony = 110743510829503, -- 4 Nov (Harmony-512.png, one upload for both places; checked on Roblox)
 	brainy = 123589958200522,
 }
 -- the same portraits uploaded for the Party House place
@@ -711,6 +715,10 @@ Config.PORTRAITS_GAME = {
 	echo = 73829813302256,
 	bramble = 79169071934599,
 	nutmeg = 114076866248414, -- 4 Nov: the same upload serves both places
+	cloud = 128519524784824, -- 4 Nov (Cloud-512.png, one upload for both places; checked on Roblox)
+	holly = 127667366689511, -- 4 Nov (Holly-512.png, one upload for both places; checked on Roblox)
+	clone = 92508398113695, -- 4 Nov (Clone-512.png, one upload for both places; checked on Roblox)
+	harmony = 110743510829503, -- 4 Nov (Harmony-512.png, one upload for both places; checked on Roblox)
 	brainy = 96437377458580,
 }
 -- daily login rewards: day 1-7 of an unbroken streak (then round again);
