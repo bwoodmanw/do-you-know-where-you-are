@@ -122,6 +122,11 @@ Progress.BOOSTS = {
 	energy = { name = "Second Wind", icon = "\u{1F4A8}", say = "Tap in the game: all your stamina back", tap = true, price = 50 },
 	freeze = { name = "Frozen Pop", icon = "\u{1F9CA}", say = "Tap in the game: freezes the host for 10 s", tap = true, price = 150 },
 	headstart = { name = "Head Start", icon = "\u{23F1}", say = "Automatic: the host waits 10 s longer", price = 100 },
+	-- an event's own boosts (3 Nov, Brent): no points price - sold only for the
+	-- event's item in its shop (Config.SEASONS newBoosts); kept once bought.
+	-- Not in BOOST_ORDER, so never in the loot, quests or daily rewards
+	giftbox = { name = "Gift Box Hideout", icon = "\u{1F381}", say = "Tap in the game: hide in a present for 10 s - the host walks past", tap = true, event = "christmas" },
+	thermos = { name = "Cocoa Thermos", icon = "\u{2615}", say = "Tap in the game: you and friends near you get all your stamina back", tap = true, event = "christmas" },
 }
 
 -- Character levels: XP comes from points earned while playing that character.

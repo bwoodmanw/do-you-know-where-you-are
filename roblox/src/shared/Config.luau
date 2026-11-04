@@ -265,7 +265,7 @@ Config.BADGES = {
 	untouched = 1991556459225776, -- Untouchable: escaped without being caught
 	nightmare = 1282994468042939, -- Nightmare Escaper: escaped on Nightmare
 	plushies = 4046817833899589, -- Plushie Collector: found every lost plushie
-	cane = 0, -- Candy Cane Collector: found the Christmas goal of candy canes (3 Nov; picture art/roblox-store/badges/badge-cane.png) - 0 until made in Creator Hub
+	cane = 2401445065578683, -- Candy Cane Collector: found the Christmas goal of candy canes (3 Nov; checked on Roblox's API: enabled)
 }
 
 -- the collectibles book: one lost plushie hidden on every floor (by map id).
@@ -438,16 +438,9 @@ Config.SEASONS = {
 		from = { 12, 1 }, to = { 1, 1 }, shopDays = 7,
 		perFloor = 6, points = 3, goal = 50, near = 4, badge = "cane", badgeName = "Candy Cane Collector", look = "Christmas", share = true,
 		shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 },
-		-- the Christmas looks of the boosts (image 0: the boost's own picture
-		-- with the Christmas name until a picture is uploaded)
-		looks = {
-			candy = { name = "Gingerbread Cookie", icon = "\u{1F36A}", image = 0 },
-			shield = { name = "Snowman Shield", icon = "\u{26C4}", image = 0 },
-			clue = { name = "Elf's Map", icon = "\u{1F5FA}", image = 0 },
-			energy = { name = "Hot Cocoa", icon = "\u{2615}", image = 0 },
-			headstart = { name = "Sled Start", icon = "\u{26F7}", image = 0 },
-			freeze = { name = "Snowball", icon = "\u{2744}", image = 0 },
-		},
+		-- 3 Nov (Brent): the six boosts keep their own names and pictures; the
+		-- event adds two boosts of its own (Progress.BOOSTS), only for candy canes
+		newBoosts = { { id = "giftbox", price = 20 }, { id = "thermos", price = 25 } },
 		gift = { 25, 100 },
 		-- 50 and 150 candy canes for Robux: Developer Products to make (0 = not on sale)
 		bundles = { { amount = 50, product = 0 }, { amount = 150, product = 0 } },
@@ -455,6 +448,10 @@ Config.SEASONS = {
 }
 -- Studio only: pretend it is this date for the seasons ({ 2026, 11, 5 } tries
 -- Thanksgiving's Feather Hunt and shop; nil = today)
+-- Christmas's own boosts (3 Nov): Gift Box Hideout hides you in a present for
+-- `seconds`; the Cocoa Thermos fills the stamina of friends within `reach`
+Config.GIFTBOX = { seconds = 10 }
+Config.THERMOS = { reach = 24 }
 Config.STUDIO_SEASON_DATE = { 2026, 12, 3 } -- 3 Nov: trying Christmas (set back to nil when done)
 -- the Turkey Roundup (Thanksgiving, the Harvest Barn - Brent, 11 Oct):
 -- `turkeys` runaway turkeys run from any kid closer than `flee` studs, at

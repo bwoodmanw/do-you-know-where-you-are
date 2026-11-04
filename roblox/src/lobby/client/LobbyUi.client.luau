@@ -1726,23 +1726,42 @@ do
 	-- Apple Cider for Second Wind) shows while its shop is open - the same boost
 	local boostList = page("boosts", "\u{26A1} Boosts", 170)
 	local boostRows = {}
-	for i, id in ipairs(Progress.BOOST_ORDER) do
+	-- 3 Nov (Brent): each event adds boosts of its own, sold only for its item
+	-- (Config.SEASONS newBoosts) - listed after the six, while its shop is open
+	local boostIds = table.clone(Progress.BOOST_ORDER)
+	for _, w in ipairs(open) do
+		for _, own in ipairs(w.season.newBoosts or {}) do
+			if Progress.BOOSTS[own.id] and not table.find(boostIds, own.id) then
+				table.insert(boostIds, own.id)
+			end
+		end
+	end
+	for i, id in ipairs(boostIds) do
 		local b = Progress.BOOSTS[id]
 		local look = Seasons.look(id)
 		local picId = look and (look.image or 0) > 0 and look.image or (Config.BOOST_IMAGES[id] or 0)
 		local r = row(boostList, i, picId, look and look.icon or b.icon, look and look.name or b.name, look and ("Works like " .. b.name .. ": " .. b.say) or b.say)
 		local have = label(r, { Size = UDim2.fromOffset(50, 40), Position = UDim2.fromOffset(318, 12), Text = "", ZIndex = 12 })
-		-- - sells one back for points (the ones bought with points)
-		local minus = button(r, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(34, 40), Position = UDim2.fromOffset(370, 12), BackgroundColor3 = RED, ZIndex = 12 }, function()
-			remotes.SellBoost:FireServer(id)
-		end)
-		button(r, b.price .. " \u{2B50}", { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(408, 12), BackgroundColor3 = GREEN, ZIndex = 12 }, function()
-			remotes.BuyBoost:FireServer(id)
-		end)
-		local x = 496
+		-- - sells one back for points (the ones bought with points); an event's
+		-- own boost has no points price, so neither
+		local minus
+		if b.price then
+			minus = button(r, "-", { Font = Enum.Font.GothamBlack, Size = UDim2.fromOffset(34, 40), Position = UDim2.fromOffset(370, 12), BackgroundColor3 = RED, ZIndex = 12 }, function()
+				remotes.SellBoost:FireServer(id)
+			end)
+			button(r, b.price .. " \u{2B50}", { Size = UDim2.fromOffset(84, 40), Position = UDim2.fromOffset(408, 12), BackgroundColor3 = GREEN, ZIndex = 12 }, function()
+				remotes.BuyBoost:FireServer(id)
+			end)
+		end
+		local x = b.price and 496 or 408
 		for _, w in ipairs(open) do
 			local e = w.season
 			local price = e.shop and e.shop[id]
+			for _, own in ipairs(e.newBoosts or {}) do
+				if own.id == id then
+					price = own.price
+				end
+			end
 			if price then
 				seasonPrice(r, x, 70, e, price, function()
 					remotes:WaitForChild("CornShop"):FireServer(e.id, id, 1)
@@ -1944,6 +1963,8 @@ do
 		p.Size = UDim2.fromOffset(38, 38)
 		p.Position = UDim2.fromOffset(-2 + (k - 1) * 42, 0)
 		p.Parent = packChip
+		-- a boost without a picture yet (an event's own): its emoji
+		label(p, { Name = "Emoji", Size = UDim2.fromScale(1, 1), Text = "" })
 		packPics[k] = p
 	end
 	remotes:WaitForChild("CornBought").OnClientEvent:Connect(function(icon, name, count, total, isSkin, seasonId)
@@ -1970,7 +1991,9 @@ do
 			r.take.Text = mine == 0 and "Equip" or mine == 1 and "\u{2705} Equipped" or ("\u{2705} x" .. mine)
 			r.take.BackgroundColor3 = mine > 0 and Color3.fromRGB(47, 107, 58) or PLUM
 			r.take.Visible = n > 0
-			r.minus.Visible = n > 0
+			if r.minus then
+				r.minus.Visible = n > 0
+			end
 		end
 		for skill, h in pairs(skinHeads) do
 			local worn = profile.skins and profile.skins[skill]
@@ -2007,6 +2030,8 @@ do
 			local img = id and (look and (look.image or 0) > 0 and look.image or (Config.BOOST_IMAGES[id] or 0)) or 0
 			p.Visible = id ~= nil
 			p.Image = img > 0 and ("rbxassetid://" .. img) or ""
+			local b = id and Progress.BOOSTS[id]
+			p.Emoji.Text = (img == 0 and b) and b.icon or ""
 		end
 		if os.clock() < receiptUntil then
 			return

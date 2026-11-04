@@ -848,6 +848,75 @@ local function applyBoost(plr, id)
 		state.freeClues = (state.freeClues or 0) + 1
 		RoundState:SetAttribute("CluesLeft", state.cluesLeft)
 		RoundState:SetAttribute("FreeClues", state.freeClues)
+	elseif id == "giftbox" then
+		-- Christmas's Gift Box Hideout (3 Nov): hidden in a wrapped present
+		-- right where you stand for Config.GIFTBOX.seconds - the host can't see
+		-- or grab you; Jump or the Get Out button ends it early. GiftBoxUntil
+		-- shows the countdown on your screen
+		local hrp = hrpOf(plr)
+		local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+		if not hrp then
+			return
+		end
+		local seconds = Config.GIFTBOX.seconds
+		local untilT = workspace:GetServerTimeNow() + seconds
+		local ground = hrp.Position - Vector3.new(0, (hum and hum.HipHeight or 2) + hrp.Size.Y / 2, 0)
+		local box = Instance.new("Model")
+		box.Name = "GiftBoxHideout"
+		local function piece(props)
+			local p = Instance.new("Part")
+			p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+			p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+			p.Material = Enum.Material.SmoothPlastic
+			for k, v in pairs(props) do
+				p[k] = v
+			end
+			p.Parent = box
+			return p
+		end
+		local RED, GOLD = Color3.fromRGB(210, 35, 45), Color3.fromRGB(255, 205, 70)
+		local mid = ground + Vector3.new(0, 2, 0)
+		piece({ Name = "Box", Size = Vector3.new(4, 4, 4), Position = mid, Color = RED })
+		piece({ Name = "Ribbon", Size = Vector3.new(4.06, 4.06, 0.7), Position = mid, Color = GOLD })
+		piece({ Name = "Ribbon", Size = Vector3.new(0.7, 4.06, 4.06), Position = mid, Color = GOLD })
+		for _, sx in ipairs({ -1, 1 }) do
+			piece({ Name = "Bow", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 0.9, 0.9), Position = ground + Vector3.new(sx * 0.6, 4.4, 0), Color = GOLD })
+		end
+		box.Parent = world.root
+		plr:SetAttribute("Hidden", true)
+		plr:SetAttribute("HideSpot", nil)
+		plr:SetAttribute("GiftBoxUntil", untilT)
+		hrp.Anchored = true
+		setVisible(plr, false)
+		Effects.burst(mid, "boost", "collect")
+		Effects.sound(mid, "hide")
+		local conn
+		conn = plr:GetAttributeChangedSignal("Hidden"):Connect(function()
+			if not plr:GetAttribute("Hidden") then
+				conn:Disconnect()
+				box:Destroy()
+				plr:SetAttribute("GiftBoxUntil", nil)
+			end
+		end)
+		task.delay(seconds, function()
+			if plr.Parent and plr:GetAttribute("GiftBoxUntil") == untilT then
+				unhide(plr)
+			end
+		end)
+	elseif id == "thermos" then
+		-- Christmas's Cocoa Thermos (3 Nov): you and every friend within
+		-- Config.THERMOS.reach studs get all your stamina back
+		local hrp = hrpOf(plr)
+		for _, p in ipairs(Players:GetPlayers()) do
+			local h = hrpOf(p)
+			if hrp and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude <= Config.THERMOS.reach then
+				Boost:FireClient(p, "stamina")
+				if p ~= plr then
+					Effects.at(p, "boost", "energy")
+					say("info", "\u{2615} " .. plr.DisplayName .. " shared a Cocoa Thermos - all your stamina back!", nil, p)
+				end
+			end
+		end
 	end
 end
 
@@ -3920,11 +3989,15 @@ UseBoost.OnServerEvent:Connect(function(plr, id)
 	if not i or state.status ~= "playing" or plr:GetAttribute("Escaped") then
 		return
 	end
+	-- the Gift Box Hideout needs you out in the open (not hiding, caged or in a vent)
+	if id == "giftbox" and (plr:GetAttribute("Hidden") or plr:GetAttribute("Caged") or plr:GetAttribute("Crawling")) then
+		return say("info", "\u{1F381} You can only hide in a gift box out in the open.", nil, plr)
+	end
 	local boost = Progress.BOOSTS[id]
 	table.remove(bag, i)
 	paintBag(plr)
 	applyBoost(plr, id)
-	Effects.at(plr, "boost", id == "candy" and "eat" or id == "energy" and "energy" or nil)
+	Effects.at(plr, "boost", id == "candy" and "eat" or (id == "energy" or id == "thermos") and "energy" or nil)
 	-- 3 Nov (Brent): the season's look of it while its shop is open (Apple Cider)
 	local look = Seasons.look(id)
 	local shown = look and look.name or boost.name

@@ -1010,8 +1010,8 @@ end)
 BuyBoost.OnServerEvent:Connect(function(plr, id)
 	local boost = typeof(id) == "string" and Progress.BOOSTS[id]
 	local data = Profile.get(plr)
-	if not boost or not data then
-		return
+	if not boost or not data or not boost.price then
+		return -- (an event's own boost has no points price)
 	end
 	if data.points < boost.price then
 		return Notice:FireClient(plr, "You need " .. boost.price .. " points for " .. boost.name .. ".")
@@ -1065,6 +1065,11 @@ do
 			end
 		end
 		local price = e.shop and e.shop[id]
+		for _, nb in ipairs(e.newBoosts or {}) do
+			if nb.id == id then
+				price = nb.price -- the event's own boost (3 Nov)
+			end
+		end
 		local boost = price and Progress.BOOSTS[id]
 		if not boost then
 			return

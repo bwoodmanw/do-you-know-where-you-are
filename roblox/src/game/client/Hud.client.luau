@@ -1913,6 +1913,26 @@ local candySlot, candyText = activeSlot("candy", "\u{1F36C}")
 local freezeSlot, freezeText = activeSlot("freeze", "\u{1F9CA}")
 local speedSlot, speedText = activeSlot("speed", "\u{26A1}") -- a burst of speed (it always runs out)
 do
+	-- 3 Nov (Brent): the Gift Box Hideout's countdown - a slot in the boosts
+	-- row and big numbers in the middle of the screen while you're in the box
+	-- (the server sets GiftBoxUntil, server time)
+	local giftSlot, giftText = activeSlot("giftbox", "\u{1F381}")
+	local big = label(gui, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.7), Size = UDim2.fromOffset(520, 64), Text = "", TextColor3 = Color3.fromRGB(255, 220, 120), TextStrokeTransparency = 0.2, Visible = false, ZIndex = 30 })
+	RunService.RenderStepped:Connect(function()
+		local left = (player:GetAttribute("GiftBoxUntil") or 0) - workspace:GetServerTimeNow()
+		local on = left > 0
+		giftSlot.Visible = on
+		big.Visible = on
+		if on then
+			local s = math.ceil(left)
+			giftText.Text = s .. "s"
+			big.Text = "\u{1F381} Hidden in a gift box: " .. s .. "  (Jump to come out)"
+			-- its last 5 seconds fade in and out, like the other boosts
+			giftSlot.GroupTransparency = left <= 5 and 0.55 * (0.5 + 0.5 * math.sin(os.clock() * 9)) or 0
+		end
+	end)
+end
+do
 	-- the speed slot says how much faster ("+5%") above its seconds
 	local pct = label(speedSlot, { Name = "Pct", Size = UDim2.new(1, 0, 0, 14), Position = UDim2.fromOffset(0, -2), Text = "", TextColor3 = Color3.fromRGB(255, 230, 120), TextStrokeTransparency = 0.2, ZIndex = 3 })
 	-- a line floats up over the boost row whenever a skill or boost gives you
