@@ -1,4 +1,4 @@
-"""clean_hair.py - repaints a toon model's long hair where Stable Fast 3D's
+"""clean_hair.py - (Holly and Clone, see PROFILES) repaints a toon model's long hair where Stable Fast 3D's
 guess left other colors on it (4 Nov, Holly: the ends of her hair, hanging
 behind her back, carried her sweater's red and green stripes, and her
 peppermint bows smeared red round the sides and back of her head).
@@ -36,6 +36,41 @@ from paint_toon import raster  # noqa: E402
 
 PROJECT = Path(__file__).resolve().parent.parent
 MODELS = PROJECT / "art" / "models"
+
+
+def yellow_hair(c):
+    return (c[:, 0] > 150) & (c[:, 1] > 0.6 * c[:, 0]) & (c[:, 2] < 0.55 * c[:, 1])
+
+
+def dark_hair(c):
+    return c.sum(axis=1) < 150
+
+
+def orange(c):
+    r, g, b = c[:, 0], c[:, 1], c[:, 2]
+    return (r > 80) & (g > 0.25 * r) & (g < 0.75 * r) & (b < 0.3 * r)  # (skin has more blue)
+
+
+def dull_brown(c):
+    """the goggles' orange half-blended into black hair (about 110, 75, 45):
+    darker than his skin (about 200, 130, 90 - skin shadows stay above 135)"""
+    r, g, b = c[:, 0], c[:, 1], c[:, 2]
+    return (r > 85) & (r < 135) & (g < 0.85 * r) & (b < 0.6 * r) & (r - b > 30)
+
+
+def pinkish(c):
+    return (c[:, 0] > 150) & (c[:, 1] < 0.7 * c[:, 0]) & (c[:, 1] < 150) & (c[:, 2] < 0.85 * c[:, 0])
+
+
+# per character: the hair color test, what is wrong on the hair, whether the
+# top of the head is cleaned too (Holly's bows - not Clone's goggles, which sit
+# on top at the front), and whether long hair hangs behind the body
+PROFILES = {
+    # 4 Nov: the sweater's stripes on her hair ends, the bows smeared round
+    "holly": {"hair": yellow_hair, "bad": lambda c: red_or_green(c), "head_bad": pinkish, "top": True, "ends": True},
+    # 4 Nov (Brent): the goggles' orange on the top and back of his hair
+    "clone": {"hair": dark_hair, "bad": orange, "head_bad": dull_brown, "top": False, "ends": False, "head": 0.2, "zcut": 0.7}  # (0.5 left orange on his crown behind the goggles)  # (0.3 reached his collar),
+}
 
 
 def red_or_green(col):
@@ -91,7 +126,7 @@ def clean(name):
     lo, hi = V.min(0), V.max(0)
     size = hi - lo
     cen = V[F].mean(axis=1)
-    head_y = hi[1] - 0.30 * size[1]
+    head_y = hi[1] - PROFILES[name].get("head", 0.30) * size[1]
 
     # the hair hanging behind the body, found on the model itself: in each
     # thin band of height below the head, the yellow (hair-colored) triangles
@@ -102,12 +137,13 @@ def clean(name):
     for f in range(len(F)):
         u, v = uvpx[F[f]].mean(axis=0)
         mid[f] = tex[int(np.clip(v, 0, TH - 1)), int(np.clip(u, 0, TW - 1))]
-    yel = (mid[:, 0] > 150) & (mid[:, 1] > 0.6 * mid[:, 0]) & (mid[:, 2] < 0.55 * mid[:, 1])
+    prof = PROFILES[name]
+    yel = prof["hair"](mid)
     step = 0.025
     bands = np.arange(0.0, (head_y - lo[1]) / size[1], step)
     with_hair = [b for b in bands if (yel & (fy >= b) & (fy < b + step) & (cen[:, 2] < 0)).sum() >= 20]
     region2 = np.zeros(len(F), bool)
-    if with_hair:
+    if with_hair and prof["ends"]:
         bottom = min(with_hair)
         below = (fy >= bottom - 0.08) & (fy < bottom - 0.01)
         z_body = cen[below, 2].min() - 0.005  # the back of the body under the hair
@@ -121,8 +157,8 @@ def clean(name):
     # the head: only behind its middle, or up where the bows are (the cheeks,
     # jaw and neck keep their colors - their shadows are reddish)
     head = cen[:, 1] > head_y
-    z_mid = cen[head, 2].min() + 0.5 * (cen[head, 2].max() - cen[head, 2].min())
-    region1 = head & (fn[:, 2] < 0.35) & ((cen[:, 2] < z_mid) | (cen[:, 1] > hi[1] - 0.13 * size[1]))
+    z_mid = cen[head, 2].min() + PROFILES[name].get("zcut", 0.5) * (cen[head, 2].max() - cen[head, 2].min())
+    region1 = head & (fn[:, 2] < 0.35) & ((cen[:, 2] < z_mid) | ((cen[:, 1] > hi[1] - 0.13 * size[1]) & prof["top"]))
     todo = np.nonzero(region1 | region2)[0]
 
     # the hair color: the median of the yellow texels on the back of the head
@@ -131,7 +167,7 @@ def clean(name):
         pts, _ = raster(uvpx[F[f]], TW, TH)
         if pts is not None and len(pts):
             c = tex[pts[:, 1], pts[:, 0]].astype(np.float32)
-            ok = (c[:, 0] > 150) & (c[:, 1] > 0.6 * c[:, 0]) & (c[:, 2] < 0.55 * c[:, 1])
+            ok = prof["hair"](c)
             samples.append(c[ok])
     hair = np.median(np.concatenate(samples), axis=0)
 
@@ -141,10 +177,10 @@ def clean(name):
         if pts is None or len(pts) == 0:
             continue
         c = tex[pts[:, 1], pts[:, 0]].astype(np.float32)
-        bad = red_or_green(c)
+        bad = prof["bad"](c)
         # on the head a few pale-pink in-betweens of the smear go too
-        if cen[f, 1] > head_y:
-            bad |= (c[:, 0] > 150) & (c[:, 1] < 0.7 * c[:, 0]) & (c[:, 1] < 150) & (c[:, 2] < 0.85 * c[:, 0])
+        if cen[f, 1] > head_y and prof["head_bad"]:
+            bad |= prof["head_bad"](c)
         if bad.any():
             tex[pts[bad, 1], pts[bad, 0]] = hair.astype(np.uint8)
             changed += int(bad.sum())

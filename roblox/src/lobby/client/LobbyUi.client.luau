@@ -2303,11 +2303,34 @@ do
 end
 -- right: picking a character, their level and the skill ladder
 local right = frame(chars, { Size = UDim2.new(1, -256, 1, -60), Position = UDim2.fromOffset(250, 0), BackgroundTransparency = 1, ZIndex = 11 })
-local charRow = frame(right, { Size = UDim2.new(1, -20, 0, 50), Position = UDim2.fromOffset(10, 56), BackgroundTransparency = 1, ZIndex = 11 })
-local charGrid = Instance.new("UIGridLayout")
--- 3 Nov: narrower as characters are added (eight fit at 72; the row is 624)
-charGrid.CellSize = UDim2.fromOffset(math.min(72, math.floor((624 - (#Config.SKILLS - 1) * 6) / #Config.SKILLS)), 64)
-charGrid.CellPadding = UDim2.fromOffset(6, 0)
+-- 4 Nov (Brent): the faces stay big and the row scrolls left and right
+-- (drag, swipe, the mouse wheel or a controller) - 14 characters no longer
+-- fit, and squeezing them made the faces too small to see
+local charRow = Instance.new("ScrollingFrame")
+charRow.Size = UDim2.new(1, -20, 0, 86)
+charRow.Position = UDim2.fromOffset(10, 44)
+charRow.BackgroundTransparency = 1
+charRow.BorderSizePixel = 0
+charRow.ZIndex = 11
+charRow.ScrollingDirection = Enum.ScrollingDirection.X
+charRow.CanvasSize = UDim2.new(0, 0, 0, 0)
+charRow.AutomaticCanvasSize = Enum.AutomaticSize.X
+charRow.ScrollBarThickness = 7
+charRow.ScrollBarImageColor3 = Color3.fromRGB(255, 138, 31)
+charRow.ElasticBehavior = Enum.ElasticBehavior.Always
+charRow.Parent = right
+do
+	-- room for the red upgrade dot that pokes out of each face's corner
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop = UDim.new(0, 11)
+	pad.PaddingLeft = UDim.new(0, 4)
+	pad.PaddingRight = UDim.new(0, 16)
+	pad.Parent = charRow
+end
+local charGrid = Instance.new("UIListLayout")
+charGrid.FillDirection = Enum.FillDirection.Horizontal
+charGrid.SortOrder = Enum.SortOrder.LayoutOrder
+charGrid.Padding = UDim.new(0, 8)
 charGrid.Parent = charRow
 local selected = Config.SKILLS[1].id
 -- the owner's test buttons: jump the shown character to a level (only you see them)
@@ -2323,7 +2346,7 @@ if (game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorI
 end
 local charBtns = {}
 for _, sk in ipairs(Config.SKILLS) do
-	charBtns[sk.id] = button(charRow, (Config.PORTRAITS[sk.id] or 0) > 0 and "" or sk.icon, { BackgroundColor3 = sk.color, ZIndex = 12 }, function()
+	charBtns[sk.id] = button(charRow, (Config.PORTRAITS[sk.id] or 0) > 0 and "" or sk.icon, { Size = UDim2.fromOffset(76, 68), LayoutOrder = #charRow:GetChildren(), BackgroundColor3 = sk.color, ZIndex = 12 }, function()
 		selected = sk.id
 		repaintChars()
 	end)
@@ -2345,7 +2368,7 @@ for _, sk in ipairs(Config.SKILLS) do
 	corner(dot, 15)
 	label(dot, { Name = "Count", Size = UDim2.fromScale(0.8, 0.8), Position = UDim2.fromScale(0.1, 0.1), Text = "", ZIndex = 16 })
 end
-local charTitle = label(right, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.fromOffset(10, 128), Text = "", ZIndex = 11 })
+local charTitle = label(right, { Size = UDim2.new(1, -20, 0, 30), Position = UDim2.fromOffset(10, 132), Text = "", ZIndex = 11 })
 local xpBack = frame(right, { Size = UDim2.new(1, -40, 0, 14), Position = UDim2.fromOffset(20, 164), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 11 })
 corner(xpBack, 7)
 local xpFill = frame(xpBack, { Size = UDim2.fromScale(0, 1), BackgroundColor3 = Color3.fromRGB(123, 227, 107), BackgroundTransparency = 0, ZIndex = 12 })
