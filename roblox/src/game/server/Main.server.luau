@@ -829,12 +829,42 @@ local function openDoor(plr, how)
 end
 
 local function revealAll(plr, by)
-	for i = 1, 3 do
-		state.known[i] = state.code[i]
-		RoundState:SetAttribute("Known" .. i, state.code[i])
+	-- 4 Nov: a 4-color code (Hard, Nightmare): the code skills learn 3 of the 4 -
+	-- one still unknown stays hidden (a balloon, a clue or Tinker's pick)
+	local n = #state.code
+	local keep
+	if n >= 4 then
+		local unknown = {}
+		for i = 1, n do
+			if not state.known[i] then
+				table.insert(unknown, i)
+			end
+		end
+		if #unknown >= 2 then
+			keep = unknown[math.random(1, #unknown)]
+		end
+	end
+	for i = 1, n do
+		if i ~= keep then
+			state.known[i] = state.code[i]
+			RoundState:SetAttribute("Known" .. i, state.code[i])
+		end
 	end
 	addPoints(plr, 10)
-	say("reveal", by .. " The code is " .. colourWord(state.code[1]) .. ", " .. colourWord(state.code[2]) .. ", " .. colourWord(state.code[3]) .. ".", state.code)
+	local words = {}
+	for i = 1, n do
+		table.insert(words, state.known[i] and colourWord(state.code[i]) or "?")
+	end
+	say("reveal", by .. " The code is " .. table.concat(words, ", ") .. "." .. (keep and (" Color " .. keep .. " is still a mystery - find it!") or ""), state.code)
+end
+-- the whole code known? (3 or 4 colors)
+local function codeKnown()
+	for i = 1, #(state.code or {}) do
+		if not state.known[i] then
+			return false
+		end
+	end
+	return true
 end
 
 local function need(plr, skill, text)
@@ -1244,14 +1274,18 @@ local function wirePrompts()
 				entry.part.Color = Color3.fromRGB(120, 60, 200)
 				entry.part.Material = Enum.Material.Neon
 				entry.label.RichText = true
+				revealAll(plr, "Glow lit up the secret paint!")
 				local t = ""
-				for i = 1, 3 do
+				for i = 1, #state.code do
+					if not state.known[i] then
+						t ..= "? " -- (4 colors: the one the paint doesn't show)
+						continue
+					end
 					local c = Config.COLOR3[state.code[i]]
 					t ..= string.format('<font color="#%02x%02x%02x">&#9679;</font>%s ', math.floor(c.R * 255 + 0.5), math.floor(c.G * 255 + 0.5), math.floor(c.B * 255 + 0.5), Config.COLOR_SHAPE[state.code[i]] or "")
 				end
 				entry.label.Text = t
 				Effects.burst(entry.part.Position, "light")
-				revealAll(plr, "Glow lit up the secret paint!")
 				quest(plr, "skill")
 			end)
 		elseif def.kind == "plant" then
@@ -1286,7 +1320,7 @@ local function wirePrompts()
 					return say("info", "The keypad has already been picked this game.", nil, plr)
 				end
 				local unknown = {}
-				for i = 1, 3 do
+				for i = 1, #state.code do
 					if not state.known[i] then
 						table.insert(unknown, i)
 					end
@@ -1307,7 +1341,7 @@ local function wirePrompts()
 				-- Master Tinker: a second colour too (never the last one)
 				if plr:GetAttribute("Power20") == "mastertinker" then
 					local more = {}
-					for i = 1, 3 do
+					for i = 1, #state.code do
 						if not state.known[i] then
 							table.insert(more, i)
 						end
@@ -3174,7 +3208,7 @@ local function clueSteps()
 		end
 		return id, "The " .. name .. " is locked. Search drawers and boxes for the key!"
 	end
-	local known = state.known[1] and state.known[2] and state.known[3]
+	local known = codeKnown()
 	if not known then
 		if skills.brainy and o.invite.prompt.Enabled and reachable("invite") then
 			add("invite", "Brainy can read the twisty invitation in the " .. roomOf("invite") .. ".")
@@ -3206,7 +3240,7 @@ local function routeText()
 	local steps, skills, lockHint = clueSteps()
 	local _ = steps
 	local parts = {}
-	local known = state.known[1] and state.known[2] and state.known[3]
+	local known = codeKnown()
 	if not known then
 		if skills.brainy and o.invite.prompt.Enabled then
 			table.insert(parts, "read the twisty invitation in the " .. roomOf("invite") .. " (Brainy)")
@@ -3646,7 +3680,7 @@ do
 			return nil
 		end
 		local unknown = {}
-		for k = 1, 3 do
+		for k = 1, #state.code do
 			if not state.known[k] then
 				table.insert(unknown, k)
 			end
@@ -4335,11 +4369,15 @@ Press.OnServerEvent:Connect(function(plr, colour)
 	state.entry[plr.UserId] = state.entry[plr.UserId] or {}
 	local e = state.entry[plr.UserId]
 	table.insert(e, colour)
-	if #e < 3 then
+	if #e < #state.code then
 		return
 	end
 	state.entry[plr.UserId] = {}
-	if e[1] == state.code[1] and e[2] == state.code[2] and e[3] == state.code[3] then
+	local right = true
+	for i = 1, #state.code do
+		right = right and e[i] == state.code[i]
+	end
+	if right then
 		openDoor(plr, "code")
 	else
 		say("wrong", "Wrong code! And that was LOUD... something is coming.", nil, plr)
@@ -4949,7 +4987,7 @@ function round.start()
 	local floors = Plans[mapInfo and mapInfo.building or "partyhouse"] or Plans.partyhouse
 	do
 		local d = Config.DIFFICULTY[RoundState:GetAttribute("Difficulty") or "normal"] or Config.DIFFICULTY.normal
-		HouseMap = MapGen.make(floors[mapInfo and mapInfo.floor or 1] or Plans.partyhouse[1], nil, { decoys = d.decoys, search = d.search })
+		HouseMap = MapGen.make(floors[mapInfo and mapInfo.floor or 1] or Plans.partyhouse[1], nil, { decoys = d.decoys, search = d.search, code = d.code or 3 })
 	end
 	-- one of the locked doors is a blocked passage instead: Muscle shoves the
 	-- junk away, or anyone plants the Confetti Cannon hidden in a search spot
@@ -5213,9 +5251,12 @@ function round.start()
 		end
 	end
 	local code = {}
-	for i = 1, 3 do
+	-- 4 Nov: 4 colors on Hard and Nightmare (Config.DIFFICULTY code), else 3
+	local codeLen = (Config.DIFFICULTY[RoundState:GetAttribute("Difficulty") or "normal"] or {}).code or 3
+	for i = 1, codeLen do
 		code[i] = Config.COLORS[math.random(1, #Config.COLORS)]
 	end
+	RoundState:SetAttribute("CodeLen", codeLen)
 	local diffKey = RoundState:GetAttribute("Difficulty") or "normal"
 	local diff = Config.DIFFICULTY[diffKey]
 	local now = workspace:GetServerTimeNow()
@@ -5258,7 +5299,7 @@ function round.start()
 	RoundState:SetAttribute("CluesLeft", diff.clues)
 	RoundState:SetAttribute("Frenzy", false)
 	RoundState:SetAttribute("HostOut", false)
-	for i = 1, 3 do
+	for i = 1, 4 do
 		RoundState:SetAttribute("Known" .. i, nil)
 	end
 	local spook = RoundState:GetAttribute("Spook")
@@ -5484,7 +5525,7 @@ function round.start()
 		end
 		for _ = 1, math.min(reveals, 1) do
 			local unknown = {}
-			for k = 1, 3 do
+			for k = 1, #state.code do
 				if not state.known[k] then
 					table.insert(unknown, k)
 				end

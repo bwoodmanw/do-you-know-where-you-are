@@ -447,7 +447,7 @@ local function hex(c)
 end
 local function paintCode()
 	local parts = {}
-	for i = 1, 3 do
+	for i = 1, RoundState:GetAttribute("CodeLen") or 3 do -- (4 on Hard and Nightmare, 4 Nov)
 		local k = RoundState:GetAttribute("Known" .. i)
 		parts[i] = k and ('<font color="' .. hex(Config.COLOR3[k]) .. '">\u{25CF}</font>' .. (Config.COLOR_SHAPE[k] or "")) or "?"
 	end
@@ -1264,10 +1264,10 @@ for i, c in ipairs(Config.COLORS) do
 		entered.Text = table.concat(shown, " ")
 		playLocal("beep", 0.6)
 		remotes.Press:FireServer(c)
-		if #pressed >= 3 then
+		if #pressed >= (RoundState:GetAttribute("CodeLen") or 3) then
 			pressed = {}
 			task.delay(0.6, function()
-				entered.Text = "_ _ _"
+				entered.Text = string.rep("_ ", RoundState:GetAttribute("CodeLen") or 3)
 			end)
 		end
 	end)
@@ -1277,7 +1277,7 @@ button(keypad, "Close", { Size = UDim2.fromOffset(214, 34), Position = UDim2.fro
 end)
 remotes.OpenKeypad.OnClientEvent:Connect(function()
 	pressed = {}
-	entered.Text = "_ _ _"
+	entered.Text = string.rep("_ ", RoundState:GetAttribute("CodeLen") or 3)
 	keypad.Visible = true
 end)
 Gamepad.panel(keypad)
@@ -2914,7 +2914,7 @@ end)
 do
 	local STEPS = {
 		"\u{1F388} Find the clue balloons and pop them: walk up and press E. Careful - some are tricks!",
-		"A real balloon shows a color. Three colors = the code for the big exit door.",
+		"A real balloon shows a color. Three colors (four on Hard and Nightmare) = the code for the big exit door.",
 		"\u{1F512} A locked door? Search drawers, boxes and coats for its key. Tinker can pick locks.",
 		"\u{1F47B} The host is out! Hold Shift to run, and press E at a \u{1F648} hiding place to hide.",
 		"Caught? Friends free you from the cage. Stuck? Press \u{1F4A1} Clue for a hint (it costs points).",
@@ -2969,9 +2969,13 @@ do
 			show(5)
 		end
 	end)
-	for i = 1, 3 do
+	for i = 1, 4 do
 		RoundState:GetAttributeChangedSignal("Known" .. i):Connect(function()
-			if RoundState:GetAttribute("Known1") and RoundState:GetAttribute("Known2") and RoundState:GetAttribute("Known3") then
+			local all = true
+			for k = 1, RoundState:GetAttribute("CodeLen") or 3 do
+				all = all and RoundState:GetAttribute("Known" .. k) ~= nil
+			end
+			if all then
 				show(6)
 			end
 		end)

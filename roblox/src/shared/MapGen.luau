@@ -119,15 +119,23 @@ function MapGen.make(plans, rng, extras)
 	end
 	local Z1, Z2, Z3, ZA = { [1] = true }, { [2] = true }, { [3] = true }, { [1] = true, [2] = true, [3] = true }
 
-	-- the clue balloons: numbers 1-3 in a random order
-	local order = { 1, 2, 3 }
-	for i = 3, 2, -1 do
+	-- the clue balloons: numbers 1-3 in a random order (4 Nov: 1-4 when the
+	-- code has 4 colors - extras.code - the 4th anywhere on the floor)
+	local codeLen = (extras and extras.code) or 3
+	local order = {}
+	for i = 1, codeLen do
+		order[i] = i
+	end
+	for i = codeLen, 2, -1 do
 		local j = rng:NextInteger(1, i)
 		order[i], order[j] = order[j], order[i]
 	end
 	add({ id = "b0", kind = "balloon", n = order[1] }, pick(Z1, "balloon", 1))
 	add({ id = "b1", kind = "balloon", n = order[2] }, pick(Z1, "balloon", 1))
 	add({ id = "b2", kind = "balloon", n = order[3] }, pick(Z2, "balloon", 1))
+	if codeLen >= 4 then
+		add({ id = "b3", kind = "balloon", n = order[4] }, pick(ZA, "balloon", 1))
+	end
 	add({ id = "plant", kind = "plant" }, pick(Z1))
 	add({ id = "p0", kind = "present", boost = "candy" }, pick(Z1, "present", 1))
 	add({ id = "p1", kind = "present", boost = "shield" }, pick(Z1, "present", 1))
@@ -145,12 +153,13 @@ function MapGen.make(plans, rng, extras)
 		add({ id = "h" .. i, kind = "hide", look = look, cap = look == "wardrobe" and 3 or rng:NextInteger(1, 2) }, pick(ZA, "hide", 1))
 	end
 	for i = 0, 2 do
-		add({ id = "x" .. i, kind = "balloon", decoy = true, n = rng:NextInteger(1, 3) }, pick(ZA, "balloon", 1))
+		add({ id = "x" .. i, kind = "balloon", decoy = true, n = rng:NextInteger(1, codeLen) }, pick(ZA, "balloon", 1))
 	end
 	-- 17 Oct: the harder difficulties add trick balloons and search spots
 	-- (make_housemap.py checks Nightmare's, the most, in every fill)
-	for i = 1, math.min(extras.decoys or 0, 3) do
-		add({ id = "x" .. (2 + i), kind = "balloon", decoy = true, n = rng:NextInteger(1, 3) }, pick(ZA, "balloon", 1))
+	-- (the 4th real balloon takes one trick balloon's place: the same count)
+	for i = 1, math.min(extras.decoys or 0, 3) - (codeLen >= 4 and 1 or 0) do
+		add({ id = "x" .. (2 + i), kind = "balloon", decoy = true, n = rng:NextInteger(1, codeLen) }, pick(ZA, "balloon", 1))
 	end
 	for i = 1, math.min(extras.search or 0, 5) do
 		n += 1
