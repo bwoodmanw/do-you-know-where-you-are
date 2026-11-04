@@ -18,3 +18,10 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 
 Send Claude the 2 pictures to check (look-alikes, logos, arms clear of the
 body) before making the model.
+
+## Generated outputs (4 Nov 2026)
+
+- Front: `art/model-input/holly/front-toon.png`, generated with Glow's front as its sole style reference.
+- Back: `art/model-input/holly/back-toon.png`, generated afterward with the saved Holly front as its sole reference.
+- Both outputs: 1024 x 1536 PNG, using the built-in image generator.
+- Reusable ordered workflow and exact final prompts: `art/model-input/holly/workflow.json`. Each prompt includes the full Picture Standard and the corresponding Picture row, with explicit single-view instructions. The front also clarifies hair placement for arm clearance and simple solid-red boot soles; the back preserves those boot colors.

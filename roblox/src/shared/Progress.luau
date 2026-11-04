@@ -567,6 +567,54 @@ local SPECIAL = {
 			{ id = "overgrowth20", name = "Overgrowth", say = "Vines grow across two doorways at once", mods = { p20 = "overgrowth" } },
 		},
 	},
+	-- Clone (4 Nov, NEW_CHARACTERS.md): Look-alike, Copycat; lookAlike (s) /
+	-- copyReach (studs) add to Config.CLONE_COPY
+	clone = {
+		[3] = {
+			{ id = "study3", name = "Quick Study", say = "Copycat recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "lungs3", name = "Twin Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[5] = {
+			{ id = "mask5", name = "Mirror Mask", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "hands5", name = "Copy Hands", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+		},
+		[7] = {
+			{ id = "learner7", name = "Fast Learner", say = "Copycat recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "cluecopy7", name = "Clue Copy", say = "+1 free clue for the team", mods = { clues = 1 } },
+		},
+		[9] = {
+			{ id = "look9", name = "Longer Look", say = "The host hesitates 0.5 s longer before grabbing you", mods = { lookAlike = 0.5 } },
+			{ id = "gadget9", name = "Gadget Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[10] = {
+			{ id = "fullcopy10", name = "Full Copy", say = "A copied skill works at your friend's own strength, upgrades and all", mods = { p10 = "fullcopy" } },
+			{ id = "quickcopy10", name = "Quick Copy", say = "A copied skill recharges 15% faster than your friend's", mods = { p10 = "quickcopy" } },
+		},
+		[11] = {
+			{ id = "study11", name = "Quicker Study", say = "Copycat recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "notes11", name = "Copy Notes", say = "+1 free clue for the team", mods = { clues = 1 } },
+		},
+		[13] = {
+			{ id = "reach13", name = "Long Reach", say = "Copy a friend up to 10 studs further away", mods = { copyReach = 10 } },
+			{ id = "nimble13", name = "Nimble", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[15] = {
+			{ id = "smart15", name = "Smart Copy", say = "Copycat recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "shield15", name = "Copy Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+		},
+		[17] = {
+			{ id = "tip17", name = "Copy Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "hush17", name = "Hush", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[19] = {
+			{ id = "master19", name = "Master Copier", say = "Copycat recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "look19", name = "Longest Look", say = "The host hesitates 0.5 s longer before grabbing you", mods = { lookAlike = 0.5 } },
+		},
+		[20] = {
+			{ id = "copytwo20", name = "Copy Two", say = "Copycat copies the two nearest friends' skills - two copied buttons", mods = { p20 = "copytwo" } },
+			{ id = "quickchange20", name = "Quick Change", say = "Once a game, Copycat recharges at once", mods = { p20 = "quickchange" } },
+		},
+	},
 	-- Holly (4 Nov, Brent): Peppermint Trail, Peppermint Slide; patchTime /
 	-- patchSize (studs wider round) / slipTime add to Config.HOLLY
 	holly = {
@@ -723,7 +771,8 @@ Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRang
 	burstMult = true, burstTime = true, flareTime = true, flareRange = true, flareStamina = true, vineTime = true, thinkTime = true,
 	noseRange = true, dashTime = true, pullRange = true, -- Nutmeg (3 Nov)
 	fogSize = true, fogTime = true, -- Cloud (4 Nov)
-	patchTime = true, patchSize = true, slipTime = true } -- Holly (4 Nov)
+	patchTime = true, patchSize = true, slipTime = true, -- Holly (4 Nov)
+	lookAlike = true, copyReach = true } -- Clone (4 Nov)
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

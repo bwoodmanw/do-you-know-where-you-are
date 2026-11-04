@@ -94,6 +94,7 @@ local ReadyUp = remote("Ready") -- client -> server: pressed Play on the charact
 local UseSkill = remote("UseSkill") -- client -> server: optional position (Echo)
 local RingBells = remote("RingBells") -- client -> server: Nutmeg's Jingle Bells (level 20), once a game
 local GrowHedge = remote("GrowHedge") -- client -> server: Holly's Holly Hedge (level 20), once a game
+local UseCopy = remote("UseCopy") -- client -> server: Clone's copied skill (slot 1 / 2, optional position)
 local AskClue = remote("AskClue")
 local Say = remote("Say") -- client -> server: phrase index
 local Bubble = remote("Bubble") -- server -> clients: player, phrase index
@@ -320,6 +321,13 @@ local function applyMods(plr)
 	plr:SetAttribute("PatchTime", Config.HOLLY.patch + (m.patchTime or 0))
 	plr:SetAttribute("PatchRadius", (m.p20 == "candystorm" and Config.HOLLY.stormRadius or Config.HOLLY.radius) + (m.patchSize or 0))
 	plr:SetAttribute("SlipTime", m.slipTime or 0)
+	-- Clone (4 Nov): Look-alike's hesitation, Copycat's reach; no copies yet
+	plr:SetAttribute("LookAlike", Config.CLONE_COPY.lookAlike + (m.lookAlike or 0))
+	plr:SetAttribute("CopyReach", Config.CLONE_COPY.reach + (m.copyReach or 0))
+	if skill ~= "clone" then
+		plr:SetAttribute("Copy1", nil)
+		plr:SetAttribute("Copy2", nil)
+	end
 	-- Muscle's Iron Lungs: stamina refills twice as fast
 	plr:SetAttribute("RegenMult", m.p10 == "ironlungs" and Config.IRON_LUNGS_REGEN or 1)
 	plr:SetAttribute("ToolkitReady", false)
@@ -1423,7 +1431,8 @@ local function wirePrompts()
 				if state.status ~= "playing" or world.unlocked[id] then
 					return
 				end
-				if plr:GetAttribute("Skill") ~= "tinker" then
+				-- (4 Nov: Clone with a copied Toolkit ready picks one lock too)
+				if plr:GetAttribute("Skill") ~= "tinker" and not (plr:GetAttribute("Skill") == "clone" and plr:GetAttribute("ToolkitReady")) then
 					return need(plr, "tinker", "Only Tinker can pick a lock. Everyone else needs the key!")
 				end
 				Effects.burst(entry.lockPart.Position, "pick")
@@ -3773,6 +3782,85 @@ do
 			plr:SetAttribute("PeppermintUntil", workspace:GetServerTimeNow() + seconds)
 			say("info", "\u{1F36C} " .. plr.DisplayName .. " scattered peppermints - lead the host over them!")
 			return true
+		elseif skill == "clone" then
+			-- Copycat (4 Nov): the button skill of the nearest friend within
+			-- CopyReach (the two nearest with Copy Two) becomes his own extra
+			-- button; alone, a wheel picks one. Full Copy: the friend's own numbers
+			local reach = plr:GetAttribute("CopyReach") or Config.CLONE_COPY.reach
+			local near = {}
+			for _, p in ipairs(Players:GetPlayers()) do
+				local h = hrpOf(p)
+				local s = p:GetAttribute("Skill")
+				if p ~= plr and h and s and s ~= "clone" and Config.COOLDOWN[s] and not p:GetAttribute("Escaped") then
+					local d = (h.Position - hrp.Position).Magnitude
+					if d <= reach then
+						table.insert(near, { p = p, s = s, d = d })
+					end
+				end
+			end
+			table.sort(near, function(a, b)
+				return a.d < b.d
+			end)
+			local want = p20 == "copytwo" and 2 or 1
+			local picks = {}
+			for _, n in ipairs(near) do
+				local dup = false
+				for _, k in ipairs(picks) do
+					dup = dup or k.s == n.s
+				end
+				if not dup and #picks < want then
+					table.insert(picks, n)
+				end
+			end
+			local wheel = #picks == 0
+			if wheel then
+				local pool = {}
+				for _, sk in ipairs(Config.SKILLS) do
+					if sk.id ~= "clone" and Config.COOLDOWN[sk.id] then
+						table.insert(pool, sk.id)
+					end
+				end
+				for _ = 1, want do
+					if #pool > 0 then
+						table.insert(picks, { s = table.remove(pool, math.random(1, #pool)) })
+					end
+				end
+			end
+			applyMods(plr) -- back to the basic numbers first
+			local names = {}
+			for slot = 1, 2 do
+				local k = picks[slot]
+				plr:SetAttribute("Copy" .. slot, k and k.s or nil)
+				plr:SetAttribute("CopyCool" .. slot, 0)
+				if k then
+					local nm = k.s
+					for _, sk in ipairs(Config.SKILLS) do
+						if sk.id == k.s then
+							nm = sk.name
+						end
+					end
+					table.insert(names, nm .. (k.p and "" or ""))
+					-- Full Copy: the friend's own numbers for that skill
+					if p10 == "fullcopy" and k.p then
+						for _, a in ipairs({ "SneakTime", "GlowRange", "FlareTime", "FlareRange", "FlareStamina", "EchoRange", "BurstMult", "BurstTime",
+							"BarricadeHold", "VineTime", "ThinkTime", "HealAmount", "HealShield", "CloneTime", "DashTime", "PullRange", "NoseRange",
+							"FogRadius", "FogTime", "PatchTime", "PatchRadius", "SlipTime" }) do
+							if k.p:GetAttribute(a) ~= nil then
+								plr:SetAttribute(a, k.p:GetAttribute(a))
+							end
+						end
+					end
+				end
+			end
+			Effects.at(plr, "reveal")
+			say("info", (wheel and "\u{1F3A1} The wheel spun: " or "\u{1F465} ") .. plr.DisplayName .. " copied " .. table.concat(names, " and ") .. "'s skill" .. (#names > 1 and "s" or "") .. "!")
+			-- Quick Change (level 20): once a game, Copycat is ready again at once
+			if p20 == "quickchange" and not once["quickchange" .. plr.UserId] then
+				once["quickchange" .. plr.UserId] = true
+				say("info", "\u{26A1} Quick Change: Copycat is ready again!", nil, plr)
+				return "free"
+			end
+			return true
 		end
 		return nil -- not a new button
 	end
@@ -4350,15 +4438,19 @@ GrowHedge.OnServerEvent:Connect(function(plr)
 	end
 end)
 
-UseSkill.OnServerEvent:Connect(function(plr, pos)
-	local skill = plr:GetAttribute("Skill")
+-- a skill used by its own button - or (4 Nov) one of Clone's copies of a
+-- friend's (slot 1 / 2), which runs just like the friend's own, at its basic
+-- strength (Full Copy: the friend's), with its own recharge CopyCool1 / 2
+local function runSkill(plr, skill, pos, slot)
 	local cd = Config.COOLDOWN[skill]
 	if not cd or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return
 	end
+	local coolKey = slot and ("CopyCool" .. slot) or "CoolUntil"
+	local coolMult = slot and (plr:GetAttribute("Power10") == "quickcopy" and 0.85 or 1) or (plr:GetAttribute("CooldownMult") or 1)
 	local now = workspace:GetServerTimeNow()
-	if (plr:GetAttribute("CoolUntil") or 0) > now then
-		return say("info", "Your skill is recharging... " .. math.ceil(plr:GetAttribute("CoolUntil") - now) .. " seconds", nil, plr)
+	if (plr:GetAttribute(coolKey) or 0) > now then
+		return say("info", (slot and "That copied skill is" or "Your skill is") .. " recharging... " .. math.ceil(plr:GetAttribute(coolKey) - now) .. " seconds", nil, plr)
 	end
 	local hrp = hrpOf(plr)
 	if not hrp then
@@ -4371,14 +4463,14 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 			quest(plr, "skill") -- worked, and the button is ready again at once (Cloud's Fog Bank)
 		elseif v2 then
 			-- Tinker's Rocket Boots: a rocket run after each Toolkit
-			if skill == "tinker" and plr:GetAttribute("Power20") == "boots" then
+			if skill == "tinker" and not slot and plr:GetAttribute("Power20") == "boots" then
 				local rb = Config.ROCKET_BOOTS
 				plr:SetAttribute("TeamBurstMult", rb.mult)
 				plr:SetAttribute("TeamBurstUntil", now + rb.seconds)
 				Effects.aura(plr, "speed", rb.seconds)
 				say("info", "\u{1F680} Rocket Boots! Run!", nil, plr)
 			end
-			plr:SetAttribute("CoolUntil", now + cd * (plr:GetAttribute("CooldownMult") or 1))
+			plr:SetAttribute(coolKey, now + cd * coolMult)
 			quest(plr, "skill")
 		end
 		return
@@ -4473,21 +4565,23 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 		local head = plr.Character and plr.Character:FindFirstChild("Head")
 		local bulb = head and head:FindFirstChild("GlowBulb")
 		local light = bulb and bulb:FindFirstChildOfClass("PointLight")
-		if not light then
+		if not light and not slot then
 			return
 		end
 		local f = Config.GLOW_FLARE
 		local base = plr:GetAttribute("GlowRange") or 24
 		local seconds = plr:GetAttribute("FlareTime") or f.seconds
-		light.Range = math.min(60, base * f.mult)
-		light.Brightness = 3
+		if light then -- (Clone's copied Flare has no bulb of its own: the burst of light only)
+			light.Range = math.min(60, base * f.mult)
+			light.Brightness = 3
+		end
 		plr:SetAttribute("FlareUntil", now + seconds)
 		Effects.at(plr, "light")
 		Effects.swell(hrp.Position, Color3.fromRGB(255, 242, 160), math.min(60, base * f.mult) * 1.2, 0.8)
 		Effects.aura(plr, "flare", seconds)
 		say("flare", plr.DisplayName .. "'s Flare lights up everything around!", { userId = plr.UserId })
 		task.delay(seconds, function()
-			if light.Parent then
+			if light and light.Parent then
 				light.Range, light.Brightness = plr:GetAttribute("GlowRange") or 24, 1.6
 			end
 		end)
@@ -4507,8 +4601,8 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 	-- two goes before the recharge: Echo's Double Throw, Muscle's Fortress,
 	-- Patch's Guardian Angel (the first go doesn't start the recharge)
 	local p10, p20 = plr:GetAttribute("Power10"), plr:GetAttribute("Power20")
-	local twoGoes = (skill == "echo" and p10 == "double") or (skill == "muscle" and p20 == "fortress")
-		or (skill == "patch" and p10 == "twoshields")
+	local twoGoes = not slot and ((skill == "echo" and p10 == "double") or (skill == "muscle" and p20 == "fortress")
+		or (skill == "patch" and p10 == "twoshields"))
 	if twoGoes and not plr:GetAttribute("SkillSecond") then
 		plr:SetAttribute("SkillSecond", true)
 		quest(plr, "skill")
@@ -4518,8 +4612,21 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 	plr:SetAttribute("SkillSecond", false)
 	-- Shadow's recharge starts when the sneak ends (never hidden all the time)
 	local after = skill == "shadow" and (plr:GetAttribute("SneakTime") or 6) or 0
-	plr:SetAttribute("CoolUntil", now + after + cd * (plr:GetAttribute("CooldownMult") or 1))
+	plr:SetAttribute(coolKey, now + after + cd * coolMult)
 	quest(plr, "skill")
+end
+UseSkill.OnServerEvent:Connect(function(plr, pos)
+	runSkill(plr, plr:GetAttribute("Skill"), pos)
+end)
+-- Clone's copied skill buttons (4 Nov): slot 1 or 2 (two with Copy Two)
+UseCopy.OnServerEvent:Connect(function(plr, slot, pos)
+	if plr:GetAttribute("Skill") ~= "clone" or (slot ~= 1 and slot ~= 2) then
+		return
+	end
+	local copied = plr:GetAttribute("Copy" .. slot)
+	if typeof(copied) == "string" and copied ~= "clone" and Config.COOLDOWN[copied] then
+		runSkill(plr, copied, pos, slot)
+	end
 end)
 
 AskClue.OnServerEvent:Connect(function(plr)

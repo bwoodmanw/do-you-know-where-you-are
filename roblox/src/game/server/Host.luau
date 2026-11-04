@@ -519,6 +519,19 @@ function Host:step(dt)
 				end
 			end
 			if flat.Magnitude < reach and (not hidden or self.frenzy) then
+				-- 4 Nov: Clone's Look-alike - he hesitates before grabbing (a copy?)
+				local wait = plr:GetAttribute("Skill") == "clone" and (plr:GetAttribute("LookAlike") or 1) or 0
+				if wait > 0 then
+					self.hesitate = self.hesitate or {}
+					local first = self.hesitate[plr]
+					if not first or now - first > wait + 2 then
+						self.hesitate[plr] = now
+						first = now
+					end
+					if now - first < wait then
+						continue
+					end
+				end
 				self.pause = 2.5
 				self.mode = "patrol"
 				self.round:hostCaught(plr)

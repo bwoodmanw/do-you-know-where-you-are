@@ -2,7 +2,7 @@
 	ids are unique per character, and the mods of a full ladder come out sane.
 	Run: .tools/luau.exe tools/check_ladder.luau ]]
 local Progress = require("../roblox/src/shared/Progress")
-local skills = { "tinker", "shadow", "brainy", "muscle", "glow", "patch", "echo", "bramble", "nutmeg", "cloud", "holly" }
+local skills = { "tinker", "shadow", "brainy", "muscle", "glow", "patch", "echo", "bramble", "nutmeg", "cloud", "holly", "clone" }
 local bad = 0
 print("levels: " .. Progress.MAX_LEVEL .. ", XP for 20: " .. Progress.LEVEL_XP[20])
 for _, sk in ipairs(skills) do

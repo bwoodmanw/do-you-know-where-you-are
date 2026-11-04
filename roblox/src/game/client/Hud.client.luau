@@ -680,7 +680,9 @@ local function fitPrompt(p)
 		p:SetAttribute("BaseDist", p.MaxActivationDistance)
 	end
 	local s = player:GetAttribute("Skill")
-	local show = (only == nil or s == only) and (notFor == nil or s ~= notFor)
+	-- (4 Nov: Clone with a copied Toolkit ready sees Tinker's pick prompts)
+	local asTinker = only == "tinker" and s == "clone" and player:GetAttribute("ToolkitReady") == true
+	local show = (only == nil or s == only or asTinker) and (notFor == nil or s ~= notFor)
 	p.MaxActivationDistance = show and p:GetAttribute("BaseDist") or 0
 end
 workspace.DescendantAdded:Connect(function(d)
@@ -688,13 +690,15 @@ workspace.DescendantAdded:Connect(function(d)
 		task.defer(fitPrompt, d)
 	end
 end)
-player:GetAttributeChangedSignal("Skill"):Connect(function()
-	for _, d in ipairs(workspace:GetDescendants()) do
-		if d:IsA("ProximityPrompt") then
-			fitPrompt(d)
+for _, a in ipairs({ "Skill", "ToolkitReady" }) do
+	player:GetAttributeChangedSignal(a):Connect(function()
+		for _, d in ipairs(workspace:GetDescendants()) do
+			if d:IsA("ProximityPrompt") then
+				fitPrompt(d)
+			end
 		end
-	end
-end)
+	end)
+end
 end
 
 -- hold-to-use prompts (pick, shove, read, free...) go faster with ladder upgrades
@@ -1279,8 +1283,9 @@ Gamepad.panel(keypad)
 
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
+local aimCopySlot = nil -- (4 Nov) aiming for Clone's copied noise (slot 1 / 2)
 local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare",
-	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog", holly = "\u{1F36C} Peppermints" }
+	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog", holly = "\u{1F36C} Peppermints", clone = "\u{1F465} Copycat" }
 local KEYS = not TOUCH and UserInputService.KeyboardEnabled -- show the R key on the button
 do
 local function paintSkill()
@@ -1310,6 +1315,7 @@ local function useSkill()
 		end
 	elseif s == "echo" or storm then
 		aiming = true
+		aimCopySlot = nil
 		toast("Tap or click a spot to throw your " .. what .. " there.", 3)
 	elseif SKILL_TEXT[s] then
 		remotes.UseSkill:FireServer()
@@ -1350,6 +1356,59 @@ Gamepad.bind(Enum.KeyCode.ButtonR1, function()
 		useSkill()
 	end
 end)
+do
+	-- Clone's copied skills (4 Nov): a button for each copy (two with Copy
+	-- Two) - V and C on a keyboard - named like the friend's own button, with
+	-- its own recharge (CopyCool1 / CopyCool2). A copied noise is aimed
+	local keyed = not TOUCH and UserInputService.KeyboardEnabled
+	local COPY_KEYS = { Enum.KeyCode.V, Enum.KeyCode.C }
+	local btns = {}
+	local function useCopy(slot)
+		local id = player:GetAttribute("Copy" .. slot)
+		if not id or player:GetAttribute("Skill") ~= "clone" or player:GetAttribute("Caged") or player:GetAttribute("Escaped") then
+			return
+		end
+		if id == "echo" then
+			if Gamepad.on() then
+				local spot = Gamepad.aimPoint({ player.Character }, 300)
+				if spot then
+					remotes.UseCopy:FireServer(slot, spot)
+				end
+			else
+				aiming = true
+				aimCopySlot = slot
+				toast("Tap or click a spot to throw your copied \u{1F3A7} noise there.", 3)
+			end
+		else
+			remotes.UseCopy:FireServer(slot)
+		end
+	end
+	for slot = 1, 2 do
+		btns[slot] = button(acts, "", { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(30, 130, 130), Visible = false }, function()
+			useCopy(slot)
+		end)
+	end
+	UserInputService.InputBegan:Connect(function(input, used)
+		for slot, k in ipairs(COPY_KEYS) do
+			if not used and input.KeyCode == k then
+				useCopy(slot)
+			end
+		end
+	end)
+	RunService.Heartbeat:Connect(function()
+		local clone = player:GetAttribute("Skill") == "clone"
+		for slot, b in ipairs(btns) do
+			local id = clone and player:GetAttribute("Copy" .. slot)
+			b.Visible = id ~= nil and id ~= false
+			if b.Visible then
+				local left = math.ceil((player:GetAttribute("CopyCool" .. slot) or 0) - workspace:GetServerTimeNow())
+				b.Text = (SKILL_TEXT[id] or id) .. (left > 0 and ("  " .. left .. "s") or (keyed and (" (" .. (slot == 1 and "V" or "C") .. ")") or ""))
+				b.AutoButtonColor = left <= 0
+				b.BackgroundColor3 = left > 0 and Color3.fromRGB(60, 70, 80) or Color3.fromRGB(30, 130, 130)
+			end
+		end
+	end)
+end
 UserInputService.InputBegan:Connect(function(input, processed)
 	if input.KeyCode == Enum.KeyCode.LeftShift then
 		shiftHeld = true
@@ -1368,7 +1427,12 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		params.FilterDescendantsInstances = { player.Character }
 		local hit = workspace:Raycast(ray.Origin, ray.Direction * 300, params)
 		if hit then
-			remotes.UseSkill:FireServer(hit.Position)
+			if aimCopySlot then
+				remotes.UseCopy:FireServer(aimCopySlot, hit.Position)
+				aimCopySlot = nil
+			else
+				remotes.UseSkill:FireServer(hit.Position)
+			end
 		end
 	end
 end)
