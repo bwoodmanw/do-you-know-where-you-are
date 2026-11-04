@@ -514,7 +514,7 @@ Config.STUDIO_FEAST_TOTAL = nil
 Config.GIFT_POINTS = { 500, 2000 }
 -- the pictures of each season's item (0 = its emoji); the candy corn is the
 -- Candy Corn boost's picture
-Config.SEASON_IMAGES = { corn = 122983417837830, feather = 139087553903886 } -- feather: art/roblox-store/feather-512.png (16 Oct)
+Config.SEASON_IMAGES = { corn = 122983417837830, feather = 139087553903886, cane = 75466128880854 } -- feather: art/roblox-store/feather-512.png (16 Oct); cane: cane-icon-512.png (4 Nov)
 
 -- icons for things you pick up
 -- what hides on each floor: these always, plus one of `extra`, each in a
@@ -614,6 +614,8 @@ Config.BOOST_IMAGES = {
 	headstart = 109500734027827,
 	freeze = 77471024527802,
 	reset = 137033892267668,
+	giftbox = 118313533121966, -- Christmas's Gift Box Hideout (4 Nov, Brent's upload)
+	thermos = 113277712985873, -- Christmas's Cocoa Thermos (4 Nov)
 }
 
 -- filled in after uploading: { title = "rbxassetid://...", scare = "rbxassetid://...", ... }

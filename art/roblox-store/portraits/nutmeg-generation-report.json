@@ -1,0 +1,15 @@
+{
+  "workflow": "tools\\workflows\\nutmeg-portrait.json",
+  "mode": "built-in image_gen",
+  "prompt": "The character is Nutmeg, a cheerful, kind girl of about 10 dressed as a reindeer, exactly as in the FIRST attached picture (her approved full-body look): warm brown skin, big brown eyes, two short dark-brown braids coming out from under the hood at the front, a light-brown reindeer hoodie with the hood UP - two short, chunky, rounded cream antlers on top of the hood and two small round brown ears on its sides - a cream patch on the front of the hoodie, a green scarf with a small round brass bell at the front, red mittens. A normal kid's nose - NO red nose. Rich, polished 3D animated-movie style, soft light, big clear eyes, a warm smile. No logos, brand marks, printed words or text anywhere. Not a copy of any existing cartoon, film or game character (not Santa's reindeer, no glowing nose). Bright, friendly and right for young kids.\n\nPORTRAIT, square: Nutmeg from the chest up, turned slightly toward the camera, smiling, her hood up with the antlers and ears showing, the green scarf and its brass bell at her chest, one red mitten raised in a small wave at the bottom edge. Behind her a soft glowing circle in warm red and gold with a few gentle snowflakes inside it, on a deep plum-purple background. In the bottom-right corner a round badge: a dark-green circle with a gold rim and a small shiny brass sleigh bell inside. Lay it out exactly like the SECOND attached picture (another character's portrait) - the same framing, size of the head, glowing circle and corner badge - but with Nutmeg.",
+  "references": [
+    "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\nutmeg\\front-toon.png",
+    "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Bramble.png"
+  ],
+  "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a62f-c80f-7f71-8561-4d25bed8f743\\exec-2193aa28-1764-4d8f-9aaa-c88d16d6f12f.png",
+  "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Nutmeg.png",
+  "format": "PNG",
+  "width": 1254,
+  "height": 1254,
+  "visual_review": "Approved likeness and brown eyes; two braids, hood up, cream antlers and ears, green scarf and brass bell, normal nose, red mitten wave, warm red/gold circle with snowflakes, plum background, and bottom-right green/gold bell badge present; no text or logos."
+}

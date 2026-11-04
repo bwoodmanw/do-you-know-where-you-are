@@ -19,5 +19,31 @@ Table for each [Picture], [Reference] and [file name] combination is below:
 [PORTRAIT, square: Nutmeg from the chest up, turned slightly toward the camera, smiling, her hood up with the antlers and ears showing, the green scarf and its brass bell at her chest, one red mitten raised in a small wave at the bottom edge. Behind her a soft glowing circle in warm red and gold with a few gentle snowflakes inside it, on a deep plum-purple background. In the bottom-right corner a round badge: a dark-green circle with a gold rim and a small shiny brass sleigh bell inside. Lay it out exactly like the SECOND attached picture (another character's portrait) - the same framing, size of the head, glowing circle and corner badge - but with Nutmeg.] | [model-input\nutmeg\front-toon.png, roblox-store\portraits\Bramble.png] | [roblox-store\portraits\Nutmeg.png]
 ```
 
+## Reusable generation workflow
+
+The machine-readable prompt table is `tools/workflows/nutmeg-portrait.json`.
+Resolve `reference_root` and `output_root` relative to the project root.
+
+1. For each asset in table order, concatenate `picture_standard` verbatim,
+   two newlines, and that asset's `picture` verbatim.
+2. Check and inspect every reference, then attach all `references` in their
+   listed order without sorting or deduplicating. The first image supplies
+   Nutmeg's identity; the second supplies portrait framing, head scale, circle,
+   rendering style, and badge placement.
+3. Use one built-in image generation call per asset with the combined prompt
+   and ordered reference paths. Generate an opaque square portrait.
+4. Inspect the result for likeness, both braids, hood, rounded antlers and ears,
+   brown eyes, normal nose, scarf bell, waving red mitten, red/gold circle,
+   snowflakes, plum background, and the bottom-right green/gold bell badge.
+5. Create the destination's parent folder if needed and copy the selected PNG
+   to `output_root/file_name`. On reruns, preserve existing images unless
+   replacement is requested; otherwise save a versioned sibling.
+6. Verify PNG format and square dimensions. Save the full submitted prompt,
+   ordered references, generated source, destination, and actual dimensions to
+   `art/roblox-store/portraits/nutmeg-generation-report.json`.
+
+To add pictures, append rows with `picture`, `references`, and `file_name` to
+the JSON table. Include the shared Picture Standard with every prompt.
+
 Send Claude the picture to check (likeness to her model, no red nose, nothing
 that looks like a famous reindeer, the badge in the corner) before uploading.
