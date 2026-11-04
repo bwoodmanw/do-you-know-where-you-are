@@ -567,6 +567,54 @@ local SPECIAL = {
 			{ id = "overgrowth20", name = "Overgrowth", say = "Vines grow across two doorways at once", mods = { p20 = "overgrowth" } },
 		},
 	},
+	-- Harmony (4 Nov, NEW_CHARACTERS.md): Music Box, In Tune, Lullaby;
+	-- lullabyTime (s) / lullabyRange (studs) add to Config.HARMONY
+	harmony = {
+		[3] = {
+			{ id = "verse3", name = "Long Verse", say = "Lullaby lasts 1 s longer", mods = { lullabyTime = 1 } },
+			{ id = "breath3", name = "Deep Breath", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[5] = {
+			{ id = "tempo5", name = "Quick Tempo", say = "Lullaby recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "hum5", name = "Soft Hum", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[7] = {
+			{ id = "voice7", name = "Big Voice", say = "Lullaby reaches 5 studs further", mods = { lullabyRange = 5 } },
+			{ id = "notes7", name = "Song Sheet", say = "+1 free clue for the team", mods = { clues = 1 } },
+		},
+		[9] = {
+			{ id = "verse9", name = "Second Verse", say = "Lullaby lasts 1 s longer", mods = { lullabyTime = 1 } },
+			{ id = "keys9", name = "Piano Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+		},
+		[10] = {
+			{ id = "chorus10", name = "Chorus", say = "Lullaby also takes 5 s off every friend's recharge", mods = { p10 = "chorus" } },
+			{ id = "soothing10", name = "Soothing Song", say = "Lullaby lasts 2 s longer", mods = { p10 = "soothing", lullabyTime = 2 } },
+		},
+		[11] = {
+			{ id = "tempo11", name = "Allegro", say = "Lullaby recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "lungs11", name = "Singer's Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+		},
+		[13] = {
+			{ id = "voice13", name = "Echoing Voice", say = "Lullaby reaches 5 studs further", mods = { lullabyRange = 5 } },
+			{ id = "hum13", name = "Whisper", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[15] = {
+			{ id = "ear15", name = "Perfect Pitch", say = "Listen to the music box 20% faster", mods = { holdMult = 0.8 } },
+			{ id = "shield15", name = "Harmony Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+		},
+		[17] = {
+			{ id = "tip17", name = "Encore Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "keys17", name = "Quick Keys", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[19] = {
+			{ id = "tempo19", name = "Presto", say = "Lullaby recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "verse19", name = "Last Verse", say = "Lullaby lasts 1 s longer", mods = { lullabyTime = 1 } },
+		},
+		[20] = {
+			{ id = "encore20", name = "Encore", say = "An Encore button: once a game, a lullaby for the whole floor - the host walks at half speed 8 s", mods = { p20 = "encore" } },
+			{ id = "crescendo20", name = "Crescendo", say = "Lullaby also stops the host 1 s first", mods = { p20 = "crescendo" } },
+		},
+	},
 	-- Clone (4 Nov, NEW_CHARACTERS.md): Look-alike, Copycat; lookAlike (s) /
 	-- copyReach (studs) add to Config.CLONE_COPY
 	clone = {
@@ -772,7 +820,8 @@ Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRang
 	noseRange = true, dashTime = true, pullRange = true, -- Nutmeg (3 Nov)
 	fogSize = true, fogTime = true, -- Cloud (4 Nov)
 	patchTime = true, patchSize = true, slipTime = true, -- Holly (4 Nov)
-	lookAlike = true, copyReach = true } -- Clone (4 Nov)
+	lookAlike = true, copyReach = true, -- Clone (4 Nov)
+	lullabyTime = true, lullabyRange = true } -- Harmony (4 Nov)
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

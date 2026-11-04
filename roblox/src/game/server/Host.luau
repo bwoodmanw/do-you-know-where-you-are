@@ -493,6 +493,11 @@ function Host:step(dt)
 		end
 	end
 
+	-- 4 Nov: Harmony's Lullaby - he walks slower while it lasts
+	if os.clock() < (self.slowUntil or 0) then
+		self.hum.WalkSpeed *= self.slowMult or 0.5
+	end
+
 	-- catch anyone close enough who is not hidden
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local char = plr.Character

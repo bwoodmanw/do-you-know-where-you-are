@@ -20,10 +20,16 @@ import sys
 src, angle = sys.argv[1], math.radians(float(sys.argv[2]))
 out = src[:-4] + "-arms.glb"
 # (height fraction, |x| fraction of half-width beyond which it is arm),
-# between the torso's side and the arm's inner side at each height
-BOUNDARY = [(0.30, 0.58), (0.40, 0.58), (0.45, 0.47), (0.48, 0.43), (0.51, 0.40), (0.54, 0.39), (0.58, 0.39)]
-FULL_BELOW, NONE_ABOVE = 0.50, 0.57  # the turn fades out over the shoulder
-PIVOT = (0.44, 0.555)  # shoulder: |x| fraction of half-width, height fraction
+# between the torso's side and the arm's inner side at each height. A third
+# argument picks another character's measurements (4 Nov: "cloud" - her coat
+# flares out, measured in cross-sections like Brainy's)
+PROFILES = {
+    "brainy": ([(0.30, 0.58), (0.40, 0.58), (0.45, 0.47), (0.48, 0.43), (0.51, 0.40), (0.54, 0.39), (0.58, 0.39)], 0.50, 0.57, (0.44, 0.555)),
+    "cloud": ([(0.36, 0.78), (0.38, 0.75), (0.40, 0.70), (0.44, 0.65), (0.46, 0.58), (0.48, 0.53), (0.50, 0.49), (0.52, 0.46), (0.54, 0.43), (0.58, 0.42)], 0.50, 0.57, (0.43, 0.56)),
+}
+BOUNDARY, FULL_BELOW, NONE_ABOVE, PIVOT = PROFILES[sys.argv[3] if len(sys.argv) > 3 else "brainy"]
+# FULL_BELOW, NONE_ABOVE: the turn fades out over the shoulder; PIVOT: the
+# shoulder (|x| fraction of half-width, height fraction)
 
 data = bytearray(open(src, "rb").read())
 assert data[:4] == b"glTF"
@@ -74,7 +80,7 @@ for mesh in gltf["meshes"]:
             f = (y - lo[1]) / H
             side = 1 if x > 0 else -1
             w = 0.0
-            if f > 0.28 and abs(x) / half > boundary(f):
+            if f > BOUNDARY[0][0] - 0.02 and abs(x) / half > boundary(f):
                 w = 1.0 - smooth((f - FULL_BELOW) / (NONE_ABOVE - FULL_BELOW))
                 # a soft edge at the boundary itself
                 w *= smooth((abs(x) / half - boundary(f)) / 0.04)

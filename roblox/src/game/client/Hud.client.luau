@@ -581,6 +581,7 @@ do
 	local POWERS = {
 		nutmeg = { power = "bells", used = "BellsUsed", text = "\u{1F514} Jingle Bells", remote = "RingBells", color = Color3.fromRGB(190, 40, 50) },
 		holly = { power = "hedge", used = "HedgeUsed", text = "\u{1F33F} Holly Hedge", remote = "GrowHedge", color = Color3.fromRGB(40, 120, 60) },
+		harmony = { power = "encore", used = "EncoreUsed", text = "\u{1F3B6} Encore", remote = "SingEncore", color = Color3.fromRGB(130, 80, 190) },
 	}
 	local bellsBtn = button(acts, "", { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(190, 40, 50), Visible = false })
 	local function current()
@@ -602,7 +603,7 @@ do
 			bellsBtn.BackgroundColor3 = p.color
 		end
 	end
-	for _, a in ipairs({ "Skill", "Power20", "BellsUsed", "HedgeUsed" }) do
+	for _, a in ipairs({ "Skill", "Power20", "BellsUsed", "HedgeUsed", "EncoreUsed" }) do
 		player:GetAttributeChangedSignal(a):Connect(paintBells)
 	end
 	paintBells()
@@ -1280,12 +1281,26 @@ remotes.OpenKeypad.OnClientEvent:Connect(function()
 	keypad.Visible = true
 end)
 Gamepad.panel(keypad)
+-- 4 Nov (Brent): the code screen closes by itself once you're out of the door,
+-- caught, or the game ends - no Close needed
+for _, a in ipairs({ "Escaped", "Caged" }) do
+	player:GetAttributeChangedSignal(a):Connect(function()
+		if player:GetAttribute(a) then
+			keypad.Visible = false
+		end
+	end)
+end
+RoundState:GetAttributeChangedSignal("Status"):Connect(function()
+	if RoundState:GetAttribute("Status") ~= "playing" then
+		keypad.Visible = false
+	end
+end)
 
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
 local aimCopySlot = nil -- (4 Nov) aiming for Clone's copied noise (slot 1 / 2)
 local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare",
-	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog", holly = "\u{1F36C} Peppermints", clone = "\u{1F465} Copycat" }
+	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog", holly = "\u{1F36C} Peppermints", clone = "\u{1F465} Copycat", harmony = "\u{1F3B5} Lullaby" }
 local KEYS = not TOUCH and UserInputService.KeyboardEnabled -- show the R key on the button
 do
 local function paintSkill()
@@ -2262,7 +2277,7 @@ RunService.RenderStepped:Connect(function(dt)
 		else
 			hum.WalkSpeed = Config.WALK * bonus
 			local dd = Config.DIFFICULTY[RoundState:GetAttribute("Difficulty") or "normal"]
-			stamina = math.min(100, stamina + ((dd and dd.staminaRegen) or Config.STAMINA_REGEN) * (player:GetAttribute("RegenMult") or 1) * dt)
+			stamina = math.min(100, stamina + ((dd and dd.staminaRegen) or Config.STAMINA_REGEN) * (player:GetAttribute("RegenMult") or 1) * (player:GetAttribute("InTune") and Config.HARMONY.tuneRegen or 1) * dt) -- (4 Nov: Harmony's In Tune)
 			if tired and stamina >= 25 then
 				tired = false
 			end
@@ -2280,7 +2295,7 @@ RunService.RenderStepped:Connect(function(dt)
 	elseif player:GetAttribute("Hidden") then
 		-- 3 Nov (Brent): hiding is a rest - stamina refills as when walking
 		local dd = Config.DIFFICULTY[RoundState:GetAttribute("Difficulty") or "normal"]
-		stamina = math.min(100, stamina + ((dd and dd.staminaRegen) or Config.STAMINA_REGEN) * (player:GetAttribute("RegenMult") or 1) * dt)
+		stamina = math.min(100, stamina + ((dd and dd.staminaRegen) or Config.STAMINA_REGEN) * (player:GetAttribute("RegenMult") or 1) * (player:GetAttribute("InTune") and Config.HARMONY.tuneRegen or 1) * dt) -- (4 Nov: Harmony's In Tune)
 		if tired and stamina >= 25 then
 			tired = false
 		end
@@ -2319,7 +2334,7 @@ RunService.RenderStepped:Connect(function(dt)
 		-- while a skill is working: its own countdown; then the recharge countdown
 		local ACTIVE = { shadow = { "SneakUntil", "\u{1F319} Sneaking" }, glow = { "FlareUntil", "\u{2728} Flare" }, bramble = { "VinesUntil", "\u{1F33F} Vines" },
 			echo = { "EchoBurstUntil", "\u{1F3A7} Burst" }, muscle = { "BarricadeUntil", "\u{1F4AA} Barricade" }, brainy = { "ThinkUntil", "\u{1F9E0} Thinking" },
-			nutmeg = { "DashUntil", "\u{1F514} Dashing" }, cloud = { "FogUntil", "\u{2601} Fog" }, holly = { "PeppermintUntil", "\u{1F36C} Peppermints" } }
+			nutmeg = { "DashUntil", "\u{1F514} Dashing" }, cloud = { "FogUntil", "\u{2601} Fog" }, holly = { "PeppermintUntil", "\u{1F36C} Peppermints" }, harmony = { "LullabyUntil", "\u{1F3B5} Lullaby" } }
 		local a = ACTIVE[skill]
 		local active = a and ((player:GetAttribute(a[1]) or 0) - serverNow) or 0
 		local cool = (player:GetAttribute("CoolUntil") or 0) - serverNow

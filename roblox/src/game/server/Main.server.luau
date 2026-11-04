@@ -95,6 +95,7 @@ local UseSkill = remote("UseSkill") -- client -> server: optional position (Echo
 local RingBells = remote("RingBells") -- client -> server: Nutmeg's Jingle Bells (level 20), once a game
 local GrowHedge = remote("GrowHedge") -- client -> server: Holly's Holly Hedge (level 20), once a game
 local UseCopy = remote("UseCopy") -- client -> server: Clone's copied skill (slot 1 / 2, optional position)
+local SingEncore = remote("SingEncore") -- client -> server: Harmony's Encore (level 20), once a game
 local AskClue = remote("AskClue")
 local Say = remote("Say") -- client -> server: phrase index
 local Bubble = remote("Bubble") -- server -> clients: player, phrase index
@@ -324,6 +325,9 @@ local function applyMods(plr)
 	-- Clone (4 Nov): Look-alike's hesitation, Copycat's reach; no copies yet
 	plr:SetAttribute("LookAlike", Config.CLONE_COPY.lookAlike + (m.lookAlike or 0))
 	plr:SetAttribute("CopyReach", Config.CLONE_COPY.reach + (m.copyReach or 0))
+	-- Harmony (4 Nov): how long and how far her Lullaby
+	plr:SetAttribute("LullabyTime", Config.HARMONY.seconds + (m.lullabyTime or 0))
+	plr:SetAttribute("LullabyRange", Config.HARMONY.range + (m.lullabyRange or 0))
 	if skill ~= "clone" then
 		plr:SetAttribute("Copy1", nil)
 		plr:SetAttribute("Copy2", nil)
@@ -2343,6 +2347,103 @@ end
 -- against a wall with a little cloud above, out of everyone's reach. Only Cloud
 -- floats up to one (hold E): a free clue for the team, or points for everyone.
 -- Extras only - never anything the team needs to escape
+-- Harmony's Music Box (4 Nov): one in the room you start in. Only Harmony
+-- hears it (hold E): it plays the whole door code
+function round.placeMusicBox()
+	local myState, myWorld = state, world
+	local s = HouseMap.start and HouseMap.start[1]
+	if not s then
+		return
+	end
+	local room
+	for _, f in ipairs(HouseMap.floors) do
+		if s[1] >= f.x0 and s[1] <= f.x1 and s[2] >= f.y0 and s[2] <= f.y1 then
+			room = f
+		end
+	end
+	if not room then
+		return
+	end
+	local taken = {}
+	for _, o in pairs(world.objects) do
+		if o.def and o.def.x then
+			table.insert(taken, { o.def.x, o.def.y })
+		end
+	end
+	for _, t in ipairs(state.extraTaken or {}) do
+		table.insert(taken, t)
+	end
+	for _, st in ipairs(HouseMap.start) do
+		table.insert(taken, st)
+	end
+	local pool = {}
+	for _, sl in ipairs(HouseMap.floorSlots or {}) do
+		local x, y = sl[1], sl[2]
+		if x >= room.x0 and x <= room.x1 and y >= room.y0 and y <= room.y1 and not nearDoorway(x, y) then
+			local clear = true
+			for _, t in ipairs(taken) do
+				if math.abs(t[1] - x) <= 1 and math.abs(t[2] - y) <= 1 then
+					clear = false
+				end
+			end
+			if clear then
+				table.insert(pool, sl)
+			end
+		end
+	end
+	if #pool == 0 then
+		return
+	end
+	local sl = pool[math.random(1, #pool)]
+	table.insert(state.extraTaken, { sl[1], sl[2] })
+	local at = House.at(sl[1], sl[2], 0)
+	local mdl = Instance.new("Model")
+	mdl.Name = "MusicBox"
+	local function piece(props)
+		local p = Instance.new("Part")
+		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+		p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		p.Material = Enum.Material.SmoothPlastic
+		for k, v in pairs(props) do
+			p[k] = v
+		end
+		p.Parent = mdl
+		return p
+	end
+	local box = piece({ Name = "Box", Size = Vector3.new(2, 1.2, 1.4), Position = at + Vector3.new(0, 0.6, 0), Color = Color3.fromRGB(150, 90, 170), CanCollide = true })
+	piece({ Name = "Lid", Size = Vector3.new(2, 0.2, 1.4), CFrame = CFrame.new(at + Vector3.new(0, 1.55, -0.55)) * CFrame.Angles(math.rad(-70), 0, 0), Color = Color3.fromRGB(120, 70, 140) })
+	piece({ Name = "Dancer", Shape = Enum.PartType.Ball, Size = Vector3.new(0.4, 0.6, 0.4), Position = at + Vector3.new(0, 1.5, 0.1), Color = Color3.fromRGB(255, 220, 120), Material = Enum.Material.Neon })
+	piece({ Name = "Key", Size = Vector3.new(0.15, 0.5, 0.5), Position = at + Vector3.new(1.1, 0.7, 0), Color = Color3.fromRGB(230, 190, 80), Material = Enum.Material.Metal })
+	local note = Instance.new("BillboardGui")
+	note.Size = UDim2.fromOffset(40, 40)
+	note.StudsOffset = Vector3.new(0, 2.6, 0)
+	note.Parent = box
+	local nt = Instance.new("TextLabel")
+	nt.Size = UDim2.fromScale(1, 1)
+	nt.BackgroundTransparency = 1
+	nt.TextScaled = true
+	nt.Text = "\u{1F3B5}"
+	nt.Parent = note
+	mdl.Parent = world.root
+	local pp = Instance.new("ProximityPrompt")
+	pp.ActionText = "Listen"
+	pp.ObjectText = "Music box - Harmony"
+	pp.HoldDuration = Config.HARMONY.listen
+	pp.MaxActivationDistance = 9
+	pp.RequiresLineOfSight = false
+	pp:SetAttribute("Only", "harmony")
+	pp.Parent = box
+	pp.Triggered:Connect(function(plr)
+		if state ~= myState or world ~= myWorld or state.status ~= "playing" or plr:GetAttribute("Skill") ~= "harmony" then
+			return
+		end
+		pp.Enabled = false
+		nt.Text = "\u{1F3B6}"
+		quest(plr, "skill")
+		revealAll(plr, "\u{1F3B5} The music box played the door code for Harmony!")
+	end)
+end
+
 function round.placeCloudSpots()
 	local C = Config.CLOUD
 	local myState, myWorld = state, world
@@ -3861,6 +3962,36 @@ do
 				return "free"
 			end
 			return true
+		elseif skill == "harmony" then
+			-- Lullaby (4 Nov): the host near her walks at half speed for a while
+			local Hm = Config.HARMONY
+			if not (host and host.model and host.root) then
+				say("info", "\u{1F3B5} Save your Lullaby for when the host is out.", nil, plr)
+				return false
+			end
+			if (host.root.Position - hrp.Position).Magnitude > (plr:GetAttribute("LullabyRange") or Hm.range) then
+				say("info", "\u{1F3B5} The host is too far away to hear your Lullaby - sing when he's closer.", nil, plr)
+				return false
+			end
+			local seconds = plr:GetAttribute("LullabyTime") or Hm.seconds
+			host.slowUntil = os.clock() + seconds
+			host.slowMult = Hm.slow
+			if p20 == "crescendo" then
+				host:stun(1) -- Crescendo: a full stop first
+			end
+			plr:SetAttribute("LullabyUntil", workspace:GetServerTimeNow() + seconds)
+			Effects.ring(hrp.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(180, 140, 230), (plr:GetAttribute("LullabyRange") or Hm.range) * 2, 1)
+			-- Chorus (level 10): every friend's recharge 5 s nearer
+			if p10 == "chorus" then
+				local now2 = workspace:GetServerTimeNow()
+				for _, p in ipairs(Players:GetPlayers()) do
+					if p ~= plr and (p:GetAttribute("CoolUntil") or 0) > now2 then
+						p:SetAttribute("CoolUntil", p:GetAttribute("CoolUntil") - Hm.chorus)
+					end
+				end
+			end
+			say("info", "\u{1F3B5} " .. plr.DisplayName .. " sang a Lullaby - the host is sleepy and slow for " .. seconds .. " s!" .. (p10 == "chorus" and " Everyone's skills are 5 s nearer!" or ""))
+			return true
 		end
 		return nil -- not a new button
 	end
@@ -4403,6 +4534,35 @@ task.spawn(function()
 	end
 end)
 
+-- Harmony's In Tune (4 Nov): twice a second, every friend within
+-- Config.HARMONY.tune studs of a Harmony is InTune - their screen refills their
+-- stamina faster
+task.spawn(function()
+	while true do
+		task.wait(0.5)
+		local singers = {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p:GetAttribute("Skill") == "harmony" and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and hrpOf(p) then
+				table.insert(singers, p)
+			end
+		end
+		for _, p in ipairs(Players:GetPlayers()) do
+			local h = hrpOf(p)
+			local tuned = false
+			if h and state.status == "playing" then
+				for _, s in ipairs(singers) do
+					if s ~= p and (hrpOf(s).Position - h.Position).Magnitude <= Config.HARMONY.tune then
+						tuned = true
+					end
+				end
+			end
+			if (p:GetAttribute("InTune") == true) ~= tuned then
+				p:SetAttribute("InTune", tuned)
+			end
+		end
+	end
+end)
+
 -- Nutmeg's Jingle Bells (level 20; 4 Nov, Brent: her choice when, not her first
 -- dash): its own button, once a game - the host freezes for Config.NUTMEG.bells
 -- seconds wherever he is. Not used up while the host isn't out yet
@@ -4615,6 +4775,22 @@ local function runSkill(plr, skill, pos, slot)
 	plr:SetAttribute(coolKey, now + after + cd * coolMult)
 	quest(plr, "skill")
 end
+-- Harmony's Encore (level 20; 4 Nov): its own button, once a game - a lullaby
+-- the whole floor hears: the host walks at half speed for Config.HARMONY.encore s
+SingEncore.OnServerEvent:Connect(function(plr)
+	if plr:GetAttribute("Skill") ~= "harmony" or plr:GetAttribute("Power20") ~= "encore" or plr:GetAttribute("EncoreUsed")
+		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
+		return
+	end
+	if not (host and host.model) then
+		return say("info", "\u{1F3B5} The host isn't out yet - save your Encore for when he is.", nil, plr)
+	end
+	plr:SetAttribute("EncoreUsed", true)
+	host.slowUntil = os.clock() + Config.HARMONY.encore
+	host.slowMult = Config.HARMONY.slow
+	say("info", "\u{1F3B6} Encore! " .. plr.DisplayName .. "'s song fills the whole floor - the host is slow for " .. Config.HARMONY.encore .. " s!")
+end)
+
 UseSkill.OnServerEvent:Connect(function(plr, pos)
 	runSkill(plr, plr:GetAttribute("Skill"), pos)
 end)
@@ -5053,6 +5229,7 @@ function round.start()
 			p:SetAttribute("BellsUsed", false)
 			p:SetAttribute("HedgeUsed", false) -- Holly's Holly Hedge too
 			p:SetAttribute("PocketsGiven", false) -- and Holly's Peppermint Pockets
+			p:SetAttribute("EncoreUsed", false) -- and Harmony's Encore
 		end
 	end
 	towerCarry = nil
@@ -5166,6 +5343,7 @@ function round.start()
 	end
 	round.placeCandyCorn()
 	round.placeCloudSpots() -- Cloud's high shelves (4 Nov)
+	round.placeMusicBox() -- Harmony's music box (4 Nov)
 	round.placeTurkeys()
 	round.placePlushie()
 	RoundState:SetAttribute("Blackout", "")
