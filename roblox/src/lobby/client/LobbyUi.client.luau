@@ -2651,6 +2651,9 @@ local function showModel(sk)
 		if Config.PROPELLER and Config.PROPELLER[modelName] then
 			pcall(require(ReplicatedStorage.Shared.Propeller).add, shown, Config.PROPELLER_LIFT)
 		end
+		if Config.ANTENNA and Config.ANTENNA[modelName] then
+			pcall(require(ReplicatedStorage.Shared.Propeller).antenna, shown, Config.ANTENNA[modelName])
+		end
 		pcall(require(ReplicatedStorage.Shared.PreviewPose), shown, sk.id, modelName) -- the character's own idle
 		shownFor = modelName
 		noModel.Visible = false

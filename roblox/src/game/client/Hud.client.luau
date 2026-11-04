@@ -993,6 +993,9 @@ local function showChar()
 		if Config.PROPELLER and Config.PROPELLER[src.Name] then
 			pcall(require(ReplicatedStorage.Shared.Propeller).add, shown, Config.PROPELLER_LIFT)
 		end
+		if Config.ANTENNA and Config.ANTENNA[src.Name] then
+			pcall(require(ReplicatedStorage.Shared.Propeller).antenna, shown, Config.ANTENNA[src.Name])
+		end
 		do
 			-- shoulders to feet (a hood or a big head is left out, so a skin is
 			-- the same size as its plain character), as a whole height

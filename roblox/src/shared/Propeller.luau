@@ -43,7 +43,9 @@ function Propeller.add(model, lift)
 	-- whole model, above its middle, facing the way the model faces. A toon's
 	-- Head part from Avatar Setup isn't where the head is drawn (Brent's photo:
 	-- the propeller by Brainy's shins); it still rides on the Head (welded).
-	local box, size = model:GetBoundingBox()
+	-- 4 Nov: the parts you can see (the whole box holds Avatar Setup's
+	-- invisible helpers far above the head - the propeller went off-screen)
+	local box, size = require(script.Parent.ModelBounds)(model)
 	local s = math.clamp(size.X * 0.3, 0.6, 2.5) -- "a head width": about a third of the A-pose width
 	if model:FindFirstChild("HumanoidRootPart") == nil then
 		s = math.max(head.Size.X, head.Size.Z)
@@ -77,6 +79,33 @@ function Propeller.add(model, lift)
 	local other = part(holder, { Name = "Blade2", Color = BLUE, Size = bladeSize, CFrame = hub.CFrame * CFrame.new(-0.3 * s, 0, 0) * CFrame.Angles(math.rad(-12), 0, 0) })
 	weld(blade, other)
 	CollectionService:AddTag(spin, TAG)
+	return holder
+end
+
+-- 4 Nov (Brent): Glow's headband antenna - a thin stem leaning out from the
+-- top of her head with a round bobble (Stable Fast 3D lost it, like the
+-- propeller). spec: Config.ANTENNA[model name] = { stem = Color3, ball = Color3 }
+function Propeller.antenna(model, spec)
+	local head = model:FindFirstChild("Head")
+	if not head or not head:IsA("BasePart") or model:FindFirstChild("Antenna") then
+		return
+	end
+	local box, size = require(script.Parent.ModelBounds)(model)
+	local s = math.clamp(size.X * 0.3, 0.6, 2.5)
+	local holder = Instance.new("Model")
+	holder.Name = "Antenna"
+	holder.Parent = model
+	local rot = model:GetPivot().Rotation
+	-- from the top of the hair, a little to one side, leaning out
+	local base = CFrame.new(box.Position + Vector3.new(0, size.Y / 2 - 0.12 * s, 0)) * rot * CFrame.new(0.14 * s, 0, 0) * CFrame.Angles(0, 0, math.rad(-18))
+	local len = 0.42 * s
+	local stem = part(holder, { Name = "Stem", Shape = Enum.PartType.Cylinder, Color = spec.stem or Color3.fromRGB(90, 190, 70),
+		Size = Vector3.new(len, 0.05 * s, 0.05 * s), CFrame = base * CFrame.new(0, len / 2, 0) * CFrame.Angles(0, 0, math.rad(90)) })
+	weld(head, stem)
+	local ball = part(holder, { Name = "Bobble", Shape = Enum.PartType.Ball, Color = spec.ball or Color3.fromRGB(255, 230, 90),
+		Material = spec.glow and Enum.Material.Neon or Enum.Material.SmoothPlastic,
+		Size = Vector3.new(0.2, 0.2, 0.2) * s, CFrame = base * CFrame.new(0, len + 0.06 * s, 0) })
+	weld(head, ball)
 	return holder
 end
 

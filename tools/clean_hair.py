@@ -35,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from paint_toon import raster  # noqa: E402
 
 PROJECT = Path(__file__).resolve().parent.parent
+INPUT = PROJECT / "art" / "model-input"
 MODELS = PROJECT / "art" / "models"
 
 
@@ -65,7 +66,23 @@ def pinkish(c):
 # per character: the hair color test, what is wrong on the hair, whether the
 # top of the head is cleaned too (Holly's bows - not Clone's goggles, which sit
 # on top at the front), and whether long hair hangs behind the body
+def brown_hair(c):
+    r, g, b = c[:, 0], c[:, 1], c[:, 2]
+    return (r > 60) & (r < 170) & (g < 0.7 * r) & (b < 0.55 * r)
+
+
+def yellowish(c):
+    r, g, b = c[:, 0], c[:, 1], c[:, 2]
+    return (r > 170) & (g > 0.7 * r) & (b < 0.6 * g)
+
+
 PROFILES = {
+    # 4 Nov (Brent: Gridiron Muscle's chest missing its jersey): the neckline
+    # came out deep as skin; and his headband's yellow on the back of his hair
+    # (his headband goes all the way round, knotted at the back: the yellow
+    # there is right - nothing on the head is repainted)
+    "gridiron-muscle": {"hair": brown_hair, "bad": lambda c: np.zeros(len(c), bool), "head_bad": None, "top": False, "ends": False,
+                        "head": 0.2, "chest": True},
     # 4 Nov: the sweater's stripes on her hair ends, the bows smeared round
     "holly": {"hair": yellow_hair, "bad": lambda c: red_or_green(c), "head_bad": pinkish, "top": True, "ends": True},
     # 4 Nov (Brent): the goggles' orange on the top and back of his hair
@@ -184,6 +201,39 @@ def clean(name):
         if bad.any():
             tex[pts[bad, 1], pts[bad, 0]] = hair.astype(np.uint8)
             changed += int(bad.sum())
+    # the chest: skin where the front picture shows the shirt -> the shirt's color
+    if prof.get("chest"):
+        from paint_toon import outline
+        pic = np.asarray(Image.open(INPUT / name / "front-toon.png").convert("RGB")).astype(np.float32)
+        _, (bx0, bx1, by0, by1) = outline(pic)
+        fixed = 0
+        band = (fn[:, 2] > 0.2) & (fy > 0.55) & (fy < 0.75)
+        # the model's own shirt color there (the picture's is a shade darker:
+        # its color would show as a patch)
+        own = []
+        for f in np.nonzero(band)[0]:
+            pts, _ = raster(uvpx[F[f]], TW, TH)
+            if pts is not None and len(pts):
+                c = tex[pts[:, 1], pts[:, 0]].astype(np.float32)
+                own.append(c[(c[:, 0] < 150) & (c[:, 1] < 0.7 * c[:, 0]) & (c.sum(axis=1) < 280)])
+        shirt_col = np.median(np.concatenate(own), axis=0).astype(np.uint8)
+        for f in np.nonzero(band)[0]:
+            pts, bc = raster(uvpx[F[f]], TW, TH)
+            if pts is None or len(pts) == 0:
+                continue
+            p3 = bc @ V[F[f]]
+            # painted models face +Z: seen from the front, +X is on the picture's right
+            ix = np.clip((bx0 + (p3[:, 0] - lo[0]) / size[0] * (bx1 - bx0)).astype(int), 0, pic.shape[1] - 1)
+            iy = np.clip((by0 + (hi[1] - p3[:, 1]) / size[1] * (by1 - by0)).astype(int), 0, pic.shape[0] - 1)
+            want = pic[iy, ix]
+            have = tex[pts[:, 1], pts[:, 0]].astype(np.float32)
+            skin = (have[:, 0] > 170) & (have[:, 1] > 0.5 * have[:, 0])
+            shirt = (want[:, 0] < 140) & (want[:, 1] < 0.65 * want[:, 0] + 10) & (want.sum(axis=1) < 260)
+            go = skin & shirt
+            if go.any():
+                tex[pts[go, 1], pts[go, 0]] = shirt_col
+                fixed += int(go.sum())
+        print(f"{name}: chest - {fixed} texels of skin where the picture shows the shirt -> {shirt_col.tolist()}")
     buf = io.BytesIO()
     Image.fromarray(tex).save(buf, format="PNG")
     swap_image(before, buf.getvalue(), glb)

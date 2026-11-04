@@ -60,6 +60,13 @@ Config.VOTE_WINDOW = 30
 -- (the old Brainy has none either - 10 Oct photo; Space Cadet Brainy gets his once switched over)
 Config.PROPELLER = { Brainy = true, BrainyToon = true, BrainySpaceToon = true }
 Config.PROPELLER_LIFT = 0
+-- Glow's headband antenna, built from parts on these models (4 Nov, Brent:
+-- Stable Fast 3D lost it) - each in its outfit's colors (shared/Propeller)
+Config.ANTENNA = {
+	Glow = { stem = Color3.fromRGB(110, 200, 70), ball = Color3.fromRGB(255, 232, 90), glow = true },
+	GlowCandy = { stem = Color3.fromRGB(240, 120, 170), ball = Color3.fromRGB(255, 205, 225) },
+	GlowHarvest = { stem = Color3.fromRGB(120, 72, 40), ball = Color3.fromRGB(250, 140, 40), glow = true },
+}
 -- crisp toon faces from the approved pictures (Faces.luau, tools/make_face.py):
 -- id = the uploaded art/faces/<name>-face.png (0 = not uploaded yet). The
 -- toon and the name it gets at its switch-over share the entry.
