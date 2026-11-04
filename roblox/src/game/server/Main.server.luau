@@ -2381,21 +2381,26 @@ end
 -- against a wall with a little cloud above, out of everyone's reach. Only Cloud
 -- floats up to one (hold E): a free clue for the team, or points for everyone.
 -- Extras only - never anything the team needs to escape
--- Harmony's Music Box (4 Nov): one in the room you start in. Only Harmony
--- hears it (hold E): it plays the whole door code
+-- Harmony's Music Box (4 Nov): one behind the first locked door (a zone-2
+-- room, like Brainy's invitation and Glow's paint - Brent: in the start room
+-- it gave the whole code in the first seconds). Only Harmony hears it
+-- (hold E): it plays the door code
 function round.placeMusicBox()
 	local myState, myWorld = state, world
 	local s = HouseMap.start and HouseMap.start[1]
 	if not s then
 		return
 	end
-	local room
+	local rooms, startRoom = {}, nil
 	for _, f in ipairs(HouseMap.floors) do
 		if s[1] >= f.x0 and s[1] <= f.x1 and s[2] >= f.y0 and s[2] <= f.y1 then
-			room = f
+			startRoom = f
+		end
+		if f.zone == 2 then
+			table.insert(rooms, f)
 		end
 	end
-	if not room then
+	if not startRoom and #rooms == 0 then
 		return
 	end
 	local taken = {}
@@ -2410,25 +2415,36 @@ function round.placeMusicBox()
 	for _, st in ipairs(HouseMap.start) do
 		table.insert(taken, st)
 	end
-	local pool = {}
-	for _, sl in ipairs(HouseMap.floorSlots or {}) do
-		local x, y = sl[1], sl[2]
-		if x >= room.x0 and x <= room.x1 and y >= room.y0 and y <= room.y1 and not nearDoorway(x, y) then
-			local clear = true
-			for _, t in ipairs(taken) do
-				if math.abs(t[1] - x) <= 1 and math.abs(t[2] - y) <= 1 then
-					clear = false
+	local function poolIn(list)
+		local pool = {}
+		for _, sl in ipairs(HouseMap.floorSlots or {}) do
+			local x, y = sl[1], sl[2]
+			for _, room in ipairs(list) do
+				if x >= room.x0 and x <= room.x1 and y >= room.y0 and y <= room.y1 and not nearDoorway(x, y) then
+					local clear = true
+					for _, t in ipairs(taken) do
+						if math.abs(t[1] - x) <= 1 and math.abs(t[2] - y) <= 1 then
+							clear = false
+						end
+					end
+					if clear then
+						table.insert(pool, { sl, room })
+					end
 				end
 			end
-			if clear then
-				table.insert(pool, sl)
-			end
 		end
+		return pool
+	end
+	local pool = poolIn(rooms)
+	if #pool == 0 and startRoom then
+		pool = poolIn({ startRoom }) -- (a floor with no room behind its first lock)
 	end
 	if #pool == 0 then
 		return
 	end
-	local sl = pool[math.random(1, #pool)]
+	local pick = pool[math.random(1, #pool)]
+	local sl = pick[1]
+	RoundState:SetAttribute("MusicBoxRoom", pick[2].name)
 	table.insert(state.extraTaken, { sl[1], sl[2] })
 	local at = House.at(sl[1], sl[2], 0)
 	local mdl = Instance.new("Model")
@@ -4141,7 +4157,9 @@ do
 			plr:SetAttribute("TeamBurstUntil", workspace:GetServerTimeNow() + (plr:GetAttribute("BurstTime") or Config.ECHO_BURST.seconds))
 			plr:SetAttribute("EchoBurstUntil", plr:GetAttribute("TeamBurstUntil"))
 			if p10 == "echomap" then
-				say("hostmap", "\u{1F3A7} You can hear exactly where the host is!", { seconds = 5 }, plr)
+				-- 4 Nov (Brent): the whole team sees the host (Echo already
+				-- sees him near with Sharp Ears)
+				say("hostmap", "\u{1F3A7} Echo Map: " .. plr.DisplayName .. " hears exactly where the host is - look!", { seconds = 5 })
 			end
 			if p20 == "soundwave" and typeof(pos) == "Vector3" and host and host.root and (host.root.Position - pos).Magnitude < 12 then
 				round:skillStun(1, "\u{1F4A5} Sound Wave! The host is stunned by the noise.")

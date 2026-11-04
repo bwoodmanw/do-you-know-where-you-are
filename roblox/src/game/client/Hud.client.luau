@@ -1030,6 +1030,9 @@ local function showChar()
 	local extra = {}
 	local where = { brainy = "invite", glow = "uv", bramble = "plant" }
 	local room = where[sk.id] and roomOf(where[sk.id])
+	if sk.id == "harmony" then
+		room = RoundState:GetAttribute("MusicBoxRoom") -- (set when the floor is made)
+	end
 	if room then
 		for i, part in ipairs(si.parts or {}) do
 			if part.kind == "hold" then
@@ -2421,6 +2424,24 @@ RunService.RenderStepped:Connect(function(dt)
 			s.RollOffMaxDistance = 60
 			s.Parent = head
 			s:Play()
+		end
+	end
+	-- 4 Nov (Brent): Echo's Sharp Ears - with the host within ECHO_EARS
+	-- studs, Echo sees his outline through walls (only Echo: made here)
+	do
+		local ears = host and host.PrimaryPart and player:GetAttribute("Skill") == "echo" and not player:GetAttribute("Escaped")
+			and (host.PrimaryPart.Position - hrp.Position).Magnitude <= (Config.ECHO_EARS or 30)
+		local hl = host and host:FindFirstChild("SharpEars")
+		if ears and not hl then
+			hl = Instance.new("Highlight")
+			hl.Name = "SharpEars"
+			hl.FillTransparency = 0.85
+			hl.FillColor = Color3.fromRGB(190, 140, 255)
+			hl.OutlineColor = Color3.fromRGB(220, 190, 255)
+			hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+			hl.Parent = host
+		elseif hl and not ears then
+			hl:Destroy()
 		end
 	end
 	local level = 0

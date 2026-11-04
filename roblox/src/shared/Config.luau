@@ -396,6 +396,8 @@ Config.GLOW_FLARE = { seconds = 8, mult = 2.2, range = 16, stamina = 30, speed =
 	beacon = { stamina = 50, speed = 1.05, speedTime = 8 } }
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
+-- Echo's Sharp Ears (4 Nov): within this many studs Echo sees the host through walls
+Config.ECHO_EARS = 30
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
 Config.AMBIENT = {
 	hum = 9112812234, -- Landing Craft Interior, Constant Hum (boilers, generators)
@@ -449,11 +451,11 @@ Config.SKILL_INFO = {
 		{ kind = "press", name = "Shield", text = "Gives the nearest friend without one a Party Shield (it lasts until a grab). If nobody near needs one, Patch shields herself for 30 seconds." },
 	} },
 	echo = { parts = {
-		{ kind = "passive", name = "Sharp Ears", text = "Hears the host coming from further away." },
+		{ kind = "passive", name = "Sharp Ears", text = "Hears the host's footsteps: when he is close, Echo sees him through the walls." },
 		{ kind = "press", name = "Noise", text = "Tap where to throw a noise - the host goes to look there, and Echo runs 5% faster for 3 seconds." },
 	} },
 	harmony = { parts = {
-		{ kind = "hold", name = "Music Box", text = "The music box in the room you start in plays the door code - only Harmony hears it." },
+		{ kind = "hold", name = "Music Box", text = "The music box behind the first locked door plays the door code - only Harmony hears it." },
 		{ kind = "passive", name = "In Tune", text = "Friends near her get their stamina back faster." },
 		{ kind = "press", name = "Lullaby", text = "The host near her walks at half speed for 6 seconds." },
 	} },
@@ -683,6 +685,7 @@ Config.CHARACTER_ASSETS = {
 	Nutmeg = 119497536712339, -- 4 Nov: Nutmeg, the Christmas reindeer (checked on Roblox: Model, Brent's upload)
 	Cloud = 85591900941622, -- 4 Nov: Cloud, the arms-out toon (checked on Roblox: Model, Brent's upload)
 	Holly = 72564808468304, -- 4 Nov: Holly, hair cleaned (checked on Roblox: Model 'Holly', Brent's upload)
+	Clone = 117482183355972, -- 4 Nov: Clone, hair cleaned (checked on Roblox: Model 'Clone', Brent's upload)
 	ShadowGobble = 82744663331421, -- 3 Nov
 	GlowHarvest = 132385404072757, -- 3 Nov
 	TinkerScarecrow = 115702745306476, -- 3 Nov

@@ -494,7 +494,7 @@ local SPECIAL = {
 		},
 		[10] = {
 			{ id = "double10", name = "Double Throw", say = "Throw two noises before Noise recharges", mods = { p10 = "double" } },
-			{ id = "echomap10", name = "Echo Map", say = "After a noise you see the host through walls for 5 s", mods = { p10 = "echomap" } },
+			{ id = "echomap10", name = "Echo Map", say = "After a noise the whole team sees the host through walls for 5 s", mods = { p10 = "echomap" } },
 		},
 		[11] = {
 			{ id = "burst11", name = "Bigger Burst", say = "Your burst: 3% faster and 1 s longer", mods = { burstMult = 0.03, burstTime = 1 } },
