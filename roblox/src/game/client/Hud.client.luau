@@ -1060,7 +1060,7 @@ local function showChar()
 	-- 3 Nov: a character you unlock (Nutmeg) shows a lock until it's yours
 	local locked = Config.CHARACTER_UNLOCK[sk.id] ~= nil and not table.find(string.split(player:GetAttribute("Unlocked") or "", ","), sk.id)
 	local early = sk.release and os.time() < sk.release -- (Nutmeg arrives 1 Dec)
-	chooseBtn.Text = mine and ("\u{2705} You are " .. sk.name) or (locked and early) and ("\u{1F512} " .. sk.name .. " arrives Dec 1") or locked and ("\u{1F512} Get " .. sk.name .. " in the Lobby Shop") or ("Choose " .. sk.name)
+	chooseBtn.Text = mine and ("\u{2705} You are " .. sk.name) or (locked and early) and ("\u{1F512} " .. sk.name .. " arrives Dec 1") or locked and (Config.CHARACTER_UNLOCK[sk.id].escapes and ("\u{1F512} Escape " .. Config.CHARACTER_UNLOCK[sk.id].escapes .. " times (" .. math.min(data and data.stats and data.stats.escapes or 0, Config.CHARACTER_UNLOCK[sk.id].escapes) .. " so far) or get " .. sk.name .. " in the Shop") or ("\u{1F512} Get " .. sk.name .. " in the Lobby Shop")) or ("Choose " .. sk.name)
 	chooseBtn.BackgroundColor3 = mine and Color3.fromRGB(47, 107, 58) or locked and Color3.fromRGB(90, 80, 105) or PUMP
 end
 player:GetAttributeChangedSignal("Unlocked"):Connect(function()

@@ -1076,7 +1076,7 @@ do
 			Profile.save(plr)
 			paintUnlocked(plr)
 			CornBought:FireClient(plr, "\u{1F389}", name, 1, u.price, true, e.id)
-			return Notice:FireClient(plr, "\u{1F389} " .. name .. " is yours - pick her in your next game!")
+			return Notice:FireClient(plr, "\u{1F389} " .. name .. " is yours - pick " .. name .. " in your next game!")
 		end
 		-- a season skin: its price on hand, spent, and it is yours for good
 		for _, skin in ipairs(Config.SKINS or {}) do
@@ -1222,7 +1222,7 @@ do
 			paintUnlocked(to)
 			Notice:FireClient(plr, "\u{1F381} Gave " .. to.DisplayName .. " " .. name .. ".")
 			if to ~= plr then
-				Notice:FireClient(to, "\u{1F381} A gift from " .. plr.DisplayName .. ": " .. name .. "! Pick her in your next game.")
+				Notice:FireClient(to, "\u{1F381} A gift from " .. plr.DisplayName .. ": " .. name .. "! Pick " .. name .. " in your next game.")
 			end
 			return
 		end
@@ -1776,7 +1776,8 @@ MarketplaceService.PromptGamePassPurchaseFinished:Connect(function(plr, passId, 
 			if (u.pass or 0) > 0 and u.pass == passId then
 				Unlocks.passBought(plr, passId)
 				paintUnlocked(plr)
-				Notice:FireClient(plr, "\u{1F389} " .. string.upper(string.sub(cid, 1, 1)) .. string.sub(cid, 2) .. " is yours - pick her in your next game!")
+				local cname = string.upper(string.sub(cid, 1, 1)) .. string.sub(cid, 2)
+				Notice:FireClient(plr, "\u{1F389} " .. cname .. " is yours - pick " .. cname .. " in your next game!")
 			end
 		end
 		for _, skin in ipairs(Config.SKINS or {}) do

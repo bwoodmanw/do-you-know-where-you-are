@@ -702,6 +702,19 @@ local function checkEnd()
 			if out then
 				pd.stats.escapes += 1
 				row.firstEscape = pd.stats.escapes == 1
+				-- 4 Nov: a character earned by escaping (Cloud at 10, ...)
+				for cid, cu in pairs(Config.CHARACTER_UNLOCK) do
+					if cu.escapes == pd.stats.escapes and not (pd.charsEarned and pd.charsEarned[cid]) then
+						local cname = string.upper(string.sub(cid, 1, 1)) .. string.sub(cid, 2)
+						local unlockedNow = plr:GetAttribute("Unlocked") or ""
+						if not table.find(string.split(unlockedNow, ","), cid) then
+							plr:SetAttribute("Unlocked", unlockedNow == "" and cid or (unlockedNow .. "," .. cid))
+						end
+						task.delay(3, function()
+							say("info", "\u{1F389} " .. cname .. " unlocked - " .. plr.DisplayName .. " escaped " .. cu.escapes .. " times! Pick " .. cname .. " in your next game.", nil, plr)
+						end)
+					end
+				end
 				local key = mapId .. "_" .. state.diff
 				if not towerRun and (not pd.best[key] or seconds < pd.best[key]) then
 					pd.best[key] = seconds
@@ -4434,7 +4447,9 @@ PickSkill.OnServerEvent:Connect(function(plr, id)
 			if not Unlocks.owns(plr, id) then
 				local u = Config.CHARACTER_UNLOCK[id]
 				local e = u and Seasons.get(u.season)
-				return say("info", s.icon .. " " .. s.name .. " is a " .. (e and e.look or "special") .. " character - get her in the Lobby's Shop" .. (e and (" for " .. u.price .. " " .. e.many) or "") .. ".", nil, plr)
+				local pd = Profile.get(plr)
+				local how = Unlocks.howText(id, pd and pd.stats)
+				return say("info", "\u{1F512} " .. s.name .. " is locked - " .. (how and (how .. ", or ") or "") .. "get " .. s.name .. " in the Lobby's Shop" .. (e and (" (" .. u.price .. " " .. e.many .. " while it's open)") or "") .. ".", nil, plr)
 			end
 			plr:SetAttribute("Skill", id)
 			applyMods(plr)

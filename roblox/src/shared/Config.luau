@@ -375,9 +375,16 @@ Config.CLOUD = { fog = 8, radius = 5, throw = 60, stormStop = 3, stormStamina = 
 Config.NUTMEG = { nose = 20, dash = 2, -- dash: 4 Nov (Brent) +0.5 s (was 1.5)
 	 dashMult = 2, pull = 12, jingleRange = 20, jingleStun = 2, bells = 7, snowSense = 5 }
 -- characters you unlock (3 Nov): earned with a season's item in its shop
--- (`price` of it), or a Game Pass (`pass`, 0 = not on sale yet; 399 Robux)
+-- (`price` of it), by escaping `escapes` times in all (4 Nov), or a Game
+-- Pass (`pass`, 0 = not on sale yet). The original 8 are free for everyone;
+-- the owner can gift any of these (the Lobby's Gift panel).
 Config.CHARACTER_UNLOCK = {
 	nutmeg = { season = "christmas", price = 400, pass = 2069971851 }, -- pass checked on Roblox 4 Nov: "Nutmeg", 399 Robux, for sale
+	-- 4 Nov (Brent): earned by playing, or a 149 Robux Game Pass (ids to come)
+	cloud = { escapes = 10, pass = 0 },
+	clone = { escapes = 25, pass = 0 },
+	harmony = { escapes = 40, pass = 0 },
+	holly = { season = "christmas", price = 150, escapes = 50, pass = 0 },
 }
 -- skills version 2 (SKILLS_V2.md): every character has a button
 Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise

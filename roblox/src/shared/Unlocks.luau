@@ -35,6 +35,10 @@ function Unlocks.owns(plr, id)
 	if d and d.charsEarned and d.charsEarned[id] then
 		return true
 	end
+	-- 4 Nov: earned by escaping (Cloud, Clone, Harmony, Holly)
+	if u.escapes and d and d.stats and (d.stats.escapes or 0) >= u.escapes then
+		return true
+	end
 	if (u.pass or 0) <= 0 then
 		return false
 	end
@@ -54,6 +58,16 @@ end
 -- a pass just bought (PromptGamePassPurchaseFinished): owned from now on
 function Unlocks.passBought(plr, passId)
 	passCache[plr.UserId .. ":" .. passId] = true
+end
+
+-- how a locked character is earned, in words ("escape 10 times - 6 so far")
+function Unlocks.howText(id, stats)
+	local u = Config.CHARACTER_UNLOCK[id]
+	if not u or not u.escapes then
+		return nil
+	end
+	local have = math.min((stats and stats.escapes) or 0, u.escapes)
+	return "escape " .. u.escapes .. " times (" .. have .. " so far)"
 end
 
 -- every unlockable character's id -> owned, for the player's screens

@@ -2015,7 +2015,7 @@ do
 		local early = sk.release and os.time() < sk.release
 		local r = row(skinList, order, Config.PORTRAITS and Config.PORTRAITS[sk.id], sk.icon, sk.name, early and (sk.name .. " arrives Dec 1 - " .. sk.say) or ((e and (e.look .. " character - ") or "") .. sk.say))
 		previewTap(r, sk.name, sk.id, sk.name)
-		local c = { id = sk.id, status = label(r, { Size = UDim2.fromOffset(120, 40), Position = UDim2.fromOffset(318, 12), Text = "", ZIndex = 12 }) }
+		local c = { id = sk.id, status = label(r, { Size = UDim2.fromOffset(120, 40), Position = UDim2.fromOffset(318, 12), Text = "", TextWrapped = true, ZIndex = 12 }) }
 		local x = 446
 		if open then
 			c.season = seasonPrice(r, x, 100, e, u.price, function()
@@ -2182,7 +2182,10 @@ do
 		end
 		for _, c in ipairs(charRows) do
 			local owned = table.find(string.split(player:GetAttribute("Unlocked") or "", ","), c.id) ~= nil
-			c.status.Text = owned and "\u{2705} Owned" or ""
+			-- 4 Nov: earned by escaping - how far along ("\u{1F3C3} 6/10 escapes")
+			local cu = Config.CHARACTER_UNLOCK[c.id]
+			local esc = cu and cu.escapes and ("\u{1F3C3} " .. math.min((profile.stats and profile.stats.escapes) or 0, cu.escapes) .. "/" .. cu.escapes .. " escapes") or ""
+			c.status.Text = owned and "\u{2705} Owned" or esc
 			if c.season then
 				c.season.Visible = not owned
 			end
