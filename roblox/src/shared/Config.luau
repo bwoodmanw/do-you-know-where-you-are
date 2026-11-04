@@ -596,6 +596,7 @@ Config.CHARACTER_ASSETS = {
 	PatchPie = 139357223306899,
 	BrainyChef = 82544604458512, -- 2 Nov: the arms-out toon (chef-brainy-arms-toon-x5.glb)
 	BrambleAcorn = 135841043095619, -- 2 Nov
+	Nutmeg = 119497536712339, -- 4 Nov: Nutmeg, the Christmas reindeer (checked on Roblox: Model, Brent's upload)
 	ShadowGobble = 82744663331421, -- 3 Nov
 	GlowHarvest = 132385404072757, -- 3 Nov
 	TinkerScarecrow = 115702745306476, -- 3 Nov
@@ -658,6 +659,7 @@ Config.PORTRAITS = {
 	glow = 74862458851440,
 	echo = 78989824967295,
 	bramble = 127007527181153,
+	nutmeg = 114076866248414, -- 4 Nov (art/roblox-store/portraits/Nutmeg-512.png)
 	brainy = 123589958200522,
 }
 -- the same portraits uploaded for the Party House place
@@ -669,6 +671,7 @@ Config.PORTRAITS_GAME = {
 	glow = 100607581544171,
 	echo = 73829813302256,
 	bramble = 79169071934599,
+	nutmeg = 114076866248414, -- 4 Nov: the same upload serves both places
 	brainy = 96437377458580,
 }
 -- daily login rewards: day 1-7 of an unbroken streak (then round again);
@@ -884,12 +887,15 @@ Config.SKINS_FREE_FOR_OWNER = true
 -- (CHARACTER_UNLOCK); everyone else's are free as before
 Config.STUDIO_NEW_CHARACTERS = true
 Config.NEW_SKILLS = {
-	{ id = "nutmeg", name = "Nutmeg", icon = "\u{1F514}", say = "Sniffs out keys", color = Color3.fromRGB(196, 120, 60), unlock = true },
+	-- release: when she appears in the live game (1 Dec 2026, midnight US
+	-- Eastern = 05:00 UTC, as the Christmas shop opens); a server already
+	-- running then shows her once it restarts
+	{ id = "nutmeg", name = "Nutmeg", icon = "\u{1F514}", say = "Sniffs out keys", color = Color3.fromRGB(196, 120, 60), unlock = true, release = 1796101200 },
 }
 do
 	local studio = game:GetService("RunService"):IsStudio()
 	for _, sk in ipairs(Config.NEW_SKILLS) do
-		if (Config.CHARACTER_ASSETS[sk.name] or 0) > 0 or (studio and Config.STUDIO_NEW_CHARACTERS) then
+		if ((Config.CHARACTER_ASSETS[sk.name] or 0) > 0 and os.time() >= (sk.release or 0)) or (studio and Config.STUDIO_NEW_CHARACTERS) then
 			table.insert(Config.SKILLS, sk)
 		end
 	end
