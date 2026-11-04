@@ -121,7 +121,7 @@ Config.ANIM = {
 		levitation = { idle = 616006778, idle2 = 616008087, walk = 616013216, run = 616010382, jump = 616008936, fall = 616005863, climb = 616003713 },
 	},
 	-- the kids (their skins use the same pack unless listed under model)
-	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy", nutmeg = "bubbly" },
+	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy", nutmeg = "bubbly", cloud = "levitation" },
 	model = { MuscleMummy = "zombie" }, -- (a "...Toon" test model walks like its character)
 	-- models saved in a T-pose whose pack idle swings the arms behind the back
 	-- (Echo, 9 Oct): they keep the pack's walk and run but stand in Roblox's
@@ -325,7 +325,18 @@ Config.SKILLS = {
 -- seconds Patch's shield on herself lasts (shields she gives friends last
 -- until a grab) - 10 Oct, Brent: a solo Patch was shielded all the time
 Config.SELF_SHIELD = 30
-Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30, nutmeg = 25 }
+Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30, nutmeg = 25, cloud = 35 }
+-- Cloud (4 Nov, NEW_CHARACTERS.md). Fog: a cloud `radius` studs round for `fog`
+-- seconds - anyone inside is hidden from the host's eyes (it loses track, as at
+-- a hiding spot). Storm Cloud (level 20): thrown up to `throw` studs where you
+-- tap; a host it covers stops `stormStop` s (once a fog); friends within
+-- `stormNear` of her get `stormStamina`% stamina and run `stormSpeed` times as
+-- fast for `stormSpeedTime` s. Silver Lining (10): friends leaving her fog run
+-- `liningSpeed` for `liningTime` s. Float Up: `spots` high shelves a floor with
+-- a cloud mark - only Cloud reaches them (hold `floatHold` s): a free clue, or
+-- `spotPoints` points for everyone
+Config.CLOUD = { fog = 8, radius = 5, throw = 60, stormStop = 3, stormStamina = 25, stormSpeed = 1.1, stormSpeedTime = 5, stormNear = 16,
+	liningSpeed = 1.05, liningTime = 3, spots = 2, floatHold = 1.5, spotPoints = 10 }
 -- Nutmeg, the Christmas reindeer (3 Nov, NEW_CHARACTERS.md): Good Nose shows
 -- drawers and boxes holding a key or a Confetti Cannon within `nose` studs (her
 -- screen only); Sleigh Dash runs `dashMult` times as fast for `dash` seconds and
@@ -336,7 +347,7 @@ Config.NUTMEG = { nose = 20, dash = 1.5, dashMult = 2, pull = 12, jingleRange = 
 -- characters you unlock (3 Nov): earned with a season's item in its shop
 -- (`price` of it), or a Game Pass (`pass`, 0 = not on sale yet; 399 Robux)
 Config.CHARACTER_UNLOCK = {
-	nutmeg = { season = "christmas", price = 400, pass = 0 },
+	nutmeg = { season = "christmas", price = 400, pass = 2069971851 }, -- pass checked on Roblox 4 Nov: "Nutmeg", 399 Robux, for sale
 }
 -- skills version 2 (SKILLS_V2.md): every character has a button
 Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise
@@ -391,6 +402,7 @@ Config.SKILL_INFO = {
 	glow = { about = "Carries a glowing light that brightens dark rooms, and lights up secret paint that shows the door code.\nFlare: for 8 seconds her light reaches more than twice as far, and she and every friend who comes near her get 30% of their stamina back and run 5% faster for 6 seconds.", how = "Press E at the painted wall (behind the first locked door). Press Flare to light up far around you." },
 	patch = { about = "Friends near Patch get half their stamina back (once every 10 seconds each). She frees every caged friend at once, faster than anyone.\nShield: gives the nearest friend without one a Party Shield (it lasts until a grab). If every friend nearby has one, or nobody is near, Patch shields herself for 30 seconds.", how = "Stay close to friends. Press the Shield button. Hold E at the cage." },
 	echo = { about = "Hears the host coming from further away.\nNoise: throws a noise that sends the host to look somewhere else - then Echo runs 5% faster for 3 seconds.", how = "Press Noise, then tap where to throw it." },
+	cloud = { about = "Float Up: only Cloud can float up to the high shelves with a little cloud on the wall - a free clue or points for everyone up there.\nFog: breathes out a fog cloud for 8 seconds - anyone inside is hidden from the host, who loses track of them.", how = "Look for shelves with a cloud mark and hold E under them. Press Fog (R) to hide yourself and friends near you." },
 	nutmeg = { about = "Good Nose: drawers and boxes nearby that hold a key or a Confetti Cannon sparkle through the walls - only Nutmeg sees it.\nSleigh Dash: a burst of double speed that pulls the nearest friend along with her.", how = "Walk near drawers and boxes to sniff them out. Press Sleigh Dash (R) to zoom off - stand near a friend to take them too." },
 	bramble = { about = "Talks to plants: the big plant whispers the door code to Bramble.\nVines: grows vines across a doorway - the host wades through them slowly, kids walk straight through.", how = "Find the big plant (in a room open from the start) and press E. Stand in a doorway and press Vines (R)." },
 }
@@ -891,6 +903,8 @@ Config.NEW_SKILLS = {
 	-- Eastern = 05:00 UTC, as the Christmas shop opens); a server already
 	-- running then shows her once it restarts
 	{ id = "nutmeg", name = "Nutmeg", icon = "\u{1F514}", say = "Sniffs out keys", color = Color3.fromRGB(196, 120, 60), unlock = true, release = 1796101200 },
+	-- Cloud (4 Nov): free like the first eight; live once her model is saved
+	{ id = "cloud", name = "Cloud", icon = "\u{2601}", say = "Hides the crew in fog", color = Color3.fromRGB(150, 200, 255) },
 }
 do
 	local studio = game:GetService("RunService"):IsStudio()

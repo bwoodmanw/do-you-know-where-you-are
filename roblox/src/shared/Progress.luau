@@ -567,6 +567,54 @@ local SPECIAL = {
 			{ id = "overgrowth20", name = "Overgrowth", say = "Vines grow across two doorways at once", mods = { p20 = "overgrowth" } },
 		},
 	},
+	-- Cloud (4 Nov, NEW_CHARACTERS.md): Float Up, Fog; fogSize (studs wider) /
+	-- fogTime add to Config.CLOUD; floatMult times her Float Up hold
+	cloud = {
+		[3] = {
+			{ id = "thick3", name = "Thick Fog", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } },
+			{ id = "coat3", name = "Raincoat", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[5] = {
+			{ id = "quick5", name = "Quick Cloud", say = "Fog recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "drizzle5", name = "Drizzle", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[7] = {
+			{ id = "last7", name = "Lasting Fog", say = "Your fog lasts 1 s longer", mods = { fogTime = 1 } },
+			{ id = "sky7", name = "Sky Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+		},
+		[9] = {
+			{ id = "wide9", name = "Wide Fog", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } },
+			{ id = "light9", name = "Light Hands", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+		},
+		[10] = {
+			{ id = "rolling10", name = "Rolling Fog", say = "Your fog drifts along with you", mods = { p10 = "rolling" } },
+			{ id = "lining10", name = "Silver Lining", say = "Friends leaving your fog run 5% faster for 3 s", mods = { p10 = "lining" } },
+		},
+		[11] = {
+			{ id = "fast11", name = "Fast Cloud", say = "Fog recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "lungs11", name = "Cloud Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+		},
+		[13] = {
+			{ id = "long13", name = "Longer Fog", say = "Your fog lasts 1 s longer", mods = { fogTime = 1 } },
+			{ id = "float13", name = "Float Higher", say = "Float up 30% faster", mods = { floatMult = 0.7 } },
+		},
+		[15] = {
+			{ id = "big15", name = "Big Fog", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } },
+			{ id = "rain15", name = "Rain Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+		},
+		[17] = {
+			{ id = "rainbow17", name = "Rainbow Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "mist17", name = "Mist Step", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[19] = {
+			{ id = "season19", name = "Storm Season", say = "Fog recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "nimble19", name = "Nimble Cloud", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[20] = {
+			{ id = "storm20", name = "Storm Cloud", say = "Tap where to throw your fog: lightning stops the host 3 s, friends near you get 25% stamina and run 10% faster for 5 s", mods = { p20 = "storm" } },
+			{ id = "bank20", name = "Fog Bank", say = "Two fogs before Fog recharges", mods = { p20 = "bank" } },
+		},
+	},
 	-- Nutmeg, the Christmas reindeer (3 Nov, NEW_CHARACTERS.md): Good Nose,
 	-- Sleigh Dash; noseRange / dashTime / pullRange add to Config.NUTMEG
 	nutmeg = {
@@ -625,7 +673,8 @@ local SPECIAL = {
 -- earlier one. Taking every step gives the old best number (or a little more).
 Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRange = true, barricadeHold = true,
 	burstMult = true, burstTime = true, flareTime = true, flareRange = true, flareStamina = true, vineTime = true, thinkTime = true,
-	noseRange = true, dashTime = true, pullRange = true } -- Nutmeg (3 Nov)
+	noseRange = true, dashTime = true, pullRange = true, -- Nutmeg (3 Nov)
+	fogSize = true, fogTime = true } -- Cloud (4 Nov)
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

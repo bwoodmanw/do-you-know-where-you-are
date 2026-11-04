@@ -262,6 +262,10 @@ function Host:canSee(char)
 	if not plr or plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling") or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return false
 	end
+	-- 4 Nov: in Cloud's fog the host can't see you (Main sets Fogged)
+	if plr:GetAttribute("Fogged") then
+		return false
+	end
 	if (plr:GetAttribute("SneakUntil") or 0) > workspace:GetServerTimeNow() then
 		return false
 	end
@@ -479,7 +483,7 @@ function Host:step(dt)
 	for _, plr in ipairs(Players:GetPlayers()) do
 		local char = plr.Character
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
-		local hidden = plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling")
+		local hidden = plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling") or plr:GetAttribute("Fogged") -- (Cloud's fog: like a hiding spot)
 		if hrp and (not hidden or self.frenzy or self.diff.peek) and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
 			and (plr:GetAttribute("SneakUntil") or 0) <= workspace:GetServerTimeNow() then
 			local flat = Vector3.new(hrp.Position.X - self.root.Position.X, 0, hrp.Position.Z - self.root.Position.Z)

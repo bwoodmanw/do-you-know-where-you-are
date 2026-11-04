@@ -310,6 +310,11 @@ local function applyMods(plr)
 	plr:SetAttribute("NoseRange", Config.NUTMEG.nose + (m.noseRange or 0))
 	plr:SetAttribute("DashTime", Config.NUTMEG.dash + (m.dashTime or 0))
 	plr:SetAttribute("PullRange", Config.NUTMEG.pull + (m.pullRange or 0))
+	-- Cloud (4 Nov): her fog's size (fogSize = studs wider) and time, her Float Up hold
+	plr:SetAttribute("FogRadius", Config.CLOUD.radius + (m.fogSize or 0) / 2)
+	plr:SetAttribute("FogTime", Config.CLOUD.fog + (m.fogTime or 0))
+	plr:SetAttribute("FloatMult", m.floatMult or 1)
+	plr:SetAttribute("FogBankUsed", false)
 	-- Muscle's Iron Lungs: stamina refills twice as fast
 	plr:SetAttribute("RegenMult", m.p10 == "ironlungs" and Config.IRON_LUNGS_REGEN or 1)
 	plr:SetAttribute("ToolkitReady", false)
@@ -2320,6 +2325,137 @@ end
 -- golden feathers): a few on random free checked spots of every floor (behind
 -- the locks too) while the season runs. Walk into one to pick it up: points,
 -- and the count towards the season's badge.
+-- Cloud's Float Up (4 Nov, Config.CLOUD): a few high shelves on each floor,
+-- against a wall with a little cloud above, out of everyone's reach. Only Cloud
+-- floats up to one (hold E): a free clue for the team, or points for everyone.
+-- Extras only - never anything the team needs to escape
+function round.placeCloudSpots()
+	local C = Config.CLOUD
+	local myState, myWorld = state, world
+	local taken = {}
+	for _, o in pairs(world.objects) do
+		if o.def and o.def.x then
+			table.insert(taken, { o.def.x, o.def.y })
+		end
+	end
+	for _, t in ipairs(state.extraTaken or {}) do
+		table.insert(taken, t)
+	end
+	local pool = {}
+	for _, sl in ipairs(HouseMap.floorSlots or {}) do
+		local x, y = sl[1], sl[2]
+		local clear = not nearDoorway(x, y)
+		for _, t in ipairs(taken) do
+			if math.abs(t[1] - x) <= 1 and math.abs(t[2] - y) <= 1 then
+				clear = false
+			end
+		end
+		if clear then
+			for _, d in ipairs({ { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }) do
+				if cellAt(x + d[1], y + d[2]) == "#" then
+					table.insert(pool, { x = x, y = y, d = d })
+					break
+				end
+			end
+		end
+	end
+	local spots = {}
+	while #spots < C.spots and #pool > 0 do
+		local s = table.remove(pool, math.random(1, #pool))
+		local spaced = true
+		for _, o in ipairs(spots) do
+			if math.abs(o.x - s.x) + math.abs(o.y - s.y) < 8 then
+				spaced = false
+			end
+		end
+		if spaced then
+			table.insert(spots, s)
+			table.insert(state.extraTaken, { s.x, s.y })
+		end
+	end
+	for i, s in ipairs(spots) do
+		local wall = Vector3.new(s.d[1], 0, s.d[2])
+		local base = House.at(s.x, s.y, 0) + wall * (T / 2 - 1)
+		local high = Config.WALL_H - 4
+		local m = Instance.new("Model")
+		m.Name = "CloudShelf"
+		local function piece(props)
+			local p = Instance.new("Part")
+			p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+			p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+			p.Material = Enum.Material.SmoothPlastic
+			for k, v in pairs(props) do
+				p[k] = v
+			end
+			p.Parent = m
+			return p
+		end
+		local face = CFrame.lookAt(base, base - wall) -- facing out of the wall
+		local shelf = piece({ Name = "Shelf", Size = Vector3.new(4, 0.4, 2), CFrame = face * CFrame.new(0, high, 0), Color = Color3.fromRGB(150, 110, 75), Material = Enum.Material.Wood })
+		-- the cloud mark on the wall above
+		for k, off in ipairs({ { -0.7, 0 }, { 0, 0.35 }, { 0.7, 0 } }) do
+			piece({ Name = "CloudMark", Shape = Enum.PartType.Ball, Size = Vector3.new(1.1, 0.9, 0.3) * (k == 2 and 1.2 or 1), CFrame = face * CFrame.new(off[1], high + 1.9 + off[2], 0.9), Color = Color3.fromRGB(235, 245, 255), Material = Enum.Material.Neon })
+		end
+		-- on the shelf: a free clue (a lightbulb) or a present (points for everyone)
+		local clue = i % 2 == 1
+		if clue then
+			piece({ Name = "ClueBulb", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.9, 0.8), CFrame = face * CFrame.new(0, high + 0.65, 0), Color = Color3.fromRGB(255, 220, 90), Material = Enum.Material.Neon })
+		else
+			piece({ Name = "ShelfPresent", Size = Vector3.new(1, 0.9, 1), CFrame = face * CFrame.new(0, high + 0.65, 0), Color = Color3.fromRGB(70, 140, 255) })
+			piece({ Name = "ShelfRibbon", Size = Vector3.new(1.05, 0.95, 0.2), CFrame = face * CFrame.new(0, high + 0.65, 0), Color = Color3.fromRGB(255, 210, 63) })
+		end
+		m.Parent = world.root
+		local pp = Instance.new("ProximityPrompt")
+		pp.ActionText = "Float up"
+		pp.ObjectText = clue and "High shelf - a clue" or "High shelf - a present"
+		pp.HoldDuration = C.floatHold
+		pp.MaxActivationDistance = high + 3
+		pp.RequiresLineOfSight = false
+		pp:SetAttribute("Only", "cloud")
+		pp.Parent = shelf
+		pp.Triggered:Connect(function(plr)
+			if state ~= myState or world ~= myWorld or state.status ~= "playing" or plr:GetAttribute("Skill") ~= "cloud"
+				or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") or not m.Parent then
+				return
+			end
+			-- she floats up to the shelf and back down
+			local h = hrpOf(plr)
+			if h then
+				local from = h.CFrame
+				h.Anchored = true
+				local up = TweenService:Create(h, TweenInfo.new(0.5, Enum.EasingStyle.Sine), { CFrame = from + Vector3.new(0, high - 3, 0) })
+				up:Play()
+				up.Completed:Wait()
+				local down = TweenService:Create(h, TweenInfo.new(0.6, Enum.EasingStyle.Sine), { CFrame = from })
+				down:Play()
+				down.Completed:Wait()
+				if not plr:GetAttribute("Hidden") then
+					h.Anchored = false
+				end
+			end
+			if not m.Parent then
+				return
+			end
+			m:Destroy()
+			quest(plr, "skill")
+			if clue then
+				state.cluesLeft += 1
+				state.freeClues = (state.freeClues or 0) + 1
+				RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+				RoundState:SetAttribute("FreeClues", state.freeClues)
+				say("info", "\u{2601} " .. plr.DisplayName .. " floated up to a high shelf - a free clue for the team!")
+			else
+				for _, p in ipairs(Players:GetPlayers()) do
+					if not p:GetAttribute("Escaped") then
+						addPoints(p, C.spotPoints)
+					end
+				end
+				say("info", "\u{2601} " .. plr.DisplayName .. " floated up to a high shelf - a present: +" .. C.spotPoints .. " points for everyone!")
+			end
+		end)
+	end
+end
+
 function round.placeCandyCorn()
 	local e = Seasons.active()
 	if not e then
@@ -3462,6 +3598,52 @@ do
 				say("info", best and ("\u{2744} Snow Sense: the nearest key is in the " .. roomOf(best) .. "!") or "\u{2744} Snow Sense: no keys left to find!", nil, plr)
 			end
 			return true
+		elseif skill == "cloud" then
+			-- Fog (4 Nov): a fog cloud where she stands (Storm Cloud: where she
+			-- tapped, up to Config.CLOUD.throw studs away) for FogTime seconds
+			local C = Config.CLOUD
+			local storm = p20 == "storm"
+			local center = hrp.Position
+			if storm then
+				if typeof(pos) ~= "Vector3" then
+					say("info", "\u{26C8} Tap where to throw your storm cloud.", nil, plr)
+					return false
+				end
+				local d = pos - hrp.Position
+				center = d.Magnitude > C.throw and (hrp.Position + d.Unit * C.throw) or pos
+				center = Vector3.new(center.X, hrp.Position.Y - 2.5, center.Z)
+			else
+				center = hrp.Position - Vector3.new(0, 2.5, 0)
+			end
+			local seconds = plr:GetAttribute("FogTime") or C.fog
+			round.makeFog(plr, center, plr:GetAttribute("FogRadius") or C.radius, seconds, { follow = p10 == "rolling" and not storm, storm = storm, lining = p10 == "lining" })
+			plr:SetAttribute("FogUntil", workspace:GetServerTimeNow() + seconds)
+			if storm then
+				-- friends near her when she throws it: stamina and a burst of speed
+				local now = workspace:GetServerTimeNow()
+				for _, p in ipairs(Players:GetPlayers()) do
+					local h = hrpOf(p)
+					if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude <= C.stormNear then
+						Boost:FireClient(p, "plus", C.stormStamina)
+						p:SetAttribute("TeamBurstMult", C.stormSpeed)
+						p:SetAttribute("TeamBurstUntil", now + C.stormSpeedTime)
+						Effects.aura(p, "speed", C.stormSpeedTime)
+					end
+				end
+				say("info", "\u{26C8} " .. plr.DisplayName .. " threw a storm cloud! Friends nearby: +" .. C.stormStamina .. "% stamina and a burst of speed!")
+			else
+				say("info", "\u{2601} " .. plr.DisplayName .. " breathed out a fog - anyone inside is hidden from the host!")
+			end
+			-- Fog Bank (level 20): a second fog before it recharges
+			if p20 == "bank" then
+				if not plr:GetAttribute("FogBankUsed") then
+					plr:SetAttribute("FogBankUsed", true)
+					say("info", "\u{2601} One more fog before it recharges!", nil, plr)
+					return "free"
+				end
+				plr:SetAttribute("FogBankUsed", false)
+			end
+			return true
 		end
 		return nil -- not a new button
 	end
@@ -3875,6 +4057,127 @@ ReadyUp.OnServerEvent:Connect(function(plr)
 	end
 end)
 
+-- Cloud's fogs (4 Nov, Config.CLOUD). Each: where, how big, until when, who made
+-- it, and its powers - follow (Rolling Fog), storm (Storm Cloud), lining
+-- (Silver Lining). Five times a second every kid inside one is Fogged (the host
+-- can't see or grab them, as at a hiding spot); a storm stops a host it covers
+local fogs = {}
+function round.makeFog(owner, center, r, seconds, opts)
+	local storm = opts.storm
+	local m = Instance.new("Model")
+	m.Name = storm and "StormCloud" or "CloudFog"
+	local puffs = {}
+	for k = 0, 4 do
+		local a = k / 5 * math.pi * 2
+		local p = Instance.new("Part")
+		p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+		p.Shape = Enum.PartType.Ball
+		p.Size = Vector3.new(r * 1.3, r * 1.1, r * 1.3)
+		p.Material = Enum.Material.SmoothPlastic
+		p.Color = storm and Color3.fromRGB(110, 115, 135) or Color3.fromRGB(235, 240, 250)
+		p.Transparency = 0.35
+		p:SetAttribute("Off", Vector3.new(math.cos(a) * r * 0.45, 2.2 + (k % 2) * 0.8, math.sin(a) * r * 0.45))
+		p.Parent = m
+		table.insert(puffs, p)
+	end
+	local mist = Instance.new("ParticleEmitter")
+	mist.Color = ColorSequence.new(storm and Color3.fromRGB(150, 155, 170) or Color3.fromRGB(245, 248, 255))
+	mist.Size = NumberSequence.new(3, 5)
+	mist.Transparency = NumberSequence.new(0.5, 1)
+	mist.Lifetime = NumberRange.new(1.5, 2.5)
+	mist.Rate = 25
+	mist.Speed = NumberRange.new(1, 2)
+	mist.SpreadAngle = Vector2.new(180, 180)
+	mist.Parent = puffs[1]
+	m.Parent = world.root
+	local f = { owner = owner, pos = center, r = r, untilT = workspace:GetServerTimeNow() + seconds, model = m, puffs = puffs,
+		follow = opts.follow, storm = storm, lining = opts.lining, world = world }
+	local function place()
+		for _, p in ipairs(f.puffs) do
+			p.Position = f.pos + p:GetAttribute("Off")
+		end
+	end
+	place()
+	f.place = place
+	table.insert(fogs, f)
+	Effects.sound(center, "sneak", 0.8)
+	return f
+end
+-- a lightning bolt flashing down through a storm cloud
+local function lightning(at)
+	local parts = {}
+	local p = at + Vector3.new(0, 8, 0)
+	for _ = 1, 4 do
+		local q = p + Vector3.new(math.random(-15, 15) / 10, -2, math.random(-15, 15) / 10)
+		local bolt = Instance.new("Part")
+		bolt.Anchored, bolt.CanCollide, bolt.CanQuery, bolt.CanTouch = true, false, false, false
+		bolt.Material = Enum.Material.Neon
+		bolt.Color = Color3.fromRGB(255, 240, 120)
+		bolt.Size = Vector3.new(0.25, 0.25, (q - p).Magnitude)
+		bolt.CFrame = CFrame.lookAt((p + q) / 2, q)
+		bolt.Parent = world.root
+		table.insert(parts, bolt)
+		p = q
+	end
+	Effects.sound(at, "bonk", 1)
+	task.delay(0.35, function()
+		for _, b in ipairs(parts) do
+			b:Destroy()
+		end
+	end)
+end
+task.spawn(function()
+	local fogOf = {} -- player -> the fog they were in a moment ago
+	while true do
+		task.wait(0.2)
+		local now = workspace:GetServerTimeNow()
+		for i = #fogs, 1, -1 do
+			local f = fogs[i]
+			if now >= f.untilT or f.world ~= world or not f.model.Parent then
+				f.model:Destroy()
+				table.remove(fogs, i)
+			else
+				local oh = f.follow and hrpOf(f.owner)
+				if oh and not f.owner:GetAttribute("Caged") then
+					f.pos = Vector3.new(oh.Position.X, f.pos.Y, oh.Position.Z) -- Rolling Fog
+					f.place()
+				end
+				-- Storm Cloud: a host under it stops (once a fog), with lightning
+				if f.storm and not f.stopped and host and host.model and host.root
+					and (Vector3.new(host.root.Position.X, 0, host.root.Position.Z) - Vector3.new(f.pos.X, 0, f.pos.Z)).Magnitude <= f.r + 2 then
+					f.stopped = true
+					host:stun(Config.CLOUD.stormStop)
+					lightning(host.root.Position)
+					say("info", "\u{26A1} Lightning! " .. f.owner.DisplayName .. "'s storm cloud stopped the host for " .. Config.CLOUD.stormStop .. " s!")
+				end
+			end
+		end
+		for _, p in ipairs(Players:GetPlayers()) do
+			local h = hrpOf(p)
+			local inside
+			if h and state.status == "playing" and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
+				for _, f in ipairs(fogs) do
+					if (Vector3.new(h.Position.X, 0, h.Position.Z) - Vector3.new(f.pos.X, 0, f.pos.Z)).Magnitude <= f.r then
+						inside = f
+						break
+					end
+				end
+			end
+			local was = fogOf[p]
+			if (inside ~= nil) ~= (p:GetAttribute("Fogged") == true) then
+				p:SetAttribute("Fogged", inside ~= nil)
+			end
+			-- Silver Lining: a friend stepping out of her fog gets a little speed
+			if was and not inside and was.lining and p ~= was.owner and now < was.untilT then
+				p:SetAttribute("TeamBurstMult", Config.CLOUD.liningSpeed)
+				p:SetAttribute("TeamBurstUntil", now + Config.CLOUD.liningTime)
+				Effects.aura(p, "speed", Config.CLOUD.liningTime)
+			end
+			fogOf[p] = inside
+		end
+	end
+end)
+
 -- Nutmeg's Jingle Bells (level 20; 4 Nov, Brent: her choice when, not her first
 -- dash): its own button, once a game - the host freezes for Config.NUTMEG.bells
 -- seconds wherever he is. Not used up while the host isn't out yet
@@ -3915,7 +4218,9 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 	-- skills version 2: Tinker's Toolkit, Brainy's Think!, Bramble's Vines
 	local v2 = round.skillV2(plr, skill, hrp, pos)
 	if v2 ~= nil then
-		if v2 then
+		if v2 == "free" then
+			quest(plr, "skill") -- worked, and the button is ready again at once (Cloud's Fog Bank)
+		elseif v2 then
 			-- Tinker's Rocket Boots: a rocket run after each Toolkit
 			if skill == "tinker" and plr:GetAttribute("Power20") == "boots" then
 				local rb = Config.ROCKET_BOOTS
@@ -4602,6 +4907,7 @@ function round.start()
 		round.placeJackBoxes()
 	end
 	round.placeCandyCorn()
+	round.placeCloudSpots() -- Cloud's high shelves (4 Nov)
 	round.placeTurkeys()
 	round.placePlushie()
 	RoundState:SetAttribute("Blackout", "")

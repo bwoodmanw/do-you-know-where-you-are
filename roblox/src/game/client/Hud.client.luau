@@ -1263,7 +1263,7 @@ Gamepad.panel(keypad)
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
 local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare",
-	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash" }
+	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog" }
 local KEYS = not TOUCH and UserInputService.KeyboardEnabled -- show the R key on the button
 do
 local function paintSkill()
@@ -1280,17 +1280,20 @@ player:GetAttributeChangedSignal("Skill"):Connect(paintSkill)
 paintSkill()
 local function useSkill()
 	local s = player:GetAttribute("Skill")
-	if s == "echo" and Gamepad.on() then
-		-- a controller throws the noise at the middle of the screen
+	-- Echo's noise and Cloud's Storm Cloud (level 20, 4 Nov) are thrown where you aim
+	local storm = s == "cloud" and player:GetAttribute("Power20") == "storm"
+	local what = storm and "\u{26C8} storm cloud" or "\u{1F3A7} noise"
+	if (s == "echo" or storm) and Gamepad.on() then
+		-- a controller throws it at the middle of the screen
 		local spot = Gamepad.aimPoint({ player.Character }, 300)
 		if spot then
 			remotes.UseSkill:FireServer(spot)
 		else
-			toast("\u{1F3A7} Point the camera at a floor or wall to throw a noise there.", 3)
+			toast("Point the camera at a floor or wall to throw your " .. what .. " there.", 3)
 		end
-	elseif s == "echo" then
+	elseif s == "echo" or storm then
 		aiming = true
-		toast("\u{1F3A7} Tap or click a spot to throw a noise there.", 3)
+		toast("Tap or click a spot to throw your " .. what .. " there.", 3)
 	elseif SKILL_TEXT[s] then
 		remotes.UseSkill:FireServer()
 	else
@@ -2001,6 +2004,12 @@ do
 		end
 	end
 	player:GetAttributeChangedSignal("NoseSpots"):Connect(paintNose)
+	-- Cloud's fog (4 Nov): say so when you step into it
+	player:GetAttributeChangedSignal("Fogged"):Connect(function()
+		if player:GetAttribute("Fogged") then
+			toast("\u{2601} You're hidden in the fog - the host can't see you here.", 2.5)
+		end
+	end)
 	-- 3 Nov (Brent): the Gift Box Hideout's countdown - a slot in the boosts
 	-- row and big numbers in the middle of the screen while you're in the box
 	-- (the server sets GiftBoxUntil, server time)
@@ -2229,7 +2238,7 @@ RunService.RenderStepped:Connect(function(dt)
 		-- while a skill is working: its own countdown; then the recharge countdown
 		local ACTIVE = { shadow = { "SneakUntil", "\u{1F319} Sneaking" }, glow = { "FlareUntil", "\u{2728} Flare" }, bramble = { "VinesUntil", "\u{1F33F} Vines" },
 			echo = { "EchoBurstUntil", "\u{1F3A7} Burst" }, muscle = { "BarricadeUntil", "\u{1F4AA} Barricade" }, brainy = { "ThinkUntil", "\u{1F9E0} Thinking" },
-			nutmeg = { "DashUntil", "\u{1F514} Dashing" } }
+			nutmeg = { "DashUntil", "\u{1F514} Dashing" }, cloud = { "FogUntil", "\u{2601} Fog" } }
 		local a = ACTIVE[skill]
 		local active = a and ((player:GetAttribute(a[1]) or 0) - serverNow) or 0
 		local cool = (player:GetAttribute("CoolUntil") or 0) - serverNow
