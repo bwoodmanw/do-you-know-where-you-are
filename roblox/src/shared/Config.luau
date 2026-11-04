@@ -426,10 +426,35 @@ Config.SEASONS = {
 		gift = { 25, 100 },
 		bundles = { { amount = 50, product = 3719001731 }, { amount = 150, product = 3719001840 } }, -- 99 / 249 Robux (16 Oct)
 	},
+	{
+		-- Christmas (Brent, 3 Nov): candy canes, 1 Dec to 1 Jan (the shop open
+		-- a week more). Nutmeg the reindeer costs 400 candy canes (or a 399
+		-- Robux Game Pass) once she's built. There is no candy cane emoji:
+		-- the tree stands in for it in words, SEASON_IMAGES.cane once uploaded.
+		-- No badge yet (goal / badge / badgeName once one is made in Creator Hub)
+		id = "christmas", name = "Candy Cane Hunt", shopName = "Christmas Shop", item = "cane",
+		one = "candy cane", many = "candy canes", icon = "\u{1F384}",
+		from = { 12, 1 }, to = { 1, 1 }, shopDays = 7,
+		perFloor = 6, points = 3, near = 4, look = "Christmas", share = true,
+		shop = { candy = 9, energy = 8, clue = 12, headstart = 15, shield = 18, freeze = 23 },
+		-- the Christmas looks of the boosts (image 0: the boost's own picture
+		-- with the Christmas name until a picture is uploaded)
+		looks = {
+			candy = { name = "Gingerbread Cookie", icon = "\u{1F36A}", image = 0 },
+			shield = { name = "Snowman Shield", icon = "\u{26C4}", image = 0 },
+			clue = { name = "Elf's Map", icon = "\u{1F5FA}", image = 0 },
+			energy = { name = "Hot Cocoa", icon = "\u{2615}", image = 0 },
+			headstart = { name = "Sled Start", icon = "\u{26F7}", image = 0 },
+			freeze = { name = "Snowball", icon = "\u{2744}", image = 0 },
+		},
+		gift = { 25, 100 },
+		-- 50 and 150 candy canes for Robux: Developer Products to make (0 = not on sale)
+		bundles = { { amount = 50, product = 0 }, { amount = 150, product = 0 } },
+	},
 }
 -- Studio only: pretend it is this date for the seasons ({ 2026, 11, 5 } tries
 -- Thanksgiving's Feather Hunt and shop; nil = today)
-Config.STUDIO_SEASON_DATE = nil
+Config.STUDIO_SEASON_DATE = { 2026, 12, 3 } -- 3 Nov: trying Christmas (set back to nil when done)
 -- the Turkey Roundup (Thanksgiving, the Harvest Barn - Brent, 11 Oct):
 -- `turkeys` runaway turkeys run from any kid closer than `flee` studs, at
 -- `speed` (walking is Config.WALK, running Config.RUN - cornering them

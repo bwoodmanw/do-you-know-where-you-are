@@ -1,0 +1,36 @@
+{
+  "name": "Cloud and Nutmeg toon pictures",
+  "reference_root": "art",
+  "output_root": "art/model-input",
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. For a FRONT view one picture is attached: another character from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW character from this prompt (different face, hair and clothes). For a BACK view one picture is attached: the same character seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no fur texture, no knit, no stitching, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, a kid about 10 years old, big clear eyes, warm skin tone (never pale or white). Small details as simple solid shapes, close to the body - nothing thin or long sticking out. No logos, brand marks, emblems, swooshes, stripes on shoes, printed words or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.",
+  "assets": [
+    {
+      "file_name": "cloud\\front-toon.png",
+      "picture": "FRONT view of Cloud, a cheerful, dreamy girl: almost-white hair in a soft, rounded chin-length bob with a faint pale-blue tint, a little rounded fringe, light-blue eyes, warm light-brown skin, a solid sunny-yellow raincoat with the hood down and big round buttons, a small rounded white backpack shaped like a puffy cloud (worn on her back, its straps showing at the front), sky-blue leggings, sky-blue rain boots. Soft and round everywhere - no spiky hair, nothing sharp, no weapon.",
+      "references": [
+        "model-input\\glow\\front-toon.png"
+      ]
+    },
+    {
+      "file_name": "cloud\\back-toon.png",
+      "picture": "BACK view of Cloud, matching the reference exactly: the back of the almost-white rounded bob, the yellow raincoat with its hood lying flat on the back, the puffy white cloud backpack close against her back, sky-blue leggings and rain boots.",
+      "references": [
+        "model-input\\cloud\\front-toon.png"
+      ]
+    },
+    {
+      "file_name": "nutmeg\\front-toon.png",
+      "picture": "FRONT view of Nutmeg, a cheerful girl dressed as a reindeer: warm brown skin, big brown eyes, two short dark-brown braids coming out from under the hood at the front, a fuzzy-looking (but solid flat color) light-brown reindeer hoodie with the hood UP - two SHORT, chunky, rounded cream antlers on top of the hood (stubby, close to the head, nothing thin), two small round brown ears on the sides of the hood - a cream patch on the front of the hoodie, a green scarf wrapped once around her neck with a small round brass bell at the front, red mittens, dark brown leggings, chunky brown boots. A normal kid's nose - NO red nose.",
+      "references": [
+        "model-input\\glow\\front-toon.png"
+      ]
+    },
+    {
+      "file_name": "nutmeg\\back-toon.png",
+      "picture": "BACK view of Nutmeg, matching the reference exactly: the back of the light-brown hood with the two short cream antlers and the small ears, a short round cream tail-puff sewn flat on the back of the hoodie, the green scarf ends tucked in, dark brown leggings, brown boots.",
+      "references": [
+        "model-input\\nutmeg\\front-toon.png"
+      ]
+    }
+  ]
+}

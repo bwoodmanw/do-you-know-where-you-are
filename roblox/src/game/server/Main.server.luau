@@ -2238,7 +2238,7 @@ function round.placeCandyCorn()
 	for _, c in ipairs(corns) do
 		local pos = House.at(c.x, c.y, 2.2)
 		local m = Instance.new("Model")
-		m.Name = e.item == "corn" and "CandyCorn" or "Golden" .. string.upper(string.sub(e.item, 1, 1)) .. string.sub(e.item, 2)
+		m.Name = e.item == "corn" and "CandyCorn" or e.item == "cane" and "CandyCane" or "Golden" .. string.upper(string.sub(e.item, 1, 1)) .. string.sub(e.item, 2)
 		-- a candy corn: a rounded yellow base, an orange middle, a white tip,
 		-- each band narrower than the one below; it bobs and glows
 		local YEL, ORA, WHI = Color3.fromRGB(255, 205, 40), Color3.fromRGB(255, 130, 25), Color3.fromRGB(255, 250, 240)
@@ -2249,7 +2249,7 @@ function round.placeCandyCorn()
 			{ Enum.PartType.Cylinder, Vector3.new(0.6, 1.05, 1.05), 1.0, WHI },
 			{ Enum.PartType.Ball, Vector3.new(0.75, 0.75, 0.75), 1.35, WHI },
 		}
-		if e.item ~= "corn" then
+		if e.item == "feather" then
 			-- a golden feather (Thanksgiving): a tall flat gold vane with a pale
 			-- middle stripe, on a short quill; it bobs and glows the same way
 			local GOLD, PALE, QUILL = Color3.fromRGB(255, 196, 46), Color3.fromRGB(255, 236, 160), Color3.fromRGB(214, 150, 40)
@@ -2257,6 +2257,23 @@ function round.placeCandyCorn()
 				{ Enum.PartType.Ball, Vector3.new(0.45, 2.8, 1.4), 0.35, GOLD },
 				{ Enum.PartType.Ball, Vector3.new(0.5, 2.4, 0.3), 0.4, PALE },
 				{ Enum.PartType.Cylinder, Vector3.new(1.1, 0.2, 0.2), -1.35, QUILL },
+			}
+		elseif e.item == "cane" then
+			-- a candy cane (Christmas, 3 Nov): a white stick with red stripes and
+			-- a hook of balls curling over at the top (the 5th value: sideways)
+			local WHITE, RED = Color3.fromRGB(255, 252, 248), Color3.fromRGB(220, 30, 45)
+			bands = {
+				{ Enum.PartType.Cylinder, Vector3.new(2.6, 0.5, 0.5), -0.2, WHITE },
+				{ Enum.PartType.Cylinder, Vector3.new(0.25, 0.56, 0.56), -1.1, RED },
+				{ Enum.PartType.Cylinder, Vector3.new(0.25, 0.56, 0.56), -0.45, RED },
+				{ Enum.PartType.Cylinder, Vector3.new(0.25, 0.56, 0.56), 0.2, RED },
+				{ Enum.PartType.Cylinder, Vector3.new(0.25, 0.56, 0.56), 0.8, RED },
+				{ Enum.PartType.Ball, Vector3.new(0.52, 0.52, 0.52), 1.25, WHITE, 0 },
+				{ Enum.PartType.Ball, Vector3.new(0.52, 0.52, 0.52), 1.55, RED, 0.15 },
+				{ Enum.PartType.Ball, Vector3.new(0.52, 0.52, 0.52), 1.72, WHITE, 0.5 },
+				{ Enum.PartType.Ball, Vector3.new(0.52, 0.52, 0.52), 1.55, RED, 0.85 },
+				{ Enum.PartType.Ball, Vector3.new(0.52, 0.52, 0.52), 1.25, WHITE, 1.0 },
+				{ Enum.PartType.Ball, Vector3.new(0.52, 0.52, 0.52), 0.92, RED, 1.05 },
 			}
 		end
 		local parts = {}
@@ -2266,7 +2283,7 @@ function round.placeCandyCorn()
 			pt.Shape = bd[1]
 			pt.Size = bd[2]
 			Shapes.fix(pt, bd[1], bd[2])
-			pt.CFrame = CFrame.new(pos + Vector3.new(0, bd[3], 0)) * (bd[1] == Enum.PartType.Cylinder and CFrame.Angles(0, 0, math.rad(90)) or CFrame.new())
+			pt.CFrame = CFrame.new(pos + Vector3.new(bd[5] or 0, bd[3], 0)) * (bd[1] == Enum.PartType.Cylinder and CFrame.Angles(0, 0, math.rad(90)) or CFrame.new())
 			pt.Color = bd[4]
 			pt.Material = Enum.Material.SmoothPlastic
 			pt.Parent = m
