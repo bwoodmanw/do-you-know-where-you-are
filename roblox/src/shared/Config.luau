@@ -760,6 +760,9 @@ Config.CHARACTER_ASSETS = {
 	HostCrumbles = 91451706955885, -- 5 Nov: Crumbles, Candy Cane Lane's host (checked on Roblox: Model 'Crumbles', Brent's upload)
 	HostMrClaus = 130635679312254, -- 5 Nov: Mr Claus, Claus Manor (checked on Roblox: Model 'HostMrClaus', Brent's upload)
 	HostMrsClaus = 92544233290407, -- 5 Nov: Mrs Claus, Claus Manor (checked on Roblox: Model 'HostMrsClaus', Brent's upload)
+	Elfy = 137385510164350, -- 5 Nov: Elfy, the limited Christmas character (checked on Roblox: Model 'Elfy', Brent's upload)
+	PatchSkater = 85745496736470, -- 5 Nov: Ice Skater Patch (checked on Roblox: Model 'PatchSkater', Brent's upload)
+	BrainyGingerbread = 78207892363161, -- 5 Nov: Gingerbread Brainy (checked on Roblox: Model 'BrainyGingerbread', Brent's upload)
 	HostYeti = 138655463727624, -- 5 Nov: Frostfoot the Yeti, Frostpeak Lodge's host (New Year's; checked on Roblox: Model 'FrostFoot', Brent's upload)
 	CloneGala = 137284317587849, -- 5 Nov: Harvest Gala Clone (checked on Roblox: Model, Brent's upload)
 	HollyCranberry = 139043771129248, -- 5 Nov: Cranberry Spice Holly (checked on Roblox: Model 'HollyCranberry', Brent's upload)
@@ -1061,8 +1064,8 @@ Config.SKINS = {
 	-- candy canes in the Christmas Shop during the event, or a 99-Robux Game
 	-- Pass any time once `pass` has its id. hidden until the model is saved
 	-- (CHARACTER_ASSETS) - take `hidden` off then. Elfy has no Christmas skin.
-	{ id = "patch_skater", skill = "patch", name = "Ice Skater Patch", model = "PatchSkater", cane = 150, pass = 0, hidden = true },
-	{ id = "brainy_gingerbread", skill = "brainy", name = "Gingerbread Brainy", model = "BrainyGingerbread", cane = 150, pass = 0, hidden = true },
+	{ id = "patch_skater", skill = "patch", name = "Ice Skater Patch", model = "PatchSkater", cane = 150, pass = 0 }, -- 5 Nov: model saved
+	{ id = "brainy_gingerbread", skill = "brainy", name = "Gingerbread Brainy", model = "BrainyGingerbread", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "shadow_silentnight", skill = "shadow", name = "Silent Night Shadow", model = "ShadowSilentNight", cane = 150, pass = 0, hidden = true },
 	{ id = "glow_twinkle", skill = "glow", name = "Twinkle Lights Glow", model = "GlowTwinkle", cane = 150, pass = 0, hidden = true },
 	{ id = "tinker_toymaker", skill = "tinker", name = "Toy Maker Tinker", model = "TinkerToymaker", cane = 150, pass = 0, hidden = true },
