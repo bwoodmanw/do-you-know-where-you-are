@@ -87,6 +87,15 @@ steps as below.
 | 20 | Harvest Gala Clone | `pass-gala-clone.png` | 99 | Clone dressed for the harvest party: a cranberry suit jacket, a golden vest, an orange bow tie and his gold goggles. Looks only - Clone's skills stay the same. Wear it from Characters in the Lobby. |
 | 21 | Pumpkin Pie Harmony | `pass-pie-harmony.png` | 99 | Harmony as sweet as dessert: a pumpkin-pie skirt with a golden crust, a cream sweater and a whipped-cream clip. Looks only - Harmony's skills stay the same. Wear it from Characters in the Lobby. |
 
+## The new characters' Thanksgiving pass ids (all 4, checked on Roblox 5 Nov: 99 Robux, for sale)
+
+| Skin | Pass id |
+|---|---|
+| Cranberry Spice Holly | 2070338137 |
+| Autumn Breeze Cloud | 2070452002 |
+| Harvest Gala Clone | 2070612915 |
+| Pumpkin Pie Harmony | 2070930914 |
+
 ## Steps (for each pass)
 
 1. **create.roblox.com** -> **Creations** -> **Escape Crew**.
