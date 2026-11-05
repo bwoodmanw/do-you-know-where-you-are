@@ -90,6 +90,20 @@ JOBS = {
     "host-mrsclaus": "host-mrsclaus-toon.glb",
     "toy-elf": "toy-elf-toon.glb",
     "elfy": "elfy-toon.glb",
+    # the Christmas skins (5 Nov, CHRISTMAS_SKINS_WORKFLOW.md)
+    "skater-patch": "skater-patch-toon.glb",
+    "gingerbread-brainy": "gingerbread-brainy-toon.glb",
+    "silentnight-shadow": "silentnight-shadow-toon.glb",
+    "twinkle-glow": "twinkle-glow-toon.glb",
+    "toymaker-tinker": "toymaker-tinker-toon.glb",
+    "sweater-muscle": "sweater-muscle-toon.glb",
+    "jinglebell-echo": "jinglebell-echo-toon.glb",
+    "evergreen-bramble": "evergreen-bramble-toon.glb",
+    "snowflake-nutmeg": "snowflake-nutmeg-toon.glb",
+    "snow-cloud": "snow-cloud-toon.glb",
+    "sugarplum-holly": "sugarplum-holly-toon.glb",
+    "nutcracker-clone": "nutcracker-clone-toon.glb",
+    "carol-harmony": "carol-harmony-toon.glb",
 }
 TEXTURE = 1024  # one 1024 x 1024 picture: plenty for flat cartoon colors
 VERTICES = 4000  # about 8,000 triangles
