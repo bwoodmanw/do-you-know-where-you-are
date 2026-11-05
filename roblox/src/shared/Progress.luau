@@ -721,7 +721,7 @@ local SPECIAL = {
 			{ id = "storm20", name = "Candy Storm", say = "Your peppermint patch is twice as big", mods = { p20 = "candystorm" } },
 		},
 	},
-	-- Elfy (5 Nov, CLAUS_MANOR.md): Elf Hands, Wind-up Toy
+	-- Elfy (5 Nov, CLAUS_MANOR.md): Workshop Helper, Wind-up Toy
 	elfy = {
 		[3] = {
 			{ id = "cocoa3", name = "Cocoa Break", say = "6% more stamina", mods = { staminaMult = 1.06 } },
@@ -765,7 +765,7 @@ local SPECIAL = {
 		},
 		[20] = {
 			{ id = "parade20", name = "Toy Parade", say = "A Toy Parade button: once a game, three toys march off in three directions at once", mods = { p20 = "parade" } },
-			{ id = "rush20", name = "Workshop Rush", say = "A Workshop Rush button: once a game, you and friends near you hold things twice as fast for 10 s", mods = { p20 = "rush" } },
+			{ id = "rush20", name = "Workshop Rush", say = "A Workshop Rush button: once a game, every friend's skill is ready to use again at once", mods = { p20 = "rush" } },
 		},
 	},
 	-- Cloud (4 Nov, NEW_CHARACTERS.md): Float Up, Fog; fogSize (studs wider) /

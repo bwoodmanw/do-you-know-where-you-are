@@ -439,14 +439,15 @@ Config.GLOW_FLARE = { seconds = 8, mult = 2.2, range = 16, stamina = 30, speed =
 	beacon = { stamina = 50, speed = 1.05, speedTime = 8 } }
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
--- Elfy (5 Nov, CLAUS_MANOR.md): Elf Hands holds things `hands` times as long
--- (25% faster). Wind-up Toy: a toy marches `march` studs a second straight
+-- Elfy (5 Nov, CLAUS_MANOR.md): Workshop Helper (5 Nov, Brent - replaces Elf
+-- Hands): friends within `helpNear` studs get their skill buttons back
+-- `help` faster (0.15 = 15%). Wind-up Toy: a toy marches `march` studs a second straight
 -- ahead for `toy` s; every `every` s each host within `hear` studs goes after
 -- it. Marching Band (10): `band` s longer, heard from `bandHear`. Wrapped Up
 -- (10): Elfy hides in a present for `wrapped` s as he sets it down. Toy
 -- Parade (20, once a game): three toys at once. Workshop Rush (20, once a
--- game): Elfy and friends within `rushNear` hold things twice as fast for `rush` s
-Config.ELFY = { hands = 0.75, toy = 6, march = 6, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5, rush = 10, rushNear = 20 }
+-- game): every friend's skill button is ready again at once
+Config.ELFY = { help = 0.15, helpNear = 20, toy = 6, march = 6, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5 }
 -- Echo's Sharp Ears (4 Nov): within this many studs Echo sees the host through walls
 Config.ECHO_EARS = 30
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
@@ -506,7 +507,7 @@ Config.SKILL_INFO = {
 		{ kind = "press", name = "Noise", text = "Tap where to throw a noise - the host goes to look there, and Echo runs 5% faster for 3 seconds." },
 	} },
 	elfy = { parts = {
-		{ kind = "passive", name = "Elf Hands", text = "Opens drawers, boxes, presents and hiding spots 25% faster." },
+		{ kind = "passive", name = "Workshop Helper", text = "Friends near Elfy get their skills back 15% faster." },
 		{ kind = "press", name = "Wind-up Toy", text = "Sets down a wind-up toy soldier that marches off jingling for 6 seconds - the host goes after the noise." },
 	} },
 	harmony = { parts = {
@@ -763,6 +764,7 @@ Config.CHARACTER_ASSETS = {
 	Elfy = 137385510164350, -- 5 Nov: Elfy, the limited Christmas character (checked on Roblox: Model 'Elfy', Brent's upload)
 	PatchSkater = 85745496736470, -- 5 Nov: Ice Skater Patch (checked on Roblox: Model 'PatchSkater', Brent's upload)
 	BrainyGingerbread = 78207892363161, -- 5 Nov: Gingerbread Brainy (checked on Roblox: Model 'BrainyGingerbread', Brent's upload)
+	ToyElf = 137802129295979, -- 5 Nov: the Toy Elf in Claus Manor (checked on Roblox: Model 'ToyElf', Brent's upload)
 	HostYeti = 138655463727624, -- 5 Nov: Frostfoot the Yeti, Frostpeak Lodge's host (New Year's; checked on Roblox: Model 'FrostFoot', Brent's upload)
 	CloneGala = 137284317587849, -- 5 Nov: Harvest Gala Clone (checked on Roblox: Model, Brent's upload)
 	HollyCranberry = 139043771129248, -- 5 Nov: Cranberry Spice Holly (checked on Roblox: Model 'HollyCranberry', Brent's upload)

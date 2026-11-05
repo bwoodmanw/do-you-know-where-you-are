@@ -290,7 +290,7 @@ local function applyMods(plr)
 	plr:SetAttribute("RunMult", m.runMult)
 	plr:SetAttribute("SightMult", m.sightMult)
 	-- Patch frees caged friends (and holds everything) twice as fast
-	plr:SetAttribute("HoldMult", m.holdMult * (skill == "patch" and 0.5 or 1) * (skill == "elfy" and Config.ELFY.hands or 1))
+	plr:SetAttribute("HoldMult", m.holdMult * (skill == "patch" and 0.5 or 1))
 	plr:SetAttribute("CooldownMult", m.cooldownMult)
 	-- ladder steps (Progress.ADDS) are added to each base value
 	plr:SetAttribute("SneakTime", 6 + (m.sneakTime or 0))
@@ -5278,6 +5278,48 @@ task.spawn(function()
 	end
 end)
 
+-- Elfy's Workshop Helper (5 Nov, Brent): once a second, every friend within
+-- Config.ELFY.helpNear studs of an Elfy gets `help` s taken off each skill
+-- recharge still running (their own button and Clone's copies) - their skills
+-- come back 15% faster while they stay near him. More than one Elfy: no stacking
+task.spawn(function()
+	while true do
+		task.wait(1)
+		if state.status == "playing" then
+			local elves = {}
+			for _, p in ipairs(Players:GetPlayers()) do
+				if p:GetAttribute("Skill") == "elfy" and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and hrpOf(p) then
+					table.insert(elves, p)
+				end
+			end
+			if #elves > 0 then
+				local E = Config.ELFY
+				local now = workspace:GetServerTimeNow()
+				for _, p in ipairs(Players:GetPlayers()) do
+					local h = hrpOf(p)
+					local near = false
+					if h and not p:GetAttribute("Escaped") then
+						for _, e in ipairs(elves) do
+							local eh = hrpOf(e)
+							if e ~= p and eh and (eh.Position - h.Position).Magnitude <= E.helpNear then
+								near = true
+							end
+						end
+					end
+					if near then
+						for _, k in ipairs({ "CoolUntil", "CopyCool1", "CopyCool2" }) do
+							local u = p:GetAttribute(k) or 0
+							if u > now then
+								p:SetAttribute(k, math.max(now, u - E.help))
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end)
+
 -- Nutmeg's Jingle Bells (level 20; 4 Nov, Brent: her choice when, not her first
 -- dash): its own button, once a game - the host freezes for Config.NUTMEG.bells
 -- seconds wherever he is. Not used up while the host isn't out yet
@@ -5495,7 +5537,7 @@ end
 -- Harmony's Encore (level 20; 4 Nov): its own button, once a game - a lullaby
 -- the whole floor hears: the host walks at half speed for Config.HARMONY.encore s
 -- Elfy's level-20 buttons (5 Nov), once a game: Toy Parade (three toys at
--- once) or Workshop Rush (he and friends near him hold things twice as fast)
+-- once) or Workshop Rush (every friend's skill button ready again at once)
 ElfyPower.OnServerEvent:Connect(function(plr)
 	local p20 = plr:GetAttribute("Power20")
 	if plr:GetAttribute("Skill") ~= "elfy" or (p20 ~= "parade" and p20 ~= "rush") or plr:GetAttribute("ToyPowerUsed")
@@ -5514,20 +5556,24 @@ ElfyPower.OnServerEvent:Connect(function(plr)
 		end
 		say("info", "\u{1F941} Toy Parade! " .. plr.DisplayName .. " sent three toys marching off - the host can't follow them all!")
 	else
-		local E = Config.ELFY
+		-- (5 Nov, Brent) every friend, anywhere in the house: skill button
+		-- (and Clone's copies) ready at once
+		local now = workspace:GetServerTimeNow()
 		for _, p in ipairs(Players:GetPlayers()) do
-			local h = hrpOf(p)
-			if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude <= E.rushNear then
-				p:SetAttribute("HoldMult", (p:GetAttribute("HoldMult") or 1) * 0.5)
-				Effects.aura(p, "speed", E.rush)
-				task.delay(E.rush, function()
-					if p.Parent then
-						applyMods(p) -- back to their own hold speed
+			if p ~= plr and not p:GetAttribute("Escaped") then
+				local was = false
+				for _, k in ipairs({ "CoolUntil", "CopyCool1", "CopyCool2" }) do
+					if (p:GetAttribute(k) or 0) > now then
+						p:SetAttribute(k, now)
+						was = true
 					end
-				end)
+				end
+				if was and hrpOf(p) then
+					Effects.aura(p, "speed", 2)
+				end
 			end
 		end
-		say("info", "\u{1F6E0} Workshop Rush! " .. plr.DisplayName .. " and friends nearby open things twice as fast for " .. E.rush .. " s!")
+		say("info", "\u{1F6E0} Workshop Rush! " .. plr.DisplayName .. " fixed everyone's gadgets - every friend's skill is ready to use again!")
 	end
 end)
 

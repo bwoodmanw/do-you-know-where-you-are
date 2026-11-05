@@ -87,8 +87,9 @@ like the runaway turkey). He isn't a playable character.
 
 ### Elfy's skills
 
-- **Elf Hands** (always on): opens drawers, boxes, presents and hiding spots
-  **25% faster**.
+- **Workshop Helper** (always on; Brent, 5 Nov - replaces Elf Hands, which
+  only made E faster, like Patch): friends within 20 studs of Elfy get their
+  skill buttons back **15% faster**.
 - **Wind-up Toy** (button, 35 s recharge): sets down a little wind-up toy
   soldier that marches off jingling for 6 s. The host goes after the noise,
   the way he follows Echo's Sound Wave.
@@ -103,8 +104,9 @@ like the runaway turkey). He isn't a playable character.
 - **Level 20**, pick one:
   - **Toy Parade**: a button, once a game: three toys march off in three
     directions at once.
-  - **Workshop Rush**: a button, once a game: for 10 s Elfy and friends near
-    him open and hold everything twice as fast.
+  - **Workshop Rush**: a button, once a game: every friend's skill button
+    (and Clone's copies) is ready to use again at once (Brent, 5 Nov - was
+    twice-as-fast holding for 10 s).
 
 ## The pictures needed
 
