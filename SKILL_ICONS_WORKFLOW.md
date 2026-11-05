@@ -22,8 +22,67 @@ Table for each [Picture] and [file name] combination is below:
 [Lullaby: two joined musical eighth notes in glossy purple, with a small golden crescent moon and a tiny twinkling star beside them, soft and sleepy] | [skill-harmony.png]
 ```
 
+## Reusable generation workflow
+
+Structured prompt table: [new-character-skill-icons.json](tools/workflows/new-character-skill-icons.json).
+Resolve `output_root` relative to this project; save each asset under
+`output_root/folder/file_name`.
+
+1. Process the five assets in table order. For each, concatenate
+   `picture_standard` verbatim, two newlines, and `picture` verbatim.
+2. Use one built-in image generation call per asset with
+   `transparent_background: true`. No reference images are specified or
+   attached. The existing Tinker and Echo skill icons can be inspected
+   separately when assessing the requested style match.
+3. Inspect each result: glossy chunky shapes, thick dark-purple outline,
+   required object counts and colors, no text, logos, backdrop or frame.
+   For Copycat, teal is on the viewer's left and orange on the right, with
+   a curved two-way arrow over both heads.
+4. Create `art/ui-icons` if absent. Save each selected PNG to its listed
+   filename. Preserve existing assets on reruns unless replacement is
+   requested; otherwise save a versioned sibling and record its actual path.
+5. Ensure each delivery is exactly 1024 x 1024. If the generator returns a
+   larger square image, resample to the requested dimensions while preserving
+   its alpha channel. Keep the unmodified generated source for provenance.
+6. Verify PNG decoding, dimensions and actual transparency. Inspect the
+   icons at 60 pixels on light and dark backgrounds for readability.
+7. Record full prompts, generated sources, destinations, actual dimensions,
+   transparency checks and any resampling in
+   `art/ui-icons/new-character-skill-icons-generation-report.json`.
+
+To add icons, append `picture` and `file_name` entries to `assets`; include
+the shared Picture Standard with every generated icon.
+
+## Execution record (4 Nov 2026)
+
+All five icons were generated with the built-in image tool, using the full
+Picture Standard and each Picture prompt without prompt changes or attached
+references. The selected generated sources were 1280 x 1280 and were
+resampled to the requested 1024 x 1024 with alpha preserved.
+
+Saved in `art/ui-icons/`:
+
+- `skill-nutmeg.png`: golden jingle bell, red bow, three orange speed streaks.
+- `skill-cloud.png`: white/pale-blue cloud with curling mist below.
+- `skill-holly.png`: three peppermint candies, one large in front.
+- `skill-clone.png`: matching teal/orange person shapes and two-way arrow.
+- `skill-harmony.png`: joined purple eighth notes, gold crescent and star.
+
+All five decode as RGBA PNGs with transparent background areas. Each was
+visually checked at full size and at 60 pixels against light and dark
+backgrounds. No Roblox upload or configuration change was performed.
+
 ## Then
 
 1. Send the five pictures back to be checked (style match, no look-alikes or logos).
 2. Upload each one to Roblox as an image (Creator Hub > Creations > Development Items > Images, or Studio's Asset Manager > Bulk Import).
 3. Send the five IDs. They go in `Config.UI_ICONS`.
+
+## Checked (4 Nov)
+
+Nutmeg, Cloud, Clone and Harmony are good to upload. **Holly's needs redoing:**
+one big round candy with two smaller round ones at its top left and top right
+reads as a famous cartoon mouse's ears and head. The new row (replaces the
+Holly row):
+
+[Peppermints: three red-and-white swirl peppermint candies, all the same size, lying in a slanted row from bottom-left to top-right and overlapping a little, the middle one in a clear cellophane wrapper twisted at both ends - not one big circle with two smaller circles on top] | [skill-holly.png]

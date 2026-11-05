@@ -1,0 +1,31 @@
+{
+  "name": "Nutmeg, Cloud, Holly, Clone and Harmony skill icons",
+  "output_root": "art",
+  "folder": "ui-icons",
+  "transparent_background": true,
+  "width": 1024,
+  "height": 1024,
+  "picture_standard": "A single button icon for a kids' co-op escape game for ages 8 and up, in exactly the same style as the game's other skill icons (a crossed wrench and screwdriver, a pair of headphones): one bold, chunky object in a glossy cartoon style with soft bright highlights, a thick dark-purple outline around the whole shape, rich purple and warm orange-gold accents, centered and filling most of the square. Fully transparent background - a PNG with no backdrop, no circle, no frame, no shadow box. It must still read clearly when shrunk to 60 pixels, so keep it simple with big shapes. No logos, brand marks, words, letters or numbers. Not taken from any existing game, film or cartoon. Square, 1024 x 1024.",
+  "assets": [
+    {
+      "file_name": "skill-nutmeg.png",
+      "picture": "Sleigh Dash: a round golden jingle bell with a small red ribbon bow on top, tilted forward as if rushing ahead, with three orange speed streaks swooshing out behind it"
+    },
+    {
+      "file_name": "skill-cloud.png",
+      "picture": "Fog: a big puffy cloud, white with pale-blue shading, with soft curls of mist spilling out from underneath it"
+    },
+    {
+      "file_name": "skill-holly.png",
+      "picture": "Peppermints: three round red-and-white swirl peppermint candies, one big in front and two smaller ones tucked behind it"
+    },
+    {
+      "file_name": "skill-clone.png",
+      "picture": "Copycat: two matching simple person shapes standing side by side, the left one teal and the right one orange, with a curved two-way arrow looping over their heads between them"
+    },
+    {
+      "file_name": "skill-harmony.png",
+      "picture": "Lullaby: two joined musical eighth notes in glossy purple, with a small golden crescent moon and a tiny twinkling star beside them, soft and sleepy"
+    }
+  ]
+}

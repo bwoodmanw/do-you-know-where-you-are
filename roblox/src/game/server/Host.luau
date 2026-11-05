@@ -403,6 +403,45 @@ function Host:step(dt)
 			end
 		end
 	end
+	-- 4 Nov (Brent: he waited by Cloud's fog until it cleared): the moment the
+	-- kid he is after (or the spot he is heading for) is in fog, he loses
+	-- them at once and walks off to a far patrol point - he doesn't camp there
+	do
+		local fogLost = false
+		if (self.mode == "hunt" or self.mode == "search") and self.target and self.target:GetAttribute("Fogged") then
+			fogLost = true
+		elseif self.mode == "search" and self.goal then
+			for _, p in ipairs(Players:GetPlayers()) do
+				local h = p:GetAttribute("Fogged") and p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+				if h and (Vector3.new(h.Position.X - self.goal.X, 0, h.Position.Z - self.goal.Z)).Magnitude < 8 then
+					fogLost = true
+				end
+			end
+		end
+		if fogLost then
+			local wasHunting = self.mode == "hunt"
+			self.mode, self.goal, self.target = "patrol", nil, nil
+			self.lastSeen = 0
+			-- the patrol point farthest from here (that isn't locked away)
+			local list = self.world.map.patrol or {}
+			local far, fd = nil, -1
+			for i, w in ipairs(list) do
+				if not w.lock or (self.world.unlocked and self.world.unlocked[w.lock]) then
+					local p = require(script.Parent.House).at(w[1], w[2], 0)
+					local d = (Vector3.new(p.X, 0, p.Z) - Vector3.new(self.root.Position.X, 0, self.root.Position.Z)).Magnitude
+					if d > fd then
+						far, fd = i, d
+					end
+				end
+			end
+			if far then
+				self.wp = far
+			end
+			if wasHunting then
+				self.round:hostLost()
+			end
+		end
+	end
 	-- who can it see? the nearest wins
 	local best, bestD = nil, math.huge
 	local lured = os.clock() < (self.lureUntil or 0)
@@ -455,7 +494,7 @@ function Host:step(dt)
 		local near, nd = nil, math.huge
 		for _, plr in ipairs(Players:GetPlayers()) do
 			local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-			if hrp and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped") then
+			if hrp and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped") and not plr:GetAttribute("Fogged") then -- (4 Nov: not into fog)
 				local d = (hrp.Position - self.root.Position).Magnitude
 				if d < nd then near, nd = hrp, d end
 			end
