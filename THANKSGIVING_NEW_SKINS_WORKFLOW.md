@@ -75,3 +75,13 @@ used the saved front immediately before it as its sole reference. The
 manifest contains the exact prompts, source output paths, dimensions and
 SHA-256 hashes. All PNG files were verified and the images visually reviewed
 for character continuity, outfit details, A-pose and matching pair colors.
+
+## Redo (4 Nov, Brent: Clone too plain; one girl in a pie skirt)
+
+Checked: Cranberry Spice Holly and Autumn Breeze Cloud are good. Two redos,
+renamed (folders change too). Run the FRONT row first, then its BACK.
+
+[FRONT view of Harvest Gala Clone, dressed up for a fancy Thanksgiving dinner: his same short curly black hair and his same round goggles pushed up on his forehead, now with shiny gold rims and amber lenses; a smart fitted two-tone dinner jacket split down the middle - the left half deep burgundy, the right half golden-mustard - with three round gold buttons; a cream shirt with a small pumpkin-orange bow tie; a short solid golden-brown vest showing at the front; his same chunky round wrist gadget, now gold with a plain dark screen; dark chocolate-brown dress trousers with NO pockets; shiny chestnut-brown dress shoes] | [clone\front-toon.png] | [gala-clone\front-toon.png]
+[BACK view of Harvest Gala Clone, matching the reference exactly: the back of his curly black hair with the gold-rimmed goggles at the top of his head, the back of the two-tone dinner jacket (seen from behind, the burgundy half is on the RIGHT of the picture and the golden-mustard half on the LEFT), chocolate-brown trousers, chestnut-brown shoes] | [gala-clone\front-toon.png] | [gala-clone\back-toon.png]
+[FRONT view of Pumpkin Pie Harmony: her same long straight black hair with bangs, plus one small solid cream hair clip shaped like a swirl of whipped cream; a cozy cream sweater with a round neck and one solid warm-brown music note on the chest; her same small round gold music-box pendant; a short, puffy skirt shaped like a pumpkin pie - a smooth pumpkin-orange top with a scalloped golden-brown pie-crust rim all round the waistband, one solid shape (not see-through, no layers of net); her piano-key wristband in cream and brown; plain orange tights; golden-brown ballet-style flat shoes. NO headphones] | [harmony\front-toon.png] | [pie-harmony\front-toon.png]
+[BACK view of Pumpkin Pie Harmony, matching the reference exactly: the back of her long straight black hair with the whipped-cream clip at the side, the back of the cream sweater, the pumpkin-pie skirt with its golden-brown crust rim all the way round, orange tights, golden-brown flats] | [pie-harmony\front-toon.png] | [pie-harmony\back-toon.png]

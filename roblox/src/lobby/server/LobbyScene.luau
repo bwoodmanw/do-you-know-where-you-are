@@ -1397,4 +1397,184 @@ function Scene.fun()
 	end)
 end
 
+-- ---------- 4 Nov (Brent): more to play with in the open spaces ----------
+-- behind the leaderboards a seesaw and a merry-go-round; by the back fence a
+-- row of music tiles; by the left fence a wishing well. onWish(plr, text)
+-- shows the well's wish to the one who tossed the coin.
+function Scene.more(onWish)
+	local folder = Instance.new("Folder")
+	folder.Name = "LobbyMore"
+	folder.Parent = workspace
+	local RunService = game:GetService("RunService")
+	local function seatAt(name, color)
+		local s = Instance.new("Seat")
+		s.Name = name
+		s.Anchored = true
+		s.Size = Vector3.new(2, 0.4, 2)
+		s.Color = color
+		s.Material = Enum.Material.SmoothPlastic
+		s.TopSurface, s.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+		s.Parent = folder
+		local pp = promptOn(s, "Sit", name)
+		pp.Triggered:Connect(function(plr)
+			local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+			if hum and not s.Occupant then
+				s:Sit(hum)
+			end
+		end)
+		return s
+	end
+
+	-- a seesaw: anyone on it and it rocks up and down
+	do
+		local at = Vector3.new(60, 0, -16)
+		part(folder, { Name = "SeesawStand", Size = Vector3.new(1.6, 2.4, 2.4), Position = at + Vector3.new(0, 1.2, 0), Color = Color3.fromRGB(230, 80, 90), Material = Enum.Material.SmoothPlastic })
+		local pivot = CFrame.new(at + Vector3.new(0, 2.6, 0))
+		local plank = part(folder, { Name = "SeesawPlank", Size = Vector3.new(1.6, 0.4, 16), Color = Color3.fromRGB(255, 200, 60), Material = Enum.Material.SmoothPlastic, CanCollide = false })
+		local a = seatAt("Seesaw", Color3.fromRGB(70, 150, 255))
+		local b = seatAt("Seesaw", Color3.fromRGB(110, 210, 110))
+		local angle, t = 0, 0
+		local function place(x)
+			local cf = pivot * CFrame.Angles(x, 0, 0)
+			plank.CFrame = cf
+			a.CFrame = cf * CFrame.new(0, 0.4, -7)
+			b.CFrame = cf * CFrame.new(0, 0.4, 7) * CFrame.Angles(0, math.pi, 0)
+		end
+		place(0)
+		RunService.Heartbeat:Connect(function(dt)
+			if a.Occupant or b.Occupant then
+				t += dt
+				angle = math.sin(t * 2) * 0.22
+			elseif math.abs(angle) > 0.001 then
+				angle *= 0.95
+				t = 0
+			else
+				return
+			end
+			place(angle)
+		end)
+	end
+
+	-- a merry-go-round: four seats; spins while anyone is on it
+	do
+		local at = Vector3.new(60, 0, 16)
+		local disc = part(folder, { Name = "MerryGoRound", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.8, 14, 14), Color = Color3.fromRGB(255, 138, 31), Material = Enum.Material.SmoothPlastic })
+		local pole = part(folder, { Name = "MerryPole", Size = Vector3.new(0.6, 6, 0.6), Color = Color3.fromRGB(240, 240, 240), Material = Enum.Material.Metal })
+		local top = part(folder, { Name = "MerryTop", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.4, 1.4), Color = Color3.fromRGB(232, 60, 70), Material = Enum.Material.SmoothPlastic })
+		local cols = { Color3.fromRGB(70, 150, 255), Color3.fromRGB(110, 210, 110), Color3.fromRGB(190, 120, 255), Color3.fromRGB(255, 220, 70) }
+		local seats = {}
+		for i = 1, 4 do
+			seats[i] = seatAt("Merry-go-round", cols[i])
+		end
+		local spin, speed = 0, 0
+		local function place()
+			local base = CFrame.new(at) * CFrame.Angles(0, spin, 0)
+			disc.CFrame = base * CFrame.new(0, 0.5, 0) * CFrame.Angles(0, 0, math.rad(90))
+			pole.CFrame = base * CFrame.new(0, 3.9, 0)
+			top.CFrame = base * CFrame.new(0, 7.1, 0)
+			for i, s in ipairs(seats) do
+				-- facing out, on the rim
+				s.CFrame = base * CFrame.Angles(0, (i - 1) * math.pi / 2, 0) * CFrame.new(0, 1.1, -5) * CFrame.Angles(0, math.pi, 0)
+			end
+		end
+		place()
+		RunService.Heartbeat:Connect(function(dt)
+			local riding = false
+			for _, s in ipairs(seats) do
+				if s.Occupant then
+					riding = true
+				end
+			end
+			speed = riding and math.min(1.6, speed + dt * 0.8) or math.max(0, speed - dt * 0.6)
+			if speed > 0 then
+				spin = (spin + speed * dt) % (math.pi * 2)
+				place()
+			end
+		end)
+	end
+
+	-- music tiles by the back fence: each plays a note when you step on it
+	do
+		local cols = { Color3.fromRGB(232, 60, 70), Color3.fromRGB(255, 138, 31), Color3.fromRGB(255, 220, 70), Color3.fromRGB(110, 210, 110),
+			Color3.fromRGB(70, 200, 220), Color3.fromRGB(70, 130, 255), Color3.fromRGB(150, 100, 240), Color3.fromRGB(240, 110, 200) }
+		-- a major scale: each tile a step higher
+		local pitch = { 1, 1.122, 1.26, 1.335, 1.498, 1.682, 1.888, 2 }
+		local id = Config.SOUNDS.collect
+		for i = 1, 8 do
+			local x = 44 + (i - 1) * 5
+			local tile = part(folder, { Name = "MusicTile", Size = Vector3.new(4.4, 0.3, 6), Position = Vector3.new(x, 0.15, 76), Color = cols[i], Material = Enum.Material.Neon, Transparency = 0.15 })
+			local last = 0
+			tile.Touched:Connect(function(hit)
+				local hum = hit.Parent and hit.Parent:FindFirstChildOfClass("Humanoid")
+				if not hum or os.clock() - last < 0.35 or not id then
+					return
+				end
+				last = os.clock()
+				local s = Instance.new("Sound")
+				s.SoundGroup = Sfx.group()
+				s.SoundId = "rbxassetid://" .. id
+				s.PlaybackSpeed = pitch[i]
+				s.Volume = 0.7
+				s.RollOffMaxDistance = 60
+				s.Parent = tile
+				s:Play()
+				Debris:AddItem(s, 3)
+				local was = tile.Size
+				tile.Size = was + Vector3.new(0, 0.5, 0)
+				tile.Transparency = 0
+				task.delay(0.2, function()
+					tile.Size = was
+					tile.Transparency = 0.15
+				end)
+			end)
+		end
+		part(folder, { Name = "MusicSign", Size = Vector3.new(6, 2.4, 0.4), Position = Vector3.new(40, 2.4, 76), CFrame = CFrame.new(40, 2.4, 76) * CFrame.Angles(0, math.rad(90), 0), Color = Color3.fromRGB(40, 28, 46), Material = Enum.Material.Wood })
+	end
+
+	-- a wishing well by the left fence: toss a coin
+	do
+		local at = Vector3.new(-72, 0, -30)
+		local stone = Color3.fromRGB(120, 115, 125)
+		for k = 0, 11 do
+			local a = k / 12 * math.pi * 2
+			part(folder, { Name = "WellStone", Size = Vector3.new(2.2, 3, 1.2), CFrame = CFrame.new(at + Vector3.new(math.cos(a) * 3.4, 1.5, math.sin(a) * 3.4)) * CFrame.Angles(0, -a + math.pi / 2, 0), Color = stone, Material = Enum.Material.Cobblestone })
+		end
+		local water = part(folder, { Name = "WellWater", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.3, 6, 6), CFrame = CFrame.new(at + Vector3.new(0, 1.6, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(60, 120, 200), Material = Enum.Material.Neon, Transparency = 0.3, CanCollide = false })
+		for _, dx in ipairs({ -3.6, 3.6 }) do
+			part(folder, { Name = "WellPost", Size = Vector3.new(0.6, 7, 0.6), Position = at + Vector3.new(dx, 3.5, 0), Color = Color3.fromRGB(110, 70, 40), Material = Enum.Material.Wood })
+		end
+		part(folder, { Name = "WellRoof", Size = Vector3.new(9, 0.6, 5), Position = at + Vector3.new(0, 7.2, 0), Color = Color3.fromRGB(150, 50, 50), Material = Enum.Material.WoodPlanks })
+		local wish = promptOn(water, "Toss a coin", "Wishing well")
+		local WISHES = {
+			"You wished for a key in the very first drawer. Good luck!",
+			"You wished the host trips over his own feet. Heh heh.",
+			"You wished for a giant cake. The well says: escape first!",
+			"You wished for a friend to play with. Try the Party button!",
+			"You wished to be invisible. Shadow is jealous.",
+			"You wished for extra candy. The well giggles.",
+			"You wished the lights stay on. Glow's got your back.",
+			"You wished for a surprise. Look behind you! ...just kidding.",
+		}
+		local cool = {}
+		wish.Triggered:Connect(function(plr)
+			if os.clock() - (cool[plr] or 0) < 3 then
+				return
+			end
+			cool[plr] = os.clock()
+			sound(water, "present", 0.8)
+			local was = water.Color
+			water.Color = Color3.fromRGB(255, 220, 90)
+			task.delay(0.6, function()
+				water.Color = was
+			end)
+			if onWish then
+				onWish(plr, "\u{1FA99} " .. WISHES[math.random(1, #WISHES)])
+			end
+		end)
+		Players.PlayerRemoving:Connect(function(plr)
+			cool[plr] = nil
+		end)
+	end
+end
+
 return Scene

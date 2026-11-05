@@ -1696,6 +1696,9 @@ stallPrompt.Triggered:Connect(function(plr)
 end)
 Scene.dropOff()
 Scene.fun()
+Scene.more(function(plr, text) -- 4 Nov: seesaw, merry-go-round, music tiles, wishing well
+	Notice:FireClient(plr, text)
+end)
 Scene.perimeter()
 Scene.seasons() -- the season's decorations (Halloween / Thanksgiving), swapped by themselves
 local boards = Scene.boards({ "\u{1F3C6} Most points earned", "\u{1F6AA} Most escapes", "\u{1F3E2} Most floors escaped", "\u{1F512} Most rescues", "\u{23F1} Fastest escapes this week" })
