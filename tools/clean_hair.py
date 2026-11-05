@@ -100,6 +100,13 @@ PROFILES = {
     # 5 Nov: Frostfoot the Yeti - his small navy ears smeared into big navy
     # patches over the white fur on both sides of his head (the face stays)
     "host-yeti": {"hair": lambda c: c.min(axis=1) > 185, "bad": lambda c: (c.sum(axis=1) < 640) & (c[:, 2] > c[:, 0] + 10) & (c[:, 1] >= c[:, 0] - 3) & (c[:, 1] < c[:, 0] + 0.5 * (c[:, 2] - c[:, 0])), "head_bad": None, "top": False, "ends": False, "head": 0.25, "zcut": 0.8},  # navy and its gray-blue blend (lavender has less green than red; the hat and scarf have far more)
+    # 5 Nov, the Christmas skins: Ice Skater Patch - the white earmuffs
+    # smeared pale patches over the sides and back of her blonde hair (the
+    # muffs sit at the middle of the head, so only behind them is cleaned)
+    "skater-patch": {"hair": yellow_hair, "bad": lambda c: (c[:, 0] > 170) & (c[:, 2] > 0.68 * c[:, 1]) & (c[:, 1] > 0.75 * c[:, 0]), "head_bad": None, "top": False, "ends": True, "head": 0.25, "zcut": 0.42},
+    # Jingle Bell Echo: the red goggle strap smeared wide through the brown
+    # curls at the sides and back, with pale streaks from the white collar
+    "jinglebell-echo": {"hair": brown_hair, "bad": lambda c: ((c[:, 0] > 120) & (c[:, 1] < 0.45 * c[:, 0]) & (c[:, 2] < 0.6 * c[:, 0])) | ((c.sum(axis=1) > 420) & (c[:, 2] > 0.75 * c[:, 0])), "head_bad": None, "top": False, "ends": False, "head": 0.22, "zcut": 0.55},
     "autumn-cloud": {"hair": lambda c: (c.min(axis=1) > 165) & (c[:, 2] >= c[:, 0] - 12), "bad": orange, "head_bad": None, "top": True, "ends": False, "head": 0.25, "zcut": 0.85,
                      "pale": (0.13, lambda c: (c[:, 0] > 190) & (c[:, 2] < c[:, 0] - 25) & (c[:, 1] > 0.6 * c[:, 0]))},
 }
