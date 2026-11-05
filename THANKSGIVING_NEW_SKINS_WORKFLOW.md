@@ -85,3 +85,25 @@ renamed (folders change too). Run the FRONT row first, then its BACK.
 [BACK view of Harvest Gala Clone, matching the reference exactly: the back of his curly black hair with the gold-rimmed goggles at the top of his head, the back of the two-tone dinner jacket (seen from behind, the burgundy half is on the RIGHT of the picture and the golden-mustard half on the LEFT), chocolate-brown trousers, chestnut-brown shoes] | [gala-clone\front-toon.png] | [gala-clone\back-toon.png]
 [FRONT view of Pumpkin Pie Harmony: her same long straight black hair with bangs, plus one small solid cream hair clip shaped like a swirl of whipped cream; a cozy cream sweater with a round neck and one solid warm-brown music note on the chest; her same small round gold music-box pendant; a short, puffy skirt shaped like a pumpkin pie - a smooth pumpkin-orange top with a scalloped golden-brown pie-crust rim all round the waistband, one solid shape (not see-through, no layers of net); her piano-key wristband in cream and brown; plain orange tights; golden-brown ballet-style flat shoes. NO headphones] | [harmony\front-toon.png] | [pie-harmony\front-toon.png]
 [BACK view of Pumpkin Pie Harmony, matching the reference exactly: the back of her long straight black hair with the whipped-cream clip at the side, the back of the cream sweater, the pumpkin-pie skirt with its golden-brown crust rim all the way round, orange tights, golden-brown flats] | [pie-harmony\front-toon.png] | [pie-harmony\back-toon.png]
+
+## Redo outputs saved (4 Nov 2026)
+
+Harvest Gala Clone and Pumpkin Pie Harmony replace Pumpkin Patch Clone and
+Harvest Song Harmony. Cranberry Spice Holly and Autumn Breeze Cloud are
+approved and their image files remain unchanged. Previous Clone and Harmony
+images are retained for history.
+
+| Character | Front | Back |
+|---|---|---|
+| Harvest Gala Clone | `art/model-input/gala-clone/front-toon.png` | `art/model-input/gala-clone/back-toon.png` |
+| Pumpkin Pie Harmony | `art/model-input/pie-harmony/front-toon.png` | `art/model-input/pie-harmony/back-toon.png` |
+
+All four replacement images are 1024 x 1536 PNGs made with the built-in image
+generator, in FRONT/BACK order per character. Each back attached only the
+front saved just before it. The unchanged Picture Standard and exact final
+prompts are recorded in `tools/workflows/thanksgiving-new-skins-redo.json`.
+The main `tools/workflows/thanksgiving-new-skins.json` now lists the new
+folders for the active eight-image set and retains the previous four rows in
+`superseded_assets`. Clone's jacket is burgundy on image left in front and
+image right in back. PNG integrity, reference dependencies, and approved
+Holly/Cloud file hashes were checked after saving.

@@ -715,6 +715,7 @@ Config.CHARACTER_ASSETS = {
 	Holly = 72564808468304, -- 4 Nov: Holly, hair cleaned (checked on Roblox: Model 'Holly', Brent's upload)
 	Clone = 117482183355972, -- 4 Nov: Clone, hair cleaned (checked on Roblox: Model 'Clone', Brent's upload)
 	Harmony = 84493995501378, -- 4 Nov: Harmony (checked on Roblox: Model 'Harmony', Brent's upload)
+	HollyCranberry = 139043771129248, -- 5 Nov: Cranberry Spice Holly (checked on Roblox: Model 'HollyCranberry', Brent's upload)
 	ShadowGobble = 82744663331421, -- 3 Nov
 	GlowHarvest = 132385404072757, -- 3 Nov
 	TinkerScarecrow = 115702745306476, -- 3 Nov
@@ -998,7 +999,7 @@ Config.SKINS = {
 	{ id = "bramble_acorn", skill = "bramble", name = "Acorn Bramble", model = "BrambleAcorn", feather = 150, pass = 2064942592 },
 	-- 4 Nov (Brent): the new characters' Thanksgiving skins - hidden until
 	-- their models are saved (CHARACTER_ASSETS) and passes made (pass = 0)
-	{ id = "holly_cranberry", skill = "holly", name = "Cranberry Spice Holly", model = "HollyCranberry", feather = 150, pass = 0, hidden = true },
+	{ id = "holly_cranberry", skill = "holly", name = "Cranberry Spice Holly", model = "HollyCranberry", feather = 150, pass = 0 }, -- 5 Nov: model saved, live (feathers only until a pass is made)
 	{ id = "cloud_autumn", skill = "cloud", name = "Autumn Breeze Cloud", model = "CloudAutumn", feather = 150, pass = 0, hidden = true },
 	{ id = "clone_gala", skill = "clone", name = "Harvest Gala Clone", model = "CloneGala", feather = 150, pass = 0, hidden = true },
 	{ id = "harmony_pie", skill = "harmony", name = "Pumpkin Pie Harmony", model = "HarmonyPie", feather = 150, pass = 0, hidden = true },

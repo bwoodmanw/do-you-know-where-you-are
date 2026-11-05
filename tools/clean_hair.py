@@ -97,6 +97,9 @@ PROFILES = {
     # Pumpkin Pie Harmony: skin-brown blended into the sides of her black hair
     "pie-harmony": {"hair": dark_hair, "bad": lambda c: (c.sum(axis=1) >= 150) & (c[:, 0] < 175) & (c[:, 0] > c[:, 2] + 15), "head_bad": None, "top": True, "ends": True},  # (zcut 0.8 painted hair over her ear and jaw)
     # Autumn Breeze Cloud: the orange leaf clip smeared over her pale hair
+    # 5 Nov: Frostfoot the Yeti - his small navy ears smeared into big navy
+    # patches over the white fur on both sides of his head (the face stays)
+    "host-yeti": {"hair": lambda c: c.min(axis=1) > 185, "bad": lambda c: (c.sum(axis=1) < 640) & (c[:, 2] > c[:, 0] + 10) & (c[:, 1] >= c[:, 0] - 3) & (c[:, 1] < c[:, 0] + 0.5 * (c[:, 2] - c[:, 0])), "head_bad": None, "top": False, "ends": False, "head": 0.25, "zcut": 0.8},  # navy and its gray-blue blend (lavender has less green than red; the hat and scarf have far more)
     "autumn-cloud": {"hair": lambda c: (c.min(axis=1) > 165) & (c[:, 2] >= c[:, 0] - 12), "bad": orange, "head_bad": None, "top": True, "ends": False, "head": 0.25, "zcut": 0.85,
                      "pale": (0.13, lambda c: (c[:, 0] > 190) & (c[:, 2] < c[:, 0] - 25) & (c[:, 1] > 0.6 * c[:, 0]))},
 }

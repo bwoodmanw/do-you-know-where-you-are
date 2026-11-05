@@ -82,6 +82,9 @@ JOBS = {
     "autumn-cloud": "autumn-cloud-toon.glb",
     "gala-clone": "gala-clone-toon.glb",
     "pie-harmony": "pie-harmony-toon.glb",
+    # the Christmas and New Year hosts (5 Nov): Crumbles, Frostfoot the Yeti
+    "host-crumbles": "host-crumbles-toon.glb",
+    "host-yeti": "host-yeti-toon.glb",
 }
 TEXTURE = 1024  # one 1024 x 1024 picture: plenty for flat cartoon colors
 VERTICES = 4000  # about 8,000 triangles
