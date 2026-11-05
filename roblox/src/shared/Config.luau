@@ -717,6 +717,7 @@ Config.CHARACTER_ASSETS = {
 	Harmony = 84493995501378, -- 4 Nov: Harmony (checked on Roblox: Model 'Harmony', Brent's upload)
 	CloudAutumn = 75463289700234, -- 5 Nov: Autumn Breeze Cloud (checked on Roblox: Model 'CloudAutumn', Brent's upload)
 	HarmonyPie = 127157616419679, -- 5 Nov: Pumpkin Pie Harmony (checked on Roblox: Model 'HarmonyPie', Brent's upload)
+	HostCrumbles = 91451706955885, -- 5 Nov: Crumbles, Candy Cane Lane's host (checked on Roblox: Model 'Crumbles', Brent's upload)
 	HostYeti = 138655463727624, -- 5 Nov: Frostfoot the Yeti, Frostpeak Lodge's host (New Year's; checked on Roblox: Model 'FrostFoot', Brent's upload)
 	CloneGala = 137284317587849, -- 5 Nov: Harvest Gala Clone (checked on Roblox: Model, Brent's upload)
 	HollyCranberry = 139043771129248, -- 5 Nov: Cranberry Spice Holly (checked on Roblox: Model 'HollyCranberry', Brent's upload)

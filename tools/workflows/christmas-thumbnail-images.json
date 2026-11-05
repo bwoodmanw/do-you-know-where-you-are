@@ -1,0 +1,31 @@
+{
+  "name": "Christmas game thumbnail and icon",
+  "reference_root": "art",
+  "output_root": "art/roblox-store",
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors) - the gingerbread giant keeps his big round eyes, chef's hat, striped scarf and peppermint buttons. No logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.",
+  "assets": [
+    {
+      "file_name": "thumbnail-christmas.png",
+      "width": 1920,
+      "height": 1080,
+      "picture": "A WIDE 16:9 game thumbnail, 1920 x 1080. Big title across the top: the words ESCAPE CREW, spelled exactly E-S-C-A-P-E C-R-E-W, in chunky glossy candy-cane letters (white with red stripes) topped with snow and a few twinkling lights - no other words, letters or numbers anywhere. Below it, two kids run toward the camera, wide-eyed and laughing-scared: on the left Nutmeg the reindeer kid (the second picture), on the right Holly (the third picture). Right behind them, Crumbles the Gingerbread Giant (the first picture) looms over them, frowning in a funny, not scary way, one big hand reaching after them, crumbs falling from him. They are on a snowy candy-cane street at night inside a toy town: toy-shop windows glowing warm, candy-cane lamp posts, strings of colored lights, piles of wrapped presents, a big lit Christmas tree, gently falling snow. Bright, colorful, full of energy, every face clear and big enough to read on a small phone screen.",
+      "references": [
+        "model-input\\host-crumbles\\front-toon.png",
+        "roblox-store\\portraits\\Nutmeg.png",
+        "roblox-store\\portraits\\Holly.png",
+        "roblox-store\\thumbnail-1920x1080.jpg"
+      ]
+    },
+    {
+      "file_name": "icon-christmas.png",
+      "width": 1024,
+      "height": 1024,
+      "picture": "A SQUARE game icon, 1024 x 1024, no words, letters or numbers. A big close-up of Crumbles the Gingerbread Giant (the first picture) filling most of the picture, frowning in a funny, not scary way, holding up a big shiny red-and-white candy cane in one hand. In the bottom right corner Nutmeg the reindeer kid (the second picture) peeks in, grinning, reaching for the candy cane. Behind them: a snowy toy town at night, a lit Christmas tree, warm glowing windows and gently falling snow, with a deep blue sky. Big simple shapes and strong colors that read clearly at a small size.",
+      "references": [
+        "model-input\\host-crumbles\\front-toon.png",
+        "roblox-store\\portraits\\Nutmeg.png",
+        "roblox-store\\icon-thanksgiving-store.png"
+      ]
+    }
+  ]
+}

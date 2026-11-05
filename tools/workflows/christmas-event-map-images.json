@@ -62,7 +62,15 @@
         "Gingerbread house, toy factory, wrapping room and lit Christmas tree; no people.",
         "Toy factory clock has hands but no numbers, letters or markings."
       ],
-      "status": "pending"
+      "status": "generated",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-29547e82-4594-452f-829f-b992e47ae032.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-candycanelane.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "7013225ac681df8ed206002fa84f31a2a3104ad8a3b0e011091cb1be088493df",
+      "review_status": "visually_checked"
     },
     {
       "order": 3,
@@ -82,7 +90,15 @@
         "Wide 16:9; three-story snowy lodge with bell tower, shaggy footprints and northern lights.",
         "No people or creatures."
       ],
-      "status": "pending"
+      "status": "generated",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-68b91ea7-9932-41fa-8fe4-625305b15302.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-frostpeak.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "802f0416ae13d1dd4d7f77a7b0ea450cfde06907701de51bf1ead173ccbe31ca",
+      "review_status": "visually_checked"
     },
     {
       "order": 4,
@@ -101,7 +117,15 @@
       "review_checks": [
         "Wide 16:9; cozy wooden hall, fireplace, cocoa table and staircase; no people."
       ],
-      "status": "pending"
+      "status": "generated",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-57c27077-aa10-4a60-a984-38c53c1b20b9.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-frostpeak-hall.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "c01b4ac1c0b7a3f3505ef0aa8f82caf60aebaa381d8f169f3c2bb6f4c6c1cc7f",
+      "review_status": "visually_checked"
     },
     {
       "order": 5,
@@ -120,7 +144,15 @@
       "review_checks": [
         "Wide 16:9; plain unnumbered doors, open guest room, laundry cart and melting snowy footprints; no people."
       ],
-      "status": "pending"
+      "status": "generated",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-3df71f9a-a1b7-4adb-b5aa-315c7791985f.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-frostpeak-rooms.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "2bcd79c9f79864e86ba27e720d617c2e9ff45e4eafdab6ddb545212dc4ec9fe2",
+      "review_status": "visually_checked"
     },
     {
       "order": 6,
@@ -139,7 +171,15 @@
       "review_checks": [
         "Wide 16:9; attic beams, bronze bell, trunks, rope ladder, snowy round window and lanterns; no people."
       ],
-      "status": "pending"
+      "status": "generated",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-fb6008cf-a629-4a2b-a71f-2aa1ea096879.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-frostpeak-belltower.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "8c5b27508308f05639028c8212af91d59242ab63965d4ef28860f4aa48721215",
+      "review_status": "visually_checked"
     }
   ]
 }

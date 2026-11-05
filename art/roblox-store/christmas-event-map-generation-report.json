@@ -43,6 +43,116 @@
       ],
       "sha256": "f905f65905b58bbbe96a198fbeb09b0b42b181da211cf0c8cc9158dcbc6ec8ff",
       "review_status": "visually_checked"
+    },
+    {
+      "order": 2,
+      "file_name": "maps\\building-candycanelane.png",
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of Candy Cane Lane, a new place in the game, seen from a little above and to the side, in exactly the same style, angle, framing and night lighting as the attached picture (another building in the game): a short snowy street of toy-shop buildings - a big gingerbread house with white icing trim and candy-cane pillars by its door, a toy factory with a big round clock and a chimney puffing white smoke, a wrapping room with a giant bow on its roof - candy-cane striped lamp posts, strings of colored Christmas lights, wrapped presents and toy soldiers' empty sentry boxes along the street, a big lit Christmas tree at the end, snow on every roof, a deep blue night sky with falling snow. No people.\n\nAttached references in order:\nImage 1: Rendering style, slightly elevated side angle, framing and night lighting; design Candy Cane Lane rather than copying the Harvest Barn.\n\nThe factory clock has hands on a plain face, with no numbers, letters or markings.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.\n\nOutput framing: one full-bleed landscape image, 2048 x 1152 pixels, 16:9. Match the reference's elevated three-quarter establishing view and warm window lighting against a deep blue night. No border, title, watermark or readable signage. Toy soldiers' sentry boxes are EMPTY; no toy soldier figures or people.",
+      "ordered_references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-harvestbarn.png"
+      ],
+      "submitted_image_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-harvestbarn.png"
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-29547e82-4594-452f-829f-b992e47ae032.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-candycanelane.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "7013225ac681df8ed206002fa84f31a2a3104ad8a3b0e011091cb1be088493df",
+      "status": "generated",
+      "review_status": "visually_checked",
+      "review_notes": "Visually reviewed elevated three-quarter street, gingerbread house with icing and candy pillars, factory with unnumbered clock and smoke, wrapping room with roof bow, empty sentry boxes, candy-striped lamps, presents, lights, Christmas tree and snow. No people, visible text or logos.",
+      "aspect_ratio_note": "16:9 landscape with at most one pixel of generator rounding; original generated pixels preserved."
+    },
+    {
+      "order": 3,
+      "file_name": "maps\\building-frostpeak.png",
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of Frostpeak Lodge, a new place in the game, seen from a little above and to the side, in exactly the same style, angle, framing and night lighting as the attached picture (another building in the game): a big three-story wooden mountain ski lodge half buried in deep snow on a snowy mountainside, warm glowing windows, a stone chimney with smoke, a small bell tower on top with a bronze bell, icicles along the roof edges, skis and sleds leaning by the door, snowy pine trees around it, big shaggy footprints in the snow leading round the side of the lodge, a starry night sky with a few green-and-blue northern lights. No people, no creature.\n\nAttached references in order:\nImage 1: Rendering style, slightly elevated side angle, framing and night lighting; design Frostpeak Lodge rather than copying the Harvest Barn.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.\n\nOutput framing: one full-bleed landscape image, 2048 x 1152 pixels, 16:9. Match the reference's elevated three-quarter establishing view, whole-building framing and warm window lighting against deep blue night. All three lodge stories must be visually readable above and between snowbanks; the bell tower rises above them. The shaggy footprints are oversized creature tracks in snow, but the creature is absent. No title, watermark, signage, people or animals.",
+      "ordered_references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-harvestbarn.png"
+      ],
+      "submitted_image_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-harvestbarn.png"
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-68b91ea7-9932-41fa-8fe4-625305b15302.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-frostpeak.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "802f0416ae13d1dd4d7f77a7b0ea450cfde06907701de51bf1ead173ccbe31ca",
+      "status": "generated",
+      "review_status": "visually_checked",
+      "review_notes": "Visually reviewed three-story wooden lodge, snowy mountainside, warm windows, chimney smoke, bronze bell tower, icicles, skis and sleds, snowy pines, oversized tracks curving around lodge, stars and green-blue aurora. No people, creature, visible text or logos.",
+      "aspect_ratio_note": "16:9 landscape with at most one pixel of generator rounding; original generated pixels preserved."
+    },
+    {
+      "order": 4,
+      "file_name": "maps\\floor-frostpeak-hall.png",
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of the inside of the Lodge Hall, the ground floor of the snowy mountain lodge, in exactly the same style, angle, framing and lighting as the attached picture (another floor in the game): a big cozy wooden hall with a roaring stone fireplace, thick rugs, comfy armchairs, a long wooden table with mugs of cocoa, snowshoes and skis on the walls, a coat rack with scarves, windows showing falling snow outside, a staircase going up. Warm firelight and a little spooky shadow in the corners. No people.\n\nAttached references in order:\nImage 1: Rendering style, camera angle, framing and lighting; design the Lodge Hall described above.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.\n\nOutput framing: one full-bleed landscape image, 2048 x 1152 pixels, 16:9. Match the attached reference's elevated three-quarter roofless dollhouse cutaway view, not an eye-level room photograph. Show the cozy lodge's ground-floor hall as an architectural cutaway with naturally continuous wood walls, floor and staircase. The reference is for camera, framing, rendering style and lighting only: replace all school features and Halloween decorations with the requested lodge furnishings, snowy windows, warm firelight and slightly shadowy corners. No title, watermark, text or people.",
+      "ordered_references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-school-ground.png"
+      ],
+      "submitted_image_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-school-ground.png"
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-57c27077-aa10-4a60-a984-38c53c1b20b9.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-frostpeak-hall.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "c01b4ac1c0b7a3f3505ef0aa8f82caf60aebaa381d8f169f3c2bb6f4c6c1cc7f",
+      "status": "generated",
+      "review_status": "visually_checked",
+      "review_notes": "Visually reviewed elevated dollhouse cutaway composition, wooden hall, roaring stone fireplace, thick rugs and armchairs, long table with cocoa mugs, snowshoes and skis, rack with scarves, snow outside windows and wooden staircase. Warm light with darker corners, no people, visible text or logos.",
+      "aspect_ratio_note": "16:9 landscape with at most one pixel of generator rounding; original generated pixels preserved."
+    },
+    {
+      "order": 5,
+      "file_name": "maps\\floor-frostpeak-rooms.png",
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of the Guest Rooms, the middle floor of the snowy mountain lodge, in exactly the same style, angle, framing and lighting as the attached picture (another floor in the game): a long creaky wooden corridor with plain wooden doors (no numbers), one open onto a cozy guest room with a quilted bed, a wardrobe and a frosty window, a laundry cart piled with towels, wall lamps glowing warm, big shaggy footprints of snow melting along the carpet. A little spooky, still cozy. No people.\n\nAttached references in order:\nImage 1: Rendering style, camera angle, framing and lighting; design the Guest Rooms described above.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.\n\nOutput framing: one full-bleed landscape image, 2048 x 1152 pixels, 16:9. Match the attached reference's elevated three-quarter roofless dollhouse cutaway architectural view, showing the long corridor and one adjacent open guest room together. Replace all school features and Halloween decorations with a wooden snowy mountain lodge interior. Guest-room doors are plain and completely UNNUMBERED: no plaques, room numbers, labels or writing. The cozy guest room must visibly include a quilted bed, wardrobe and frosty window. A towel-loaded laundry cart stands in the corridor; large shaggy snowy footprints leave damp melting marks along the carpet. Warm lamps and soft shadow, no people or creatures, title, watermark or text.",
+      "ordered_references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-school-classrooms.png"
+      ],
+      "submitted_image_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-school-classrooms.png"
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-3df71f9a-a1b7-4adb-b5aa-315c7791985f.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-frostpeak-rooms.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "2bcd79c9f79864e86ba27e720d617c2e9ff45e4eafdab6ddb545212dc4ec9fe2",
+      "status": "generated",
+      "review_status": "visually_checked",
+      "review_notes": "Visually reviewed long wooden corridor in elevated architectural cutaway, plain unnumbered doors, open cozy guest room with quilted bed, wardrobe and frosty window, towel-loaded laundry cart, warm wall lamps and large melting snowy footprints along carpet. No people, visible text or logos.",
+      "aspect_ratio_note": "16:9 landscape with at most one pixel of generator rounding; original generated pixels preserved."
+    },
+    {
+      "order": 6,
+      "file_name": "maps\\floor-frostpeak-belltower.png",
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of the Bell Tower, the top floor of the snowy mountain lodge, in exactly the same style, angle, framing and lighting as the attached picture (another floor in the game): a dusty wooden attic under the roof beams with a big bronze bell hanging in the middle, old trunks and boxes, a rope ladder, a round window with moonlight and snow blowing in, icicles hanging from the beams, a few old lanterns glowing. A little spooky, still cozy. No people.\n\nAttached references in order:\nImage 1: Rendering style, camera angle, framing and lighting; design the Bell Tower described above.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.\n\nOutput framing: one full-bleed landscape image, 2048 x 1152 pixels, 16:9. Match the attached reference's elevated three-quarter architectural cutaway camera, wide framing, warm lanterns and blue moonlight, showing the wooden attic exposed beneath sloping roof beams. The reference is for style, view and lighting ONLY: replace the school clock machinery, classrooms, Halloween props and city setting with the snowy mountain lodge's attic. A single big bronze bell hangs prominently in the MIDDLE of the attic from the rafters, not at the side. Include old trunks and boxes, a clearly visible ROPE LADDER, a round window with moonlight and snow blowing in, icicles on the beams and a few glowing old lanterns. No clock face or classroom desks. Cozy, a little spooky, never scary. No people, creatures, text, title or watermark.",
+      "ordered_references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-school-clocktower.png"
+      ],
+      "submitted_image_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-school-clocktower.png"
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-fb6008cf-a629-4a2b-a71f-2aa1ea096879.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-frostpeak-belltower.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "8c5b27508308f05639028c8212af91d59242ab63965d4ef28860f4aa48721215",
+      "status": "generated",
+      "review_status": "visually_checked",
+      "review_notes": "Visually reviewed wooden attic cutaway under rafters, prominent central bronze bell, old trunks and boxes, rope ladder, round moonlit snowy window, icicles and warm old lanterns. Cozy night mood; no people, visible text or logos.",
+      "aspect_ratio_note": "16:9 landscape with at most one pixel of generator rounding; original generated pixels preserved."
     }
   ]
 }
