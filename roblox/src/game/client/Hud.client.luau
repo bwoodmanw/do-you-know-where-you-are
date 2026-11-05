@@ -644,8 +644,12 @@ do
 		return Config.BOOST_IMAGES and Config.BOOST_IMAGES.candy or 0
 	end)
 	-- the skill tile shows the character you are playing
+	-- 4 Nov (Brent: the new characters' words were tiny - no skill picture,
+	-- so the words were squeezed to fit the whole tile): their portrait
+	-- stands in until a skill picture is made
 	local repaint = tileIcon(skillBtn, function()
-		return Config.UI_ICONS and Config.UI_ICONS["skill-" .. tostring(player:GetAttribute("Skill"))] or 0
+		local s = tostring(player:GetAttribute("Skill"))
+		return Config.UI_ICONS and Config.UI_ICONS["skill-" .. s] or Config.PORTRAITS_GAME and Config.PORTRAITS_GAME[s] or 0
 	end)
 	player:GetAttributeChangedSignal("Skill"):Connect(repaint)
 end

@@ -561,6 +561,15 @@ function Characters.host(name)
 	fitHeight(m, HOST_HEIGHT)
 	m.PrimaryPart = m.HumanoidRootPart
 	fixRoot(m, m.HumanoidRootPart, name) -- 17 Oct (Brent could not find the Pumpkin host)
+	-- 4 Nov (Brent: the Robot got stuck in rooms): only the root collides, as
+	-- for the kids - a wide body (the Robot's lamp arms, held still) caught
+	-- on doorframes and furniture
+	m.HumanoidRootPart.CanCollide = true -- (it still stops at walls)
+	for _, d in ipairs(m:GetDescendants()) do
+		if d:IsA("BasePart") and d ~= m.HumanoidRootPart then
+			d.CanCollide = false
+		end
+	end
 	-- 16 Oct (Brent: every host floated): with Roblox's automatic scaling off,
 	-- the hip height no longer grew with the host - set it from the model
 	-- itself, as for the kids (the root's bottom to the lowest part)
