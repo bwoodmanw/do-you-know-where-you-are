@@ -4687,10 +4687,10 @@ do
 				Effects.stars(h.model, seconds, Color3.fromRGB(190, 140, 255))
 			end
 			plr:SetAttribute("LullabyUntil", workspace:GetServerTimeNow() + seconds)
-			Effects.ring(feet, Color3.fromRGB(180, 140, 230), reach * 2, 1)
-			-- the whole reach stays on the floor a moment; purple notes circle the
-			-- host for as long as he is slowed
-			Effects.zone(feet, Color3.fromRGB(180, 140, 230), reach * 2, 1.5)
+			-- 5 Nov (Brent: it has to feel instant): the whole reach lights up at
+			-- once (no ring spreading out); purple notes circle the host for as
+			-- long as he is slowed - the slow itself starts the moment she sings
+			Effects.zone(feet, Color3.fromRGB(180, 140, 230), reach * 2, 1.2)
 			-- Chorus (level 10): every friend's recharge 5 s nearer
 			if p10 == "chorus" then
 				local now2 = workspace:GetServerTimeNow()

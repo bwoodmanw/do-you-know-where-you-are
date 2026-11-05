@@ -588,7 +588,7 @@ task.spawn(function()
 	button(panel, "Close", { Size = UDim2.fromOffset(160, 40), Position = UDim2.new(0.5, 10, 1, -48), ZIndex = 31 }, function()
 		panel.Visible = false
 	end)
-	button(gui, "\u{1F4CA} Balance", { Name = "OwnerBalance", Size = UDim2.fromOffset(130, 36), Position = UDim2.new(0.5, -230, 1, -166), ZIndex = 5 }, function()
+	button(gui, "\u{1F4CA} Balance", { Name = "OwnerBalance", AnchorPoint = Vector2.new(0, 1), Size = UDim2.fromOffset(170, 38), Position = UDim2.new(0.5, -175, 1, -130), ZIndex = 5 }, function()
 		panel.Visible = not panel.Visible
 		if panel.Visible then
 			fill()
@@ -1433,8 +1433,8 @@ do
 		local bannerHolder = Instance.new("Frame")
 		bannerHolder.BackgroundTransparency = 1
 		bannerHolder.AnchorPoint = Vector2.new(0, 1)
-		bannerHolder.Position = UDim2.new(0.5, -(#open * 160 - 10) / 2 + (slot - 1) * 160, 1, -84)
-		bannerHolder.Size = UDim2.fromOffset(150, 38)
+		bannerHolder.Position = UDim2.new(0.5, -(#open * 180 - 10) / 2 + (slot - 1) * 180, 1, -84)
+		bannerHolder.Size = UDim2.fromOffset(170, 38) -- (the same grid as Balance and Gift above)
 		bannerHolder.ZIndex = 5
 		bannerHolder.Parent = gui
 		itemPic(e, bannerHolder, 38, UDim2.fromOffset(0, 0), 6)
@@ -1469,7 +1469,7 @@ do
 	-- shop is still open) or points, for anyone in this Lobby
 	local gs = open[1] and open[1].season
 	if game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId then
-		local giftBtn = button(gui, "\u{1F381} Gift", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0.5, 50, 1, -130), Size = UDim2.fromOffset(96, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
+		local giftBtn = button(gui, "\u{1F381} Gift", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0.5, 5, 1, -130), Size = UDim2.fromOffset(170, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
 		local panel = frame(gui, { Size = UDim2.fromOffset(660, 420), Position = UDim2.new(0.5, -330, 0.5, -210), Visible = false, ZIndex = 10 })
 		corner(panel, 18)
 		label(panel, { Size = UDim2.new(1, -20, 0, 36), Position = UDim2.fromOffset(10, 8), Text = "\u{1F381} Gifts (only you see this)", TextColor3 = PUMP, ZIndex = 11 })
