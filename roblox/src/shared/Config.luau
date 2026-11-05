@@ -34,7 +34,7 @@ Config.UI_ICONS = { -- art/ui-icons/*.png (ids checked on Roblox's API, 9 Oct)
 	["skill-echo"] = 104667451078873, ["skill-bramble"] = 111735284994326,
 	-- 4 Nov: the new characters' (checked on Roblox: images, Brent's uploads)
 	["skill-nutmeg"] = 130558478857131, ["skill-cloud"] = 121339475435162, ["skill-clone"] = 73709798548335,
-	["skill-harmony"] = 85934320538971, ["skill-holly"] = 123270261720358,
+	["skill-harmony"] = 85934320538971, ["skill-elfy"] = 83245423049053, ["skill-holly"] = 123270261720358,
 	["emote-wave"] = 91108624177477, ["emote-point"] = 119927036397486, ["emote-cheer"] = 87893385946810,
 	["emote-laugh"] = 100088092280645, ["emote-dance1"] = 102728279626825, ["emote-dance2"] = 133487841239662,
 	["emote-dance3"] = 106045742443407, ["emote-stop"] = 129902482804856,
@@ -811,6 +811,10 @@ Config.MAP_IMAGES = {
 	carnival_3 = 102152843956658, -- The Funhouse
 	["building-aquarium"] = 112735362765924,
 	["building-harvestbarn"] = 114769245234832, -- 16 Oct: the Harvest Barn (Thanksgiving)
+	["building-clausmanor"] = 96494729698283, -- 5 Nov: Claus Manor (checked on Roblox: Brent's upload)
+	clausmanor = 113374683726016, -- The Toy Workshop
+	clausmanor_2 = 111807048166045, -- The Cookie Kitchen
+	clausmanor_3 = 88724892712443, -- The Sleigh Loft
 	["building-candycanelane"] = 102715187877075, -- 5 Nov: Candy Cane Lane (Christmas; checked on Roblox: Brent's upload)
 	aquarium = 91974787928356, -- Main Hall
 	aquarium_2 = 75069384210834, -- Deep Sea
@@ -831,6 +835,7 @@ Config.PORTRAITS = {
 	holly = 127667366689511, -- 4 Nov (Holly-512.png, one upload for both places; checked on Roblox)
 	clone = 92508398113695, -- 4 Nov (Clone-512.png, one upload for both places; checked on Roblox)
 	harmony = 110743510829503, -- 4 Nov (Harmony-512.png, one upload for both places; checked on Roblox)
+	elfy = 126090240267338, -- 5 Nov (Elfy-512.png, one upload for both places; checked on Roblox)
 	brainy = 123589958200522,
 }
 -- the same portraits uploaded for the Party House place
@@ -847,6 +852,7 @@ Config.PORTRAITS_GAME = {
 	holly = 127667366689511, -- 4 Nov (Holly-512.png, one upload for both places; checked on Roblox)
 	clone = 92508398113695, -- 4 Nov (Clone-512.png, one upload for both places; checked on Roblox)
 	harmony = 110743510829503, -- 4 Nov (Harmony-512.png, one upload for both places; checked on Roblox)
+	elfy = 126090240267338, -- 5 Nov (Elfy-512.png, one upload for both places; checked on Roblox)
 	brainy = 96437377458580,
 }
 -- daily login rewards: day 1-7 of an unbroken streak (then round again);
