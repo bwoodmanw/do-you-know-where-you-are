@@ -809,6 +809,7 @@ Config.MAP_IMAGES = {
 	carnival_3 = 102152843956658, -- The Funhouse
 	["building-aquarium"] = 112735362765924,
 	["building-harvestbarn"] = 114769245234832, -- 16 Oct: the Harvest Barn (Thanksgiving)
+	["building-candycanelane"] = 102715187877075, -- 5 Nov: Candy Cane Lane (Christmas; checked on Roblox: Brent's upload)
 	aquarium = 91974787928356, -- Main Hall
 	aquarium_2 = 75069384210834, -- Deep Sea
 	aquarium_3 = 111966719661004, -- Rooftop Pools

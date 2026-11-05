@@ -1,0 +1,63 @@
+{
+  "name": "Claus Manor map pictures",
+  "reference_root": "art/roblox-store/maps",
+  "output_root": "art/roblox-store/maps",
+  "generation_mode": "built-in image_gen",
+  "instructions": [
+    "Process assets in table order, one built-in generation per asset.",
+    "Include the full Picture Standard followed by the Picture and prompt_clarification.",
+    "Inspect every reference, then attach every listed reference in array order, resolving paths under reference_root.",
+    "Create output parent folders as needed. Copy each generated PNG to output_root/file_name.",
+    "Inspect every result for scene details, matching reference style, wide 16:9 framing, and absence of text, people, characters and living creatures.",
+    "Verify saved PNG dimensions and SHA-256 against the generated source.",
+    "Preserve existing assets unless replacement is explicitly authorized."
+  ],
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in exactly the same style, angle, framing and lighting as the attached picture (another place in the game). A WIDE 16:9 picture. No people, no characters, no creatures. No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous place or character from a film, cartoon or game.",
+  "assets": [
+    {
+      "order": 1,
+      "file_name": "building-clausmanor.png",
+      "picture": "Claus Manor, the grumpy Clauses' big house at the North Pole, seen from a little above and to the side: a tall, crooked, three-story dark-red brick-and-timber manor half buried in deep snow, a steep snowy roof with a big crooked chimney puffing dark smoke, a lit-up workshop window full of toys on the ground floor, a warm kitchen window on the middle floor, a big round loft window at the top with a sleigh's runners just visible inside, icicles along every edge, piles of wrapped presents by the front door, a little sign-less lamp post, a lump of coal in the snow by the path, snowy pine trees, a deep blue night sky with falling snow and a faint green northern light",
+      "references": [
+        "building-candycanelane.png"
+      ],
+      "prompt_clarification": "Reference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image.",
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in exactly the same style, angle, framing and lighting as the attached picture (another place in the game). A WIDE 16:9 picture. No people, no characters, no creatures. No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous place or character from a film, cartoon or game.\n\nClaus Manor, the grumpy Clauses' big house at the North Pole, seen from a little above and to the side: a tall, crooked, three-story dark-red brick-and-timber manor half buried in deep snow, a steep snowy roof with a big crooked chimney puffing dark smoke, a lit-up workshop window full of toys on the ground floor, a warm kitchen window on the middle floor, a big round loft window at the top with a sleigh's runners just visible inside, icicles along every edge, piles of wrapped presents by the front door, a little sign-less lamp post, a lump of coal in the snow by the path, snowy pine trees, a deep blue night sky with falling snow and a faint green northern light\n\nReference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image.",
+      "status": "pending"
+    },
+    {
+      "order": 2,
+      "file_name": "floor-clausmanor-workshop.png",
+      "picture": "The Toy Workshop, the ground floor of Claus Manor, seen from above into the cut-away room: long wooden workbenches covered in half-built toys (wooden trains, teddy bears, rocking horses, drums), shelves of paint pots, a conveyor belt of wrapped presents, a coal scuttle by a big black iron stove, stacks of wrapped presents in the corners, warm lamp light and a little spooky shadow in the corners",
+      "references": [
+        "floor-frostpeak-hall.png"
+      ],
+      "prompt_clarification": "Reference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image. Teddy bears and rocking horses are inanimate toys only; no living characters or creatures.",
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in exactly the same style, angle, framing and lighting as the attached picture (another place in the game). A WIDE 16:9 picture. No people, no characters, no creatures. No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous place or character from a film, cartoon or game.\n\nThe Toy Workshop, the ground floor of Claus Manor, seen from above into the cut-away room: long wooden workbenches covered in half-built toys (wooden trains, teddy bears, rocking horses, drums), shelves of paint pots, a conveyor belt of wrapped presents, a coal scuttle by a big black iron stove, stacks of wrapped presents in the corners, warm lamp light and a little spooky shadow in the corners\n\nReference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image. Teddy bears and rocking horses are inanimate toys only; no living characters or creatures.",
+      "status": "pending"
+    },
+    {
+      "order": 3,
+      "file_name": "floor-clausmanor-kitchen.png",
+      "picture": "The Cookie Kitchen, the middle floor of Claus Manor, seen from above into the cut-away room: a big old-fashioned kitchen with a huge brick oven glowing orange, long tables with trays of iced cookies and gingerbread, tall jars of candy, rolling pins and mixing bowls, a pantry door ajar, a cuckoo clock without numbers, wrapped presents tucked under the tables, warm light and a little spooky shadow in the corners",
+      "references": [
+        "floor-frostpeak-rooms.png"
+      ],
+      "prompt_clarification": "Reference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image. The cuckoo clock has a blank dial and no bird or character; gingerbread is plain food, with no faces or figures.",
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in exactly the same style, angle, framing and lighting as the attached picture (another place in the game). A WIDE 16:9 picture. No people, no characters, no creatures. No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous place or character from a film, cartoon or game.\n\nThe Cookie Kitchen, the middle floor of Claus Manor, seen from above into the cut-away room: a big old-fashioned kitchen with a huge brick oven glowing orange, long tables with trays of iced cookies and gingerbread, tall jars of candy, rolling pins and mixing bowls, a pantry door ajar, a cuckoo clock without numbers, wrapped presents tucked under the tables, warm light and a little spooky shadow in the corners\n\nReference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image. The cuckoo clock has a blank dial and no bird or character; gingerbread is plain food, with no faces or figures.",
+      "status": "pending"
+    },
+    {
+      "order": 4,
+      "file_name": "floor-clausmanor-loft.png",
+      "picture": "The Sleigh Loft, the top floor of Claus Manor, seen from above into the cut-away attic: big roof beams with icicles, a big red sleigh piled with wrapped presents in the middle, harness bells hanging on the walls, sacks of toys, a ladder, a big round window with moonlight and snow blowing in, old lanterns glowing, a little spooky still cozy",
+      "references": [
+        "floor-frostpeak-belltower.png"
+      ],
+      "prompt_clarification": "Reference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image.",
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in exactly the same style, angle, framing and lighting as the attached picture (another place in the game). A WIDE 16:9 picture. No people, no characters, no creatures. No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous place or character from a film, cartoon or game.\n\nThe Sleigh Loft, the top floor of Claus Manor, seen from above into the cut-away attic: big roof beams with icicles, a big red sleigh piled with wrapped presents in the middle, harness bells hanging on the walls, sacks of toys, a ladder, a big round window with moonlight and snow blowing in, old lanterns glowing, a little spooky still cozy\n\nReference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image.",
+      "status": "pending"
+    }
+  ],
+  "status": "in_progress"
+}

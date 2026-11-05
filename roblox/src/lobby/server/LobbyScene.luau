@@ -346,9 +346,31 @@ function Scene.perimeter()
 	fence(Vector3.new(-E, 0, -86), Vector3.new(-E, 0, E))
 	fence(Vector3.new(E, 0, -86), Vector3.new(E, 0, E))
 	fence(Vector3.new(-E, 0, E), Vector3.new(E, 0, E))
-	-- trees just inside the fence: bare spooky ones and dark leafy ones
+	-- trees just inside the fence: bare spooky ones and dark leafy ones. 5 Nov
+	-- (Brent): in their own folder, swapped for snowy pine trees at Christmas
+	-- (Scene.seasons swaps them)
+	local edge = folder
+	local trees = Instance.new("Folder")
+	trees.Name = "FenceTrees"
+	trees.Parent = edge
+	local pines = Instance.new("Folder")
+	pines.Name = "FencePines"
+	Scene.fenceTrees, Scene.fencePines = trees, pines
 	local rng = Random.new(31)
+	local function pine(pos)
+		local h = rng:NextNumber(0.85, 1.2)
+		part(pines, { Name = "PineTrunk", Size = Vector3.new(1.2, 3 * h, 1.2), Position = pos + Vector3.new(0, 1.5 * h, 0), Color = Color3.fromRGB(80, 54, 36), Material = Enum.Material.Wood })
+		for k = 0, 3 do
+			local dia = (9 - k * 2.1) * h
+			local y = (3.2 + k * 2.6) * h
+			part(pines, { Name = "PineTier", Shape = Enum.PartType.Cylinder, Size = Vector3.new(2.6 * h, dia, dia), CFrame = CFrame.new(pos + Vector3.new(0, y, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(26, 92, 50), Material = Enum.Material.SmoothPlastic, CanCollide = k == 0 })
+			-- snow on each tier
+			part(pines, { Name = "PineSnow", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.5, dia * 0.8, dia * 0.8), CFrame = CFrame.new(pos + Vector3.new(0, y + 1.4 * h, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(245, 248, 255), Material = Enum.Material.Snow, CanCollide = false })
+		end
+		part(pines, { Name = "PineTop", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.8, 1.4) * h, Position = pos + Vector3.new(0, 13.2 * h, 0), Color = Color3.fromRGB(245, 248, 255), Material = Enum.Material.Snow, CanCollide = false })
+	end
 	local function tree(pos, bare)
+		local folder = trees
 		local trunkCol = Color3.fromRGB(58, 40, 30)
 		local h = bare and rng:NextNumber(12, 16) or rng:NextNumber(10, 14)
 		part(folder, { Name = "TreeTrunk", Size = Vector3.new(1.4, h, 1.4), Position = pos + Vector3.new(0, h / 2, 0), Color = trunkCol, Material = Enum.Material.Wood })
@@ -374,7 +396,13 @@ function Scene.perimeter()
 		table.insert(spots, Vector3.new(x, 0, E - 6))
 	end
 	for i, p in ipairs(spots) do
-		tree(p + Vector3.new(rng:NextNumber(-2, 2), 0, rng:NextNumber(-3, 3)), i % 3 == 0)
+		local at = p + Vector3.new(rng:NextNumber(-2, 2), 0, rng:NextNumber(-3, 3))
+		tree(at, i % 3 == 0)
+		pine(at)
+		-- a second, smaller pine between them at Christmas, for a fuller row
+		if i % 2 == 0 then
+			pine(at + Vector3.new(p.X < -50 and 2 or p.X > 50 and -2 or 7, 0, (p.X < -50 or p.X > 50) and 7 or 2))
+		end
 	end
 	-- jack-o'-lanterns along the fence, glowing. 3 Nov (Brent: still pumpkins
 	-- at Christmas): they sit in their own folder, which Scene.seasons takes
@@ -748,10 +776,67 @@ function Scene.christmas(folder)
 	end
 	-- a present: a box with a ribbon both ways and a bow on top
 	local function present(pos, size, box, ribbon)
-		part(folder, { Name = "Present", Size = size, Position = pos + Vector3.new(0, size.Y / 2, 0), Color = box, Material = Enum.Material.SmoothPlastic })
-		deco({ Name = "Ribbon", Size = Vector3.new(size.X + 0.05, size.Y + 0.05, size.Z * 0.18), Position = pos + Vector3.new(0, size.Y / 2, 0), Color = ribbon })
-		deco({ Name = "Ribbon", Size = Vector3.new(size.X * 0.18, size.Y + 0.05, size.Z + 0.05), Position = pos + Vector3.new(0, size.Y / 2, 0), Color = ribbon })
-		deco({ Name = "Bow", Shape = Enum.PartType.Ball, Size = Vector3.new(size.X * 0.4, size.Y * 0.25, size.Z * 0.4), Position = pos + Vector3.new(0, size.Y + 0.1, 0), Color = ribbon })
+		return {
+			part(folder, { Name = "Present", Size = size, Position = pos + Vector3.new(0, size.Y / 2, 0), Color = box, Material = Enum.Material.SmoothPlastic }),
+			deco({ Name = "Ribbon", Size = Vector3.new(size.X + 0.05, size.Y + 0.05, size.Z * 0.18), Position = pos + Vector3.new(0, size.Y / 2, 0), Color = ribbon }),
+			deco({ Name = "Ribbon", Size = Vector3.new(size.X * 0.18, size.Y + 0.05, size.Z + 0.05), Position = pos + Vector3.new(0, size.Y / 2, 0), Color = ribbon }),
+			deco({ Name = "Bow", Shape = Enum.PartType.Ball, Size = Vector3.new(size.X * 0.4, size.Y * 0.25, size.Z * 0.4), Position = pos + Vector3.new(0, size.Y + 0.1, 0), Color = ribbon }),
+		}
+	end
+	-- 5 Nov (Brent): things to play with in the snow (the shared helpers further
+	-- down this file come after this function, so its own copies)
+	local Debris = game:GetService("Debris")
+	local function promptOn(p, action, object)
+		local pp = Instance.new("ProximityPrompt")
+		pp.ActionText = action
+		pp.ObjectText = object
+		pp.RequiresLineOfSight = false
+		pp.MaxActivationDistance = 10
+		pp.Parent = p
+		return pp
+	end
+	local function popText(at, text)
+		local holder = deco({ Name = "PopText", Size = Vector3.new(0.2, 0.2, 0.2), Position = at, Transparency = 1, CanQuery = false, CanTouch = false })
+		local bb = Instance.new("BillboardGui")
+		bb.Size = UDim2.fromOffset(240, 50)
+		bb.StudsOffset = Vector3.new(0, 2, 0)
+		bb.AlwaysOnTop = true
+		bb.MaxDistance = 60
+		bb.Parent = holder
+		local l = Instance.new("TextLabel")
+		l.Size = UDim2.fromScale(1, 1)
+		l.BackgroundTransparency = 1
+		l.Font = Enum.Font.GothamBold
+		l.TextScaled = true
+		l.TextColor3 = Color3.new(1, 1, 1)
+		l.TextStrokeTransparency = 0.3
+		l.Text = text
+		l.Parent = bb
+		Debris:AddItem(holder, 2.5)
+	end
+	-- wobble a group of anchored parts round a point, then put them back
+	local function wobble(parts, pivot, swings, angle)
+		local base = {}
+		for i, p in ipairs(parts) do
+			base[i] = p.CFrame
+		end
+		task.spawn(function()
+			for k = 1, swings do
+				local a = math.rad(angle * (k % 2 == 0 and -1 or 1) * (1 - (k - 1) / swings))
+				local turn = CFrame.new(pivot) * CFrame.Angles(a * 0.6, 0, a) * CFrame.new(-pivot)
+				for i, p in ipairs(parts) do
+					if p.Parent then
+						p.CFrame = turn * base[i]
+					end
+				end
+				task.wait(0.07)
+			end
+			for i, p in ipairs(parts) do
+				if p.Parent then
+					p.CFrame = base[i]
+				end
+			end
+		end)
 	end
 	-- a giant candy cane standing by the gate (the hook turned toward the lane)
 	local function bigCane(base, hookDir)
@@ -788,9 +873,51 @@ function Scene.christmas(folder)
 	starLight.Parent = star
 	for k, off in ipairs({ Vector3.new(-5, 0, -4), Vector3.new(4.5, 0, -4.5), Vector3.new(-2, 0, -6.5), Vector3.new(2.5, 0, -7), Vector3.new(6, 0, -1) }) do
 		local boxes = { RED, GREEN, WHITE, GOLD, Color3.fromRGB(70, 140, 255) }
-		present(treeAt + off, Vector3.new(1.6 + (k % 2) * 0.8, 1.2 + (k % 3) * 0.5, 1.6 + (k % 2) * 0.8), boxes[k], boxes[(k + 1) % 5 + 1])
+		local pieces = present(treeAt + off, Vector3.new(1.6 + (k % 2) * 0.8, 1.2 + (k % 3) * 0.5, 1.6 + (k % 2) * 0.8), boxes[k], boxes[(k + 1) % 5 + 1])
+		-- 5 Nov (Brent): give it a shake - what could it be?
+		local guesses = { "Rattle rattle... a toy train?", "Squishy... socks again?", "Jingle jingle... bells?", "Heavy... a giant cookie?", "No peeking until Christmas!", "Bonk... a snow globe?", "Squeak... a rubber duck?" }
+		local pp = promptOn(pieces[1], "Shake", "Present")
+		pp.MaxActivationDistance = 8
+		local busy = false
+		pp.Triggered:Connect(function()
+			if busy then
+				return
+			end
+			busy = true
+			sound(pieces[1], "present", 0.8)
+			wobble(pieces, pieces[1].Position - Vector3.new(0, pieces[1].Size.Y / 2, 0), 8, 12)
+			popText(pieces[1].Position + Vector3.new(0, 1, 0), guesses[math.random(#guesses)])
+			task.delay(1.2, function()
+				busy = false
+			end)
+		end)
 	end
-	-- snowmen where the tombstones stood, facing the lane
+	-- a big gold bell on a wooden post by the tree: ring it
+	do
+		local postAt = treeAt + Vector3.new(-11, 0, -3)
+		part(folder, { Name = "BellPost", Size = Vector3.new(0.8, 9, 0.8), Position = postAt + Vector3.new(0, 4.5, 0), Color = Color3.fromRGB(110, 72, 42), Material = Enum.Material.Wood })
+		part(folder, { Name = "BellArm", Size = Vector3.new(3, 0.6, 0.6), Position = postAt + Vector3.new(1.2, 8.7, 0), Color = Color3.fromRGB(110, 72, 42), Material = Enum.Material.Wood })
+		local hang = postAt + Vector3.new(2.3, 8.4, 0)
+		local bell = deco({ Name = "BigBell", Shape = Enum.PartType.Ball, Size = Vector3.new(2.2, 2.4, 2.2), Position = hang - Vector3.new(0, 1.3, 0), Color = GOLD, Material = Enum.Material.Metal })
+		local lip = deco({ Name = "BellLip", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.4, 2.6, 2.6), CFrame = CFrame.new(hang - Vector3.new(0, 2.3, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = GOLD, Material = Enum.Material.Metal })
+		local bow = deco({ Name = "BellBow", Shape = Enum.PartType.Ball, Size = Vector3.new(1.2, 0.6, 0.5), Position = hang + Vector3.new(0, -0.1, 0), Color = RED })
+		local pp = promptOn(bell, "Ring", "Big bell")
+		local busy = false
+		pp.Triggered:Connect(function()
+			if busy then
+				return
+			end
+			busy = true
+			sound(bell, "bell", 1)
+			wobble({ bell, lip, bow }, hang, 10, 20)
+			task.delay(1, function()
+				busy = false
+			end)
+		end)
+	end
+	-- snowmen where the tombstones stood, facing the lane. 5 Nov: a snowball
+	-- on the head or hat knocks the hat up in the air (hatOf)
+	local hatOf = {}
 	for i, p in ipairs({ Vector3.new(-40, 0, 30), Vector3.new(-48, 0, 12), Vector3.new(44, 0, -40), Vector3.new(-44, 0, -60), Vector3.new(62, 0, 40), Vector3.new(-60, 0, 70) }) do
 		local face = CFrame.lookAt(p, Vector3.new(0, 0, p.Z)) * CFrame.Angles(0, math.rad((i * 37) % 30 - 15), 0)
 		local function at(x, y, z)
@@ -810,13 +937,130 @@ function Scene.christmas(folder)
 		for _, sx in ipairs({ -1, 1 }) do
 			deco({ Name = "StickArm", Size = Vector3.new(2.2, 0.15, 0.15), CFrame = at(sx * 2, 4.3, 0) * CFrame.Angles(0, 0, math.rad(sx * 25)), Color = Color3.fromRGB(100, 65, 35), Material = Enum.Material.Wood })
 		end
-		deco({ Name = "HatBrim", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.12, 1.8, 1.8), CFrame = at(0, 6.3, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(30, 30, 35) })
-		deco({ Name = "HatTop", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1, 1.2, 1.2), CFrame = at(0, 6.85, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(30, 30, 35) })
+		local brim = deco({ Name = "HatBrim", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.12, 1.8, 1.8), CFrame = at(0, 6.3, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(30, 30, 35) })
+		local top = deco({ Name = "HatTop", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1, 1.2, 1.2), CFrame = at(0, 6.85, 0) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(30, 30, 35) })
+		local hat = { parts = { brim, top }, base = { brim.CFrame, top.CFrame } }
+		for _, n in ipairs({ "SnowHead", "HatBrim", "HatTop" }) do
+			for _, d in ipairs(folder:GetChildren()) do
+				if d.Name == n and not hatOf[d] and (d.Position - at(0, 6, 0).Position).Magnitude < 2 then
+					hatOf[d] = hat
+				end
+			end
+		end
+	end
+	local function popHat(hat)
+		if hat.busy then
+			return
+		end
+		hat.busy = true
+		task.spawn(function()
+			for k = 1, 10 do
+				local up = math.sin(k / 10 * math.pi) * 3
+				local spin = CFrame.Angles(0, k * 0.6, 0)
+				for i, p in ipairs(hat.parts) do
+					p.CFrame = CFrame.new(0, up, 0) * hat.base[i] * spin
+				end
+				task.wait(0.05)
+			end
+			for i, p in ipairs(hat.parts) do
+				p.CFrame = hat.base[i]
+			end
+			hat.busy = false
+		end)
+	end
+	-- snowballs (5 Nov, Brent): press E at a snow pile for 5 snowballs, click or
+	-- tap to throw. A hit puffs snow; a snowman's hat pops off
+	local function splat(at)
+		local puff = deco({ Name = "SnowPuff", Size = Vector3.new(0.2, 0.2, 0.2), Position = at, Transparency = 1, CanQuery = false, CanTouch = false })
+		local e = Instance.new("ParticleEmitter")
+		e.Color = ColorSequence.new(WHITE)
+		e.Size = NumberSequence.new(0.5, 0)
+		e.Lifetime = NumberRange.new(0.4, 0.7)
+		e.Speed = NumberRange.new(6, 10)
+		e.SpreadAngle = Vector2.new(180, 180)
+		e.Acceleration = Vector3.new(0, -20, 0)
+		e.Enabled = false
+		e.Parent = puff
+		e:Emit(14)
+		sound(puff, "pop", 0.6)
+		Debris:AddItem(puff, 1.5)
+	end
+	local function snowballTool(plr)
+		local char = plr.Character
+		local have = (char and char:FindFirstChild("Snowball")) or plr.Backpack:FindFirstChild("Snowball")
+		if have then
+			have:SetAttribute("Left", 5)
+			return
+		end
+		local tool = Instance.new("Tool")
+		tool.Name = "Snowball"
+		tool.ToolTip = "Click or tap to throw"
+		tool.CanBeDropped = false
+		tool:SetAttribute("Left", 5)
+		local handle = Instance.new("Part")
+		handle.Name = "Handle"
+		handle.Shape = Enum.PartType.Ball
+		handle.Size = Vector3.new(1, 1, 1)
+		handle.Color, handle.Material = WHITE, Enum.Material.Snow
+		handle.CanCollide, handle.Massless = false, true
+		handle.Parent = tool
+		local last = 0
+		tool.Activated:Connect(function()
+			if os.clock() - last < 0.45 then
+				return
+			end
+			last = os.clock()
+			local c = tool.Parent
+			local hrp = c and c:FindFirstChild("HumanoidRootPart")
+			local left = tool:GetAttribute("Left") or 0
+			if not hrp or left <= 0 then
+				return
+			end
+			tool:SetAttribute("Left", left - 1)
+			local look = hrp.CFrame.LookVector
+			local ball = Instance.new("Part")
+			ball.Name = "ThrownSnowball"
+			ball.Shape = Enum.PartType.Ball
+			ball.Size = Vector3.new(1, 1, 1)
+			ball.Color, ball.Material = WHITE, Enum.Material.Snow
+			ball.CanCollide, ball.CanQuery = false, false
+			ball.Position = hrp.Position + look * 2.5 + Vector3.new(0, 1.5, 0)
+			ball.Parent = workspace
+			ball:SetNetworkOwner(nil)
+			ball.AssemblyLinearVelocity = look * 70 + Vector3.new(0, 16, 0)
+			sound(ball, "throw", 0.5)
+			local done = false
+			ball.Touched:Connect(function(hit)
+				if done or hit:IsDescendantOf(c) or hit.Name == "ThrownSnowball" or hit.Transparency >= 1 then
+					return
+				end
+				done = true
+				splat(ball.Position)
+				local hat = hatOf[hit]
+				if hat then
+					popHat(hat)
+				end
+				ball:Destroy()
+			end)
+			Debris:AddItem(ball, 4)
+			if left - 1 <= 0 then
+				task.delay(0.3, function()
+					tool:Destroy()
+				end)
+			end
+		end)
+		tool.Parent = plr.Backpack
 	end
 	-- snow patches on the lawn (where Thanksgiving's leaf piles were)
 	for _, c in ipairs({ Vector3.new(-26, 0, 30), Vector3.new(26, 0, 36), Vector3.new(-30, 0, 70), Vector3.new(-8, 0, 84), Vector3.new(50, 0, 60), Vector3.new(-55, 0, 45) }) do
 		deco({ Name = "SnowPatch", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.3, 9, 7), CFrame = CFrame.new(c + Vector3.new(0, 0.12, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = WHITE, Material = Enum.Material.Snow })
-		deco({ Name = "SnowMound", Shape = Enum.PartType.Ball, Size = Vector3.new(4, 1.2, 3), Position = c + Vector3.new(0.5, 0.3, 0.4), Color = WHITE, Material = Enum.Material.Snow })
+		local mound = deco({ Name = "SnowMound", Shape = Enum.PartType.Ball, Size = Vector3.new(4, 1.2, 3), Position = c + Vector3.new(0.5, 0.3, 0.4), Color = WHITE, Material = Enum.Material.Snow })
+		-- 5 Nov (Brent): make snowballs here
+		local pp = promptOn(mound, "Make snowballs", "Snow pile")
+		pp.Triggered:Connect(function(plr)
+			snowballTool(plr)
+			sound(mound, "pick", 0.6)
+		end)
 	end
 	-- snow falling over the whole Lobby
 	local sky = deco({ Name = "SnowSky", Size = Vector3.new(170, 1, 170), Position = Vector3.new(0, 45, 15), Transparency = 1, CanQuery = false, CanTouch = false })
@@ -974,14 +1218,8 @@ function Scene.christmas(folder)
 					bulb(hit.Position + Vector3.new(0, 0.35, 0))
 				end
 			end
-			for x = lo.X + 1.5, hi.X - 1.5, 3 do
-				for z = lo.Z + 1.5, hi.Z - 1.5, 3 do
-					local hit = workspace:Raycast(Vector3.new(x, hi.Y + 10, z), Vector3.new(0, -(height + 20), 0), hp)
-					if hit and hit.Normal.Y > 0.45 and hit.Position.Y > lo.Y + height * 0.45 then
-						deco({ Name = "RoofSnow", Size = Vector3.new(3.4, 0.35, 3.4), CFrame = CFrame.lookAt(hit.Position, hit.Position + hit.Normal) * CFrame.Angles(math.rad(-90), 0, 0) + hit.Normal * 0.15, Color = WHITE, Material = Enum.Material.Snow, CanQuery = false, CanTouch = false })
-					end
-				end
-			end
+			-- (5 Nov, Brent: the roof snow showed as floating white squares on the
+			-- house's odd-shaped roof - taken off)
 			-- a wreath on the front door: a ring of green with red berries and a red bow
 			local door = workspace:Raycast(Vector3.new(centre.X, lo.Y + 5, frontZ + s * 20), Vector3.new(0, 0, -s * 60), hp)
 			if door then
@@ -1030,6 +1268,11 @@ function Scene.seasons()
 			-- time, as the fence may be built after this starts)
 			if Scene.fencePumpkins then
 				Scene.fencePumpkins.Parent = want ~= "christmas" and Scene.fenceEdge or nil
+			end
+			-- 5 Nov (Brent): snowy pines along the fence at Christmas
+			if Scene.fenceTrees then
+				Scene.fenceTrees.Parent = want ~= "christmas" and Scene.fenceEdge or nil
+				Scene.fencePines.Parent = want == "christmas" and Scene.fenceEdge or nil
 			end
 			-- the pokeable giant pumpkin: a giant red bauble with a gold cap at Christmas
 			local gp = Scene.giantPumpkin
