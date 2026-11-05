@@ -29,7 +29,10 @@
         1536
       ],
       "sha256": "88d93c5e5b5bc72e3365656bd3594e94c2e862a8bda96222be3978bdf024b9d5",
-      "validation": "Inspected: Patch likeness, forehead bandage, blue eyes and ponytail; earmuffs, icy-blue jacket/skirt, white tights and skates with chunky silver blades; full-body A-pose. Soft 3D lighting remains visible."
+      "validation": "Inspected: Patch likeness, forehead bandage, blue eyes and ponytail; earmuffs, icy-blue jacket/skirt, white tights and skates with chunky silver blades; full-body A-pose. Soft 3D lighting remains visible.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\patch\\front-toon.png"
+      ]
     },
     {
       "order": 2,
@@ -48,7 +51,11 @@
         1536
       ],
       "sha256": "81bf1227c2040a6b44d0c352832114461a854d7bb04b2245114565a5184be85f",
-      "validation": "Inspected: direct rear A-pose, matching ponytail, earmuffs, icy-blue jacket/skirt, white tights and skating boots with silver blades. Soft 3D lighting remains visible."
+      "validation": "Inspected: direct rear A-pose, matching ponytail, earmuffs, icy-blue jacket/skirt, white tights and skating boots with silver blades. Soft 3D lighting remains visible.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\skater-patch\\front-toon.png"
+      ],
+      "reference_front_sha256": "88d93c5e5b5bc72e3365656bd3594e94c2e862a8bda96222be3978bdf024b9d5"
     },
     {
       "order": 3,
@@ -66,7 +73,10 @@
         1536
       ],
       "sha256": "21160edb51a38158d009d72afc5e333674b09d4df90e85d3be6282959152fefd",
-      "validation": "Inspected: Brainy likeness and glasses; red-white cap/red propeller, brown coat with white wavy trim and three peppermint buttons; cream shirt, pocket-free tan trousers, red-white sneakers, A-pose."
+      "validation": "Inspected: Brainy likeness and glasses; red-white cap/red propeller, brown coat with white wavy trim and three peppermint buttons; cream shirt, pocket-free tan trousers, red-white sneakers, A-pose.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\brainy\\front-toon.png"
+      ]
     },
     {
       "order": 4,
@@ -85,7 +95,11 @@
         1536
       ],
       "sha256": "e8b1b2d51153251cc469e3df851dbcd07cad4f2ddde96f0812ca39978820c53b",
-      "validation": "Inspected: direct back, matching brown hair, red-white cap and red propeller, brown coat with white wavy hem/cuffs, tan trousers and red-white sneakers, full-body A-pose."
+      "validation": "Inspected: direct back, matching brown hair, red-white cap and red propeller, brown coat with white wavy hem/cuffs, tan trousers and red-white sneakers, full-body A-pose.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\gingerbread-brainy\\front-toon.png"
+      ],
+      "reference_front_sha256": "21160edb51a38158d009d72afc5e333674b09d4df90e85d3be6282959152fefd"
     },
     {
       "order": 5,
@@ -94,8 +108,26 @@
         "shadow\\front-toon.png"
       ],
       "file_name": "silentnight-shadow\\front-toon.png",
-      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Silent Night Shadow: his same black hair, purple eyes and plain face mask, the mask now midnight navy; a midnight-navy hoodie with the hood up, a smooth solid white band round the edge of the hood and a small round white pom-pom on top of the hood; silver-gray fingerless gloves; midnight-navy jogger pants with NO pockets; plain navy sneakers with white soles",
-      "status": "pending"
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Silent Night Shadow: his same black hair, purple eyes and plain face mask, the mask now midnight navy; a midnight-navy hoodie with the hood up, a smooth solid white band round the edge of the hood and a small round white pom-pom on top of the hood; silver-gray fingerless gloves; midnight-navy jogger pants with NO pockets; plain navy sneakers with white soles\n\nFor this row generate ONLY ONE FRONT view of ONE character facing directly toward the camera, centered and filling the portrait frame. Do not include any back view, second figure, turnaround sheet, collage or split panel. The BACK-view instructions in the shared standard apply only to later BACK rows.",
+      "status": "completed",
+      "prompt_clarification": "For this row generate ONLY ONE FRONT view of ONE character facing directly toward the camera, centered and filling the portrait frame. Do not include any back view, second figure, turnaround sheet, collage or split panel. The BACK-view instructions in the shared standard apply only to later BACK rows.",
+      "discarded_sources": [
+        {
+          "path": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-5a33ed66-c002-4cf9-8381-75259b29fe92.png",
+          "reason": "Returned both views in one image; one FRONT only is required."
+        }
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-609ec44e-8e58-4a45-b3e7-861e51f0a104.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\silentnight-shadow\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "1e031a11a964f894dab2e9f798624a8cfc01f1cf55468ed44a610c94a403a47c",
+      "validation": "Inspected: single front, black hair/purple eyes, navy mask/hoodie/joggers, white hood band and round pom-pom, gray fingerless gloves, navy shoes with white soles, full-body A-pose.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\shadow\\front-toon.png"
+      ]
     },
     {
       "order": 6,
@@ -105,8 +137,20 @@
       ],
       "file_name": "silentnight-shadow\\back-toon.png",
       "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Silent Night Shadow, matching the reference exactly: the back of the midnight-navy hood with its white edge band and the white pom-pom on top, the back of the navy hoodie, silver-gray gloves, navy joggers, navy sneakers with white soles",
-      "status": "pending",
-      "depends_on": 5
+      "status": "completed",
+      "depends_on": 5,
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-9ebc8400-80d7-4014-8e12-1fcc58ff6296.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\silentnight-shadow\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "e9492807512e2b85039bfa8027728bdf6107fa248b5c5c6cb1c37419d499f6e0",
+      "validation": "Inspected: direct rear A-pose, matching navy hood/hoodie/joggers and shoes, white pom-pom and hood edge, gray gloves and white soles.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\silentnight-shadow\\front-toon.png"
+      ],
+      "reference_front_sha256": "1e031a11a964f894dab2e9f798624a8cfc01f1cf55468ed44a610c94a403a47c"
     },
     {
       "order": 7,
@@ -116,7 +160,18 @@
       ],
       "file_name": "twinkle-glow\\front-toon.png",
       "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Twinkle Lights Glow: her same curly brown hair in a bun and green eyes, her headband with its little antenna, the round bulb now solid red; a forest-green raincoat with a chunky string of big round solid light bulbs (red, gold and blue, not glowing) wrapped once diagonally across her chest like a sash, close to the coat; a cream scarf wrapped snugly at her neck (ends tucked in); plain dark-green jogger pants with NO pockets; red rain boots",
-      "status": "pending"
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-8fb4f6a8-a300-4b1d-8340-95ed7416de8f.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\twinkle-glow\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "41be64169e2ace601f1c1dbabb05b4ca1f01c25424346934270ef4d1d3a2452b",
+      "validation": "Inspected: Glow likeness, curly bun and green eyes, red antenna bulb, forest-green coat with red/gold/blue solid bulb sash, tucked cream scarf, pocket-free dark-green joggers and red boots. Small blank white boot tabs inherited from reference.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\glow\\front-toon.png"
+      ]
     },
     {
       "order": 8,
@@ -126,8 +181,20 @@
       ],
       "file_name": "twinkle-glow\\back-toon.png",
       "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Twinkle Lights Glow, matching the reference exactly: the back of her curly bun and the headband with the red bulb, the cream scarf at her neck, the back of the forest-green raincoat with the string of red, gold and blue bulbs crossing it diagonally, dark-green joggers, red rain boots",
-      "status": "pending",
-      "depends_on": 7
+      "status": "completed",
+      "depends_on": 7,
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-8daca335-10f8-476e-8e14-67451adcf344.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\twinkle-glow\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "f5fc76aa3cb0d18dfde50a47f877a715b7b64f65fc9ec5402a7320b72ab711c8",
+      "validation": "Inspected: direct back, matching curly bun/red antenna bulb correctly on opposite image side, cream scarf, green coat and diagonal colored bulb sash, dark-green joggers and red boots.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\twinkle-glow\\front-toon.png"
+      ],
+      "reference_front_sha256": "41be64169e2ace601f1c1dbabb05b4ca1f01c25424346934270ef4d1d3a2452b"
     },
     {
       "order": 9,
@@ -136,8 +203,33 @@
         "tinker\\front-toon.png"
       ],
       "file_name": "toymaker-tinker\\front-toon.png",
-      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Toy Maker Tinker: his same brown hair, round goggles on his head and his cap worn backwards, the cap now green with a red brim; bright red overalls over a green long-sleeve shirt; a brown tool belt with a small wooden toy hammer and a small toy wrench tucked in, close to the belt; red-and-white candy-striped socks showing above plain brown work boots",
-      "status": "pending"
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Toy Maker Tinker: his same brown hair, round goggles on his head and his cap worn backwards, the cap now green with a red brim; bright red overalls over a green long-sleeve shirt; a brown tool belt with a small wooden toy hammer and a small toy wrench tucked in, close to the belt; red-and-white candy-striped socks showing above plain brown work boots\n\nFor this row generate ONLY ONE FRONT view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows. The cap is worn backwards with its red brim behind the head, not pointing forward.\n\nMANDATORY CAP ORIENTATION CHANGE FROM REFERENCE: rotate the cap so the red visor is centered at the REAR of his head, pointing straight behind him. In this straight-on FRONT image the red visor is hidden behind the head; absolutely NO brim projects on image left or right, and no brim above the forehead. Show the green back panel and small adjustment closure above his forehead, with his round goggles on top. His face, eyes, hair, proportions and the rest of the requested outfit remain the same.",
+      "status": "completed",
+      "prompt_clarification": "For this row generate ONLY ONE FRONT view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows. The cap is worn backwards with its red brim behind the head, not pointing forward.\n\nMANDATORY CAP ORIENTATION CHANGE FROM REFERENCE: rotate the cap so the red visor is centered at the REAR of his head, pointing straight behind him. In this straight-on FRONT image the red visor is hidden behind the head; absolutely NO brim projects on image left or right, and no brim above the forehead. Show the green back panel and small adjustment closure above his forehead, with his round goggles on top. His face, eyes, hair, proportions and the rest of the requested outfit remain the same.",
+      "discarded_sources": [
+        {
+          "path": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-05f7302c-30bf-4521-8643-4a43e6578c79.png",
+          "reason": "Two figures/views in one frame; FRONT-only row requires a single figure."
+        }
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-350f73a6-9e51-4c28-be10-53566629b976.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\toymaker-tinker\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "707102e824835a9814612669677a1ba3b9ef4f6d72a7b1995b5fcf38af81d495",
+      "validation": "Inspected: true backwards green cap with adjustment closure at forehead, red brim behind head, unchanged Tinker likeness, goggles, requested red-green outfit, tool belt, striped socks and brown boots.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\tinker\\front-toon.png"
+      ],
+      "superseded_results": [
+        {
+          "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-38dd705c-0882-421a-bf07-925975d14bf7.png",
+          "sha256": "5085a13f0551433d145d849063999d811b864ce43acf70aa857eeb8aaf1142f7",
+          "validation": "Inspected: single Tinker front and original likeness/goggles; green cap with red brim at image left, red overalls/green long sleeves, brown belt with chunky hammer/wrench, striped socks and brown boots. Cap retains sideways angle of approved look."
+        }
+      ]
     },
     {
       "order": 10,
@@ -146,9 +238,43 @@
         "toymaker-tinker\\front-toon.png"
       ],
       "file_name": "toymaker-tinker\\back-toon.png",
-      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Toy Maker Tinker, matching the reference exactly: the back of his green backwards cap (the red brim at the back), his goggles, brown hair, the back of the red overalls with straps crossing his green shirt, the tool belt, red-and-white striped socks, brown boots",
-      "status": "pending",
-      "depends_on": 9
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Toy Maker Tinker, matching the reference exactly: the back of his green backwards cap (the red brim at the back), his goggles, brown hair, the back of the red overalls with straps crossing his green shirt, the tool belt, red-and-white striped socks, brown boots\n\nRear construction: the two red overall shoulder straps form a clear X across the green upper back. No front bib or front buttons/buckles on the back. The cap is worn truly backwards: its RED BRIM is CENTERED at the BACK, projecting toward the rear-view camera as one broad horizontal red visor across the back of his head. Do not move the brim to either side. Match the attached newly saved front exactly. One rear figure only.\n\nThe brown tool belt is viewed from its REAR: a plain continuous brown band across the center back, NO gold belt buckle at center back, NO hammer or wrench across the rear. The front tools stay in front and are hidden from this rear camera. Small side pouches may be visible only at the outer hips. Keep the centered rear red cap brim and crossed X straps.\n\nImportant rear-view goggles: the round glass lenses sit on his FOREHEAD at the FRONT of his head and are hidden from the rear. On the BACK of his green cap show ONLY a single continuous brown goggle strap, no round goggles, no glass discs and no eye-like shapes. The rear of his head is green cap, centered red visor, brown strap and brown hair.",
+      "status": "completed",
+      "depends_on": 9,
+      "prompt_clarification": "Rear construction: the two red overall shoulder straps form a clear X across the green upper back. No front bib or front buttons/buckles on the back. The cap is worn truly backwards: its RED BRIM is CENTERED at the BACK, projecting toward the rear-view camera as one broad horizontal red visor across the back of his head. Do not move the brim to either side. Match the attached newly saved front exactly. One rear figure only.\n\nThe brown tool belt is viewed from its REAR: a plain continuous brown band across the center back, NO gold belt buckle at center back, NO hammer or wrench across the rear. The front tools stay in front and are hidden from this rear camera. Small side pouches may be visible only at the outer hips. Keep the centered rear red cap brim and crossed X straps.\n\nImportant rear-view goggles: the round glass lenses sit on his FOREHEAD at the FRONT of his head and are hidden from the rear. On the BACK of his green cap show ONLY a single continuous brown goggle strap, no round goggles, no glass discs and no eye-like shapes. The rear of his head is green cap, centered red visor, brown strap and brown hair.",
+      "discarded_sources": [
+        {
+          "path": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-a61107a5-2929-46ad-a90f-ba6f1febfaef.png",
+          "reason": "Back used front bib/buckles instead of requested crossing rear straps."
+        },
+        {
+          "path": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-ac9492bf-ab85-4009-b730-4cce74697778.png",
+          "reason": "Cap corrected but front belt buckle and tools incorrectly duplicated on rear."
+        },
+        {
+          "path": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-44d7f7b0-e5fa-4e96-9820-c32c536e0c4a.png",
+          "reason": "Belt corrected but goggle lenses duplicated on back of head."
+        }
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-130f69ee-b394-41cc-a971-ce7bcdf1d4a5.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\toymaker-tinker\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "ad94a62d2b29ffd10d8710bfb1af0b592e35e161e9e0bf1d0e37968f4d24e306",
+      "validation": "Inspected: direct rear, green cap with centered red rear brim and plain brown goggle strap; crossed X red overall straps; plain rear belt and side pouches; matching striped socks, brown boots, colors and A-pose.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\toymaker-tinker\\front-toon.png"
+      ],
+      "superseded_results": [
+        {
+          "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-c50ccd57-8058-478d-91d5-d33cfed903fe.png",
+          "sha256": "637580e5ae4348bbda033364bdb0c7a384601655d18424d91ad42eab69b2f24a",
+          "validation": "Inspected: direct back with crossed X overall straps, matching green shirt/red overalls, green cap/red brim now image right, brown belt, striped socks and brown boots."
+        }
+      ],
+      "reference_front_sha256": "707102e824835a9814612669677a1ba3b9ef4f6d72a7b1995b5fcf38af81d495"
     },
     {
       "order": 11,
@@ -157,8 +283,41 @@
         "muscle\\front-toon.png"
       ],
       "file_name": "sweater-muscle\\front-toon.png",
-      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Holiday Sweater Muscle: his same spiky brown hair, his headband now red; a big bright-red holiday sweater (smooth, no knit texture) with one wide green band across the chest and a row of solid white zigzags along that band; green-and-white wristbands; dark-green sports shorts; white socks with red tops; plain red sneakers with white soles",
-      "status": "pending"
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Holiday Sweater Muscle: his same spiky brown hair, his headband now red; a big bright-red holiday sweater (smooth, no knit texture) with one wide green band across the chest and a row of solid white zigzags along that band; green-and-white wristbands; dark-green sports shorts; white socks with red tops; plain red sneakers with white soles\n\nFor this row generate ONLY ONE FRONT view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "status": "completed",
+      "prompt_clarification": "For this row generate ONLY ONE FRONT view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-4c46268f-a409-4e68-8a5a-3cdb2aaa3e1e.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sweater-muscle\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "4d043ec542c0a7c4af5c24237019d112150528abc2e75ae63511d9a0ed8ac9b9",
+      "validation": "Inspected: Muscle likeness/spiky hair, red headband and smooth red sweater, green chest band/white zigzag, green-white wristbands, dark-green shorts, white socks/red tops, plain red-white shoes, A-pose. Very fine sock ribbing remains visible.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\muscle\\front-toon.png"
+      ],
+      "discarded_sources": [
+        {
+          "path": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-e9b093e6-99b4-4daf-988e-c1a806c624a1.png",
+          "reason": "Sock ribbing persisted; used as target for localized texture correction."
+        }
+      ],
+      "correction_attempts": [
+        {
+          "source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-e9b093e6-99b4-4daf-988e-c1a806c624a1.png",
+          "result": "Fine sock ribbing persists."
+        },
+        {
+          "source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-0e06c044-f0eb-4851-b49d-12d17ddc0717.png",
+          "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Holiday Sweater Muscle: his same spiky brown hair, his headband now red; a big bright-red holiday sweater (smooth, no knit texture) with one wide green band across the chest and a row of solid white zigzags along that band; green-and-white wristbands; dark-green sports shorts; white socks with red tops; plain red sneakers with white soles\n\nFor this row generate ONLY ONE FRONT view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.\n\nThe white socks and their red top bands must be perfectly smooth solid toy shapes with zero vertical lines, zero ribbing, zero knit pattern and zero cloth texture. All clothing is smooth molded toy material. Keep one front figure only.\n\nTargeted correction: Image 1 is the approved identity reference; Image 2 is the selected new outfit image to edit. Keep Image 2 exactly the same except the socks: replace the ribbed white socks with plain smooth white molded-plastic cylindrical ankle cuffs with smooth red rims. Their white surfaces must be completely featureless, no tiny vertical grooves or lines. Same white color, same height and silhouette. Do not change face, clothing colors, zigzag, pose or framing.",
+          "references": [
+            "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\muscle\\front-toon.png",
+            "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-e9b093e6-99b4-4daf-988e-c1a806c624a1.png"
+          ],
+          "result": "Localized correction still retains fine sock ribbing. Original selected image retained."
+        }
+      ]
     },
     {
       "order": 12,
@@ -167,9 +326,22 @@
         "sweater-muscle\\front-toon.png"
       ],
       "file_name": "sweater-muscle\\back-toon.png",
-      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Holiday Sweater Muscle, matching the reference exactly: the back of his spiky brown hair and red headband, the back of the red sweater with the green band and white zigzags going all the way round, dark-green shorts, white socks with red tops, red sneakers",
-      "status": "pending",
-      "depends_on": 11
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Holiday Sweater Muscle, matching the reference exactly: the back of his spiky brown hair and red headband, the back of the red sweater with the green band and white zigzags going all the way round, dark-green shorts, white socks with red tops, red sneakers\n\nFor this row generate ONLY ONE BACK view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "status": "completed",
+      "depends_on": 11,
+      "prompt_clarification": "For this row generate ONLY ONE BACK view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-2c3135fc-c730-430b-967c-fc91499be10f.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sweater-muscle\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "94fbd4ba8ccea4376f2b06957e6f1b2b655d47b46a5af68a10521057280fe7f0",
+      "validation": "Inspected: direct rear A-pose, red headband, matching red sweater/green band/white zigzag wrapping around, green shorts, green-white wristbands, white socks/red tops and red-white shoes.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sweater-muscle\\front-toon.png"
+      ],
+      "reference_front_sha256": "4d043ec542c0a7c4af5c24237019d112150528abc2e75ae63511d9a0ed8ac9b9"
     },
     {
       "order": 13,
@@ -178,8 +350,20 @@
         "echo\\front-toon.png"
       ],
       "file_name": "jinglebell-echo\\front-toon.png",
-      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Jingle Bell Echo: her same curly brown hair and eyes, the goggles on her head now red with gold rims, and one small round gold bell on each side of them; a short puffy red jacket with a smooth solid white collar and cuffs, open over a green hoodie; green jogger pants with NO pockets; plain white sneakers with red soles",
-      "status": "pending"
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Jingle Bell Echo: her same curly brown hair and eyes, the goggles on her head now red with gold rims, and one small round gold bell on each side of them; a short puffy red jacket with a smooth solid white collar and cuffs, open over a green hoodie; green jogger pants with NO pockets; plain white sneakers with red soles\n\nFor this row generate ONLY ONE FRONT view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "status": "completed",
+      "prompt_clarification": "For this row generate ONLY ONE FRONT view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-61f9de3c-a5c2-4980-b005-22384865569d.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\jinglebell-echo\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "8650b2682cc1c40b9e98cf67e981729cac170571a30a2aed252ac95add52cd0a",
+      "validation": "Inspected: Echo likeness, curly brown hair/eyes, red goggles with gold rims and two small bells, red jacket with white collar/cuffs, green hoodie/joggers without pockets, white shoes/red soles and full A-pose.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\echo\\front-toon.png"
+      ]
     },
     {
       "order": 14,
@@ -188,9 +372,22 @@
         "jinglebell-echo\\front-toon.png"
       ],
       "file_name": "jinglebell-echo\\back-toon.png",
-      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Jingle Bell Echo, matching the reference exactly: the back of her curly brown hair with the red goggles and the two gold bells at the sides, the back of the red jacket with its white collar, the green hood lying flat, green joggers, white sneakers with red soles",
-      "status": "pending",
-      "depends_on": 13
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Jingle Bell Echo, matching the reference exactly: the back of her curly brown hair with the red goggles and the two gold bells at the sides, the back of the red jacket with its white collar, the green hood lying flat, green joggers, white sneakers with red soles\n\nFor this row generate ONLY ONE BACK view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "status": "completed",
+      "depends_on": 13,
+      "prompt_clarification": "For this row generate ONLY ONE BACK view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-c3e2f882-f768-4b70-94a2-0dab8023ec70.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\jinglebell-echo\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "9fc749c01ad011f7cd707116234ac6761023571c8661194a78606efeb24120dd",
+      "validation": "Inspected: direct rear with curly hair, red goggle strap and two gold bells, red jacket/white collar/cuffs, green hood flat and green joggers, white shoes/red soles, A-pose.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\jinglebell-echo\\front-toon.png"
+      ],
+      "reference_front_sha256": "8650b2682cc1c40b9e98cf67e981729cac170571a30a2aed252ac95add52cd0a"
     },
     {
       "order": 15,
@@ -199,8 +396,20 @@
         "bramble\\front-toon.png"
       ],
       "file_name": "evergreen-bramble\\front-toon.png",
-      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Evergreen Bramble: his same messy brown hair and face, his leaf crown now made of a few solid holly leaves with small round red berries; a dark-green poncho shaped in three layered pointed tiers like a little pine tree (smooth solid shapes, no needles), with a few small round red and gold ornaments on it; his same small satchel; brown shorts; dark-green socks; brown boots",
-      "status": "pending"
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Evergreen Bramble: his same messy brown hair and face, his leaf crown now made of a few solid holly leaves with small round red berries; a dark-green poncho shaped in three layered pointed tiers like a little pine tree (smooth solid shapes, no needles), with a few small round red and gold ornaments on it; his same small satchel; brown shorts; dark-green socks; brown boots\n\nFor this row generate ONLY ONE FRONT view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "status": "completed",
+      "prompt_clarification": "For this row generate ONLY ONE FRONT view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-3ce11117-4271-4dca-9f98-6566d90fd7f7.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\evergreen-bramble\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "3afb2dc11e0ff34dde006ce44a298e838993f7b22e793f4d08cc4bfe1e58b7d5",
+      "validation": "Inspected: Bramble likeness, messy brown hair and holly/berry crown; three pointed dark-green poncho tiers with red/gold ornaments, original satchel, brown shorts/boots and dark-green socks. Inherited boot laces and small satchel ornaments remain.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\bramble\\front-toon.png"
+      ]
     },
     {
       "order": 16,
@@ -209,9 +418,37 @@
         "evergreen-bramble\\front-toon.png"
       ],
       "file_name": "evergreen-bramble\\back-toon.png",
-      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Evergreen Bramble, matching the reference exactly: the back of his messy brown hair with the holly crown, the back of the pine-tree poncho in three pointed tiers with its red and gold ornaments, the satchel strap, brown shorts, dark-green socks, brown boots",
-      "status": "pending",
-      "depends_on": 15
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Evergreen Bramble, matching the reference exactly: the back of his messy brown hair with the holly crown, the back of the pine-tree poncho in three pointed tiers with its red and gold ornaments, the satchel strap, brown shorts, dark-green socks, brown boots\n\nFor this row generate ONLY ONE BACK view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "status": "completed",
+      "depends_on": 15,
+      "prompt_clarification": "For this row generate ONLY ONE BACK view of ONE character, centered and filling the portrait frame. Do not include a second figure, turnaround sheet, collage or split panel. Instructions for the other view in the shared standard apply only to other rows.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-f4d0e51d-3591-4b57-b6c3-1285184ffbbb.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\evergreen-bramble\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "448403b818a73ab7cdb1e698ccbfaa669aabb5dad48640f92bac054caf87a685",
+      "validation": "Inspected: direct rear with matching holly crown and hair, three poncho tiers/red-gold ornaments, satchel at opposite image side with diagonal strap, brown shorts/boots and green socks, full-body A-pose.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\evergreen-bramble\\front-toon.png"
+      ],
+      "reference_front_sha256": "3afb2dc11e0ff34dde006ce44a298e838993f7b22e793f4d08cc4bfe1e58b7d5"
     }
-  ]
+  ],
+  "verification": {
+    "completed": 16,
+    "png_dimensions": [
+      1024,
+      1536
+    ],
+    "all_file_hashes_verified": true,
+    "all_original_rows_preserved": true,
+    "all_back_references_are_preceding_saved_fronts": true,
+    "notes": [
+      "Soft 3D form lighting is visible throughout.",
+      "Tinker cap orientation, rear goggle strap, crossed overall straps and rear belt corrected.",
+      "Fine ribbing remains on Muscle front socks despite two targeted correction attempts."
+    ]
+  }
 }
