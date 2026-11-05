@@ -1379,7 +1379,8 @@ end
 local aiming = false
 local aimCopySlot = nil -- (4 Nov) aiming for Clone's copied noise (slot 1 / 2)
 local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare",
-	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog", holly = "\u{1F36C} Peppermints", clone = "\u{1F465} Copycat", harmony = "\u{1F3B5} Lullaby" }
+	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog", holly = "\u{1F36C} Peppermints", clone = "\u{1F465} Copycat", harmony = "\u{1F3B5} Lullaby",
+	elfy = "\u{1F941} Wind-up Toy" } -- 5 Nov: Elfy was missing, so his button only said 'press E'
 local KEYS = not TOUCH and UserInputService.KeyboardEnabled -- show the R key on the button
 do
 local function paintSkill()
