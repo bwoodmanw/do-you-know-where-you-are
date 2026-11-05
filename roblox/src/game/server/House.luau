@@ -28,6 +28,8 @@ local THEMES = {
 	aquarium = { wall = Color3.fromRGB(28, 72, 96), light = Color3.fromRGB(165, 215, 255), ceiling = Color3.fromRGB(18, 38, 58) },
 	-- the Harvest Barn (Thanksgiving): barn-red walls, warm lantern light, dark rafters
 	barn = { wall = Color3.fromRGB(138, 46, 38), light = Color3.fromRGB(255, 212, 150), ceiling = Color3.fromRGB(58, 40, 30) },
+	-- Claus Manor (Christmas, 5 Nov): deep red-brown walls, warm firelight, dark beams
+	claus = { wall = Color3.fromRGB(112, 40, 42), light = Color3.fromRGB(255, 214, 160), ceiling = Color3.fromRGB(52, 32, 30) },
 }
 local HT = 24 -- ceiling height of tall rooms (the Gallery with its loft)
 
@@ -904,6 +906,81 @@ local function xmasFurniture(root, kind, x, y)
 			part(root, { Name = "ToyDrum", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1, 1.6, 1.6), CFrame = CFrame.new(top + Vector3.new(0, 0.5, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(240, 190, 50) })
 		end
 		return true
+	elseif kind == "oven" then
+		-- Claus Manor's Cookie Kitchen: a brick oven glowing orange inside
+		part(root, { Name = "Oven", Size = Vector3.new(T, 7, T * 0.8), Position = at(x, y, 3.5), Material = Enum.Material.Brick, Color = Color3.fromRGB(150, 70, 52) })
+		local mouth = part(root, { Name = "OvenFire", Size = Vector3.new(T * 0.5, 2.2, 0.3), Position = at(x, y, 2.4) + Vector3.new(0, 0, T * 0.4), Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 140, 50), CanCollide = false })
+		local glow = Instance.new("PointLight")
+		glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 150, 70), 10, 1.2
+		glow.Parent = mouth
+		return true
+	elseif kind == "cookies" then
+		-- a long table with trays of iced cookies
+		part(root, { Name = "CookieTable", Size = Vector3.new(T, 0.6, T * 0.8), Position = at(x, y, 3.4), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(160, 108, 64) })
+		for _, dx in ipairs({ -1, 1 }) do
+			for _, dz in ipairs({ -1, 1 }) do
+				part(root, { Name = "TableLeg", Size = Vector3.new(0.5, 3.1, 0.5), Position = at(x, y, 1.55) + Vector3.new(dx * (T / 2 - 0.6), 0, dz * (T * 0.4 - 0.6)), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(120, 80, 48) })
+			end
+		end
+		part(root, { Name = "CookieTray", Size = Vector3.new(T * 0.7, 0.2, T * 0.5), Position = at(x, y, 3.8), Material = Enum.Material.Metal, Color = Color3.fromRGB(200, 204, 210), CanCollide = false })
+		local icing = { Color3.fromRGB(255, 255, 255), Color3.fromRGB(240, 90, 110), Color3.fromRGB(110, 200, 120) }
+		for i = 0, 5 do
+			local cx, cz = (i % 3 - 1) * 1.4, (math.floor(i / 3) - 0.5) * 1.4
+			part(root, { Name = "Cookie", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.25, 1.1, 1.1), CFrame = CFrame.new(at(x, y, 4.0) + Vector3.new(cx, 0, cz)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(196, 130, 70), CanCollide = false })
+			part(root, { Name = "Icing", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.06, 0.7, 0.7), CFrame = CFrame.new(at(x, y, 4.15) + Vector3.new(cx, 0, cz)) * CFrame.Angles(0, 0, math.rad(90)), Color = icing[(x + y + i) % 3 + 1], CanCollide = false })
+		end
+		return true
+	elseif kind == "candyjars" then
+		-- a tall cupboard of candy jars
+		part(root, { Name = "Cupboard", Size = Vector3.new(T, 10, T * 0.6), Position = at(x, y, 5), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(120, 60, 50) })
+		local sweets = { Color3.fromRGB(240, 70, 80), Color3.fromRGB(255, 200, 60), Color3.fromRGB(90, 190, 110), Color3.fromRGB(250, 250, 250) }
+		for row = 0, 2 do
+			for b = 0, 2 do
+				part(root, { Name = "CandyJar", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.6, 1.3, 1.3), CFrame = CFrame.new(at(x, y, 1.6 + row * 3) + Vector3.new(-2 + b * 2, 0, T * 0.3 + 0.4)) * CFrame.Angles(0, 0, math.rad(90)), Material = Enum.Material.Glass, Transparency = 0.2, Color = sweets[(x + y + row + b) % #sweets + 1], CanCollide = false })
+			end
+		end
+		return true
+	elseif kind == "sleigh" then
+		-- Claus Manor's Sleigh Loft: a big red sleigh piled with presents
+		-- (one piece a cell; a row of cells is one long sleigh)
+		part(root, { Name = "Sleigh", Size = Vector3.new(T, 3.4, T * 0.9), Position = at(x, y, 2.4), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(196, 36, 44) })
+		part(root, { Name = "SleighTrim", Size = Vector3.new(T + 0.05, 0.5, T * 0.92), Position = at(x, y, 4.0), Material = Enum.Material.SmoothPlastic, Color = Color3.fromRGB(240, 196, 70), CanCollide = false })
+		for _, dz in ipairs({ -1, 1 }) do
+			part(root, { Name = "Runner", Size = Vector3.new(T, 0.4, 0.4), Position = at(x, y, 0.3) + Vector3.new(0, 0, dz * T * 0.38), Material = Enum.Material.Metal, Color = Color3.fromRGB(240, 196, 70), CanCollide = false })
+		end
+		local k = x * 5 + y * 3
+		for i = 0, 1 do
+			local s = 1.8 - i * 0.4
+			part(root, { Name = "Present", Size = Vector3.new(s * 1.3, s, s), Position = at(x, y, 4.2 + s / 2 + i * 1.6) + Vector3.new((i - 0.5) * 1.2, 0, 0), Material = Enum.Material.SmoothPlastic, Color = XMAS_WRAP[(k + i) % #XMAS_WRAP + 1], CanCollide = false })
+		end
+		return true
+	elseif kind == "reindeer" then
+		-- Brent (5 Nov): reindeer in the Sleigh Loft - a big friendly
+		-- reindeer standing in its stall (built from parts, no model needed)
+		local BROWN, LIGHT, DARK = Color3.fromRGB(140, 92, 56), Color3.fromRGB(220, 190, 150), Color3.fromRGB(80, 54, 36)
+		local face = (x + y) % 2 == 0 and 1 or -1 -- facing one way or the other
+		local function bit(name, shape, size, offset, color)
+			return part(root, { Name = name, Shape = shape, Size = size, Position = at(x, y, 0) + Vector3.new(offset.X * face, offset.Y, offset.Z), Material = Enum.Material.SmoothPlastic, Color = color, CanCollide = false })
+		end
+		bit("ReindeerBody", Enum.PartType.Ball, Vector3.new(4.6, 3, 2.6), Vector3.new(0, 4.4, 0), BROWN)
+		bit("ReindeerBelly", Enum.PartType.Ball, Vector3.new(3.4, 1.6, 2.2), Vector3.new(0, 3.7, 0), LIGHT)
+		bit("ReindeerNeck", Enum.PartType.Ball, Vector3.new(1.4, 2.6, 1.4), Vector3.new(1.9, 5.8, 0), BROWN)
+		bit("ReindeerHead", Enum.PartType.Ball, Vector3.new(2, 1.6, 1.5), Vector3.new(2.5, 7.1, 0), BROWN)
+		bit("ReindeerNose", Enum.PartType.Ball, Vector3.new(0.6, 0.6, 0.6), Vector3.new(3.5, 7.0, 0), DARK)
+		for _, dz in ipairs({ -0.5, 0.5 }) do
+			bit("ReindeerEye", Enum.PartType.Ball, Vector3.new(0.3, 0.3, 0.3), Vector3.new(3.0, 7.5, dz * 1.1), Color3.fromRGB(20, 20, 24))
+			bit("Antler", Enum.PartType.Block, Vector3.new(0.3, 1.8, 0.3), Vector3.new(2.2, 8.6, dz * 1.2), LIGHT)
+			bit("Antler", Enum.PartType.Block, Vector3.new(0.9, 0.3, 0.3), Vector3.new(2.5, 9.0, dz * 1.4), LIGHT)
+		end
+		for _, dx in ipairs({ -1.5, 1.5 }) do
+			for _, dz in ipairs({ -0.7, 0.7 }) do
+				bit("ReindeerLeg", Enum.PartType.Block, Vector3.new(0.6, 3.4, 0.6), Vector3.new(dx, 1.7, dz), BROWN)
+			end
+		end
+		bit("ReindeerTail", Enum.PartType.Ball, Vector3.new(0.7, 0.7, 0.7), Vector3.new(-2.4, 5.0, 0), LIGHT)
+		-- an invisible block so kids and the host walk round it
+		part(root, { Name = "ReindeerBlock", Size = Vector3.new(T * 0.8, 9, T * 0.6), Position = at(x, y, 4.5), Transparency = 1 })
+		return true
 	end
 	return false
 end
@@ -1053,7 +1130,7 @@ function House.build(map)
 					-- a fish tank, pool, kelp, submarine, bones, coral or the great tank
 				elseif map.theme == "barn" and barnFurniture(root, kind, x, y) then
 					-- a hay bale, a feed trough or a row of corn
-				elseif map.theme == "xmas" and xmasFurniture(root, kind, x, y) then
+				elseif (map.theme == "xmas" or map.theme == "claus") and xmasFurniture(root, kind, x, y) then
 					-- a pile of presents or a toy workbench (Candy Cane Lane)
 				elseif kind == "table" then
 					part(root, { Name = "Table", Size = Vector3.new(T, 0.6, T), Position = at(x, y, 3.4), Material = Enum.Material.Fabric, Color = Color3.fromRGB(242, 233, 247) })

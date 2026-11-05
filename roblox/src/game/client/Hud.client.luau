@@ -586,10 +586,18 @@ do
 		nutmeg = { power = "bells", used = "BellsUsed", text = "\u{1F514} Jingle Bells", remote = "RingBells", color = Color3.fromRGB(190, 40, 50) },
 		holly = { power = "hedge", used = "HedgeUsed", text = "\u{1F33F} Holly Hedge", remote = "GrowHedge", color = Color3.fromRGB(40, 120, 60) },
 		harmony = { power = "encore", used = "EncoreUsed", text = "\u{1F3B6} Encore", remote = "SingEncore", color = Color3.fromRGB(130, 80, 190) },
+		elfy = { power = "parade", used = "ToyPowerUsed", text = "\u{1F941} Toy Parade", remote = "ElfyPower", color = Color3.fromRGB(190, 40, 50) },
+	}
+	-- (5 Nov) a character with a second level-20 button choice
+	local POWERS_ALT = {
+		elfy = { power = "rush", used = "ToyPowerUsed", text = "\u{1F6E0} Workshop Rush", remote = "ElfyPower", color = Color3.fromRGB(40, 140, 70) },
 	}
 	local bellsBtn = button(acts, "", { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(190, 40, 50), Visible = false })
 	local function current()
 		local p = POWERS[player:GetAttribute("Skill") or ""]
+		if p and player:GetAttribute("Power20") ~= p.power then
+			p = POWERS_ALT[player:GetAttribute("Skill") or ""]
+		end
 		return p and player:GetAttribute("Power20") == p.power and not player:GetAttribute(p.used) and p or nil
 	end
 	local function ring()
@@ -607,7 +615,7 @@ do
 			bellsBtn.BackgroundColor3 = p.color
 		end
 	end
-	for _, a in ipairs({ "Skill", "Power20", "BellsUsed", "HedgeUsed", "EncoreUsed" }) do
+	for _, a in ipairs({ "Skill", "Power20", "BellsUsed", "HedgeUsed", "EncoreUsed", "ToyPowerUsed" }) do
 		player:GetAttributeChangedSignal(a):Connect(paintBells)
 	end
 	paintBells()
@@ -2355,6 +2363,10 @@ RunService.RenderStepped:Connect(function(dt)
 		-- wading through the chocolate river is slow (the bridge is not)
 		wadeParams.FilterDescendantsInstances = { char }
 		local below = workspace:Raycast(hrp.Position, Vector3.new(0, -8, 0), wadeParams)
+		-- (5 Nov) Mr Claus's lump of coal: slowed for a moment
+		if (player:GetAttribute("CoalUntil") or 0) > workspace:GetServerTimeNow() then
+			hum.WalkSpeed *= Config.HOST_SKILLS.coal.slowMult
+		end
 		if below and (below.Instance.Name == "ChocolateRiver" or below.Instance.Name == "WadeWater") then
 			hum.WalkSpeed *= Config.WADE.kid
 			if not wadeTold then

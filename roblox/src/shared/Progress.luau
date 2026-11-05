@@ -38,6 +38,11 @@ Progress.MAPS = {
 	{ id = "harvestbarn", building = "harvestbarn", floor = 0, name = "The Harvest Barn", icon = "\u{1F983}", ready = true, secret = true, season = "thanksgiving" },
 	-- 4 Nov (Brent): Christmas's building, every year 1 Dec - 4 Jan
 	{ id = "candycanelane", building = "candycanelane", floor = 0, name = "Candy Cane Lane", icon = "\u{1F36C}", ready = true, secret = true, season = "christmas" },
+	-- 5 Nov (Brent): Claus Manor, Christmas's present hunt - three floors, the
+	-- first open to everyone during Christmas, the next by escaping the one below
+	{ id = "clausmanor", building = "clausmanor", floor = 1, name = "Claus Manor: Toy Workshop", icon = "\u{1F381}", ready = true, season = "christmas" },
+	{ id = "clausmanor_2", building = "clausmanor", floor = 2, name = "Claus Manor: Cookie Kitchen", icon = "\u{1F36A}", ready = true, season = "christmas" },
+	{ id = "clausmanor_3", building = "clausmanor", floor = 3, name = "Claus Manor: Sleigh Loft", icon = "\u{1F6F7}", ready = true, season = "christmas" },
 }
 
 Progress.BUILDINGS = {
@@ -49,6 +54,7 @@ Progress.BUILDINGS = {
 	{ id = "aquarium", name = "Sunken Aquarium" },
 	{ id = "harvestbarn", name = "The Harvest Barn", season = "thanksgiving" },
 	{ id = "candycanelane", name = "Candy Cane Lane", season = "christmas" },
+	{ id = "clausmanor", name = "Claus Manor", season = "christmas" },
 }
 
 -- the buildings to show now: every year-round one, and a season's own while
@@ -72,7 +78,8 @@ function Progress.openMaps(unlocked, seasonId)
 	end
 	for _, m in ipairs(Progress.MAPS) do
 		if m.season then
-			out[m.id] = m.season == seasonId or nil
+			-- (5 Nov) a season building's upper floors open by escaping the one below
+			out[m.id] = (m.season == seasonId and (m.floor <= 1 or (unlocked and unlocked[m.id]))) or nil
 		end
 	end
 	return out
@@ -712,6 +719,53 @@ local SPECIAL = {
 		[20] = {
 			{ id = "hedge20", name = "Holly Hedge", say = "A Holly Hedge button: once a game, a prickly hedge fills a doorway 10 s - the host can't get past, kids squeeze through", mods = { p20 = "hedge" } },
 			{ id = "storm20", name = "Candy Storm", say = "Your peppermint patch is twice as big", mods = { p20 = "candystorm" } },
+		},
+	},
+	-- Elfy (5 Nov, CLAUS_MANOR.md): Elf Hands, Wind-up Toy
+	elfy = {
+		[3] = {
+			{ id = "cocoa3", name = "Cocoa Break", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "nimble3", name = "Nimble Elf", say = "Hold things 6% faster", mods = { holdMult = 0.94 } },
+		},
+		[5] = {
+			{ id = "quick5", name = "Quick Wind", say = "Wind-up Toy recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "quiet5", name = "Soft Slippers", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[7] = {
+			{ id = "tip7", name = "Workshop Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "lungs7", name = "Candy Fuel", say = "8% more stamina", mods = { staminaMult = 1.08 } },
+		},
+		[9] = {
+			{ id = "hands9", name = "Tiny Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+			{ id = "quick9", name = "Spring Key", say = "Wind-up Toy recharges 10% faster", mods = { cooldownMult = 0.9 } },
+		},
+		[10] = {
+			{ id = "band10", name = "Marching Band", say = "Your toy marches 3 s longer and is heard from twice as far", mods = { p10 = "band" } },
+			{ id = "wrapped10", name = "Wrapped Up", say = "As you set the toy down you hide inside a present for 5 s - the host walks past", mods = { p10 = "wrapped" } },
+		},
+		[11] = {
+			{ id = "quick11", name = "Oiled Gears", say = "Wind-up Toy recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "quiet11", name = "Tiptoe", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[13] = {
+			{ id = "tip13", name = "Elf Hint", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "hands13", name = "Fast Wrapper", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[15] = {
+			{ id = "shield15", name = "Tinsel Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+			{ id = "quick15", name = "Wound Tight", say = "Wind-up Toy recharges 15% faster", mods = { cooldownMult = 0.85 } },
+		},
+		[17] = {
+			{ id = "lungs17", name = "Peppermint Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "quiet17", name = "Snow Cloak", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[19] = {
+			{ id = "quick19", name = "Master Toymaker", say = "Wind-up Toy recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "tip19", name = "North Pole Map", say = "+1 free clue for the team", mods = { clues = 1 } },
+		},
+		[20] = {
+			{ id = "parade20", name = "Toy Parade", say = "A Toy Parade button: once a game, three toys march off in three directions at once", mods = { p20 = "parade" } },
+			{ id = "rush20", name = "Workshop Rush", say = "A Workshop Rush button: once a game, you and friends near you hold things twice as fast for 10 s", mods = { p20 = "rush" } },
 		},
 	},
 	-- Cloud (4 Nov, NEW_CHARACTERS.md): Float Up, Fog; fogSize (studs wider) /

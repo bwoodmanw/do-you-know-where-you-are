@@ -39,6 +39,10 @@ function Unlocks.owns(plr, id)
 	if u.escapes and d and d.stats and (d.stats.escapes or 0) >= u.escapes then
 		return true
 	end
+	-- 5 Nov: Elfy - presents opened yourself in Claus Manor
+	if u.presents and d and d.stats and (d.stats.presents or 0) >= u.presents then
+		return true
+	end
 	if (u.pass or 0) <= 0 then
 		return false
 	end
@@ -63,6 +67,10 @@ end
 -- how a locked character is earned, in words ("escape 10 times - 6 so far")
 function Unlocks.howText(id, stats)
 	local u = Config.CHARACTER_UNLOCK[id]
+	if u and u.presents then
+		local have = math.min((stats and stats.presents) or 0, u.presents)
+		return "open " .. u.presents .. " presents in Claus Manor at Christmas (" .. have .. " so far)"
+	end
 	if not u or not u.escapes then
 		return nil
 	end

@@ -103,6 +103,7 @@ Config.LOOK = {
 		carnival = { ambient = rgb(100, 78, 88), outdoor = rgb(120, 92, 105), tint = rgb(255, 236, 222) },
 		aquarium = { ambient = rgb(70, 90, 115), outdoor = rgb(85, 108, 135), tint = rgb(226, 240, 255) },
 		xmas = { ambient = rgb(95, 90, 115), outdoor = rgb(120, 125, 150), tint = rgb(240, 246, 255) }, -- Candy Cane Lane
+		claus = { ambient = rgb(100, 82, 88), outdoor = rgb(120, 125, 150), tint = rgb(255, 238, 225) }, -- Claus Manor (5 Nov)
 	},
 	lobby = { ambient = rgb(85, 76, 100), outdoor = rgb(125, 115, 145), tint = rgb(255, 242, 230) },
 }
@@ -132,7 +133,7 @@ Config.ANIM = {
 		levitation = { idle = 616006778, idle2 = 616008087, walk = 616013216, run = 616010382, jump = 616008936, fall = 616005863, climb = 616003713 },
 	},
 	-- the kids (their skins use the same pack unless listed under model)
-	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy", nutmeg = "bubbly", cloud = "levitation", holly = "cartoony", clone = "astronaut", harmony = "bubbly" },
+	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy", nutmeg = "bubbly", cloud = "levitation", holly = "cartoony", clone = "astronaut", harmony = "bubbly", elfy = "toy" },
 	model = { MuscleMummy = "zombie" }, -- (a "...Toon" test model walks like its character)
 	-- models saved in a T-pose whose pack idle swings the arms behind the back
 	-- (Echo, 9 Oct): they keep the pack's walk and run but stand in Roblox's
@@ -148,7 +149,7 @@ Config.ANIM = {
 	plainRun = { shadow = true, brainy = true },
 	run = 507767714, -- Roblox's plain R15 run
 	-- the hosts
-	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie", crumbles = "zombie" },
+	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie", crumbles = "zombie", mrclaus = "zombie", mrsclaus = "elder" },
 	-- hosts that play no body animation and glide (16 Oct: the Robot toon is a
 	-- lamp on wheels - a walk animation tied it in knots)
 	hostStill = { robot = true },
@@ -244,6 +245,14 @@ Config.HOST_SKILLS = {
 	-- who steps on one crunches it and he hears where (Shadow sneaking and
 	-- crawling kids step softly)
 	crumbs = { max = 5, last = 45, clear = 2, cooldown = { easy = 14, normal = 10, hard = 8, nightmare = 6 } },
+	-- Claus Manor (5 Nov, CLAUS_MANOR.md). Mr Claus's Lump of Coal: thrown like
+	-- the Pumpkin's (a slow arc you can see coming); a kid it hits runs at
+	-- `slowMult` speed for `slow` seconds (no knock-down)
+	coal = { min = 8, range = 45, flight = 1.2, radius = 4, slow = 2, slowMult = 0.5,
+		cooldown = { easy = 20, normal = 15, hard = 12, nightmare = 9 } },
+	-- Mrs Claus's Naughty List: a kid she sees goes on the list - for `seconds`
+	-- both Clauses are told where that kid is, every `every` seconds
+	naughty = { seconds = 6, every = 1, cooldown = { easy = 30, normal = 22, hard = 18, nightmare = 14 } },
 }
 -- the hosts: the model in ServerStorage/Characters and the skill. Each game
 -- picks one: half the time the building's own, otherwise one of the others.
@@ -261,8 +270,14 @@ Config.HOSTS = {
 	gobbler = { model = "HostGobbler", name = "the Gobbler", tint = Color3.fromRGB(126, 72, 40), hidden = true },
 	-- Candy Cane Lane's host (Christmas, 4 Nov): only there, always there
 	crumbles = { model = "HostCrumbles", name = "Crumbles the Gingerbread Giant", skill = "crumbs", tint = Color3.fromRGB(176, 108, 58), hidden = true },
+	-- Claus Manor's hosts (Christmas, 5 Nov): only there (Config.FLOOR_HOSTS)
+	mrclaus = { model = "HostMrClaus", name = "Mr Claus", skill = "coal", tint = Color3.fromRGB(176, 30, 40), hidden = true },
+	mrsclaus = { model = "HostMrsClaus", name = "Mrs Claus", skill = "naughty", tint = Color3.fromRGB(120, 40, 90), hidden = true },
 }
-Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear", aquarium = "anglerfish", harvestbarn = "gobbler", candycanelane = "crumbles" }
+-- a building whose floors have their own hosts (5 Nov): a list is two hosts
+-- at once (the second runs alongside the first)
+Config.FLOOR_HOSTS = { clausmanor = { [1] = "mrclaus", [2] = "mrsclaus", [3] = { "mrclaus", "mrsclaus" } } }
+Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear", aquarium = "anglerfish", harvestbarn = "gobbler", candycanelane = "crumbles", clausmanor = "mrclaus" }
 -- the "escaped all floors" badge counts these buildings' floors (its badge says 9 floors)
 Config.ALL_FLOORS_BUILDINGS = { partyhouse = true, gummy = true, hospital = true }
 Config.CLUES = 3
@@ -345,7 +360,7 @@ Config.SKILLS = {
 -- seconds Patch's shield on herself lasts (shields she gives friends last
 -- until a grab) - 10 Oct, Brent: a solo Patch was shielded all the time
 Config.SELF_SHIELD = 30
-Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30, nutmeg = 25, cloud = 35, holly = 30, clone = 90, harmony = 30 }
+Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30, nutmeg = 25, cloud = 35, holly = 30, clone = 90, harmony = 30, elfy = 35 }
 -- Harmony (4 Nov, NEW_CHARACTERS.md). Music Box (floor job): a music box in the
 -- room you start in plays the door code for Harmony (hold E `listen` s). In
 -- Tune (always on): friends within `tune` studs of her get their stamina back
@@ -396,6 +411,9 @@ Config.CHARACTER_UNLOCK = {
 	clone = { escapes = 25, pass = 2066906385 },
 	harmony = { escapes = 40, pass = 2072624265 },
 	holly = { season = "christmas", price = 150, escapes = 50, pass = 2067446371 },
+	-- 5 Nov (Brent): limited edition - only by opening `presents` real presents
+	-- yourself in Claus Manor (Config.PRESENT_HUNT.goal); no pass, no shop price
+	elfy = { presents = 150, limited = true },
 }
 -- skills version 2 (SKILLS_V2.md): every character has a button
 Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise
@@ -421,6 +439,14 @@ Config.GLOW_FLARE = { seconds = 8, mult = 2.2, range = 16, stamina = 30, speed =
 	beacon = { stamina = 50, speed = 1.05, speedTime = 8 } }
 -- Echo's noise: seconds the host goes to it and ignores the kids it can see
 Config.ECHO_LURE = 5
+-- Elfy (5 Nov, CLAUS_MANOR.md): Elf Hands holds things `hands` times as long
+-- (25% faster). Wind-up Toy: a toy marches `march` studs a second straight
+-- ahead for `toy` s; every `every` s each host within `hear` studs goes after
+-- it. Marching Band (10): `band` s longer, heard from `bandHear`. Wrapped Up
+-- (10): Elfy hides in a present for `wrapped` s as he sets it down. Toy
+-- Parade (20, once a game): three toys at once. Workshop Rush (20, once a
+-- game): Elfy and friends within `rushNear` hold things twice as fast for `rush` s
+Config.ELFY = { hands = 0.75, toy = 6, march = 6, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5, rush = 10, rushNear = 20 }
 -- Echo's Sharp Ears (4 Nov): within this many studs Echo sees the host through walls
 Config.ECHO_EARS = 30
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
@@ -478,6 +504,10 @@ Config.SKILL_INFO = {
 	echo = { parts = {
 		{ kind = "passive", name = "Sharp Ears", text = "Hears the host's footsteps: when he is close, Echo sees him through the walls." },
 		{ kind = "press", name = "Noise", text = "Tap where to throw a noise - the host goes to look there, and Echo runs 5% faster for 3 seconds." },
+	} },
+	elfy = { parts = {
+		{ kind = "passive", name = "Elf Hands", text = "Opens drawers, boxes, presents and hiding spots 25% faster." },
+		{ kind = "press", name = "Wind-up Toy", text = "Sets down a wind-up toy soldier that marches off jingling for 6 seconds - the host goes after the noise." },
 	} },
 	harmony = { parts = {
 		{ kind = "hold", name = "Music Box", text = "The music box behind the first locked door plays the door code - only Harmony hears it." },
@@ -600,6 +630,16 @@ Config.STUDIO_SEASON_DATE = { 2026, 12, 3 } -- 3 Nov: trying Christmas (set back
 -- the Lobby load it by id when ServerStorage/Characters has no `Turkey`
 Config.TURKEY_ASSET = 72652828731875
 Config.ROUNDUP = { turkeys = 8, flee = 16, catch = 4, speed = 15, height = 3.2, points = 5, goal = 50, share = true }
+-- the Present Hunt (Claus Manor, Christmas - Brent 5 Nov, CLAUS_MANOR.md): on
+-- each floor `real[floor]` presents and `decoys[floor]` decoys look the same;
+-- hold `hold` s to open one. A real one counts (and `points`); once all are
+-- open the big door swings open (no keys, no code). A decoy lets out a Toy Elf
+-- who runs from kids (`flee` studs, `speed`) jingling every `jingle` s for
+-- `elfTime` s - each jingle tells the Clauses where he is; tag him (within
+-- `catch`) to stop him (`elfPoints`). Elfy (the limited character) for `goal`
+-- real presents opened yourself during Christmas (no party share)
+Config.PRESENT_HUNT = { real = { 6, 8, 10 }, decoys = { 3, 4, 5 }, hold = 1.5, points = 5, elfTime = 8, jingle = 1.5,
+	flee = 14, speed = 13, catch = 4, elfPoints = 2, elfHeight = 2.6, goal = 150 }
 -- the Feast Meter (Thanksgiving, Brent 11 Oct): every runaway turkey caught
 -- in every server adds up (shared/FeastMeter.luau). Each stage reached gives
 -- every player who took part in catching a turkey this season its reward
@@ -651,7 +691,7 @@ Config.ARRIVE_WAIT = 45 -- the first game waits this long at most for the rest o
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "candycanelane" -- partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3), aquarium(_2, _3)
+Config.STUDIO_MAP = "clausmanor" -- 5 Nov: trying Claus Manor (_2, _3 for its upper floors; candycanelane = Candy Cane Lane); partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3), aquarium(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); nil = random
@@ -1037,6 +1077,9 @@ Config.NEW_SKILLS = {
 	{ id = "clone", name = "Clone", icon = "\u{1F465}", say = "Copies a friend's skill", color = Color3.fromRGB(40, 170, 170) },
 	-- Harmony (4 Nov): free; live once her model is saved
 	{ id = "harmony", name = "Harmony", icon = "\u{1F3B5}", say = "Sings the host slow", color = Color3.fromRGB(180, 140, 230) },
+	-- Elfy (5 Nov, Brent): limited edition - won only by opening presents in
+	-- Claus Manor during Christmas (CHARACTER_UNLOCK.elfy); live once his model is saved
+	{ id = "elfy", name = "Elfy", icon = "\u{1F9DD}", say = "Wind-up toy maker", color = Color3.fromRGB(60, 160, 80), unlock = true, release = 1796101200 },
 }
 do
 	local studio = game:GetService("RunService"):IsStudio()

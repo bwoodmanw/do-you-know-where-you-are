@@ -96,6 +96,7 @@ local RingBells = remote("RingBells") -- client -> server: Nutmeg's Jingle Bells
 local GrowHedge = remote("GrowHedge") -- client -> server: Holly's Holly Hedge (level 20), once a game
 local UseCopy = remote("UseCopy") -- client -> server: Clone's copied skill (slot 1 / 2, optional position)
 local SingEncore = remote("SingEncore") -- client -> server: Harmony's Encore (level 20), once a game
+local ElfyPower = remote("ElfyPower") -- client -> server: Elfy's Toy Parade or Workshop Rush (level 20), once a game
 local AskClue = remote("AskClue")
 local Say = remote("Say") -- client -> server: phrase index
 local Bubble = remote("Bubble") -- server -> clients: player, phrase index
@@ -289,7 +290,7 @@ local function applyMods(plr)
 	plr:SetAttribute("RunMult", m.runMult)
 	plr:SetAttribute("SightMult", m.sightMult)
 	-- Patch frees caged friends (and holds everything) twice as fast
-	plr:SetAttribute("HoldMult", m.holdMult * (skill == "patch" and 0.5 or 1))
+	plr:SetAttribute("HoldMult", m.holdMult * (skill == "patch" and 0.5 or 1) * (skill == "elfy" and Config.ELFY.hands or 1))
 	plr:SetAttribute("CooldownMult", m.cooldownMult)
 	-- ladder steps (Progress.ADDS) are added to each base value
 	plr:SetAttribute("SneakTime", 6 + (m.sneakTime or 0))
@@ -344,6 +345,19 @@ local round = {}
 -- Tower Run: what carries from one floor to the next (set between floors)
 local towerCarry = nil
 local world, host
+-- Claus Manor's top floor (5 Nov): a second host runs alongside the first;
+-- steppingHost is whichever host is thinking right now (its catches and the
+-- traps it steps in are its own)
+local host2, steppingHost = nil, nil
+-- a noise: every host hears it
+local function alertHosts(pos)
+	if host then
+		host:alert(pos)
+	end
+	if host2 and host2.model then
+		host2:alert(pos)
+	end
+end
 local hostTimer = nil
 
 local function say(kind, text, data, toPlayer)
@@ -820,7 +834,7 @@ local function escape(plr, side)
 end
 
 local function openDoor(plr, how)
-	if state.doorOpen or (state.roundup and how ~= "turkeys") then
+	if state.doorOpen or (state.roundup and how ~= "turkeys") or (state.presentHunt and how ~= "presents") then
 		return
 	end
 	state.doorOpen = true
@@ -950,7 +964,7 @@ local NOTHING = {
 }
 
 -- a boost happens: from the bag (tapped) or found in a present / search spot
-local function applyBoost(plr, id)
+local function applyBoost(plr, id, seconds)
 	if id == "candy" then
 		Boost:FireClient(plr, "candy")
 	elseif id == "energy" then
@@ -987,7 +1001,7 @@ local function applyBoost(plr, id)
 		if not hrp then
 			return
 		end
-		local seconds = Config.GIFTBOX.seconds
+		seconds = seconds or Config.GIFTBOX.seconds -- (5 Nov) Elfy's Wrapped Up: shorter
 		local untilT = workspace:GetServerTimeNow() + seconds
 		local ground = hrp.Position - Vector3.new(0, (hum and hum.HipHeight or 2) + hrp.Size.Y / 2, 0)
 		local box = Instance.new("Model")
@@ -1231,7 +1245,7 @@ local function wirePrompts()
 					Effects.burst(entry.part.Position, "pop")
 					say("pop", "POP! Just air - that balloon was a trick. And it was LOUD...", nil, plr)
 					if host then
-						host:alert(entry.part.Position)
+						alertHosts(entry.part.Position)
 					end
 					return
 				end
@@ -1249,7 +1263,7 @@ local function wirePrompts()
 				Effects.burst(entry.part.Position + Vector3.new(0, 4, 0), "pop")
 				say("pop", "Balloon " .. def.n .. " was " .. colourWord(col) .. "! That was LOUD...", { n = def.n, color = col, icon = Config.ITEM_ICONS.balloon, userId = plr.UserId })
 				if host then
-					host:alert(entry.part.Position)
+					alertHosts(entry.part.Position)
 				end
 			end)
 		elseif def.kind == "present" then
@@ -1463,7 +1477,7 @@ local function wirePrompts()
 					Effects.burst(pos, "shove")
 					-- BOOM: the host comes to look
 					if host and host.model then
-						host:alert(pos)
+						alertHosts(pos)
 					end
 					clearBlock(plr, id, "popper")
 				end)
@@ -1517,7 +1531,7 @@ local function wirePrompts()
 				Effects.sound(entry.part.Position, "hide")
 				-- rummaging is noisy
 				if host and math.random() < 0.5 then
-					host:alert(entry.part.Position)
+					alertHosts(entry.part.Position)
 				end
 				local lock = world.keyIn[id]
 				local isPopper = lock ~= nil and world.objects[lock].def.blocked
@@ -1735,7 +1749,7 @@ function round.hostCrumbs(_, pos, hostModel)
 		Effects.sound(at, "candy", 1)
 		say("info", "CRUNCH! " .. plr.DisplayName .. " stepped on Crumbles' crumbs - he heard that!", { userId = plr.UserId })
 		if host and host.model then
-			host:alert(at)
+			alertHosts(at)
 		end
 	end)
 	task.delay(s.last, function()
@@ -2200,7 +2214,7 @@ function round.placeJackBoxes()
 							hl.Parent = plr.Character
 							game:GetService("Debris"):AddItem(hl, s.show)
 							if host and host.model then
-								host:alert(h.Position)
+								alertHosts(h.Position)
 							end
 							task.delay(s.rearm, function()
 								if not b.dead and b.model.Parent and state == myState then
@@ -2300,7 +2314,7 @@ function round.hostFakeGift(_, pos, hostModel)
 			game:GetService("Debris"):AddItem(hl, s.show)
 		end
 		if h and host and host.model then
-			host:alert(h.Position)
+			alertHosts(h.Position)
 		end
 	end)
 	-- Brainy and Glow can tell a fake, and pop it safely
@@ -3176,6 +3190,367 @@ function round.placeTurkeys()
 end
 
 -- hit by a thrown pumpkin: knocked flat for a moment
+-- the Present Hunt (Claus Manor, Christmas - Brent 5 Nov, CLAUS_MANOR.md):
+-- the locked doors stand open and the keypad is off; real presents and decoys
+-- look the same round the floor. A real one counts (the big door swings open
+-- once all are found) and adds to the opener's Elfy count; a decoy lets out
+-- a Toy Elf who runs from kids jingling - every jingle tells the Clauses
+-- where he is - until he is tagged or his time runs out.
+function round.placePresents()
+	state.presentHunt = nil
+	RoundState:SetAttribute("Presents", nil)
+	local P = Config.PRESENT_HUNT
+	if not P or HouseMap.theme ~= "claus" then
+		return
+	end
+	local myState, myWorld = state, world
+	local mi = Progress.mapIndex(RoundState:GetAttribute("Map") or "")
+	local fl = (mi and Progress.MAPS[mi].floor) or 1
+	local nReal, nDecoy = P.real[fl] or P.real[1], P.decoys[fl] or P.decoys[1]
+	-- the locked doors stand open from the start; no keypad on the big door
+	for id, entry in pairs(world.objects) do
+		if entry.def and entry.def.kind == "lock" and not entry.def.bonus and not world.unlocked[id] then
+			world.unlocked[id] = true
+			RoundState:SetAttribute("Lock_" .. id, true)
+			entry.part.CanCollide = false
+			entry.part.Position += Vector3.new(0, 13, 0)
+			for _, k in ipairs({ "unlockPrompt", "pickPrompt", "shovePrompt", "popperPrompt" }) do
+				if entry[k] then
+					entry[k].Enabled = false
+				end
+			end
+			if entry.lockPart then
+				entry.lockPart:Destroy()
+			end
+			for _, p in ipairs(entry.pile or {}) do
+				p:Destroy()
+			end
+			if entry.giftPrompt then
+				entry.giftPrompt.Enabled = true
+			end
+		end
+	end
+	local door = world.objects.door
+	if door then
+		for _, k in ipairs({ "usePrompt", "padPrompt" }) do
+			if door[k] then
+				door[k].Enabled = false
+			end
+		end
+	end
+	-- where they sit: free floor slots, spread round the floor
+	local taken = {}
+	for _, o in pairs(world.objects) do
+		if o.def and o.def.x then
+			table.insert(taken, { o.def.x, o.def.y })
+		end
+	end
+	for _, t in ipairs(state.extraTaken or {}) do
+		table.insert(taken, t)
+	end
+	local pool = {}
+	for _, sl in ipairs(HouseMap.floorSlots or {}) do
+		local ok = true
+		for _, t in ipairs(taken) do
+			if math.abs(t[1] - sl[1]) <= 1 and math.abs(t[2] - sl[2]) <= 1 then
+				ok = false
+			end
+		end
+		if ok then
+			table.insert(pool, sl)
+		end
+	end
+	local spots = {}
+	local gapNeeded = 4
+	while #spots < nReal + nDecoy and #pool > 0 do
+		local sl = table.remove(pool, math.random(1, #pool))
+		local spaced = true
+		for _, s in ipairs(spots) do
+			if math.abs(s[1] - sl[1]) + math.abs(s[2] - sl[2]) < gapNeeded then
+				spaced = false
+			end
+		end
+		if spaced then
+			table.insert(spots, sl)
+			table.insert(state.extraTaken, { sl[1], sl[2] })
+		end
+	end
+	nReal = math.min(nReal, #spots)
+	state.presentHunt = { found = 0, total = nReal }
+	RoundState:SetAttribute("Presents", "0/" .. nReal)
+	if nReal == 0 then
+		state.presentHunt = nil -- nowhere to put them: an ordinary door
+		RoundState:SetAttribute("Presents", nil)
+		return
+	end
+	-- which are real: the first nReal of a shuffled list
+	for i = #spots, 2, -1 do
+		local j = math.random(1, i)
+		spots[i], spots[j] = spots[j], spots[i]
+	end
+	local WRAPS = { Color3.fromRGB(214, 40, 50), Color3.fromRGB(40, 150, 80), Color3.fromRGB(60, 110, 220), Color3.fromRGB(240, 196, 60), Color3.fromRGB(150, 70, 190) }
+	local RIBBON = { Color3.fromRGB(255, 220, 90), Color3.fromRGB(255, 255, 255), Color3.fromRGB(240, 60, 70) }
+	local folder = Instance.new("Folder")
+	folder.Name = "HuntPresents"
+	folder.Parent = world.root
+
+	-- the Toy Elf: the imported toy (Characters/ToyElf, once saved), else a built one
+	local chars = game:GetService("ServerStorage"):FindFirstChild("Characters")
+	local src = chars and chars:FindFirstChild("ToyElf")
+	local function makeElf()
+		local m
+		if src then
+			m = src:Clone()
+			for _, d in ipairs(m:GetDescendants()) do
+				if d:IsA("Script") or d:IsA("LocalScript") or d:IsA("Humanoid") then
+					d:Destroy()
+				end
+			end
+		else
+			m = Instance.new("Model")
+			local function bit(shape, size, pos, color)
+				local p = Instance.new("Part")
+				p.Shape, p.Size, p.Color = shape, size, color
+				Shapes.fix(p, shape, size)
+				p.Material = Enum.Material.SmoothPlastic
+				p.CFrame = CFrame.new(pos)
+				p.Parent = m
+				return p
+			end
+			local RED, GREEN, SKIN = Color3.fromRGB(214, 40, 50), Color3.fromRGB(50, 160, 80), Color3.fromRGB(255, 214, 180)
+			bit(Enum.PartType.Ball, Vector3.new(1.8, 1.9, 1.6), Vector3.new(0, 1.3, 0), GREEN)
+			bit(Enum.PartType.Ball, Vector3.new(1.4, 1.4, 1.4), Vector3.new(0, 2.7, 0), SKIN)
+			bit(Enum.PartType.Ball, Vector3.new(1.3, 1.1, 1.3), Vector3.new(0, 3.4, 0), RED)
+			bit(Enum.PartType.Ball, Vector3.new(0.5, 0.5, 0.5), Vector3.new(0, 4.0, 0), Color3.fromRGB(255, 255, 255))
+			bit(Enum.PartType.Ball, Vector3.new(0.25, 0.25, 0.25), Vector3.new(-0.3, 2.8, 0.65), Color3.fromRGB(20, 20, 24))
+			bit(Enum.PartType.Ball, Vector3.new(0.25, 0.25, 0.25), Vector3.new(0.3, 2.8, 0.65), Color3.fromRGB(20, 20, 24))
+			bit(Enum.PartType.Block, Vector3.new(0.3, 1.0, 0.3), Vector3.new(0, 1.5, -0.95), Color3.fromRGB(240, 196, 60))
+			bit(Enum.PartType.Block, Vector3.new(1.0, 0.3, 0.3), Vector3.new(0, 1.9, -1.1), Color3.fromRGB(240, 196, 60))
+		end
+		for _, p in ipairs(m:GetDescendants()) do
+			if p:IsA("BasePart") then
+				p.Anchored, p.CanCollide, p.CanTouch, p.CanQuery, p.CastShadow = true, false, false, false, false
+			end
+		end
+		local _, size = m:GetBoundingBox()
+		if size.Y > 0 then
+			m:ScaleTo(m:GetScale() * P.elfHeight / size.Y)
+		end
+		return m
+	end
+	local TURN = CFrame.Angles(0, math.pi, 0)
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	local function runTo(from, dir, most)
+		local skip = { folder }
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Character then
+				table.insert(skip, p.Character)
+			end
+		end
+		for _, h in ipairs({ host, host2 }) do
+			if h and h.model then
+				table.insert(skip, h.model)
+			end
+		end
+		params.FilterDescendantsInstances = skip
+		local eye = from + Vector3.new(0, 1.2, 0)
+		local hit = workspace:Raycast(eye, dir * most, params)
+		local d = hit and math.max(0, (hit.Position - eye).Magnitude - 2.5) or most
+		return from + dir * d, d
+	end
+	local function releaseElf(at, opener)
+		local m = makeElf()
+		m.Name = "ToyElf"
+		m.Parent = folder
+		local cf, size = m:GetBoundingBox()
+		local lift = m:GetPivot().Position.Y - (cf.Position.Y - size.Y / 2)
+		local e = { model = m, pos = at, face = Vector3.new(0, 0, 1), moving = 0 }
+		m:PivotTo(CFrame.lookAt(at + Vector3.new(0, lift, 0), at + Vector3.new(0, lift, 1)) * TURN)
+		say("info", "\u{1F514} A decoy! A Toy Elf jumped out and is jingling for the Clauses - tag him to stop him!", { userId = opener and opener.UserId })
+		local endsAt = os.clock() + P.elfTime
+		local nextJingle = 0
+		local function gone(tagger)
+			if not m.Parent then
+				return
+			end
+			e.moving += 1
+			local pos = e.pos
+			m:Destroy()
+			Effects.burst(pos + Vector3.new(0, 1.5, 0), "light")
+			if tagger then
+				addPoints(tagger, P.elfPoints, true)
+				say("info", "\u{1F9DD} " .. tagger.DisplayName .. " tagged the Toy Elf - quiet again!", { userId = tagger.UserId })
+			end
+		end
+		task.spawn(function()
+			while m.Parent and state == myState and world == myWorld and state.status == "playing" do
+				local now = os.clock()
+				if now >= endsAt then
+					gone(nil)
+					break
+				end
+				-- the jingle: every host hears where he is
+				if now >= nextJingle then
+					nextJingle = now + P.jingle
+					Effects.sound(e.pos, "bell", 0.8)
+					Effects.burst(e.pos + Vector3.new(0, 2, 0), "noise", false)
+					alertHosts(e.pos)
+				end
+				-- run from the nearest kid; tagged when one catches him
+				local near, nd = nil, math.huge
+				for _, p in ipairs(Players:GetPlayers()) do
+					local h = hrpOf(p)
+					if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and not p:GetAttribute("Waiting") then
+						local d = (Vector3.new(h.Position.X, 0, h.Position.Z) - Vector3.new(e.pos.X, 0, e.pos.Z)).Magnitude
+						if d < nd then
+							near, nd = p, d
+						end
+					end
+				end
+				if near and nd <= P.catch then
+					gone(near)
+					break
+				end
+				if near and nd < P.flee and (e.busyUntil or 0) <= now then
+					local h = hrpOf(near)
+					local away = Vector3.new(e.pos.X - h.Position.X, 0, e.pos.Z - h.Position.Z)
+					away = away.Magnitude > 0.1 and away.Unit or Vector3.new(1, 0, 0)
+					-- the most open way roughly away from the kid
+					local bestTo, bestD = nil, -1
+					for _, a in ipairs({ 0, 35, -35, 70, -70, 110, -110 }) do
+						local dir = (CFrame.Angles(0, math.rad(a), 0) * away)
+						local to, d = runTo(e.pos, dir, 12)
+						if d > bestD then
+							bestTo, bestD = to, d
+						end
+					end
+					if bestTo and bestD > 1 then
+						local from = e.pos
+						local seconds = (bestTo - from).Magnitude / P.speed
+						e.face = (bestTo - from).Unit
+						e.busyUntil = now + seconds
+						e.moving += 1
+						local mine = e.moving
+						task.spawn(function()
+							local start = os.clock()
+							while m.Parent and e.moving == mine do
+								local a = math.min(1, (os.clock() - start) / seconds)
+								e.pos = from:Lerp(bestTo, a)
+								local hop = math.abs(math.sin(a * seconds * 10)) * 0.5
+								local p = e.pos + Vector3.new(0, lift + hop, 0)
+								m:PivotTo(CFrame.lookAt(p, p + e.face) * TURN)
+								if a >= 1 then
+									break
+								end
+								task.wait()
+							end
+						end)
+					end
+				end
+				task.wait(0.1)
+			end
+			if m.Parent then
+				m:Destroy()
+			end
+		end)
+	end
+
+	local function opened(plr, real, box)
+		local hunt = state.presentHunt
+		local at = box.Position
+		box.Parent = nil
+		for _, d in ipairs(folder:GetChildren()) do
+			if d:GetAttribute("Box") == box.Name then
+				d:Destroy()
+			end
+		end
+		box:Destroy()
+		if not real then
+			Effects.burst(at, "pop")
+			releaseElf(Vector3.new(at.X, at.Y - box.Size.Y / 2, at.Z), plr)
+			return
+		end
+		hunt.found += 1
+		local n, total = hunt.found, hunt.total
+		RoundState:SetAttribute("Presents", n .. "/" .. total)
+		Effects.burst(at + Vector3.new(0, 1, 0), "escape", "present")
+		addPoints(plr, P.points, true)
+		-- the opener's own count (no party share): Elfy at P.goal
+		local data = Profile.get(plr)
+		if data then
+			data.stats.presents = (data.stats.presents or 0) + 1
+			local goal = (Config.CHARACTER_UNLOCK.elfy and Config.CHARACTER_UNLOCK.elfy.presents) or P.goal
+			local have = data.stats.presents
+			data.charsEarned = data.charsEarned or {}
+			if have >= goal and not data.charsEarned.elfy then
+				data.charsEarned.elfy = true -- kept for good, even after Christmas
+				say("info", "\u{1F9DD} " .. plr.DisplayName .. " opened " .. goal .. " presents and won ELFY, the limited-edition elf! Pick him in the Lobby.")
+				Effects.at(plr, "pop")
+			elseif have < goal and have % 10 == 0 then
+				say("info", "\u{1F9DD} Elfy: " .. have .. " of " .. goal .. " presents opened.", nil, plr)
+			end
+			Profile.publish(plr)
+		end
+		say("info", "\u{1F381} " .. plr.DisplayName .. " found a present! " .. n .. " of " .. total, { userId = plr.UserId })
+		if n >= total then
+			say("info", "\u{1F381} Every present found - the door is open!")
+			openDoor(plr, "presents")
+		end
+	end
+
+	for i, sl in ipairs(spots) do
+		local real = i <= nReal
+		local base = House.at(sl[1], sl[2], 0)
+		local s = 2.6
+		local wrap = WRAPS[math.random(1, #WRAPS)]
+		local ribbon = RIBBON[math.random(1, #RIBBON)]
+		local box = Instance.new("Part")
+		box.Name = "HuntPresent" .. i
+		box.Size = Vector3.new(s * 1.2, s, s * 1.2)
+		box.CFrame = CFrame.new(base + Vector3.new(0, s / 2, 0)) * CFrame.Angles(0, math.rad(math.random(0, 89)), 0)
+		box.Color = wrap
+		box.Material = Enum.Material.SmoothPlastic
+		box.Anchored, box.CanCollide = true, true
+		box.Parent = folder
+		for _, sz in ipairs({ Vector3.new(s * 1.22, s + 0.04, 0.4), Vector3.new(0.4, s + 0.04, s * 1.22) }) do
+			local r = Instance.new("Part")
+			r.Name = "Ribbon"
+			r.Size = sz
+			r.CFrame = box.CFrame
+			r.Color = ribbon
+			r.Material = Enum.Material.SmoothPlastic
+			r.Anchored, r.CanCollide, r.CanQuery = true, false, false
+			r:SetAttribute("Box", box.Name)
+			r.Parent = folder
+		end
+		local bow = Instance.new("Part")
+		bow.Name = "Bow"
+		bow.Shape = Enum.PartType.Ball
+		bow.Size = Vector3.new(1.1, 0.7, 1.1)
+		bow.CFrame = box.CFrame * CFrame.new(0, s / 2 + 0.3, 0)
+		bow.Color = ribbon
+		bow.Anchored, bow.CanCollide, bow.CanQuery = true, false, false
+		bow:SetAttribute("Box", box.Name)
+		bow.Parent = folder
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.ActionText = "Open"
+		prompt.ObjectText = "Present"
+		prompt.HoldDuration = P.hold
+		prompt.MaxActivationDistance = 9
+		prompt.RequiresLineOfSight = false
+		prompt.Parent = box
+		local done = false
+		prompt.Triggered:Connect(function(plr)
+			if done or state ~= myState or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
+				return
+			end
+			done = true
+			opened(plr, real, box)
+		end)
+	end
+end
+
 function round.hostHit(_, plr)
 	if plr:GetAttribute("Knocked") then
 		return
@@ -3218,7 +3593,38 @@ local function intoCage(plr)
 	world.objects.cage.prompt.Enabled = true
 end
 
+-- Mr Claus's Lump of Coal (5 Nov): slowed, not knocked down
+function round.hostCoal(_, plr)
+	local s = Config.HOST_SKILLS.coal
+	plr:SetAttribute("CoalUntil", workspace:GetServerTimeNow() + s.slow)
+	Effects.react(plr, "bonk", s.slow)
+	say("bonk", "\u{1FAA8} " .. plr.DisplayName .. " got a lump of coal - slowed down!", { userId = plr.UserId })
+end
+
+-- Mrs Claus's Naughty List (5 Nov): for a few seconds every host is told
+-- where the kid she saw is
+function round.hostNaughty(_, plr)
+	local s = Config.HOST_SKILLS.naughty
+	local myState = state
+	say("info", "\u{1F4DC} Mrs Claus put " .. plr.DisplayName .. " on the Naughty List - the Clauses know where you are! Keep moving!", { userId = plr.UserId })
+	Effects.at(plr, "reveal")
+	task.spawn(function()
+		local ends = os.clock() + s.seconds
+		while os.clock() < ends and state == myState and state.status == "playing" do
+			local h = hrpOf(plr)
+			if not h or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
+				break
+			end
+			-- (a host chasing by sight keeps chasing; the others come to look,
+			-- and she keeps after the kid once they are out of sight)
+			alertHosts(h.Position)
+			task.wait(s.every)
+		end
+	end)
+end
+
 function round.hostCaught(_, plr)
+	local host = steppingHost or host -- (5 Nov) the Claus who caught them
 	unhide(plr)
 	-- caught in a vent or the laundry chute (only in a frenzy): out of it first
 	if plr:GetAttribute("Crawling") then
@@ -3434,6 +3840,7 @@ do
 
 	-- the guard rails: a skill stun is short, and never twice in a row
 	function round.skillStun(_, seconds, text)
+		local host = steppingHost or host -- (5 Nov) the host in the trap
 		if not (host and host.model) or state.status ~= "playing" then
 			return false
 		end
@@ -3798,6 +4205,98 @@ do
 
 	-- the new buttons (and the powers that ride on the old ones); returns
 	-- false when nothing happened (no cooldown then)
+	-- Elfy's wind-up toy soldier (5 Nov): marches `march` studs a second along
+	-- `dir` (stopping at walls) for Config.ELFY.toy s (+band); every `every`
+	-- s each host within earshot goes after it (as after Echo's noise)
+	function round.windUpToy(plr, hrp, dir, band)
+		local E = Config.ELFY
+		local seconds = E.toy + (band and E.band or 0)
+		local hear = band and E.bandHear or E.hear
+		dir = Vector3.new(dir.X, 0, dir.Z)
+		dir = dir.Magnitude > 0.05 and dir.Unit or Vector3.new(0, 0, 1)
+		local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+		local ground = hrp.Position - Vector3.new(0, (hum and hum.HipHeight or 2) + hrp.Size.Y / 2, 0)
+		local m = Instance.new("Model")
+		m.Name = "WindUpToy"
+		local function bit(shape, size, offset, color)
+			local p = Instance.new("Part")
+			p.Shape, p.Size, p.Color = shape, size, color
+			Shapes.fix(p, shape, size)
+			p.Material = Enum.Material.SmoothPlastic
+			p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, false, false, false, false
+			p:SetAttribute("Offset", offset)
+			p.Parent = m
+			return p
+		end
+		bit(Enum.PartType.Block, Vector3.new(0.9, 1.1, 0.7), Vector3.new(0, 1.2, 0), Color3.fromRGB(200, 40, 50))
+		bit(Enum.PartType.Ball, Vector3.new(0.8, 0.8, 0.8), Vector3.new(0, 2.15, 0), Color3.fromRGB(255, 214, 180))
+		bit(Enum.PartType.Cylinder, Vector3.new(0.9, 0.7, 0.7), Vector3.new(0, 2.85, 0), Color3.fromRGB(30, 30, 40))
+		bit(Enum.PartType.Block, Vector3.new(0.35, 0.65, 0.35), Vector3.new(-0.22, 0.33, 0), Color3.fromRGB(30, 60, 140))
+		bit(Enum.PartType.Block, Vector3.new(0.35, 0.65, 0.35), Vector3.new(0.22, 0.33, 0), Color3.fromRGB(30, 60, 140))
+		bit(Enum.PartType.Cylinder, Vector3.new(0.4, 0.8, 0.8), Vector3.new(0, 1.2, 0.5), Color3.fromRGB(240, 196, 60))
+		bit(Enum.PartType.Block, Vector3.new(0.15, 0.7, 0.15), Vector3.new(0, 1.3, -0.5), Color3.fromRGB(240, 196, 60))
+		m.Parent = world.root
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		local skip = { m }
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Character then
+				table.insert(skip, p.Character)
+			end
+		end
+		params.FilterDescendantsInstances = skip
+		local myState = state
+		local pos = ground
+		local function place(t)
+			local cf = CFrame.lookAt(pos, pos + dir)
+			local bob = math.abs(math.sin(t * 12)) * 0.15
+			for _, p in ipairs(m:GetChildren()) do
+				local o = p:GetAttribute("Offset")
+				if o then
+					p.CFrame = cf * CFrame.new(o.X, o.Y + bob, -o.Z)
+					if p.Shape == Enum.PartType.Cylinder then
+						p.CFrame = p.CFrame * CFrame.Angles(0, 0, math.rad(90))
+					end
+				end
+			end
+		end
+		place(0)
+		Effects.burst(ground + Vector3.new(0, 1, 0), "noise")
+		task.spawn(function()
+			local start, last, nextCall = os.clock(), os.clock(), 0
+			while m.Parent and state == myState and state.status == "playing" do
+				local now = os.clock()
+				local t = now - start
+				if t >= seconds then
+					break
+				end
+				local step = (now - last) * E.march
+				last = now
+				local hit = workspace:Raycast(pos + Vector3.new(0, 1, 0), dir * (step + 1.2), params)
+				if hit then
+					dir = Vector3.new(-dir.Z, 0, dir.X) -- a wall: turn and keep marching
+				else
+					pos += dir * step
+				end
+				place(t)
+				if now >= nextCall then
+					nextCall = now + E.every
+					Effects.sound(pos, "bell", 0.6)
+					for _, h in ipairs({ host, host2 }) do
+						if h and h.model and h.root and (h.root.Position - pos).Magnitude <= hear then
+							h:lure(pos, E.every + 0.5)
+						end
+					end
+				end
+				task.wait()
+			end
+			if m.Parent then
+				Effects.burst(pos + Vector3.new(0, 1, 0), "light")
+				m:Destroy()
+			end
+		end)
+	end
+
 	function round.skillV2(plr, skill, hrp, pos)
 		local p10, p20 = plr:GetAttribute("Power10"), plr:GetAttribute("Power20")
 		state.oncePerGame = state.oncePerGame or {}
@@ -3956,6 +4455,17 @@ do
 					return "free"
 				end
 				plr:SetAttribute("FogBankUsed", false)
+			end
+			return true
+		elseif skill == "elfy" then
+			-- Wind-up Toy (5 Nov): a toy soldier marches off straight ahead
+			-- jingling; the hosts within earshot go after it
+			round.windUpToy(plr, hrp, hrp.CFrame.LookVector, p10 == "band")
+			if p10 == "wrapped" then
+				applyBoost(plr, "giftbox", Config.ELFY.wrapped)
+				say("info", "\u{1F381} " .. plr.DisplayName .. " set down a wind-up toy and hid inside a present!")
+			else
+				say("info", "\u{1F941} " .. plr.DisplayName .. " set down a wind-up toy - the host goes after the noise!")
 			end
 			return true
 		elseif skill == "holly" then
@@ -4498,7 +5008,7 @@ Press.OnServerEvent:Connect(function(plr, colour)
 		say("wrong", "Wrong code! And that was LOUD... something is coming.", nil, plr)
 		Effects.sound(world.objects.door.keypad.Position, "wrong", 1)
 		if host then
-			host:alert(world.objects.door.keypad.Position)
+			alertHosts(world.objects.door.keypad.Position)
 		end
 	end
 end)
@@ -4941,6 +5451,43 @@ local function runSkill(plr, skill, pos, slot)
 end
 -- Harmony's Encore (level 20; 4 Nov): its own button, once a game - a lullaby
 -- the whole floor hears: the host walks at half speed for Config.HARMONY.encore s
+-- Elfy's level-20 buttons (5 Nov), once a game: Toy Parade (three toys at
+-- once) or Workshop Rush (he and friends near him hold things twice as fast)
+ElfyPower.OnServerEvent:Connect(function(plr)
+	local p20 = plr:GetAttribute("Power20")
+	if plr:GetAttribute("Skill") ~= "elfy" or (p20 ~= "parade" and p20 ~= "rush") or plr:GetAttribute("ToyPowerUsed")
+		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
+		return
+	end
+	local hrp = hrpOf(plr)
+	if not hrp then
+		return
+	end
+	plr:SetAttribute("ToyPowerUsed", true)
+	if p20 == "parade" then
+		local look = hrp.CFrame.LookVector
+		for _, a in ipairs({ 0, 120, -120 }) do
+			round.windUpToy(plr, hrp, CFrame.Angles(0, math.rad(a), 0) * look, plr:GetAttribute("Power10") == "band")
+		end
+		say("info", "\u{1F941} Toy Parade! " .. plr.DisplayName .. " sent three toys marching off - the host can't follow them all!")
+	else
+		local E = Config.ELFY
+		for _, p in ipairs(Players:GetPlayers()) do
+			local h = hrpOf(p)
+			if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude <= E.rushNear then
+				p:SetAttribute("HoldMult", (p:GetAttribute("HoldMult") or 1) * 0.5)
+				Effects.aura(p, "speed", E.rush)
+				task.delay(E.rush, function()
+					if p.Parent then
+						applyMods(p) -- back to their own hold speed
+					end
+				end)
+			end
+		end
+		say("info", "\u{1F6E0} Workshop Rush! " .. plr.DisplayName .. " and friends nearby open things twice as fast for " .. E.rush .. " s!")
+	end
+end)
+
 SingEncore.OnServerEvent:Connect(function(plr)
 	if plr:GetAttribute("Skill") ~= "harmony" or plr:GetAttribute("Power20") ~= "encore" or plr:GetAttribute("EncoreUsed")
 		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
@@ -5108,6 +5655,11 @@ function round.start()
 	if host then
 		host:remove()
 	end
+	if host2 then
+		host2:remove()
+		host2 = nil
+	end
+	state.partnerKind = nil
 	-- the floor this server plays (the Lobby's choice; Config.STUDIO_MAP in Studio)
 	local mapIdx = Progress.mapIndex(RoundState:GetAttribute("Map") or "partyhouse")
 	local mapInfo = mapIdx and Progress.MAPS[mapIdx]
@@ -5137,7 +5689,7 @@ function round.start()
 	world = House.build(HouseMap)
 	world.onNoise = function(pos)
 		if host and host.model then
-			host:alert(pos)
+			alertHosts(pos)
 		end
 	end
 	Props.place(world)
@@ -5198,7 +5750,7 @@ function round.start()
 			return
 		end
 		if host and host.model then
-			host:alert(pos)
+			alertHosts(pos)
 		end
 		say("info", plr.DisplayName .. " switched on the " .. label .. " - the host is coming to look!")
 	end
@@ -5209,7 +5761,7 @@ function round.start()
 			return false
 		end
 		if host and host.model then
-			host:alert(pos)
+			alertHosts(pos)
 		end
 		say("info", "CREEEAK! " .. plr.DisplayName .. " turned the vault wheel - the vault is open! (The host heard that...)")
 		return true
@@ -5398,6 +5950,7 @@ function round.start()
 			p:SetAttribute("HedgeUsed", false) -- Holly's Holly Hedge too
 			p:SetAttribute("PocketsGiven", false) -- and Holly's Peppermint Pockets
 			p:SetAttribute("EncoreUsed", false) -- and Harmony's Encore
+			p:SetAttribute("ToyPowerUsed", false) -- and Elfy's Toy Parade / Workshop Rush
 		end
 	end
 	towerCarry = nil
@@ -5503,6 +6056,21 @@ function round.start()
 	if carry and carry.hostKind then
 		kind = carry.hostKind -- the same host follows you up
 	end
+	-- (5 Nov) a building whose floors have their own hosts (Claus Manor): a
+	-- list is two at once - the second runs alongside the first
+	do
+		local fh = mapI and Config.FLOOR_HOSTS and Config.FLOOR_HOSTS[Progress.MAPS[mapI].building]
+		local e = fh and fh[Progress.MAPS[mapI].floor]
+		if type(e) == "table" then
+			kind = e[1]
+			state.partnerKind = e[2]
+		elseif type(e) == "string" then
+			kind = e
+		end
+		if RunService:IsStudio() and Config.STUDIO_HOST and Config.HOSTS[Config.STUDIO_HOST] then
+			kind = Config.STUDIO_HOST
+		end
+	end
 	host.kind = kind
 	RoundState:SetAttribute("HostKind", kind)
 	state.extraTaken = {}
@@ -5513,6 +6081,7 @@ function round.start()
 	round.placeCloudSpots() -- Cloud's high shelves (4 Nov)
 	round.placeMusicBox() -- Harmony's music box (4 Nov)
 	round.placeTurkeys()
+	round.placePresents() -- Claus Manor (5 Nov)
 	round.placePlushie()
 	RoundState:SetAttribute("Blackout", "")
 	RoundState:SetAttribute("DarkRooms", "")
@@ -5689,7 +6258,24 @@ function round.start()
 		if state.status == "playing" then
 			host:spawn(state.hostDiff or diffFor(state.diff))
 			RoundState:SetAttribute("HostOut", true)
-			say("appear", "Ding dong! Who came to my party? (Tonight's host: " .. Config.HOSTS[host.kind or "pumpkin"].name .. ")")
+			local partner = state.partnerKind and Config.HOSTS[state.partnerKind]
+			say("appear", "Ding dong! Who came to my party? (Tonight's host" .. (partner and "s: " or ": ") .. Config.HOSTS[host.kind or "pumpkin"].name
+				.. (partner and (" and " .. partner.name) or "") .. ")")
+			-- (5 Nov) the second Claus follows a few seconds later
+			if partner then
+				local myState = state
+				task.delay(4, function()
+					if state ~= myState or state.status ~= "playing" then
+						return
+					end
+					host2 = Host.new(world, round)
+					host2.kind = state.partnerKind
+					host2:spawn(state.hostDiff or diffFor(state.diff))
+					if host2.model then
+						host2.model.Name = "PartyHost2" -- the client's close-ups follow the first
+					end
+				end)
+			end
 		end
 	end)
 end
@@ -5733,6 +6319,14 @@ RunService.Heartbeat:Connect(function(dt)
 	end
 	if host and host.model then
 		host:step(step)
+	end
+	if host2 and host2.model then
+		steppingHost = host2
+		local ok, err = pcall(host2.step, host2, step)
+		steppingHost = nil
+		if not ok then
+			warn("[host2] " .. tostring(err))
+		end
 	end
 	local _W, Hh = HouseMap.w * T, HouseMap.h * T
 	for _, plr in ipairs(Players:GetPlayers()) do

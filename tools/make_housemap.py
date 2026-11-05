@@ -863,6 +863,63 @@ def plan_candylane():
     return p
 
 
+
+# ---------------------------------------------------------------- Claus Manor (Christmas, floors 1-3)
+# A secret Christmas building (CLAUS_MANOR.md, 5 Nov - Brent): the Midnight
+# School's three checked floors with the Clauses' rooms, floors and furniture.
+# In the game the Present Hunt runs on every floor: the locked doors stand
+# open, and the big door opens once every real present is found
+# (Main.server.luau) - no keys, no code. Hosts: Mr Claus (1), Mrs Claus (2),
+# both (3).
+CLAUS_FLOORS = {'boards': 'frostwood', 'carpet': 'carpet', 'wood': 'wood', 'green': 'green',
+                'greylino': 'peppermint', 'tiles': 'peppermint', 'purple': 'gingerbread'}
+
+
+def claus(base, pid, name, floor_no, exit_text, rooms, locks, kinds, snow=()):
+    # the store rooms first: add_closets only moves plain shelves and tables
+    p = add_closets(base())
+    p.id, p.name = pid, name
+    p.building, p.floor_no, p.theme = 'clausmanor', floor_no, 'claus'
+    p.exit_text = exit_text
+    base_rooms = {f[5] for f in base().floors}
+    for n in base_rooms:
+        assert n in rooms, (pid, n)
+    p.floors = [(x0, y0, x1, y1, 'snow' if rooms.get(n, n) in snow else CLAUS_FLOORS.get(k, k), rooms.get(n, n)) for x0, y0, x1, y1, k, n in p.floors]
+    p.tall = {rooms.get(n, n) for n in p.tall}
+    p.furniture = [(x0, y0, x1, y1, kinds.get(k, k)) for x0, y0, x1, y1, k in p.furniture]
+    p.fixed = [dict(o, name=locks[o['id']]) if o['id'] in locks else o for o in p.fixed]
+    return p
+
+
+def plan_claus1():
+    return claus(plan_school, 'claus1_a', 'Claus Manor - The Toy Workshop', 1, 'Up to the Cookie Kitchen!',
+                 {'Lost and Found': 'Toy Storeroom', "Principal's Office": "Mr Claus's Office", 'Front Lobby': 'Front Hall',
+                  "Teachers' Lounge": 'Elf Break Room', 'Long Hallway': 'Long Corridor', 'Cafeteria': 'Paint Shop',
+                  'Kitchen': 'Coal Cellar', 'Assembly Hall': 'Toy Workshop', 'Music Room': 'Music Box Room', 'Art Room': 'Doll Room'},
+                 {'L1': "Mr Claus's Office door", 'L2': 'Front Hall door'},
+                 {'desk': 'workbench', 'piano': 'presents', 'shelf': 'presents', 'table': 'workbench'})
+
+
+def plan_claus2():
+    return claus(plan_school2, 'claus2_a', 'Claus Manor - The Cookie Kitchen', 2, 'Up to the Sleigh Loft!',
+                 {'Science Lab': 'Pantry', 'Computer Room': 'Candy Storeroom', 'Upper Stairs': 'Back Stairs',
+                  'Trophy Room': 'Cookie Jar Room', 'Classroom 2B': 'Baking Room', 'Library': 'Cookie Kitchen',
+                  'Classroom 2C': 'Icing Room', 'Art Room': 'Gingerbread Oven', 'Landing': 'Landing',
+                  'Restrooms': 'Washroom', "Caretaker's Room": "Mrs Claus's Parlor"},
+                 {'L1': 'Pantry door', 'L2': 'Back Stairs door'},
+                 {'desk': 'oven', 'shelf': 'candyjars', 'table': 'cookies'})
+
+
+def plan_claus3():
+    # Brent (5 Nov): reindeer in the Sleigh Loft - the desks are reindeer,
+    # the tables a sleigh piled with presents
+    return claus(plan_school3, 'claus3_a', 'Claus Manor - The Sleigh Loft', 3, 'Out over the rooftops!',
+                 {'Bell Room': 'Harness Room', 'Old Classroom': 'Reindeer Stalls', 'Clock Tower': 'Chimney Top',
+                  'Observatory': 'Star Window', 'Storage Loft': 'Sack Loft', 'Top Corridor': 'Loft Walk',
+                  'Boiler Room': 'Coal Bin', 'Locker Room': 'Sled Racks', 'Exam Hall': 'Sleigh Loft', 'Detention Room': 'Naughty Corner'},
+                 {'L1': 'Reindeer Stalls door', 'L2': 'Chimney Top door'},
+                 {'desk': 'reindeer', 'shelf': 'presents', 'table': 'sleigh'}, snow=('Chimney Top',))
+
 # ---------------------------------------------------------------- floor 2: the Bedrooms
 def plan_bedrooms():
     p = Plan('bed_a', 'The Party House - Bedrooms')
@@ -1271,6 +1328,9 @@ lab = add_closets(plan_labs())
 cellar = add_closets(plan_basement())
 barn = add_closets(plan_barn())
 lane = add_closets(plan_candylane())
+claus1 = plan_claus1()
+claus2 = plan_claus2()
+claus3 = plan_claus3()
 school = add_closets(plan_school())
 school2 = add_closets(plan_school2())
 school3 = add_closets(plan_school3())
@@ -1292,7 +1352,10 @@ for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirr
           mainhall, mirror(mainhall, 'mainhall_b', 'Sunken Aquarium - Main Hall'), deepsea, mirror(deepsea, 'deepsea_b', 'Sunken Aquarium - Deep Sea'),
           rooftop, mirror(rooftop, 'rooftop_b', 'Sunken Aquarium - Rooftop Pools'),
           barn, mirror(barn, 'barn_b', 'The Harvest Barn'),
-          lane, mirror(lane, 'lane_b', 'Candy Cane Lane')):
+          lane, mirror(lane, 'lane_b', 'Candy Cane Lane'),
+          claus1, mirror(claus1, 'claus1_b', 'Claus Manor - The Toy Workshop'),
+          claus2, mirror(claus2, 'claus2_b', 'Claus Manor - The Cookie Kitchen'),
+          claus3, mirror(claus3, 'claus3_b', 'Claus Manor - The Sleigh Loft')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (
@@ -1327,7 +1390,7 @@ out = ['--[[',
        '\tpassage), D the big exit door, C the host\'s door.',
        '\tReturns building -> floor number -> list of plans.',
        ']]', '', 'return {']
-for bld in ('partyhouse', 'gummy', 'hospital', 'school', 'carnival', 'aquarium', 'harvestbarn', 'candycanelane'):
+for bld in ('partyhouse', 'gummy', 'hospital', 'school', 'carnival', 'aquarium', 'harvestbarn', 'candycanelane', 'clausmanor'):
  out.append('\t%s = {' % bld)
  for fl in sorted({pfl for p, _, _, _, pfl in plans if p.building == bld}):
   out.append('\t[%d] = {' % fl)

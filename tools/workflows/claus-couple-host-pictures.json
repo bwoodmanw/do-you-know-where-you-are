@@ -1,0 +1,95 @@
+{
+  "name": "Mr Claus and Mrs Claus host pictures",
+  "reference_root": "art/model-input",
+  "output_root": "art/model-input",
+  "generation_mode": "built-in image_gen",
+  "instructions": [
+    "Process assets in table order, one generation per asset.",
+    "Include the full Picture Standard followed by the Picture and prompt_clarification.",
+    "Attach every listed reference in array order, resolving paths under reference_root.",
+    "Inspect every reference and result. Create output parent folders as needed.",
+    "Save and verify each FRONT before generating its BACK; attach that saved FRONT.",
+    "Preserve existing assets unless replacement is explicitly authorized."
+  ],
+  "picture_standard": "This is a host (the friendly-spooky chaser) in a kids' co-op escape game for ages 8 and up: grumpy, sneaky and silly, never gory or truly frightening. For a FRONT view one picture is attached: ANOTHER host from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW host from this prompt. For a BACK view one picture is attached: the same host seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no fur strands, no stitching, no grime, no wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded chunky shapes; small details as simple solid shapes close to the body - nothing thin or long sticking out. A big host, about twice as tall as a 10-year-old. No logos, brand marks, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, game or advert - a new, original take on a grumpy Christmas couple. Full body standing in an A-pose: arms straight and angled down and away from the body with a clear gap between each arm and the body, hands open, legs apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.",
+  "assets": [
+    {
+      "order": 1,
+      "file_name": "host-mrclaus\\front-toon.png",
+      "picture": "FRONT view of Mr Claus, the grumpy Christmas boss: a big, round, barrel-bellied man with rosy cheeks and a big bulbous red nose, a short neat frosty-white beard and bushy white eyebrows pulled into a sulky frown, small sly black eyes; a dark-red suit coat with plain white cuffs and hem (no fur texture) and big square black buttons, a wide black belt with a plain square gray buckle, a small round black sack of coal hanging at his hip, dark-red trousers, chunky black boots; a dark-red floppy cap with a white band and a round white bobble, a gray smudge of soot on the cap and one cheek; big white gloves",
+      "references": [
+        "host-gobbler\\front-toon.png"
+      ],
+      "prompt_clarification": "Reference role: Image 1 is ANOTHER host, for style only. Face directly toward the camera. Render the requested gray soot marks as smooth flat solid-gray patches, never textured grime.",
+      "prompt": "This is a host (the friendly-spooky chaser) in a kids' co-op escape game for ages 8 and up: grumpy, sneaky and silly, never gory or truly frightening. For a FRONT view one picture is attached: ANOTHER host from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW host from this prompt. For a BACK view one picture is attached: the same host seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no fur strands, no stitching, no grime, no wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded chunky shapes; small details as simple solid shapes close to the body - nothing thin or long sticking out. A big host, about twice as tall as a 10-year-old. No logos, brand marks, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, game or advert - a new, original take on a grumpy Christmas couple. Full body standing in an A-pose: arms straight and angled down and away from the body with a clear gap between each arm and the body, hands open, legs apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Mr Claus, the grumpy Christmas boss: a big, round, barrel-bellied man with rosy cheeks and a big bulbous red nose, a short neat frosty-white beard and bushy white eyebrows pulled into a sulky frown, small sly black eyes; a dark-red suit coat with plain white cuffs and hem (no fur texture) and big square black buttons, a wide black belt with a plain square gray buckle, a small round black sack of coal hanging at his hip, dark-red trousers, chunky black boots; a dark-red floppy cap with a white band and a round white bobble, a gray smudge of soot on the cap and one cheek; big white gloves\n\nReference role: Image 1 is ANOTHER host, for style only. Face directly toward the camera. Render the requested gray soot marks as smooth flat solid-gray patches, never textured grime.",
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab96-73d0-7002-be60-bc2a9de57b98\\exec-ff46f8e6-84e2-4d62-abc7-0f2bf7f5d694.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\host-mrclaus\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "08af50da4fa3ee827fa3d36e5b7338261d1ea16cad6571958ef21d6184426772",
+      "validation": "Visually checked full-body front A-pose, costume and solid-color details; saved source hash verified."
+    },
+    {
+      "order": 2,
+      "file_name": "host-mrclaus\\back-toon.png",
+      "picture": "BACK view of Mr Claus, matching the reference exactly: the back of his dark-red floppy cap with the white bobble, the back of his white hair, the dark-red coat with its white hem, the wide black belt, the coal sack at his hip, chunky black boots, white gloves",
+      "references": [
+        "host-mrclaus\\front-toon.png"
+      ],
+      "prompt_clarification": "Reference role: Image 1 shows this SAME host from the FRONT. Rotate the camera 180 degrees to show the character directly from behind in the same A-pose. Preserve exact silhouette, proportions, colors, costume and accessories; keep anatomical left/right fixed, so asymmetric accessories change image side. Do not show the face or front-only decorations.",
+      "prompt": "This is a host (the friendly-spooky chaser) in a kids' co-op escape game for ages 8 and up: grumpy, sneaky and silly, never gory or truly frightening. For a FRONT view one picture is attached: ANOTHER host from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW host from this prompt. For a BACK view one picture is attached: the same host seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no fur strands, no stitching, no grime, no wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded chunky shapes; small details as simple solid shapes close to the body - nothing thin or long sticking out. A big host, about twice as tall as a 10-year-old. No logos, brand marks, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, game or advert - a new, original take on a grumpy Christmas couple. Full body standing in an A-pose: arms straight and angled down and away from the body with a clear gap between each arm and the body, hands open, legs apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Mr Claus, matching the reference exactly: the back of his dark-red floppy cap with the white bobble, the back of his white hair, the dark-red coat with its white hem, the wide black belt, the coal sack at his hip, chunky black boots, white gloves\n\nReference role: Image 1 shows this SAME host from the FRONT. Rotate the camera 180 degrees to show the character directly from behind in the same A-pose. Preserve exact silhouette, proportions, colors, costume and accessories; keep anatomical left/right fixed, so asymmetric accessories change image side. Do not show the face or front-only decorations.",
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab96-73d0-7002-be60-bc2a9de57b98\\exec-eb9b5c74-c9d1-4396-bdac-e4f89de88691.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\host-mrclaus\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "c319064abf7a11546f50eefa63292b81c3391c934ee0106410319390d5c469b1",
+      "validation": "Visually checked direct rear A-pose, matching costume and colors, cap bobble and coal sack on corresponding anatomical sides; saved source hash verified."
+    },
+    {
+      "order": 3,
+      "file_name": "host-mrsclaus\\front-toon.png",
+      "picture": "FRONT view of Mrs Claus, the sly Christmas boss: a tall, thin lady with a pointed chin, a sly sideways smirk, narrowed green eyes behind small round gold glasses, rosy cheeks, white hair pulled into a tight round bun on top of her head with a small sprig of holly in it; a long plum-and-dark-red dress down to her ankles with plain white cuffs and collar, a white apron with one big pocket, red-and-white striped stockings, pointed dark-red shoes; big white oven mitts on both hands; a long rolled-up cream paper list tucked into her apron pocket (a plain scroll shape, no writing)",
+      "references": [
+        "host-gobbler\\front-toon.png"
+      ],
+      "prompt_clarification": "Reference role: Image 1 is ANOTHER host, for style only. Face directly toward the camera. Keep the holly sprig chunky and close to the bun, glasses opaque, and the plain cream scroll close to the apron; leave enough stockings visible below the ankle-length dress to show their red-and-white stripes.",
+      "prompt": "This is a host (the friendly-spooky chaser) in a kids' co-op escape game for ages 8 and up: grumpy, sneaky and silly, never gory or truly frightening. For a FRONT view one picture is attached: ANOTHER host from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW host from this prompt. For a BACK view one picture is attached: the same host seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no fur strands, no stitching, no grime, no wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded chunky shapes; small details as simple solid shapes close to the body - nothing thin or long sticking out. A big host, about twice as tall as a 10-year-old. No logos, brand marks, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, game or advert - a new, original take on a grumpy Christmas couple. Full body standing in an A-pose: arms straight and angled down and away from the body with a clear gap between each arm and the body, hands open, legs apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Mrs Claus, the sly Christmas boss: a tall, thin lady with a pointed chin, a sly sideways smirk, narrowed green eyes behind small round gold glasses, rosy cheeks, white hair pulled into a tight round bun on top of her head with a small sprig of holly in it; a long plum-and-dark-red dress down to her ankles with plain white cuffs and collar, a white apron with one big pocket, red-and-white striped stockings, pointed dark-red shoes; big white oven mitts on both hands; a long rolled-up cream paper list tucked into her apron pocket (a plain scroll shape, no writing)\n\nReference role: Image 1 is ANOTHER host, for style only. Face directly toward the camera. Keep the holly sprig chunky and close to the bun, glasses opaque, and the plain cream scroll close to the apron; leave enough stockings visible below the ankle-length dress to show their red-and-white stripes.",
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab96-73d0-7002-be60-bc2a9de57b98\\exec-6a149c27-eab6-4376-8f69-5aa135d933c0.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\host-mrsclaus\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "79d610c3c2f26b687417ab8b11799cc5a25b26057929101328004d7ae02cbc09",
+      "validation": "Visually checked full-body front A-pose, arm gaps, bun and holly, round gold glasses, sly green eyes, apron with blank scroll, mitts and striped stockings; saved source hash verified."
+    },
+    {
+      "order": 4,
+      "file_name": "host-mrsclaus\\back-toon.png",
+      "picture": "BACK view of Mrs Claus, matching the reference exactly: the back of her white hair in its tight bun with the holly sprig, the back of the plum-and-dark-red dress, the white apron's bow tied at her back, red-and-white striped stockings, pointed dark-red shoes, white oven mitts",
+      "references": [
+        "host-mrsclaus\\front-toon.png"
+      ],
+      "prompt_clarification": "Reference role: Image 1 shows this SAME host from the FRONT. Rotate the camera 180 degrees to show the character directly from behind in the same A-pose. Preserve exact silhouette, proportions, colors, costume and accessories; keep anatomical left/right fixed, so asymmetric accessories change image side. Do not show the face or front-only decorations.",
+      "prompt": "This is a host (the friendly-spooky chaser) in a kids' co-op escape game for ages 8 and up: grumpy, sneaky and silly, never gory or truly frightening. For a FRONT view one picture is attached: ANOTHER host from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW host from this prompt. For a BACK view one picture is attached: the same host seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no fur strands, no stitching, no grime, no wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded chunky shapes; small details as simple solid shapes close to the body - nothing thin or long sticking out. A big host, about twice as tall as a 10-year-old. No logos, brand marks, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, game or advert - a new, original take on a grumpy Christmas couple. Full body standing in an A-pose: arms straight and angled down and away from the body with a clear gap between each arm and the body, hands open, legs apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Mrs Claus, matching the reference exactly: the back of her white hair in its tight bun with the holly sprig, the back of the plum-and-dark-red dress, the white apron's bow tied at her back, red-and-white striped stockings, pointed dark-red shoes, white oven mitts\n\nReference role: Image 1 shows this SAME host from the FRONT. Rotate the camera 180 degrees to show the character directly from behind in the same A-pose. Preserve exact silhouette, proportions, colors, costume and accessories; keep anatomical left/right fixed, so asymmetric accessories change image side. Do not show the face or front-only decorations.",
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab96-73d0-7002-be60-bc2a9de57b98\\exec-3224346f-e5f5-4ab8-99c8-059f5bac1f63.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\host-mrsclaus\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "6ecba13f5d33444ea5f2378d757ab389a7599af1ec0fc9b98b78b605b2127b1b",
+      "validation": "Visually checked direct rear A-pose, matching plum/red dress and stockings, bun, holly on corresponding anatomical side and white apron bow; saved source hash verified."
+    }
+  ],
+  "status": "completed",
+  "completed_date": "2026-11-05"
+}

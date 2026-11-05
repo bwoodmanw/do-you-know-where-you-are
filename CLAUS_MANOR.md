@@ -25,6 +25,9 @@ one before is escaped, as in the other buildings.
 | 2 | The Cookie Kitchen | Mrs Claus | 8 + 4 |
 | 3 | The Sleigh Loft | **both** Clauses | 10 + 5 |
 
+The Sleigh Loft has reindeer standing in their stalls (Brent, 5 Nov) and a
+big red sleigh piled with presents.
+
 Recommended split: one Claus on each of floors 1 and 2, and both together on
 the top floor. Kids learn each Claus's trick on its own floor before facing
 them together. Two hosts at once is new for the game, so only floor 3 needs
@@ -94,8 +97,9 @@ like the runaway turkey). He isn't a playable character.
 - **Level 10**, pick one:
   - **Marching Band**: the toy marches 3 s longer and twice as loud (heard
     from twice as far).
-  - **Gift Sense**: in Claus Manor, decoy presents wobble a little on Elfy's
-    screen.
+  - **Wrapped Up** (Brent, 5 Nov - replaces Gift Sense, which only worked on
+    one map): as he sets the toy down, Elfy hides inside a present for 5 s
+    and the host walks past.
 - **Level 20**, pick one:
   - **Toy Parade**: a button, once a game: three toys march off in three
     directions at once.

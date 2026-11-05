@@ -464,10 +464,16 @@ function Host:step(dt)
 		self.goal = best.Character.HumanoidRootPart.Position
 		self.lastSeen = now
 		-- throw a pumpkin at someone in sight, not too close, not too far
-		local s = Config.HOST_SKILLS.throw
-		if self.skill == "throw" and now >= (self.nextSkill or 0) and bestD >= s.min and bestD <= s.range then
+		local s = Config.HOST_SKILLS[self.skill == "coal" and "coal" or "throw"]
+		if (self.skill == "throw" or self.skill == "coal") and now >= (self.nextSkill or 0) and bestD >= s.min and bestD <= s.range then
 			self.nextSkill = now + (s.cooldown[string.lower(self.diff.name)] or 15)
 			self:throwAt(best)
+		end
+		-- Mrs Claus (5 Nov): whoever she sees goes on the Naughty List
+		local ns = Config.HOST_SKILLS.naughty
+		if self.skill == "naughty" and now >= (self.nextSkill or 0) then
+			self.nextSkill = now + (ns.cooldown[string.lower(self.diff.name)] or 22)
+			self.round:hostNaughty(best)
 		end
 		-- the Caretaker padlocks a doorway on the far side of a kid he can see
 		if self.skill == "lockup" and now >= (self.nextSkill or 0) then
@@ -680,14 +686,15 @@ function Host:throwAt(plr)
 		return
 	end
 	local Effects = require(script.Parent.Effects)
-	local s = Config.HOST_SKILLS.throw
+	local coal = self.skill == "coal" -- (5 Nov) Mr Claus throws a lump of coal
+	local s = Config.HOST_SKILLS[coal and "coal" or "throw"]
 	local from = head.Position + Vector3.new(0, 1, 0)
 	local to = Vector3.new(hrp.Position.X, 1, hrp.Position.Z)
 	local ball = Instance.new("Part")
 	ball.Name = "ThrownPumpkin"
 	ball.Shape = Enum.PartType.Ball
-	ball.Size = Vector3.new(3.4, 3, 3.4)
-	ball.Color = Color3.fromRGB(240, 120, 20)
+	ball.Size = coal and Vector3.new(2.4, 2, 2.4) or Vector3.new(3.4, 3, 3.4)
+	ball.Color = coal and Color3.fromRGB(36, 34, 38) or Color3.fromRGB(240, 120, 20)
 	ball.Material = Enum.Material.SmoothPlastic
 	ball.Anchored, ball.CanCollide, ball.CanQuery, ball.CanTouch = true, false, false, false
 	ball.Position = from
@@ -728,7 +735,11 @@ function Host:throwAt(plr)
 			local h = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
 			if h and not p:GetAttribute("Hidden") and not p:GetAttribute("Crawling") and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped")
 				and (Vector3.new(h.Position.X, 0, h.Position.Z) - Vector3.new(to.X, 0, to.Z)).Magnitude < s.radius then
-				self.round:hostHit(p)
+				if coal then
+					self.round:hostCoal(p)
+				else
+					self.round:hostHit(p)
+				end
 			end
 		end
 	end)
