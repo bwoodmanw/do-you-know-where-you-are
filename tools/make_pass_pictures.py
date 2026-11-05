@@ -7,6 +7,7 @@ an autumn circle like the other pass pictures. 2 Nov.
     -> art/roblox-store/passes/pass-<folder>.png and _thanksgiving.png
 """
 import os
+import sys
 from collections import deque
 
 import numpy as np
@@ -68,7 +69,8 @@ def picture(folder):
     top, bottom = ys.min(), ys.max()
     cx = (xs.min() + xs.max()) / 2
     # head and shoulders: the top 46% of the figure, square
-    side = int((bottom - top) * 0.46)
+    # (5 Nov) Pumpkin Pie Harmony: down to her pie skirt - it is the skin
+    side = int((bottom - top) * {"pie-harmony": 0.66}.get(folder, 0.46))
     left = int(cx - side / 2)
     crop = cut.crop((left, top - int(side * 0.04), left + side, top - int(side * 0.04) + side)).resize((S - 36, S - 36), Image.LANCZOS)
     # an autumn circle: deep orange to brown, a few soft leaves of light
@@ -87,13 +89,16 @@ def picture(folder):
     return out
 
 
+# 5 Nov: name the folders to make only those (the new characters' skins:
+#   python tools/make_pass_pictures.py cranberry-holly autumn-cloud gala-clone pie-harmony)
+ONLY = sys.argv[1:]
 pics = []
-for f in SKINS:
+for f in ONLY or SKINS:
     p = picture(f)
     p.save(os.path.join(ROOT, "art", "roblox-store", "passes", "pass-%s.png" % f))
     pics.append(p)
 sheet = Image.new("RGBA", (3 * 260, 3 * 260), (30, 20, 40, 255))
 for i, p in enumerate(pics):
     sheet.alpha_composite(p.resize((250, 250)), ((i % 3) * 260 + 5, (i // 3) * 260 + 5))
-sheet.save(os.path.join(ROOT, "art", "roblox-store", "passes", "_thanksgiving.png"))
+sheet.save(os.path.join(ROOT, "art", "roblox-store", "passes", "_thanksgiving-new.png" if ONLY else "_thanksgiving.png"))
 print("wrote", len(pics), "pass pictures")

@@ -72,6 +72,21 @@ now: friends in a party would see different prices for the same skin, and the
 Lobby's Skill Reset button shows the product's set price. Look again after a
 month of sales.
 
+## The new characters' Thanksgiving skins (5 Nov): 4 more passes
+
+Pictures made by `tools/make_pass_pictures.py cranberry-holly autumn-cloud
+gala-clone pie-harmony` (checked; Harmony framed lower so her pie skirt shows):
+`art/roblox-store/passes/`, all four in `_thanksgiving-new.png`. Each is also
+150 golden feathers in the Feather Shop. Price 99, Managed pricing off, same
+steps as below.
+
+| # | Name (type exactly) | Picture | Price | Description |
+|---|---|---|---|---|
+| 18 | Cranberry Spice Holly | `pass-cranberry-holly.png` | 99 | Holly spiced up for the feast: a cranberry-red sweater with a cinnamon-orange band, a little gold star and cranberry clips in her hair. Looks only - Holly's skills stay the same. Wear it from Characters in the Lobby. |
+| 19 | Autumn Breeze Cloud | `pass-autumn-cloud.png` | 99 | Cloud bundled up for a breezy fall day: a pumpkin-orange coat, a cozy cream scarf and a maple-leaf clip. Looks only - Cloud's skills stay the same. Wear it from Characters in the Lobby. |
+| 20 | Harvest Gala Clone | `pass-gala-clone.png` | 99 | Clone dressed for the harvest party: a cranberry suit jacket, a golden vest, an orange bow tie and his gold goggles. Looks only - Clone's skills stay the same. Wear it from Characters in the Lobby. |
+| 21 | Pumpkin Pie Harmony | `pass-pie-harmony.png` | 99 | Harmony as sweet as dessert: a pumpkin-pie skirt with a golden crust, a cream sweater and a whipped-cream clip. Looks only - Harmony's skills stay the same. Wear it from Characters in the Lobby. |
+
 ## Steps (for each pass)
 
 1. **create.roblox.com** -> **Creations** -> **Escape Crew**.
