@@ -358,6 +358,31 @@ local function alertHosts(pos)
 		host2:alert(pos)
 	end
 end
+-- (5 Nov) the hosts that are out, the one nearest a spot, and the nearest
+-- within reach of it: a kid's skill works on whichever Claus it's used on
+local function liveHosts()
+	local out = {}
+	for _, h in ipairs({ host, host2 }) do
+		if h and h.model and h.root then
+			table.insert(out, h)
+		end
+	end
+	return out
+end
+local function nearestHost(pos)
+	local best, bestD = host, math.huge
+	for _, h in ipairs(liveHosts()) do
+		local d = (h.root.Position - pos).Magnitude
+		if d < bestD then
+			best, bestD = h, d
+		end
+	end
+	return best
+end
+local function hostNear(pos, reach)
+	local h = nearestHost(pos)
+	return h and h.root and (h.root.Position - pos).Magnitude < reach and h or nil
+end
 local hostTimer = nil
 
 local function say(kind, text, data, toPlayer)
@@ -973,7 +998,7 @@ local function applyBoost(plr, id, seconds)
 		plr:SetAttribute("Shield", true)
 		plr:SetAttribute("SelfShieldAt", nil) -- this one keeps until a grab
 	elseif id == "freeze" then
-		if host and host.model then
+		for _, host in ipairs(liveHosts()) do -- (5 Nov) both Clauses
 			host:stun(10)
 			RoundState:SetAttribute("FrozenUntil", workspace:GetServerTimeNow() + 10)
 			local ice = Instance.new("Highlight")
@@ -1205,6 +1230,7 @@ local function barricade(plr, c)
 	task.spawn(function()
 		local stopAt = os.clock() + Config.BARRICADE.stands
 		while os.clock() < stopAt and world == myWorld and state.status == "playing" do
+			local host = nearestHost(c.door.Position) -- (5 Nov) the Claus at the door
 			if host and host.model and host.root and (host.root.Position - c.door.Position).Magnitude < 7 then
 				host:stun(hold)
 				say("info", "CRASH! The host is smashing through Muscle's barricade!")
@@ -3059,8 +3085,8 @@ function round.placeTurkeys()
 				table.insert(skip, p.Character)
 			end
 		end
-		if host and host.model then
-			table.insert(skip, host.model)
+		for _, hh in ipairs(liveHosts()) do
+			table.insert(skip, hh.model)
 		end
 		params.FilterDescendantsInstances = skip
 		local eye = from + Vector3.new(0, 1.5, 0)
@@ -3615,6 +3641,14 @@ function round.hostNaughty(_, plr)
 			if not h or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 				break
 			end
+			-- (5 Nov, Brent) hiding wipes you off the list: a closet or hiding
+			-- spot, a present (gift box, Elfy's Wrapped Up), a vent, Cloud's fog
+			-- or a sneak skill - the Clauses aren't told where you are
+			if plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling") or plr:GetAttribute("Fogged")
+				or (plr:GetAttribute("SneakUntil") or 0) > workspace:GetServerTimeNow() then
+				say("info", "\u{1F92B} " .. plr.DisplayName .. " hid - off the Naughty List!", { userId = plr.UserId })
+				break
+			end
 			-- (a host chasing by sight keeps chasing; the others come to look,
 			-- and she keeps after the kid once they are out of sight)
 			alertHosts(h.Position)
@@ -3662,7 +3696,8 @@ function round.hostCaught(_, plr)
 	end
 	plr:SetAttribute("Caged", true)
 	intoCage(plr)
-	say("caught", plr.DisplayName .. " was caught! Free them from the cage in the " .. roomOf("cage") .. "!", { userId = plr.UserId })
+	say("caught", plr.DisplayName .. " was caught! Free them from the cage in the " .. roomOf("cage") .. "!",
+		{ userId = plr.UserId, host = host and host.model and host.model.Name or nil })
 	checkEnd()
 end
 
@@ -3839,8 +3874,9 @@ do
 	end
 
 	-- the guard rails: a skill stun is short, and never twice in a row
-	function round.skillStun(_, seconds, text)
-		local host = steppingHost or host -- (5 Nov) the host in the trap
+	function round.skillStun(_, seconds, text, near)
+		-- (5 Nov) the host in the trap, or the one nearest the skill
+		local host = steppingHost or (near and nearestHost(near)) or host
 		if not (host and host.model) or state.status ~= "playing" then
 			return false
 		end
@@ -3875,8 +3911,8 @@ do
 				table.insert(skip, p.Character)
 			end
 		end
-		if host and host.model then
-			table.insert(skip, host.model)
+		for _, hh in ipairs(liveHosts()) do
+			table.insert(skip, hh.model)
 		end
 		params.FilterDescendantsInstances = skip
 		local flat = Vector3.new(dir.X, 0, dir.Z)
@@ -3907,8 +3943,8 @@ do
 				model:Destroy()
 			end
 		end)
-		if host and host.model then
-			host:lure(to, seconds)
+		for _, h in ipairs(liveHosts()) do -- (5 Nov) both Clauses
+			h:lure(to, seconds)
 		end
 	end
 
@@ -3920,7 +3956,8 @@ do
 			return
 		end
 		local seconds = plr:GetAttribute("CloneTime") or Config.CLONE.seconds
-		local away = host and host.root and (hrp.Position - host.root.Position) or hrp.CFrame.LookVector
+		local near = nearestHost(hrp.Position) -- (5 Nov) away from the nearest Claus
+		local away = near and near.root and (hrp.Position - near.root.Position) or hrp.CFrame.LookVector
 		for i = 1, count do
 			-- 17 Oct (Brent: one clone barely moved): the first runs away from the
 			-- host, the second the opposite way, a third to the side; each turns a
@@ -4095,6 +4132,7 @@ do
 			local stopAt = os.clock() + Config.HOLLY.hedge
 			local told = false
 			while os.clock() < stopAt and world == myWorld and state.status == "playing" do
+				local host = nearestHost(c) -- (5 Nov) the Claus at the hedge
 				if host and host.model and host.root and (Vector3.new(host.root.Position.X, 0, host.root.Position.Z) - Vector3.new(c.X, 0, c.Z)).Magnitude < 6 then
 					host:stun(0.4) -- held at the hedge
 					if not told then
@@ -4392,6 +4430,7 @@ do
 			end
 			say("info", "\u{1F6F7} " .. plr.DisplayName .. " dashed off" .. (#names > 0 and (" with " .. table.concat(names, " and ")) or "") .. "!")
 			-- Jingle Dash (level 10): the bell freezes a host close by
+			local host = nearestHost(hrp.Position) -- (5 Nov) the nearest Claus
 			if p10 == "jingledash" and host and host.model and host.root and (host.root.Position - hrp.Position).Magnitude <= nm.jingleRange then
 				host:stun(nm.jingleStun)
 				say("info", "\u{1F514} Jingle! The host froze for " .. nm.jingleStun .. " s.")
@@ -4611,6 +4650,7 @@ do
 		elseif skill == "harmony" then
 			-- Lullaby (4 Nov): the host near her walks at half speed for a while
 			local Hm = Config.HARMONY
+			local host = nearestHost(hrp.Position) -- (5 Nov) the nearest Claus
 			if not (host and host.model and host.root) then
 				say("info", "\u{1F3B5} Save your Lullaby for when the host is out.", nil, plr)
 				return false
@@ -4742,8 +4782,8 @@ do
 					end
 				end
 				game:GetService("Debris"):AddItem(lamp, Config.NIGHT_LIGHT.seconds)
-			elseif p10 == "dazzle" and host and host.root and (host.root.Position - hrp.Position).Magnitude < range then
-				round:skillStun(2, "\u{2728} Dazzled! The host stops to rub his eyes.")
+			elseif p10 == "dazzle" and hostNear(hrp.Position, range) then
+				round:skillStun(2, "\u{2728} Dazzled! The host stops to rub his eyes.", hrp.Position)
 			end
 			if p20 == "beacon" then
 				local seconds = plr:GetAttribute("FlareTime") or Config.GLOW_FLARE.seconds
@@ -4768,8 +4808,8 @@ do
 				-- sees him near with Sharp Ears)
 				say("hostmap", "\u{1F3A7} Echo Map: " .. plr.DisplayName .. " hears exactly where the host is - look!", { seconds = 5 })
 			end
-			if p20 == "soundwave" and typeof(pos) == "Vector3" and host and host.root and (host.root.Position - pos).Magnitude < 12 then
-				round:skillStun(1, "\u{1F4A5} Sound Wave! The host is stunned by the noise.")
+			if p20 == "soundwave" and typeof(pos) == "Vector3" and hostNear(pos, 12) then
+				round:skillStun(1, "\u{1F4A5} Sound Wave! The host is stunned by the noise.", pos)
 			end
 		end
 	end
@@ -5171,6 +5211,7 @@ task.spawn(function()
 					f.pos = Vector3.new(oh.Position.X, f.pos.Y, oh.Position.Z) -- Rolling Fog
 					f.place()
 				end
+				local host = nearestHost(f.pos) -- (5 Nov) the Claus under the cloud
 				-- Storm Cloud: a host under it stops (once a fog), with lightning
 				if f.storm and not f.stopped and host and host.model and host.root
 					and (Vector3.new(host.root.Position.X, 0, host.root.Position.Z) - Vector3.new(f.pos.X, 0, f.pos.Z)).Magnitude <= f.r + 2 then
@@ -5250,7 +5291,9 @@ RingBells.OnServerEvent:Connect(function(plr)
 	end
 	local seconds = Config.NUTMEG.bells
 	plr:SetAttribute("BellsUsed", true)
-	host:stun(seconds)
+	for _, h in ipairs(liveHosts()) do -- (5 Nov) both Clauses
+		h:stun(seconds)
+	end
 	RoundState:SetAttribute("FrozenUntil", workspace:GetServerTimeNow() + seconds)
 	local h = hrpOf(plr)
 	if h then
@@ -5383,8 +5426,8 @@ local function runSkill(plr, skill, pos, slot)
 						Boost:FireClient(p, "shake", p == plr and 1 or 0.6)
 					end
 				end
-				if host and host.root and (host.root.Position - hrp.Position).Magnitude < Config.POUND.range then
-					round:skillStun(Config.POUND.stun, "\u{1F4A5} GROUND POUND! " .. plr.DisplayName .. " stunned the host!")
+				if hostNear(hrp.Position, Config.POUND.range) then
+					round:skillStun(Config.POUND.stun, "\u{1F4A5} GROUND POUND! " .. plr.DisplayName .. " stunned the host!", hrp.Position)
 				else
 					say("info", "\u{1F4A5} Ground Pound! (The host was too far away to feel it.)", nil, plr)
 				end
@@ -5423,8 +5466,8 @@ local function runSkill(plr, skill, pos, slot)
 		if typeof(pos) ~= "Vector3" or (pos - hrp.Position).Magnitude > (plr:GetAttribute("EchoRange") or 70) then
 			return say("info", "Throw it somewhere closer!", nil, plr)
 		end
-		if host and host.model then
-			host:lure(pos, Config.ECHO_LURE)
+		for _, h in ipairs(liveHosts()) do -- (5 Nov) both Clauses
+			h:lure(pos, Config.ECHO_LURE)
 		end
 		Effects.burst(pos + Vector3.new(0, 1, 0), "noise")
 		Effects.ring(pos, Color3.fromRGB(255, 210, 63), 24, 0.9, 0.25)
@@ -5497,9 +5540,11 @@ SingEncore.OnServerEvent:Connect(function(plr)
 		return say("info", "\u{1F3B5} The host isn't out yet - save your Encore for when he is.", nil, plr)
 	end
 	plr:SetAttribute("EncoreUsed", true)
-	host.slowUntil = os.clock() + Config.HARMONY.encore
-	host.slowMult = Config.HARMONY.slow
-	Effects.stars(host.model, Config.HARMONY.encore, Color3.fromRGB(190, 140, 255)) -- (4 Nov) notes while he's slow
+	for _, h in ipairs(liveHosts()) do -- (5 Nov) both Clauses
+		h.slowUntil = os.clock() + Config.HARMONY.encore
+		h.slowMult = Config.HARMONY.slow
+		Effects.stars(h.model, Config.HARMONY.encore, Color3.fromRGB(190, 140, 255)) -- (4 Nov) notes while he's slow
+	end
 	say("info", "\u{1F3B6} Encore! " .. plr.DisplayName .. "'s song fills the whole floor - the host is slow for " .. Config.HARMONY.encore .. " s!")
 end)
 

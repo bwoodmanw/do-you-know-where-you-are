@@ -1,0 +1,87 @@
+{
+  "name": "Elfy and Toy Elf picture workflow",
+  "reference_root": "art/model-input",
+  "output_root": "art/model-input",
+  "generation_mode": "built-in image_gen",
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. For a FRONT view one picture is attached: another character from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW character from this prompt (different face, hair and clothes). For a BACK view one picture is attached: the same character seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, big clear eyes. Small details as simple solid shapes, close to the body - nothing thin or long sticking out. No logos, brand marks, emblems, swooshes, stripes on shoes, printed words or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.",
+  "instructions": [
+    "Process assets in table order; include the complete standard and Picture in every prompt.",
+    "Inspect and attach every reference in array order.",
+    "Save and verify each front before generating its matching back; use that saved front as the back reference.",
+    "Create missing output folders. Preserve existing artwork unless replacement is explicitly requested."
+  ],
+  "assets": [
+    {
+      "order": 1,
+      "picture": "FRONT view of Elfy, a cheerful, mischievous boy of about 10 who is a Christmas elf: warm light-peach skin (never pale or white), bright green eyes, short tousled golden-blonde hair poking out under his hat, small pointed elf ears, a big cheeky grin, rosy cheeks; a green pointed elf hat that flops over to one side with a small round gold bell on its tip, a green elf tunic with a jagged pointed hem and a wide gold belt with a plain square buckle, a small red collar, red-and-white striped leggings, green shoes with short curled-up toes; plain green mittens are NOT worn - bare open hands",
+      "references": [
+        "holly\\front-toon.png"
+      ],
+      "file_name": "elfy\\front-toon.png",
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. For a FRONT view one picture is attached: another character from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW character from this prompt (different face, hair and clothes). For a BACK view one picture is attached: the same character seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, big clear eyes. Small details as simple solid shapes, close to the body - nothing thin or long sticking out. No logos, brand marks, emblems, swooshes, stripes on shoes, printed words or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Elfy, a cheerful, mischievous boy of about 10 who is a Christmas elf: warm light-peach skin (never pale or white), bright green eyes, short tousled golden-blonde hair poking out under his hat, small pointed elf ears, a big cheeky grin, rosy cheeks; a green pointed elf hat that flops over to one side with a small round gold bell on its tip, a green elf tunic with a jagged pointed hem and a wide gold belt with a plain square buckle, a small red collar, red-and-white striped leggings, green shoes with short curled-up toes; plain green mittens are NOT worn - bare open hands",
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab96-73d0-7002-be60-bc2a9de57b98\\exec-681d3590-46d9-443f-bd4f-086606eead40.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\elfy\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "9237f90db5600a2b68117552938f56297fa9cb23cce5e2404ce32d3949feae62",
+      "validation": "Visually inspected: full-body A-pose, open bare hands, green eyes, blond hair, elf hat and bell, tunic, gold belt, striped leggings and curled green shoes."
+    },
+    {
+      "order": 2,
+      "picture": "BACK view of Elfy, matching the reference exactly: the back of his green pointed hat flopping to the same side with its gold bell, golden-blonde hair at the back of his neck, pointed ears, the back of the green tunic with its jagged hem and gold belt, red-and-white striped leggings, green curled-toe shoes",
+      "references": [
+        "elfy\\front-toon.png"
+      ],
+      "file_name": "elfy\\back-toon.png",
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. For a FRONT view one picture is attached: another character from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW character from this prompt (different face, hair and clothes). For a BACK view one picture is attached: the same character seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, big clear eyes. Small details as simple solid shapes, close to the body - nothing thin or long sticking out. No logos, brand marks, emblems, swooshes, stripes on shoes, printed words or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Elfy, matching the reference exactly: the back of his green pointed hat flopping to the same side with its gold bell, golden-blonde hair at the back of his neck, pointed ears, the back of the green tunic with its jagged hem and gold belt, red-and-white striped leggings, green curled-toe shoes\n\nAnatomical-side consistency: In the attached FRONT, the hat tip and gold bell are on image RIGHT (Elfy's left). In this direct BACK view they MUST be on image LEFT (still Elfy's left). Keep the same character, pose, outfit and colors. Do not mirror the character's anatomy.",
+      "status": "completed",
+      "prompt_clarification": "Anatomical-side consistency: In the attached FRONT, the hat tip and gold bell are on image RIGHT (Elfy's left). In this direct BACK view they MUST be on image LEFT (still Elfy's left). Keep the same character, pose, outfit and colors. Do not mirror the character's anatomy.",
+      "discarded_sources": [
+        {
+          "path": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab96-73d0-7002-be60-bc2a9de57b98\\exec-92860570-4da2-4d64-968c-2bcb18db6d9b.png",
+          "reason": "Hat tip remained on image right instead of changing image side in rear view."
+        }
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab96-73d0-7002-be60-bc2a9de57b98\\exec-138a05c2-267c-42ec-a781-9f59dc64e4d6.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\elfy\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "da43e04bed268442e8ad5f5b6a5aaea075e787db1444c7395a8aa8b14120d10c",
+      "validation": "Visually inspected: direct rear A-pose, matching costume and colors, hat bell correctly on image left."
+    },
+    {
+      "order": 3,
+      "picture": "FRONT view of the Toy Elf, a small wind-up Christmas toy that comes to life (NOT a real kid - a toy about knee-high to a kid, so make it stubby and round like a toy figure): a round head with painted-on round black eyes, rosy pink dot cheeks and a wide silly open smile, a pointy red hat with a white bobble and a small gold bell, a round red-and-green tunic, short stubby green legs and round black boots, little round white hands, a big gold wind-up key on its back that shows a little on both sides",
+      "references": [
+        "turkey\\front-toon.png"
+      ],
+      "file_name": "toy-elf\\front-toon.png",
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. For a FRONT view one picture is attached: another character from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW character from this prompt (different face, hair and clothes). For a BACK view one picture is attached: the same character seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, big clear eyes. Small details as simple solid shapes, close to the body - nothing thin or long sticking out. No logos, brand marks, emblems, swooshes, stripes on shoes, printed words or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of the Toy Elf, a small wind-up Christmas toy that comes to life (NOT a real kid - a toy about knee-high to a kid, so make it stubby and round like a toy figure): a round head with painted-on round black eyes, rosy pink dot cheeks and a wide silly open smile, a pointy red hat with a white bobble and a small gold bell, a round red-and-green tunic, short stubby green legs and round black boots, little round white hands, a big gold wind-up key on its back that shows a little on both sides",
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab96-73d0-7002-be60-bc2a9de57b98\\exec-979c5f93-de3a-400a-8629-a61800ee621d.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\toy-elf\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "bb8f1c53cdcb10e4bf92139a686d580b188ba7493cb8275d5f01e0bf94337764",
+      "validation": "Visually inspected: stubby round toy body, red/green tunic, white round hands, green legs, black boots, red hat with bobble and bell, gold key visible on both sides."
+    },
+    {
+      "order": 4,
+      "picture": "BACK view of the Toy Elf, matching the reference exactly: the back of its round head and pointy red hat with the white bobble and gold bell, the big gold wind-up key sticking out of the middle of its back, the round red-and-green tunic, stubby green legs and round black boots",
+      "references": [
+        "toy-elf\\front-toon.png"
+      ],
+      "file_name": "toy-elf\\back-toon.png",
+      "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. For a FRONT view one picture is attached: another character from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW character from this prompt (different face, hair and clothes). For a BACK view one picture is attached: the same character seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, big clear eyes. Small details as simple solid shapes, close to the body - nothing thin or long sticking out. No logos, brand marks, emblems, swooshes, stripes on shoes, printed words or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of the Toy Elf, matching the reference exactly: the back of its round head and pointy red hat with the white bobble and gold bell, the big gold wind-up key sticking out of the middle of its back, the round red-and-green tunic, stubby green legs and round black boots\n\nImage 1 is the FRONT identity reference. Show this same toy directly from behind. Keep anatomical sides fixed: the hat tip, white bobble and bell on image RIGHT in the front must be on image LEFT in the back. The two gold loops visible at its sides belong to ONE wind-up key centered on the back, with a short thick central shaft and two rounded loop handles. Preserve its exact body shape, colors, costume and pose; no face visible.",
+      "status": "pending",
+      "prompt_clarification": "Image 1 is the FRONT identity reference. Show this same toy directly from behind. Keep anatomical sides fixed: the hat tip, white bobble and bell on image RIGHT in the front must be on image LEFT in the back. The two gold loops visible at its sides belong to ONE wind-up key centered on the back, with a short thick central shaft and two rounded loop handles. Preserve its exact body shape, colors, costume and pose; no face visible."
+    }
+  ]
+}

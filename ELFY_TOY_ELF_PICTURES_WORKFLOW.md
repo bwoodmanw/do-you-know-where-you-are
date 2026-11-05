@@ -1,0 +1,20 @@
+# Elfy and Toy Elf picture workflow
+
+Use the built-in image generator, one image per row in table order. Full prompt record: [JSON workflow](tools/workflows/elfy-toy-elf-pictures.json). Reference root: `art/model-input`; output root: `art/model-input`, both relative to this project. Attach every reference in listed order. Inspect inputs and results. Create missing folders, save each front before making its back, and preserve existing artwork unless replacement is requested.
+
+## Picture Standard
+
+This is for a kids' co-op escape game for ages 8 and up: friendly, funny and a little spooky, never scary. For a FRONT view one picture is attached: another character from the same game - use it ONLY as a guide to the style, proportions and level of detail; design a completely NEW character from this prompt (different face, hair and clothes). For a BACK view one picture is attached: the same character seen from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Simple rounded shapes, slightly chunky proportions, big clear eyes. Small details as simple solid shapes, close to the body - nothing thin or long sticking out. No logos, brand marks, emblems, swooshes, stripes on shoes, printed words or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.
+
+## Ordered pictures
+
+| Order | Picture | References | File name |
+|---|---|---|---|
+| 1 | FRONT view of Elfy, a cheerful, mischievous boy of about 10 who is a Christmas elf: warm light-peach skin (never pale or white), bright green eyes, short tousled golden-blonde hair poking out under his hat, small pointed elf ears, a big cheeky grin, rosy cheeks; a green pointed elf hat that flops over to one side with a small round gold bell on its tip, a green elf tunic with a jagged pointed hem and a wide gold belt with a plain square buckle, a small red collar, red-and-white striped leggings, green shoes with short curled-up toes; plain green mittens are NOT worn - bare open hands | `holly\front-toon.png` | `elfy\front-toon.png` |
+| 2 | BACK view of Elfy, matching the reference exactly: the back of his green pointed hat flopping to the same side with its gold bell, golden-blonde hair at the back of his neck, pointed ears, the back of the green tunic with its jagged hem and gold belt, red-and-white striped leggings, green curled-toe shoes | `elfy\front-toon.png` | `elfy\back-toon.png` |
+| 3 | FRONT view of the Toy Elf, a small wind-up Christmas toy that comes to life (NOT a real kid - a toy about knee-high to a kid, so make it stubby and round like a toy figure): a round head with painted-on round black eyes, rosy pink dot cheeks and a wide silly open smile, a pointy red hat with a white bobble and a small gold bell, a round red-and-green tunic, short stubby green legs and round black boots, little round white hands, a big gold wind-up key on its back that shows a little on both sides | `turkey\front-toon.png` | `toy-elf\front-toon.png` |
+| 4 | BACK view of the Toy Elf, matching the reference exactly: the back of its round head and pointy red hat with the white bobble and gold bell, the big gold wind-up key sticking out of the middle of its back, the round red-and-green tunic, stubby green legs and round black boots | `toy-elf\front-toon.png` | `toy-elf\back-toon.png` |
+
+## Verification
+
+Check likeness, framing, all requested colors and accessories, no writing or logos, and consistent anatomical sides between views. Record source, saved destination, PNG dimensions and SHA-256 in the JSON after saving.

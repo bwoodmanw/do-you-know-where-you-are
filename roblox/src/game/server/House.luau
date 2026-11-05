@@ -2012,6 +2012,8 @@ local CHRISTMAS_DECOR = { Color3.fromRGB(210, 35, 45), Color3.fromRGB(40, 140, 7
 local HALLOWEEN_DECOR = { Color3.fromRGB(255, 138, 31), Color3.fromRGB(110, 60, 160), Color3.fromRGB(30, 24, 34), Color3.fromRGB(150, 220, 60) }
 local CANDY_PICTURES = { "\u{1F36C}", "\u{1F36D}", "\u{1F9C1}", "\u{1F369}", "\u{1F36B}", "\u{1F370}", "\u{1F366}", "\u{1F388}" }
 local PICTURES = { "\u{1F383}", "\u{1F47B}", "\u{1F987}", "\u{1F578}", "\u{1F382}", "\u{1F388}", "\u{1F315}", "\u{1F36D}" }
+local XMAS_PICTURES = { "\u{1F384}", "\u{1F381}", "\u{26C4}", "\u{1F514}", "\u{1F36A}", "\u{1F98C}", "\u{2744}", "\u{1F31F}" }
+local XMAS_BULBS = { Color3.fromRGB(255, 60, 60), Color3.fromRGB(60, 210, 90), Color3.fromRGB(255, 200, 50), Color3.fromRGB(70, 140, 255), Color3.fromRGB(255, 120, 200) }
 local AQUARIUM_PICTURES = { "\u{1F41F}", "\u{1F420}", "\u{1F419}", "\u{1F988}", "\u{1F422}", "\u{1F42C}", "\u{1F980}", "\u{1F433}" }
 local CARNIVAL_PICTURES = { "\u{1F3AA}", "\u{1F3A0}", "\u{1F3A1}", "\u{1F388}", "\u{1F37F}", "\u{1F39F}", "\u{1F939}", "\u{1F383}" }
 local SCHOOL_PICTURES = { "\u{1F34E}", "\u{270F}", "\u{1F4DA}", "\u{1F514}", "\u{1F392}", "\u{1F4D0}", "\u{1F989}", "\u{1F383}" }
@@ -2023,6 +2025,10 @@ function House.decorate(world)
 	local decorSeason = require(game:GetService("ReplicatedStorage").Shared.Seasons).decor()
 	local candy = map.theme == "gummy"
 	local hosp = map.theme == "hospital"
+	-- (5 Nov) Christmas trees, lights and cookies: the Christmas buildings
+	-- always (lots), every map during Christmas (some)
+	local xmasMap = map.theme == "claus" or map.theme == "xmas"
+	local xmasLook = xmasMap or decorSeason == "christmas"
 	local busy = {}
 	for _, o in ipairs(map.objects) do
 		busy[o.x .. "," .. o.y] = true
@@ -2068,6 +2074,29 @@ function House.decorate(world)
 		t.Text = text
 		t.TextTransparency = 0.15
 		t.Parent = sg
+	end
+	if xmasLook then
+		-- (5 Nov, Brent) a plate of cookies and a glass of milk on tables, desks
+		-- and counters (every one in a Christmas building, every other one elsewhere)
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Include
+		params.FilterDescendantsInstances = { root }
+		local TOPS = { table = true, desk = true, counter = true, workbench = true }
+		for i, fu in ipairs(map.furniture or {}) do
+			if TOPS[fu.kind] and (xmasMap or i % 2 == 0) then
+				local c = at(fu.x0, fu.y0, 0) + Vector3.new(1.4, 0, -1.2)
+				local hit = workspace:Raycast(c + Vector3.new(0, 9, 0), Vector3.new(0, -9, 0), params)
+				if hit and hit.Instance.Transparency < 1 and hit.Position.Y > 2.5 and hit.Position.Y < 5 then
+					local y = hit.Position.Y
+					deco({ Name = "CookiePlate", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.12, 1.8, 1.8), CFrame = CFrame.new(c.X, y + 0.06, c.Z) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(245, 245, 250), Material = Enum.Material.SmoothPlastic })
+					for k = 0, 2 do
+						local a = k * 2.1
+						deco({ Name = "Cookie", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.18, 0.6, 0.6), CFrame = CFrame.new(c.X + math.cos(a) * 0.4, y + 0.2 + k * 0.05, c.Z + math.sin(a) * 0.4) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(196, 130, 70), Material = Enum.Material.SmoothPlastic })
+					end
+					deco({ Name = "MilkGlass", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.9, 0.45, 0.45), CFrame = CFrame.new(c.X + 1.4, y + 0.45, c.Z) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(250, 250, 252), Material = Enum.Material.SmoothPlastic })
+				end
+			end
+		end
 	end
 	for r, f in ipairs(map.floors) do
 		local x0, z0, x1, z1 = f.x0 * T, f.y0 * T, (f.x1 + 1) * T, (f.y1 + 1) * T
@@ -2242,6 +2271,55 @@ function House.decorate(world)
 				end
 			end
 		end
+		-- (5 Nov, Brent) Christmas: string lights round the top of the walls, and
+		-- a decorated tree in a corner (every room of a Christmas building,
+		-- every other room elsewhere) - decoration only, nothing solid
+		if xmasLook then
+			local top = (f.tall and HT or H)
+			local walls = xmasMap and { { x0, z0, x1, z0, 1 }, { x0, z1, x1, z1, -1 }, { x0, z0, x0, z1, 1 }, { x1, z0, x1, z1, -1 } } or { { x0, z0, x1, z0, 1 } }
+			for wi, w in ipairs(walls) do
+				local a, b = Vector3.new(w[1], 0, w[2]), Vector3.new(w[3], 0, w[4])
+				local along = (b - a).Magnitude
+				local n = math.max(4, math.floor(along / 2.5))
+				local inward = (w[1] == w[3]) and Vector3.new(w[5] * 0.5, 0, 0) or Vector3.new(0, 0, w[5] * 0.5)
+				for k = 0, n do
+					local p = a:Lerp(b, (1 + (along - 2) * k / n) / along) + inward
+					deco({ Name = "ChristmasLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.45, 0.6, 0.45), Position = Vector3.new(p.X, top - 0.9 - math.sin(k / n * math.pi) * 0.6, p.Z), Color = XMAS_BULBS[(k + wi + r) % #XMAS_BULBS + 1], Material = Enum.Material.Neon })
+				end
+			end
+			if (xmasMap or r % 2 == 0) and f.x1 - f.x0 >= 2 and f.y1 - f.y0 >= 2 then
+				local spot
+				for _, c in ipairs({ { f.x1, f.y1 }, { f.x0, f.y1 }, { f.x1, f.y0 }, { f.x0, f.y0 } }) do
+					if not spot and free(c[1], c[2]) and not furnitureAt(map, c[1], c[2]) then
+						spot = c
+					end
+				end
+				if spot then
+					busy[spot[1] .. "," .. spot[2]] = true
+					-- pushed into the corner, out of the way
+					local base = at(spot[1], spot[2], 0) + Vector3.new(spot[1] == f.x1 and 1.6 or -1.6, 0, spot[2] == f.y1 and 1.6 or -1.6)
+					local trng = Random.new(r * 13 + spot[1])
+					deco({ Name = "TreeTrunk", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.2, 0.9, 0.9), CFrame = CFrame.new(base + Vector3.new(0, 0.6, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(110, 70, 40), Material = Enum.Material.Wood })
+					for i, tier in ipairs({ { 4.2, 1.2 }, { 3.2, 3.0 }, { 2.2, 4.6 }, { 1.2, 5.9 } }) do
+						local d, y = tier[1], tier[2]
+						deco({ Name = "TreeTier", Shape = Enum.PartType.Ball, Size = Vector3.new(d, 2.2, d), Position = base + Vector3.new(0, y + 0.8, 0), Color = i % 2 == 0 and Color3.fromRGB(34, 120, 60) or Color3.fromRGB(28, 104, 52), Material = Enum.Material.SmoothPlastic })
+						for o = 1, 3 + (4 - i) do
+							local ang = trng:NextNumber(0, math.pi * 2)
+							deco({ Name = "Ornament", Shape = Enum.PartType.Ball, Size = Vector3.new(0.45, 0.45, 0.45), Position = base + Vector3.new(math.cos(ang) * d * 0.47, y + 0.6 + (o % 2) * 0.3, math.sin(ang) * d * 0.47), Color = XMAS_BULBS[(o + i + r) % #XMAS_BULBS + 1], Material = Enum.Material.Neon })
+						end
+					end
+					local star = deco({ Name = "TreeStar", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.8, 0.8), Position = base + Vector3.new(0, 7.6, 0), Color = Color3.fromRGB(255, 215, 70), Material = Enum.Material.Neon })
+					local glow = Instance.new("PointLight")
+					glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 220, 140), 9, 0.7
+					glow.Parent = star
+					-- two presents under the tree
+					for g = 0, 1 do
+						local s = 1.2 - g * 0.3
+						deco({ Name = "TreePresent", Size = Vector3.new(s * 1.3, s, s), Position = base + Vector3.new((g - 0.5) * 2.4, s / 2, (0.5 - g) * 1.6), Color = XMAS_WRAP[(r + g) % #XMAS_WRAP + 1], Material = Enum.Material.SmoothPlastic })
+					end
+				end
+			end
+		end
 		-- pictures on the north wall, facing into the room
 		local hung = 0
 		for _, x in ipairs({ f.x0 + 2, f.x1 - 2, math.floor((f.x0 + f.x1) / 2) }) do
@@ -2251,15 +2329,15 @@ function House.decorate(world)
 				world.wallUsed[x .. "," .. (f.y0 - 1)] = true -- no window over a picture
 				local pic = deco({ Name = "Picture", Size = Vector3.new(3.4, 2.8, 0.2), Position = at(x, f.y0 - 1, 7.5) + Vector3.new(0, 0, T / 2 + 0.15), Color = Color3.fromRGB(110, 80, 40), Material = Enum.Material.Wood })
 				local inner = deco({ Name = "Painting", Size = Vector3.new(2.8, 2.2, 0.05), Position = pic.Position + Vector3.new(0, 0, 0.12), Color = Color3.fromRGB(40, 30, 55) })
-				local pics = candy and CANDY_PICTURES or hosp and HOSPITAL_PICTURES or map.theme == "school" and SCHOOL_PICTURES or map.theme == "carnival" and CARNIVAL_PICTURES or map.theme == "aquarium" and AQUARIUM_PICTURES or PICTURES
+				local pics = xmasLook and XMAS_PICTURES or candy and CANDY_PICTURES or hosp and HOSPITAL_PICTURES or map.theme == "school" and SCHOOL_PICTURES or map.theme == "carnival" and CARNIVAL_PICTURES or map.theme == "aquarium" and AQUARIUM_PICTURES or PICTURES
 				emoji(inner, Enum.NormalId.Back, pics[(x + r) % #pics + 1])
 			end
 		end
 		-- cobwebs in two top corners
 		for _, c in ipairs(candy and {} or { { x0, z0, 45 }, { x1, z1, 45 } }) do
 			local web = deco({ Name = "Cobweb", Size = Vector3.new(4.5, 4.5, 0.05), CFrame = CFrame.new(c[1] + (c[1] == x0 and 1.4 or -1.4), H - 1.8, c[2] + (c[2] == z0 and 1.4 or -1.4)) * CFrame.Angles(0, math.rad(c[3]), 0), Transparency = 1 })
-			emoji(web, Enum.NormalId.Front, "\u{1F578}")
-			emoji(web, Enum.NormalId.Back, "\u{1F578}")
+			emoji(web, Enum.NormalId.Front, xmasLook and "\u{1F514}" or "\u{1F578}")
+			emoji(web, Enum.NormalId.Back, xmasLook and "\u{1F514}" or "\u{1F578}")
 		end
 		-- party clutter away from the walls (not solid); some of it does things
 		local inner = {}

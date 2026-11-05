@@ -56,7 +56,7 @@ it.
 | | Mr Claus | Mrs Claus |
 |---|---|---|
 | Look | A big, grumpy, round man in a dark-red suit with black boots, a frosty-white beard, a soot-smudged cap, a sack of coal on his belt, and a scowl | A tall, sly lady in a plum-and-red dress with a white apron, small round glasses, a tight white bun, oven mitts, and a long rolled-up list |
-| Skill | **Lump of Coal**: throws coal in a slow arc you can see coming, like the Pumpkin's throw. A kid it hits is **slowed for 2 s**. Hiding and crawling dodge it | **Naughty List**: when she spots a kid, she writes them on her list. For **6 s** both Clauses know where that kid is and head there. Get out of sight and keep moving |
+| Skill | **Lump of Coal**: throws coal in a slow arc you can see coming, like the Pumpkin's throw. A kid it hits is **slowed for 2 s**. Hiding and crawling dodge it | **Naughty List**: when she spots a kid, she writes them on her list. For **6 s** both Clauses know where that kid is and head there. Hiding (a closet, a present, a vent, Cloud's fog, a sneak skill) takes you off the list at once |
 | Floors | 1 and 3 | 2 and 3 |
 
 Both Clauses hear the Toy Elves' jingles and any other noise. Kids' skills

@@ -360,8 +360,9 @@ end
 
 -- the camera rushes in on the host's face (works with any host model)
 local scareBusyUntil = 0 -- the results wait for the close-up to finish
-local function hostCloseUp(intense)
-	local host = workspace:FindFirstChild("PartyHost")
+local function hostCloseUp(intense, name)
+	-- (5 Nov) the host who caught you (Claus Manor's top floor has two)
+	local host = workspace:FindFirstChild(type(name) == "string" and name or "PartyHost") or workspace:FindFirstChild("PartyHost")
 	local head = host and (host:FindFirstChild("Head", true) or host.PrimaryPart)
 	if not head then
 		return
@@ -2895,7 +2896,7 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 	if kind == "appear" and spooky then
 		task.spawn(jumpscare)
 	elseif kind == "caught" and data and data.userId == player.UserId then
-		hostCloseUp(spooky)
+		hostCloseUp(spooky, data.host)
 	elseif kind == "spotted" and data and data.userId == player.UserId then
 		local cam = workspace.CurrentCamera
 		for i = 1, 6 do
@@ -2919,13 +2920,15 @@ remotes.Notify.OnClientEvent:Connect(function(kind, text, data)
 		end)
 	elseif kind == "hostmap" then
 		-- Echo Map: the host shows through walls for a few seconds
-		local h = workspace:FindFirstChild("PartyHost")
-		if h then
-			local hl = Instance.new("Highlight")
-			hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(255, 80, 80), Color3.fromRGB(255, 220, 220), 0.5
-			hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-			hl.Parent = h
-			game:GetService("Debris"):AddItem(hl, data and data.seconds or 5)
+		for _, nm in ipairs({ "PartyHost", "PartyHost2" }) do -- (5 Nov) both Clauses
+			local h = workspace:FindFirstChild(nm)
+			if h then
+				local hl = Instance.new("Highlight")
+				hl.FillColor, hl.OutlineColor, hl.FillTransparency = Color3.fromRGB(255, 80, 80), Color3.fromRGB(255, 220, 220), 0.5
+				hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+				hl.Parent = h
+				game:GetService("Debris"):AddItem(hl, data and data.seconds or 5)
+			end
 		end
 	elseif kind == "plushie" and type(data) == "table" then
 		-- a card on the left: the plushie turning in 3D, its name, your count
