@@ -1407,7 +1407,7 @@ do
 		local panel = frame(gui, { Size = UDim2.fromOffset(660, 420), Position = UDim2.new(0.5, -330, 0.5, -210), Visible = false, ZIndex = 10 })
 		corner(panel, 18)
 		label(panel, { Size = UDim2.new(1, -20, 0, 36), Position = UDim2.fromOffset(10, 8), Text = "\u{1F381} Gifts (only you see this)", TextColor3 = PUMP, ZIndex = 11 })
-		local giftSub = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = gs and ("Players in this Lobby, or anyone by username (characters, skins). " .. string.upper(string.sub(gs.many, 1, 1)) .. string.sub(gs.many, 2) .. " go to spend.") or "Players in this Lobby, or anyone by username (characters and skins).", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
+		local giftSub = label(panel, { Size = UDim2.new(1, -20, 0, 20), Position = UDim2.fromOffset(10, 44), Text = gs and ("Players in this Lobby, or anyone by username (characters, skins, levels). " .. string.upper(string.sub(gs.many, 1, 1)) .. string.sub(gs.many, 2) .. " go to spend.") or "Players in this Lobby, or anyone by username (characters, skins, levels).", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 11 })
 		local giftList = Instance.new("ScrollingFrame")
 		giftList.BackgroundTransparency = 1
 		giftList.Position = UDim2.fromOffset(10, 70)
@@ -1467,7 +1467,8 @@ do
 					end
 				end
 				local unlockable = Config.CHARACTER_UNLOCK[sk.id] ~= nil
-				if #mine > 0 or unlockable then
+				-- (4 Nov: every character has a section now - levels for all)
+				do
 					n += 1
 					local head = frame(skinPick, { Size = UDim2.new(1, -10, 0, 40), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
 					corner(pic(head, Config.PORTRAITS and Config.PORTRAITS[sk.id], 36, UDim2.fromOffset(2, 2)), 18)
@@ -1487,6 +1488,26 @@ do
 						end)
 						corner(pic(b, Config.PORTRAITS and Config.PORTRAITS[sk.id], 60, UDim2.fromOffset(-2, 1)), 30)
 						label(b, { Size = UDim2.fromOffset(118, 56), Position = UDim2.fromOffset(64, 3), Text = "\u{2B50} " .. sk.name .. " (character)", TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 14 })
+					end
+					-- 4 Nov (Brent): levels - raised to it, never lowered
+					do
+						n += 1
+						local lvRow = frame(skinPick, { Size = UDim2.new(1, -10, 0, 44), LayoutOrder = n, BackgroundTransparency = 1, ZIndex = 12 })
+						local hl = Instance.new("UIListLayout")
+						hl.FillDirection = Enum.FillDirection.Horizontal
+						hl.Padding = UDim.new(0, 8)
+						hl.SortOrder = Enum.SortOrder.LayoutOrder
+						hl.Parent = lvRow
+						for k, lv in ipairs({ 5, 10, 15, 20 }) do
+							button(lvRow, "\u{2B06} Lv " .. lv, { Size = UDim2.fromOffset(110, 40), LayoutOrder = k, BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 13 }, function()
+								if pickFor then
+									remotes:WaitForChild("OwnerGift"):FireServer(pickFor.UserId, "level", sk.id .. ":" .. lv)
+								end
+							end)
+						end
+					end
+					if #mine == 0 and not unlockable then
+						tiles.Visible = false
 					end
 					for i, skin in ipairs(mine) do
 						local b = button(tiles, "", { LayoutOrder = i, BackgroundColor3 = PLUM, ZIndex = 13 }, function()
@@ -1517,7 +1538,7 @@ do
 			pickTitle.Visible = p ~= nil
 			giftList.Visible = p == nil
 			giftSub.Visible = p == nil
-			pickTitle.Text = p and ("Tap a character or skin to give it to " .. p.DisplayName .. " (theirs for good" .. (p.away and ", when they next come to the Lobby" or "") .. "). Close goes back.") or ""
+			pickTitle.Text = p and ("Tap a character, skin or level to give it to " .. p.DisplayName .. " (theirs for good" .. (p.away and ", when they next come to the Lobby" or "") .. "). Close goes back.") or ""
 		end
 		local function fill()
 			for _, c in ipairs(giftList:GetChildren()) do

@@ -1201,7 +1201,39 @@ pcall(function()
 	GiftStore = game:GetService("DataStoreService"):GetDataStore("EscapeCrew_Gifts_v1")
 end)
 -- what a gift is called ("Cloud", "the Gridiron Muscle skin"), or nil if unknown
+-- 4 Nov (Brent): levels the owner can give ("cloud:10")
+local GIFT_LEVELS = { 5, 10, 15, 20 }
+local function parseLevel(id)
+	if typeof(id) ~= "string" then
+		return nil
+	end
+	local skill, lv = string.match(id, "^(%a+):(%d+)$")
+	lv = tonumber(lv)
+	if not skill or not lv or not table.find(GIFT_LEVELS, lv) or not Progress.LEVEL_XP[lv] then
+		return nil
+	end
+	for _, sk in ipairs(Config.SKILLS) do
+		if sk.id == skill then
+			return sk, lv
+		end
+	end
+	return nil
+end
+-- raise a character's level (its XP) to lv; never lowers it. true if raised
+local function giveLevel(data, skill, lv)
+	data.xp = data.xp or {}
+	local want = Progress.LEVEL_XP[lv]
+	if (data.xp[skill] or 0) >= want then
+		return false
+	end
+	data.xp[skill] = want
+	return true
+end
 local function giftName(kind, id)
+	if kind == "level" then
+		local sk, lv = parseLevel(id)
+		return sk and (sk.name .. " level " .. lv) or nil
+	end
 	if kind == "char" and typeof(id) == "string" and Config.CHARACTER_UNLOCK[id] then
 		return string.upper(string.sub(id, 1, 1)) .. string.sub(id, 2)
 	elseif kind == "skin" then
@@ -1249,7 +1281,12 @@ local function claimGifts(plr, data)
 	local got = {}
 	for _, g in ipairs(waiting) do
 		local name, skin = giftName(g.kind, g.id)
-		if name and g.kind == "char" then
+		if name and g.kind == "level" then
+			local sk, lv = parseLevel(g.id)
+			if sk and giveLevel(data, sk.id, lv) then
+				table.insert(got, name)
+			end
+		elseif name and g.kind == "char" then
 			data.charsEarned = data.charsEarned or {}
 			if not data.charsEarned[g.id] then
 				data.charsEarned[g.id] = true
@@ -1305,7 +1342,7 @@ do
 		end
 		-- 4 Nov (Brent): a character or skin for someone not in this Lobby
 		-- (found by username): kept, and theirs when they next come
-		if (kind == "char" or kind == "skin") and typeof(userId) == "number" and not Players:GetPlayerByUserId(userId) then
+		if (kind == "char" or kind == "skin" or kind == "level") and typeof(userId) == "number" and not Players:GetPlayerByUserId(userId) then
 			local what = giftName(kind, amount)
 			if not what then
 				return
@@ -1316,6 +1353,29 @@ do
 			end)
 			who = okName and who or "They"
 			return Notice:FireClient(plr, saved and ("\u{1F381} Saved: " .. who .. " gets " .. what .. " the next time they come to the Lobby.") or "Couldn't save that gift just now - try again in a moment.")
+		end
+		-- 4 Nov (Brent): a character's level (kind "level", amount "cloud:10"):
+		-- raised to it, never lowered; they pick its upgrades in the ladder
+		if kind == "level" then
+			local to = typeof(userId) == "number" and Players:GetPlayerByUserId(userId)
+			local data = to and Profile.get(to)
+			local sk, lv = parseLevel(amount)
+			if not sk then
+				return
+			end
+			if not data then
+				return Notice:FireClient(plr, "That player isn't in this Lobby any more.")
+			end
+			if not giveLevel(data, sk.id, lv) then
+				return Notice:FireClient(plr, to.DisplayName .. "'s " .. sk.name .. " is already level " .. lv .. " or higher.")
+			end
+			Profile.publish(to)
+			Profile.save(to)
+			Notice:FireClient(plr, "\u{1F381} Gave " .. to.DisplayName .. " " .. sk.name .. " level " .. lv .. ".")
+			if to ~= plr then
+				Notice:FireClient(to, "\u{1F381} A gift from " .. plr.DisplayName .. ": " .. sk.name .. " is now level " .. lv .. "! Pick the new upgrades in Characters > Skills.")
+			end
+			return
 		end
 		-- 4 Nov (Brent): a character you unlock (Nutmeg), theirs for good - also
 		-- before she goes on sale (kind "char", amount = the character's id)
