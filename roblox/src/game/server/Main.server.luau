@@ -4650,34 +4650,47 @@ do
 		elseif skill == "harmony" then
 			-- Lullaby (4 Nov): the host near her walks at half speed for a while
 			local Hm = Config.HARMONY
-			local host = nearestHost(hrp.Position) -- (5 Nov) the nearest Claus
-			if not (host and host.model and host.root) then
+			if #liveHosts() == 0 then
 				say("info", "\u{1F3B5} Save your Lullaby for when the host is out.", nil, plr)
 				return false
 			end
 			-- 4 Nov (Brent: no clear reach): measured flat (not up and down), and
-			-- a too-far host is told in studs
+			-- a too-far host is told in studs. 5 Nov (Brent: failed with the host
+			-- in the circle): measured to the edge of his body, not his middle,
+			-- 2 studs of grace for him walking in as she presses, and every host
+			-- in reach is slowed (Claus Manor has two)
 			local reach = plr:GetAttribute("LullabyRange") or Hm.range
 			local hum = hrp.Parent and hrp.Parent:FindFirstChildOfClass("Humanoid")
 			local feet = hrp.Position - Vector3.new(0, hrp.Size.Y / 2 + (hum and hum.HipHeight or 2), 0) -- (the floor under her)
-			local flat = Vector3.new(host.root.Position.X - hrp.Position.X, 0, host.root.Position.Z - hrp.Position.Z).Magnitude
-			if flat > reach then
-				Effects.zone(feet, Color3.fromRGB(180, 140, 230), reach * 2, 1.2)
-				say("info", "\u{1F3B5} The host is " .. math.floor(flat) .. " studs away - your Lullaby reaches " .. reach .. " (the purple circle). Sing when he's inside it.", nil, plr)
+			local caught, nearest = {}, math.huge
+			for _, h in ipairs(liveHosts()) do
+				local cf, size = h.model:GetBoundingBox()
+				local body = math.min(math.max(size.X, size.Z) / 2, 5)
+				local gap = Vector3.new(cf.Position.X - hrp.Position.X, 0, cf.Position.Z - hrp.Position.Z).Magnitude - body
+				nearest = math.min(nearest, gap)
+				if gap <= reach + 2 then
+					table.insert(caught, h)
+				end
+			end
+			if #caught == 0 then
+				Effects.zone(feet, Color3.fromRGB(180, 140, 230), reach * 2, 2.5)
+				say("info", "\u{1F3B5} The host is " .. math.max(1, math.floor(nearest - reach)) .. " studs outside your Lullaby (the purple circle). Sing when he's inside it.", nil, plr)
 				return false
 			end
 			local seconds = plr:GetAttribute("LullabyTime") or Hm.seconds
-			host.slowUntil = os.clock() + seconds
-			host.slowMult = Hm.slow
-			if p20 == "crescendo" then
-				host:stun(1) -- Crescendo: a full stop first
+			for _, h in ipairs(caught) do
+				h.slowUntil = os.clock() + seconds
+				h.slowMult = Hm.slow
+				if p20 == "crescendo" then
+					h:stun(1) -- Crescendo: a full stop first
+				end
+				Effects.stars(h.model, seconds, Color3.fromRGB(190, 140, 255))
 			end
 			plr:SetAttribute("LullabyUntil", workspace:GetServerTimeNow() + seconds)
 			Effects.ring(feet, Color3.fromRGB(180, 140, 230), reach * 2, 1)
 			-- the whole reach stays on the floor a moment; purple notes circle the
 			-- host for as long as he is slowed
 			Effects.zone(feet, Color3.fromRGB(180, 140, 230), reach * 2, 1.5)
-			Effects.stars(host.model, seconds, Color3.fromRGB(190, 140, 255))
 			-- Chorus (level 10): every friend's recharge 5 s nearer
 			if p10 == "chorus" then
 				local now2 = workspace:GetServerTimeNow()
