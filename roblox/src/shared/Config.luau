@@ -32,9 +32,9 @@ Config.UI_ICONS = { -- art/ui-icons/*.png (ids checked on Roblox's API, 9 Oct)
 	["skill-tinker"] = 125253090151263, ["skill-shadow"] = 122833619672235, ["skill-brainy"] = 88694764071896,
 	["skill-muscle"] = 111012437636051, ["skill-glow"] = 79995490435238, ["skill-patch"] = 124927699659337,
 	["skill-echo"] = 104667451078873, ["skill-bramble"] = 111735284994326,
-	-- 4 Nov: the new characters' (checked on Roblox: images, Brent's uploads); Holly's to come
+	-- 4 Nov: the new characters' (checked on Roblox: images, Brent's uploads)
 	["skill-nutmeg"] = 130558478857131, ["skill-cloud"] = 121339475435162, ["skill-clone"] = 73709798548335,
-	["skill-harmony"] = 85934320538971,
+	["skill-harmony"] = 85934320538971, ["skill-holly"] = 123270261720358,
 	["emote-wave"] = 91108624177477, ["emote-point"] = 119927036397486, ["emote-cheer"] = 87893385946810,
 	["emote-laugh"] = 100088092280645, ["emote-dance1"] = 102728279626825, ["emote-dance2"] = 133487841239662,
 	["emote-dance3"] = 106045742443407, ["emote-stop"] = 129902482804856,
@@ -383,11 +383,11 @@ Config.NUTMEG = { nose = 20, dash = 2, -- dash: 4 Nov (Brent) +0.5 s (was 1.5)
 -- the owner can gift any of these (the Lobby's Gift panel).
 Config.CHARACTER_UNLOCK = {
 	nutmeg = { season = "christmas", price = 400, pass = 2069971851 }, -- pass checked on Roblox 4 Nov: "Nutmeg", 399 Robux, for sale
-	-- 4 Nov (Brent): earned by playing, or a 149 Robux Game Pass (ids to come)
-	cloud = { escapes = 10, pass = 0 },
-	clone = { escapes = 25, pass = 0 },
-	harmony = { escapes = 40, pass = 0 },
-	holly = { season = "christmas", price = 150, escapes = 50, pass = 0 },
+	-- 4 Nov (Brent): earned by playing, or a 149 Robux Game Pass
+	cloud = { escapes = 10, pass = 2070906828 }, -- passes checked on Roblox 4 Nov: name, 149 Robux, for sale
+	clone = { escapes = 25, pass = 2066906385 },
+	harmony = { escapes = 40, pass = 2072624265 },
+	holly = { season = "christmas", price = 150, escapes = 50, pass = 2067446371 },
 }
 -- skills version 2 (SKILLS_V2.md): every character has a button
 Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise
