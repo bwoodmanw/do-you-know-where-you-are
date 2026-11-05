@@ -1,6 +1,8 @@
 # Elfy portrait workflow
 
-Use the built-in image generator, one image per row in table order. Full prompt record: [JSON workflow](tools/workflows/elfy-portrait.json). Reference root: `art`; output root: `art`, both relative to this project. Attach every reference in listed order. Inspect inputs and results. Create missing folders, save each front before making its back, and preserve existing artwork unless replacement is requested.
+Use the built-in image generator, one image per row in table order. Full prompt record: [JSON workflow](tools/workflows/elfy-portrait.json). Reference root: `art`; output root: `art`, both relative to this project. Attach every reference in listed order. Inspect inputs and results. Create missing folders and preserve existing artwork unless replacement is requested.
+
+For every row, submit the complete Picture Standard verbatim, followed by two newlines and that row's Picture verbatim. Resolve reference paths under `art` without sorting or deduplicating. The first reference supplies Elfy's identity; the second supplies the portrait layout only. Generate an opaque square portrait. Copy the selected PNG to `art/[file name]`, creating its parent folder first. To add pictures, append rows with `picture`, `references`, and `file_name` to the JSON table and derive each `prompt` the same way.
 
 ## Picture Standard
 
@@ -14,4 +16,4 @@ A square character portrait for a kids' co-op escape game for ages 8 and up. The
 
 ## Verification
 
-Check likeness, framing, all requested colors and accessories, no writing or logos, and consistent anatomical sides between views. Record source, saved destination, PNG dimensions and SHA-256 in the JSON after saving.
+Check likeness, chest-up framing, the wink, raised present with a red bow, green/gold glowing circle, snowflakes and bells, deep red background, bottom-right green/gold wind-up-key badge, and no writing or logos. Record source, saved destination, PNG dimensions and SHA-256 in the JSON after saving.

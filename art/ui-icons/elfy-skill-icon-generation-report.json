@@ -1,0 +1,37 @@
+{
+  "generation_date": "2026-11-05",
+  "mode": "built-in image_gen",
+  "workflow": "tools/workflows/elfy-skill-icon.json",
+  "prompt": "A single button icon for a kids' co-op escape game for ages 8 and up, in exactly the same style as the game's other skill icons (a crossed wrench and screwdriver, a pair of headphones): one bold, chunky object in a glossy cartoon style with soft bright highlights, a thick dark-purple outline around the whole shape, rich purple and warm orange-gold accents, centered and filling most of the square. Fully transparent background - a PNG with no backdrop, no circle, no frame, no shadow box. It must still read clearly when shrunk to 60 pixels, so keep it simple with big shapes. No logos, brand marks, words, letters or numbers. Not taken from any existing game, film or cartoon. Square, 1024 x 1024.\n\nWind-up Toy: a small round wind-up toy drummer soldier in red and gold with a big gold wind-up key in its back, marching to the right, with two small curved motion lines and a tiny gold bell beside it",
+  "references": [],
+  "transparent_background": true,
+  "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1acfd-e9d7-79d1-822d-74871739ae4f\\exec-27c54f27-5db3-4f33-8e13-9e51c4dfc608.png",
+  "source_dimensions": [
+    1254,
+    1254
+  ],
+  "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\ui-icons\\skill-elfy.png",
+  "saved_dimensions": [
+    1024,
+    1024
+  ],
+  "format": "PNG",
+  "color_mode": "RGBA",
+  "resampling": "LANCZOS to 1024 x 1024; alpha preserved",
+  "fully_transparent_pixels": 515325,
+  "fully_opaque_pixels": 3037,
+  "all_corners_transparent": true,
+  "sha256": "dfd46851282b0e6ae0b13713ce850f3f14be4d84137466dc5dc12c84e949c9b3",
+  "visual_review": "Round red-and-gold toy drummer, large rear gold wind-up key, marching right, two curved motion lines and gold bell; glossy finish, dark-purple outline, no text or backdrop.",
+  "small_size_review": {
+    "dimensions": [
+      60,
+      60
+    ],
+    "backgrounds": [
+      "#e7e4ed",
+      "#241336"
+    ],
+    "result": "Main toy silhouette, red-and-gold palette, purple outline, rear key and drum remain recognizable on light and dark backgrounds."
+  }
+}

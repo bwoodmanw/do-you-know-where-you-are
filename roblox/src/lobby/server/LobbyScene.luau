@@ -985,6 +985,20 @@ function Scene.christmas(folder)
 		sound(puff, "pop", 0.6)
 		Debris:AddItem(puff, 1.5)
 	end
+	-- 5 Nov (Brent): the ball goes where you aim - the client sends the
+	-- point under the mouse or tap (or the middle of the screen)
+	local throwers = {}
+	local aimEvent = game:GetService("ReplicatedStorage"):FindFirstChild("SnowballAim") or Instance.new("RemoteEvent")
+	aimEvent.Name = "SnowballAim"
+	aimEvent.Parent = game:GetService("ReplicatedStorage")
+	aimEvent.OnServerEvent:Connect(function(plr, target)
+		local c = plr.Character
+		local tool = c and c:FindFirstChild("Snowball")
+		local f = tool and throwers[tool]
+		if f and typeof(target) == "Vector3" and target.X == target.X then
+			f(target)
+		end
+	end)
 	local function snowballTool(plr)
 		local char = plr.Character
 		local have = (char and char:FindFirstChild("Snowball")) or plr.Backpack:FindFirstChild("Snowball")
@@ -1005,11 +1019,41 @@ function Scene.christmas(folder)
 		handle.CanCollide, handle.Massless = false, true
 		handle.Parent = tool
 		local last = 0
+		local pending, aimed = nil, nil
+		local throw
+		-- the click and the aim arrive one after the other, either way round
+		throwers[tool] = function(target)
+			if pending and os.clock() - pending < 0.4 then
+				pending = nil
+				throw(target)
+			else
+				aimed = { target, os.clock() }
+			end
+		end
 		tool.Activated:Connect(function()
 			if os.clock() - last < 0.45 then
 				return
 			end
 			last = os.clock()
+			if aimed and os.clock() - aimed[2] < 0.4 then
+				local target = aimed[1]
+				aimed = nil
+				throw(target)
+				return
+			end
+			local mine = os.clock()
+			pending = mine
+			task.delay(0.3, function()
+				if pending == mine then
+					pending = nil
+					throw(nil) -- no aim came: straight ahead
+				end
+			end)
+		end)
+		tool.Destroying:Connect(function()
+			throwers[tool] = nil
+		end)
+		throw = function(target)
 			local c = tool.Parent
 			local hrp = c and c:FindFirstChild("HumanoidRootPart")
 			local left = tool:GetAttribute("Left") or 0
@@ -1018,16 +1062,31 @@ function Scene.christmas(folder)
 			end
 			tool:SetAttribute("Left", left - 1)
 			local look = hrp.CFrame.LookVector
+			local start = hrp.Position + Vector3.new(0, 1.5, 0)
+			local vel = look * 70 + Vector3.new(0, 16, 0)
+			if target then
+				-- aim: across to the spot, lobbed enough to land on it
+				local flat = Vector3.new(target.X - start.X, 0, target.Z - start.Z)
+				local dist = flat.Magnitude
+				if dist > 1.5 then
+					look = flat.Unit
+					start = hrp.Position + look * 2.5 + Vector3.new(0, 1.5, 0)
+					local speed = 75
+					local t = math.clamp((dist - 2.5) / speed, 0.05, 1.2)
+					local rise = (target.Y - start.Y) / t + 0.5 * workspace.Gravity * t
+					vel = look * speed + Vector3.new(0, math.clamp(rise, -40, 90), 0)
+				end
+			end
 			local ball = Instance.new("Part")
 			ball.Name = "ThrownSnowball"
 			ball.Shape = Enum.PartType.Ball
 			ball.Size = Vector3.new(1, 1, 1)
 			ball.Color, ball.Material = WHITE, Enum.Material.Snow
 			ball.CanCollide, ball.CanQuery = false, false
-			ball.Position = hrp.Position + look * 2.5 + Vector3.new(0, 1.5, 0)
+			ball.Position = target and start or hrp.Position + look * 2.5 + Vector3.new(0, 1.5, 0)
 			ball.Parent = workspace
 			ball:SetNetworkOwner(nil)
-			ball.AssemblyLinearVelocity = look * 70 + Vector3.new(0, 16, 0)
+			ball.AssemblyLinearVelocity = vel
 			sound(ball, "throw", 0.5)
 			local done = false
 			ball.Touched:Connect(function(hit)
@@ -1048,7 +1107,7 @@ function Scene.christmas(folder)
 					tool:Destroy()
 				end)
 			end
-		end)
+		end
 		tool.Parent = plr.Backpack
 	end
 	-- snow patches on the lawn (where Thanksgiving's leaf piles were)

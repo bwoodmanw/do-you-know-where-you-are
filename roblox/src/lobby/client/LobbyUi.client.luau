@@ -3242,3 +3242,41 @@ remotes:WaitForChild("RejoinOffer").OnClientEvent:Connect(function(info)
 		box:Destroy()
 	end)
 end)
+
+-- 5 Nov (Brent): snowballs fly where you aim - the point under the mouse
+-- or the tap (a controller: the middle of the screen)
+do
+	local aimEvent = game:GetService("ReplicatedStorage"):WaitForChild("SnowballAim", 30)
+	local function aimPoint()
+		local cam = workspace.CurrentCamera
+		local ray
+		local uis = game:GetService("UserInputService")
+		if uis.GamepadEnabled and not uis.MouseEnabled and not uis.TouchEnabled then
+			local size = cam.ViewportSize
+			ray = cam:ViewportPointToRay(size.X / 2, size.Y / 2)
+		else
+			ray = Players.LocalPlayer:GetMouse().UnitRay
+		end
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.FilterDescendantsInstances = { Players.LocalPlayer.Character }
+		local hit = workspace:Raycast(ray.Origin, ray.Direction * 150, params)
+		return hit and hit.Position or ray.Origin + ray.Direction * 80
+	end
+	local function watch(char)
+		char.ChildAdded:Connect(function(tool)
+			if tool:IsA("Tool") and tool.Name == "Snowball" and not tool:GetAttribute("AimHooked") then
+				tool:SetAttribute("AimHooked", true)
+				tool.Activated:Connect(function()
+					if aimEvent then
+						aimEvent:FireServer(aimPoint())
+					end
+				end)
+			end
+		end)
+	end
+	if Players.LocalPlayer.Character then
+		watch(Players.LocalPlayer.Character)
+	end
+	Players.LocalPlayer.CharacterAdded:Connect(watch)
+end

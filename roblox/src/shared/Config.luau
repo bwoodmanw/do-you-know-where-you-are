@@ -758,6 +758,8 @@ Config.CHARACTER_ASSETS = {
 	CloudAutumn = 75463289700234, -- 5 Nov: Autumn Breeze Cloud (checked on Roblox: Model 'CloudAutumn', Brent's upload)
 	HarmonyPie = 127157616419679, -- 5 Nov: Pumpkin Pie Harmony (checked on Roblox: Model 'HarmonyPie', Brent's upload)
 	HostCrumbles = 91451706955885, -- 5 Nov: Crumbles, Candy Cane Lane's host (checked on Roblox: Model 'Crumbles', Brent's upload)
+	HostMrClaus = 130635679312254, -- 5 Nov: Mr Claus, Claus Manor (checked on Roblox: Model 'HostMrClaus', Brent's upload)
+	HostMrsClaus = 92544233290407, -- 5 Nov: Mrs Claus, Claus Manor (checked on Roblox: Model 'HostMrsClaus', Brent's upload)
 	HostYeti = 138655463727624, -- 5 Nov: Frostfoot the Yeti, Frostpeak Lodge's host (New Year's; checked on Roblox: Model 'FrostFoot', Brent's upload)
 	CloneGala = 137284317587849, -- 5 Nov: Harvest Gala Clone (checked on Roblox: Model, Brent's upload)
 	HollyCranberry = 139043771129248, -- 5 Nov: Cranberry Spice Holly (checked on Roblox: Model 'HollyCranberry', Brent's upload)
@@ -1049,6 +1051,23 @@ Config.SKINS = {
 	{ id = "cloud_autumn", skill = "cloud", name = "Autumn Breeze Cloud", model = "CloudAutumn", feather = 150, pass = 2070452002 }, -- 5 Nov: live (pass checked: 99 Robux, for sale)
 	{ id = "clone_gala", skill = "clone", name = "Harvest Gala Clone", model = "CloneGala", feather = 150, pass = 2070612915 }, -- 5 Nov: live (pass and model checked on Roblox)
 	{ id = "harmony_pie", skill = "harmony", name = "Pumpkin Pie Harmony", model = "HarmonyPie", feather = 150, pass = 2070930914 }, -- 5 Nov: live (pass and model checked on Roblox)
+	-- the Christmas skins (5 Nov, Brent: CHRISTMAS_SKINS_WORKFLOW.md): 150
+	-- candy canes in the Christmas Shop during the event, or a 99-Robux Game
+	-- Pass any time once `pass` has its id. hidden until the model is saved
+	-- (CHARACTER_ASSETS) - take `hidden` off then. Elfy has no Christmas skin.
+	{ id = "patch_skater", skill = "patch", name = "Ice Skater Patch", model = "PatchSkater", cane = 150, pass = 0, hidden = true },
+	{ id = "brainy_gingerbread", skill = "brainy", name = "Gingerbread Brainy", model = "BrainyGingerbread", cane = 150, pass = 0, hidden = true },
+	{ id = "shadow_silentnight", skill = "shadow", name = "Silent Night Shadow", model = "ShadowSilentNight", cane = 150, pass = 0, hidden = true },
+	{ id = "glow_twinkle", skill = "glow", name = "Twinkle Lights Glow", model = "GlowTwinkle", cane = 150, pass = 0, hidden = true },
+	{ id = "tinker_toymaker", skill = "tinker", name = "Toy Maker Tinker", model = "TinkerToymaker", cane = 150, pass = 0, hidden = true },
+	{ id = "muscle_sweater", skill = "muscle", name = "Holiday Sweater Muscle", model = "MuscleSweater", cane = 150, pass = 0, hidden = true },
+	{ id = "echo_jingle", skill = "echo", name = "Jingle Bell Echo", model = "EchoJingle", cane = 150, pass = 0, hidden = true },
+	{ id = "bramble_evergreen", skill = "bramble", name = "Evergreen Bramble", model = "BrambleEvergreen", cane = 150, pass = 0, hidden = true },
+	{ id = "nutmeg_snowflake", skill = "nutmeg", name = "Snowflake Nutmeg", model = "NutmegSnowflake", cane = 150, pass = 0, hidden = true },
+	{ id = "cloud_snow", skill = "cloud", name = "First Snow Cloud", model = "CloudSnow", cane = 150, pass = 0, hidden = true },
+	{ id = "holly_sugarplum", skill = "holly", name = "Sugar Plum Holly", model = "HollySugarplum", cane = 150, pass = 0, hidden = true },
+	{ id = "clone_nutcracker", skill = "clone", name = "Nutcracker Clone", model = "CloneNutcracker", cane = 150, pass = 0, hidden = true },
+	{ id = "harmony_carol", skill = "harmony", name = "Carol Singer Harmony", model = "HarmonyCarol", cane = 150, pass = 0, hidden = true },
 }
 -- every Thanksgiving skin's Game Pass price (Managed pricing off - PASSES.md);
 -- the Skins window's Robux button shows it (the Shop reads each pass's price)

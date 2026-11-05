@@ -1,0 +1,15 @@
+{
+  "name": "Elfy Wind-up Toy skill icon",
+  "output_root": "art",
+  "folder": "ui-icons",
+  "transparent_background": true,
+  "width": 1024,
+  "height": 1024,
+  "picture_standard": "A single button icon for a kids' co-op escape game for ages 8 and up, in exactly the same style as the game's other skill icons (a crossed wrench and screwdriver, a pair of headphones): one bold, chunky object in a glossy cartoon style with soft bright highlights, a thick dark-purple outline around the whole shape, rich purple and warm orange-gold accents, centered and filling most of the square. Fully transparent background - a PNG with no backdrop, no circle, no frame, no shadow box. It must still read clearly when shrunk to 60 pixels, so keep it simple with big shapes. No logos, brand marks, words, letters or numbers. Not taken from any existing game, film or cartoon. Square, 1024 x 1024.",
+  "assets": [
+    {
+      "file_name": "skill-elfy.png",
+      "picture": "Wind-up Toy: a small round wind-up toy drummer soldier in red and gold with a big gold wind-up key in its back, marching to the right, with two small curved motion lines and a tiny gold bell beside it"
+    }
+  ]
+}

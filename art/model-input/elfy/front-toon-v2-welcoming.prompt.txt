@@ -1,0 +1,5 @@
+Mode: built-in image_gen
+Use case: precise-object-edit.
+Input image: edit target, front-toon-v1-frowny.png.
+Edit ONLY his face to look warm, kind and welcoming: relaxed eyebrows raised in a happy arch, with both inner ends comfortably raised, never angled downward toward the nose; big round bright green eyes looking straight ahead; a wide open happy smile with evenly lifted corners, friendly and symmetrical; rosy cheeks. His expression must be sweet, sincere, joyful and welcoming, never sly or smirking, no frown, no lowered angry eyebrows.
+Preserve the exact same boy elf identity, 3D cartoon art style, hair, ears, head outline, outfit, hat, bell, pose, body, hands, legs, shoes, all colors, materials, lighting, shadows, full-body framing and light-gray background. Change only the facial expression inside the face; leave everything outside the face unchanged. Maintain the original image dimensions and composition. No text or added elements.

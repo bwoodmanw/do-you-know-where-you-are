@@ -23,7 +23,16 @@
       ],
       "prompt_clarification": "Reference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image.",
       "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in exactly the same style, angle, framing and lighting as the attached picture (another place in the game). A WIDE 16:9 picture. No people, no characters, no creatures. No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous place or character from a film, cartoon or game.\n\nClaus Manor, the grumpy Clauses' big house at the North Pole, seen from a little above and to the side: a tall, crooked, three-story dark-red brick-and-timber manor half buried in deep snow, a steep snowy roof with a big crooked chimney puffing dark smoke, a lit-up workshop window full of toys on the ground floor, a warm kitchen window on the middle floor, a big round loft window at the top with a sleigh's runners just visible inside, icicles along every edge, piles of wrapped presents by the front door, a little sign-less lamp post, a lump of coal in the snow by the path, snowy pine trees, a deep blue night sky with falling snow and a faint green northern light\n\nReference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image.",
-      "status": "pending"
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ac9d-576a-7a62-a593-68886663269b\\exec-9be779a6-c3df-49f8-adc5-d47d51230884.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-clausmanor.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "7430983603af1a8612d0b9952ddfb7afdd63d643d3684e11cbc34e778ee1fdbc",
+      "validation": "Visually checked snowy three-story dark-red manor, crooked smoky chimney, workshop/kitchen/loft windows, sleigh runners, presents, coal, lamp, pine trees and aurora. Reference style, camera framing and warm lighting visually checked; no people, living characters, text or logos observed. Saved PNG bytes match the generated source.",
+      "aspect_ratio_note": "Native generated size is 1672 x 941, approximately 16:9 (0.053% ratio difference); preserved without resampling."
     },
     {
       "order": 2,
@@ -34,7 +43,16 @@
       ],
       "prompt_clarification": "Reference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image. Teddy bears and rocking horses are inanimate toys only; no living characters or creatures.",
       "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in exactly the same style, angle, framing and lighting as the attached picture (another place in the game). A WIDE 16:9 picture. No people, no characters, no creatures. No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous place or character from a film, cartoon or game.\n\nThe Toy Workshop, the ground floor of Claus Manor, seen from above into the cut-away room: long wooden workbenches covered in half-built toys (wooden trains, teddy bears, rocking horses, drums), shelves of paint pots, a conveyor belt of wrapped presents, a coal scuttle by a big black iron stove, stacks of wrapped presents in the corners, warm lamp light and a little spooky shadow in the corners\n\nReference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image. Teddy bears and rocking horses are inanimate toys only; no living characters or creatures.",
-      "status": "pending"
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ac9d-576a-7a62-a593-68886663269b\\exec-437f1057-bb4a-48fb-8b69-3e2f8306d4f6.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-clausmanor-workshop.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "0f859879ef4366bcc243d2b9a08f996423f36e1411a12f59cb522521991b2f67",
+      "validation": "Visually checked cut-away workshop, wooden workbenches, inanimate toy trains, teddy bears and rocking horses, drums, paint pots, present conveyor, black stove and coal scuttle. Reference style, camera framing and warm lighting visually checked; no people, living characters, text or logos observed. Saved PNG bytes match the generated source.",
+      "aspect_ratio_note": "Native generated size is 1672 x 941, approximately 16:9 (0.053% ratio difference); preserved without resampling."
     },
     {
       "order": 3,
@@ -45,7 +63,16 @@
       ],
       "prompt_clarification": "Reference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image. The cuckoo clock has a blank dial and no bird or character; gingerbread is plain food, with no faces or figures.",
       "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in exactly the same style, angle, framing and lighting as the attached picture (another place in the game). A WIDE 16:9 picture. No people, no characters, no creatures. No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous place or character from a film, cartoon or game.\n\nThe Cookie Kitchen, the middle floor of Claus Manor, seen from above into the cut-away room: a big old-fashioned kitchen with a huge brick oven glowing orange, long tables with trays of iced cookies and gingerbread, tall jars of candy, rolling pins and mixing bowls, a pantry door ajar, a cuckoo clock without numbers, wrapped presents tucked under the tables, warm light and a little spooky shadow in the corners\n\nReference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image. The cuckoo clock has a blank dial and no bird or character; gingerbread is plain food, with no faces or figures.",
-      "status": "pending"
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ac9d-576a-7a62-a593-68886663269b\\exec-de5ef39a-934d-424a-a8f4-aab957afb9ae.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-clausmanor-kitchen.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "1d6f70bab673b385e40e8a3772bf7b4bbc63c8f76aa52a79bc9af7a6780ce80d",
+      "validation": "Visually checked cut-away kitchen, glowing brick oven, cookies and gingerbread, candy jars, rolling pins and bowls, open pantry, blank clock dial and presents under tables. Reference style, camera framing and warm lighting visually checked; no people, living characters, text or logos observed. Saved PNG bytes match the generated source.",
+      "aspect_ratio_note": "Native generated size is 1672 x 941, approximately 16:9 (0.053% ratio difference); preserved without resampling."
     },
     {
       "order": 4,
@@ -56,8 +83,18 @@
       ],
       "prompt_clarification": "Reference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image.",
       "prompt": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in exactly the same style, angle, framing and lighting as the attached picture (another place in the game). A WIDE 16:9 picture. No people, no characters, no creatures. No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous place or character from a film, cartoon or game.\n\nThe Sleigh Loft, the top floor of Claus Manor, seen from above into the cut-away attic: big roof beams with icicles, a big red sleigh piled with wrapped presents in the middle, harness bells hanging on the walls, sacks of toys, a ladder, a big round window with moonlight and snow blowing in, old lanterns glowing, a little spooky still cozy\n\nReference role: Image 1 is another place in the same game; use it to match the rendering style, camera angle, framing and lighting while depicting the requested new scene. Render a wide 16:9 image.",
-      "status": "pending"
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ac9d-576a-7a62-a593-68886663269b\\exec-9e717fb3-59a0-4a83-91c1-14e9a541bf22.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\floor-clausmanor-loft.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "sha256": "e60ebc61262c33ed83e7959fbffdc0d5e687b9af804fd571e0028013f1da0b70",
+      "validation": "Visually checked cut-away attic, roof beams and icicles, central red sleigh with presents, harness bells, toy sacks, ladder, moonlit round window and glowing lanterns. Reference style, camera framing and warm lighting visually checked; no people, living characters, text or logos observed. Saved PNG bytes match the generated source.",
+      "aspect_ratio_note": "Native generated size is 1672 x 941, approximately 16:9 (0.053% ratio difference); preserved without resampling."
     }
   ],
-  "status": "in_progress"
+  "status": "completed",
+  "completed_date": "2026-11-05"
 }

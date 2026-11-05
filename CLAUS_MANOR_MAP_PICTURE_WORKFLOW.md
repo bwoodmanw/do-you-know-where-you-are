@@ -25,4 +25,4 @@ Check a wide 16:9 composition, the requested scene and reference style, and no t
 
 ## Run status
 
-Generation in progress.
+Completed on 5 Nov 2026 using built-in image generation. All four PNGs were visually inspected and saved in table order at the requested paths. SHA-256 checks confirm that saved files match their generated sources. Native dimensions are 1672 x 941, approximately 16:9 (0.053% ratio difference); images were preserved without resampling. The JSON contains the full final prompt, ordered references and validation record for every picture.
