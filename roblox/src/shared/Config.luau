@@ -988,6 +988,12 @@ Config.SKINS = {
 	{ id = "echo_dj", skill = "echo", name = "Feast DJ Echo", model = "EchoDJ", feather = 150, pass = 2064403446 },
 	{ id = "echo_cocoa", skill = "echo", name = "Cozy Cocoa Echo", model = "EchoCocoa", feather = 150, pass = 2064569161 },
 	{ id = "bramble_acorn", skill = "bramble", name = "Acorn Bramble", model = "BrambleAcorn", feather = 150, pass = 2064942592 },
+	-- 4 Nov (Brent): the new characters' Thanksgiving skins - hidden until
+	-- their models are saved (CHARACTER_ASSETS) and passes made (pass = 0)
+	{ id = "holly_cranberry", skill = "holly", name = "Cranberry Spice Holly", model = "HollyCranberry", feather = 150, pass = 0, hidden = true },
+	{ id = "cloud_autumn", skill = "cloud", name = "Autumn Breeze Cloud", model = "CloudAutumn", feather = 150, pass = 0, hidden = true },
+	{ id = "clone_gala", skill = "clone", name = "Harvest Gala Clone", model = "CloneGala", feather = 150, pass = 0, hidden = true },
+	{ id = "harmony_pie", skill = "harmony", name = "Pumpkin Pie Harmony", model = "HarmonyPie", feather = 150, pass = 0, hidden = true },
 }
 -- every Thanksgiving skin's Game Pass price (Managed pricing off - PASSES.md);
 -- the Skins window's Robux button shows it (the Shop reads each pass's price)

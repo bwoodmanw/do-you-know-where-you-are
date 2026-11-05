@@ -77,6 +77,11 @@ JOBS = {
     "clone": "clone-toon.glb",
     "harmony": "harmony-toon.glb",
     "holly": "holly-toon.glb",  # 4 Nov: Holly (Christmas, free)
+    # Thanksgiving skins for the new characters (4 Nov)
+    "cranberry-holly": "cranberry-holly-toon.glb",
+    "autumn-cloud": "autumn-cloud-toon.glb",
+    "gala-clone": "gala-clone-toon.glb",
+    "pie-harmony": "pie-harmony-toon.glb",
 }
 TEXTURE = 1024  # one 1024 x 1024 picture: plenty for flat cartoon colors
 VERTICES = 4000  # about 8,000 triangles

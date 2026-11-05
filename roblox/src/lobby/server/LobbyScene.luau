@@ -1042,6 +1042,22 @@ function Scene.seasons()
 				gp.poke.ObjectText = xmas and "Giant bauble" or "Giant pumpkin"
 				gp.glow.Color = xmas and Color3.fromRGB(255, 90, 90) or Color3.fromRGB(255, 140, 40)
 			end
+			-- 4 Nov (Brent): the whole lawn under snow at Christmas (the lane
+			-- packed snow), back to grass and cobbles after
+			do
+				local xmas = want == "christmas"
+				for _, n in ipairs({ "Ground", "HouseYard" }) do
+					local g = workspace:FindFirstChild(n)
+					if g and g:IsA("BasePart") then
+						g.Material = xmas and Enum.Material.Snow or Enum.Material.Grass
+						g.Color = xmas and Color3.fromRGB(236, 242, 250) or Color3.fromRGB(46, 82, 40)
+					end
+				end
+				local lane = workspace:FindFirstChild("Lane")
+				if lane and lane:IsA("BasePart") then
+					lane.Color = xmas and Color3.fromRGB(196, 204, 216) or Color3.fromRGB(90, 84, 80)
+				end
+			end
 			if want ~= shown then
 				if folder then
 					folder:Destroy()
