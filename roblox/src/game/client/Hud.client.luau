@@ -321,7 +321,7 @@ local function jumpscare()
 		local f = os.clock() - t0
 		if scareFace then
 			-- rush in on the face
-			local d = scareFace.r * (3.3 - math.min(1, f * 2.5) * 1.2) -- 4 Nov (Brent: face cut off): ends a little farther (was 2.8)
+			local d = scareFace.r * (4.2 - math.min(1, f * 2.5) * 1.2) -- 4 Nov (Brent: face cut off, twice): ends farther (was 2.8, then 3.3)
 			local aim = (scareFace.face or scareFace.head.Position) - Vector3.new(0, scareFace.r * 0.1, 0)
 			scareCam.CFrame = CFrame.lookAt(aim + scareFace.dir * d + Vector3.new((math.random() - 0.5) * 0.15, 0, 0), aim)
 		end
@@ -400,8 +400,8 @@ local function hostCloseUp(intense)
 		end
 		-- rush in on the face, then hold it filling the screen, shaking
 		local e = 1 - (1 - math.min(1, f * 1.6)) ^ 3
-		local dist = r + 9.5 - e * 6.0 -- 4 Nov (Brent: face cut off): stops a little farther away (was e * 7.0, fov - e * 22)
-		cam.FieldOfView = fov - e * 17
+		local dist = r + 9.5 - e * 4.5 -- 4 Nov (Brent: face cut off, twice): stops farther away (was e * 7.0 / fov - e * 22, then 6.0 / 17)
+		cam.FieldOfView = fov - e * 12
 		local s = (intense and 0.3 or 0.1) * e
 		-- the face points the way the host walks (its root); a head part's own
 		-- direction can be backwards on an imported model
