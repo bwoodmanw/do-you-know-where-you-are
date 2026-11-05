@@ -952,13 +952,23 @@ QuickPlay.OnServerEvent:Connect(function(plr)
 		end
 	end
 	local data = Profile.get(plr)
+	-- 4 Nov (Brent): a random map of the ones open to you (unlocked, and the
+	-- running season's floors); one you haven't escaped yet is twice as
+	-- likely, so a solo player still moves on (escaping unlocks the next floor)
 	local pick = "partyhouse"
 	if data then
+		local open = Progress.openMaps(data.unlocked, Seasons.active() and Seasons.active().id)
+		local bag = {}
 		for _, m in ipairs(Progress.MAPS) do
-			if m.ready and data.unlocked and data.unlocked[m.id] and not (data.cleared and data.cleared[m.id]) then
-				pick = m.id
-				break
+			if m.ready and open[m.id] then
+				table.insert(bag, m.id)
+				if not (data.cleared and data.cleared[m.id]) then
+					table.insert(bag, m.id)
+				end
 			end
+		end
+		if #bag > 0 then
+			pick = bag[math.random(1, #bag)]
 		end
 	end
 	leave(plr)

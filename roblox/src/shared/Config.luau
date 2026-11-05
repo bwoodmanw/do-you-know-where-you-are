@@ -647,7 +647,7 @@ Config.STUDIO_MAP = "aquarium" -- partyhouse(_2, _3, _b = the secret Basement), 
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); nil = random
-Config.STUDIO_HOST = "robot" -- 4 Nov: Studio only, for the Robot test (nil = random); the live game ignores it
+Config.STUDIO_HOST = nil
 -- 4 Nov (Brent: the Robot got stuck in rooms): a host drawn shorter than the
 -- usual 12 studs (rooms are 14 tall), by its model name
 Config.HOST_HEIGHTS = { HostRobot = 11 }

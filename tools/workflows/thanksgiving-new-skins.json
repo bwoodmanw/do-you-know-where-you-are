@@ -1,0 +1,147 @@
+{
+  "name": "Thanksgiving new skins: Holly, Clone, Cloud and Harmony",
+  "created": "2026-11-04",
+  "generator": "built-in image_gen",
+  "reference_root": "art/model-input",
+  "output_root": "art/model-input",
+  "picture_standard": "This is a Thanksgiving outfit for a character in a kids' co-op escape game for ages 8 and up: friendly and cozy, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no plaid, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no feathers, no stalks, no straps hanging loose). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.",
+  "instructions": [
+    "Run all eight rows sequentially in listed order.",
+    "Attach only the listed reference; FRONT uses the original approved character, BACK uses the FRONT saved immediately before it.",
+    "Inspect each reference before generation. Inspect and save each generated result before advancing.",
+    "Every prompt includes the entire Picture Standard and the exact Picture row.",
+    "Create output folders as needed; do not overwrite existing artwork without explicit replacement authorization."
+  ],
+  "assets": [
+    {
+      "order": 1,
+      "picture": "FRONT view of Cranberry Spice Holly: her same long straight golden-blonde hair, but the peppermint hair bows become a small round cluster of three deep-red cranberries with one small orange-brown leaf on each side of her head; a cozy cranberry-red sweater with a round cream collar and a wide cinnamon-brown band across the chest; a small solid star-shaped brooch in warm nutmeg-brown at the collar; a cinnamon-brown skirt; cream tights; short ginger-orange boots",
+      "references": [
+        "holly\\front-toon.png"
+      ],
+      "file_name": "cranberry-holly\\front-toon.png",
+      "prompt": "Generate exactly ONE image of ONE character, FRONT VIEW ONLY. No turnaround sheet or extra views. The standard describes FRONT and BACK conditionally; generate only the view requested in this row. The sole attached image is the approved original character. Preserve identity, face, hair, skin tone and proportions; change only the specified outfit and accessories.\n\nThis is a Thanksgiving outfit for a character in a kids' co-op escape game for ages 8 and up: friendly and cozy, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no plaid, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no feathers, no stalks, no straps hanging loose). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Cranberry Spice Holly: her same long straight golden-blonde hair, but the peppermint hair bows become a small round cluster of three deep-red cranberries with one small orange-brown leaf on each side of her head; a cozy cranberry-red sweater with a round cream collar and a wide cinnamon-brown band across the chest; a small solid star-shaped brooch in warm nutmeg-brown at the collar; a cinnamon-brown skirt; cream tights; short ginger-orange boots",
+      "status": "generated",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a95f-227e-7861-9340-5cacc73dcd4d\\exec-7e959fe4-bdc3-4264-b850-92cadb7688b4.png",
+      "sha256": "b3d425f3c2722c36720f63280b1c164db106425f4234357288eccb68c278f59e"
+    },
+    {
+      "order": 2,
+      "picture": "BACK view of Cranberry Spice Holly, matching the reference exactly: the back of her long golden-blonde hair, the cranberry clusters peeking at both sides, the cranberry-red sweater with the cinnamon-brown band all the way round, the cinnamon-brown skirt, cream tights, ginger-orange boots",
+      "references": [
+        "cranberry-holly\\front-toon.png"
+      ],
+      "file_name": "cranberry-holly\\back-toon.png",
+      "prompt": "Generate exactly ONE image of ONE character, BACK VIEW ONLY. No turnaround sheet or extra views. The standard describes FRONT and BACK conditionally; generate only the view requested in this row. The sole attached image is the finished new outfit from the front. Turn that same character directly around, matching the pose, proportions, outfit and colors. No face visible from behind.\n\nThis is a Thanksgiving outfit for a character in a kids' co-op escape game for ages 8 and up: friendly and cozy, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no plaid, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no feathers, no stalks, no straps hanging loose). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Cranberry Spice Holly, matching the reference exactly: the back of her long golden-blonde hair, the cranberry clusters peeking at both sides, the cranberry-red sweater with the cinnamon-brown band all the way round, the cinnamon-brown skirt, cream tights, ginger-orange boots",
+      "status": "generated",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a95f-227e-7861-9340-5cacc73dcd4d\\exec-157cefb9-be16-4d07-9eb9-36b935f8755d.png",
+      "sha256": "356ce303cfa130424f0d660bf676496fc8c2cb55a462b06042dc1c73e68d6858"
+    },
+    {
+      "order": 3,
+      "picture": "FRONT view of Pumpkin Patch Clone: his same short curly black hair and his same round goggles, now with amber lenses; a zip-up jacket split down the middle in two solid colors - the left half pumpkin-orange, the right half leaf-green - with the zipper as one plain brown line; a plain cream T-shirt at the neck; his same chunky round wrist gadget, now brown with a plain dark screen; chestnut-brown jogger pants with NO pockets; plain cream sneakers with orange soles",
+      "references": [
+        "clone\\front-toon.png"
+      ],
+      "file_name": "pumpkin-clone\\front-toon.png",
+      "prompt": "Generate exactly ONE image of ONE character, FRONT VIEW ONLY. No turnaround sheet or extra views. The standard describes FRONT and BACK conditionally; generate only the view requested in this row. The sole attached image is the approved original character. Preserve identity, face, hair, skin tone and proportions; change only the specified outfit and accessories.\n\nThis is a Thanksgiving outfit for a character in a kids' co-op escape game for ages 8 and up: friendly and cozy, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no plaid, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no feathers, no stalks, no straps hanging loose). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Pumpkin Patch Clone: his same short curly black hair and his same round goggles, now with amber lenses; a zip-up jacket split down the middle in two solid colors - the left half pumpkin-orange, the right half leaf-green - with the zipper as one plain brown line; a plain cream T-shirt at the neck; his same chunky round wrist gadget, now brown with a plain dark screen; chestnut-brown jogger pants with NO pockets; plain cream sneakers with orange soles\n\nFor the jacket, left and right refer to the picture: pumpkin-orange on image LEFT, leaf-green on image RIGHT. This reverses in the back view.",
+      "status": "generated",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a95f-227e-7861-9340-5cacc73dcd4d\\exec-92d2ca71-615f-4633-8735-9b68e0fe9ec2.png",
+      "sha256": "4342a40730cf0d69b1d6a15a3abc5afac5c217670f58bfedbf724333b7de1b90"
+    },
+    {
+      "order": 4,
+      "picture": "BACK view of Pumpkin Patch Clone, matching the reference exactly: the back of his curly black hair with the goggles' amber lenses at the top of his head, the jacket split in two colors (seen from behind, the pumpkin-orange half is on the RIGHT of the picture and the leaf-green half on the LEFT), chestnut-brown joggers, cream sneakers with orange soles",
+      "references": [
+        "pumpkin-clone\\front-toon.png"
+      ],
+      "file_name": "pumpkin-clone\\back-toon.png",
+      "prompt": "Generate exactly ONE image of ONE character, BACK VIEW ONLY. No turnaround sheet or extra views. The standard describes FRONT and BACK conditionally; generate only the view requested in this row. The sole attached image is the finished new outfit from the front. Turn that same character directly around, matching the pose, proportions, outfit and colors. No face visible from behind.\n\nThis is a Thanksgiving outfit for a character in a kids' co-op escape game for ages 8 and up: friendly and cozy, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no plaid, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no feathers, no stalks, no straps hanging loose). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Pumpkin Patch Clone, matching the reference exactly: the back of his curly black hair with the goggles' amber lenses at the top of his head, the jacket split in two colors (seen from behind, the pumpkin-orange half is on the RIGHT of the picture and the leaf-green half on the LEFT), chestnut-brown joggers, cream sneakers with orange soles",
+      "status": "generated",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a95f-227e-7861-9340-5cacc73dcd4d\\exec-b1e0d518-891e-4af3-b735-757589c6bc3c.png",
+      "sha256": "297216df84d71fbcf5d50501d99008f3797b91bd385893d794a62f55a7078795"
+    },
+    {
+      "order": 5,
+      "picture": "FRONT view of Autumn Breeze Cloud: her same almost-white chin-length bob with a faint pale-blue tint, plus one small solid orange maple-leaf hair clip on one side; a rust-orange raincoat with the hood down and big round acorn-brown buttons, the same shape as her yellow one; a short cream scarf wrapped snugly round her neck (ends tucked in, nothing hanging); mustard-yellow leggings; chocolate-brown rain boots",
+      "references": [
+        "cloud\\front-toon.png"
+      ],
+      "file_name": "autumn-cloud\\front-toon.png",
+      "prompt": "Generate exactly ONE image of ONE character, FRONT VIEW ONLY. No turnaround sheet or extra views. The standard describes FRONT and BACK conditionally; generate only the view requested in this row. The sole attached image is the approved original character. Preserve identity, face, hair, skin tone and proportions; change only the specified outfit and accessories.\n\nThis is a Thanksgiving outfit for a character in a kids' co-op escape game for ages 8 and up: friendly and cozy, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no plaid, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no feathers, no stalks, no straps hanging loose). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Autumn Breeze Cloud: her same almost-white chin-length bob with a faint pale-blue tint, plus one small solid orange maple-leaf hair clip on one side; a rust-orange raincoat with the hood down and big round acorn-brown buttons, the same shape as her yellow one; a short cream scarf wrapped snugly round her neck (ends tucked in, nothing hanging); mustard-yellow leggings; chocolate-brown rain boots",
+      "status": "generated",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a95f-227e-7861-9340-5cacc73dcd4d\\exec-9a1215d8-8567-4b0b-86d7-cab6eb25e28c.png",
+      "sha256": "26cba54a7e4e0e8e94d66cbb3c276ec72ec261e5f6c6a4610e10c704332322ef"
+    },
+    {
+      "order": 6,
+      "picture": "BACK view of Autumn Breeze Cloud, matching the reference exactly: the back of her almost-white bob with the orange leaf clip at the side, the cream scarf at her neck, the back of the rust-orange raincoat, mustard-yellow leggings, chocolate-brown rain boots",
+      "references": [
+        "autumn-cloud\\front-toon.png"
+      ],
+      "file_name": "autumn-cloud\\back-toon.png",
+      "prompt": "Generate exactly ONE image of ONE character, BACK VIEW ONLY. No turnaround sheet or extra views. The standard describes FRONT and BACK conditionally; generate only the view requested in this row. The sole attached image is the finished new outfit from the front. Turn that same character directly around, matching the pose, proportions, outfit and colors. No face visible from behind.\n\nThis is a Thanksgiving outfit for a character in a kids' co-op escape game for ages 8 and up: friendly and cozy, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no plaid, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no feathers, no stalks, no straps hanging loose). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Autumn Breeze Cloud, matching the reference exactly: the back of her almost-white bob with the orange leaf clip at the side, the cream scarf at her neck, the back of the rust-orange raincoat, mustard-yellow leggings, chocolate-brown rain boots",
+      "status": "generated",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a95f-227e-7861-9340-5cacc73dcd4d\\exec-aed9e7ff-b736-4b06-b77f-3d4b4e7cb12f.png",
+      "sha256": "5a8d320bbd495480251500694f930e339ae7ec60b4c62e607259ee0eb07e25d5"
+    },
+    {
+      "order": 7,
+      "picture": "FRONT view of Harvest Song Harmony: her same long straight black hair with bangs, the music-note hair clips now solid golden-orange; a pumpkin-orange hoodie with the hood down and three soft wavy bands of warm brown across the chest (plain solid shapes, like a sound wave); her same small round gold music-box pendant; her piano-key wristband now in cream and brown; plain cream leggings; rust-red sneakers with cream soles. NO headphones",
+      "references": [
+        "harmony\\front-toon.png"
+      ],
+      "file_name": "harvest-harmony\\front-toon.png",
+      "prompt": "Generate exactly ONE image of ONE character, FRONT VIEW ONLY. No turnaround sheet or extra views. The standard describes FRONT and BACK conditionally; generate only the view requested in this row. The sole attached image is the approved original character. Preserve identity, face, hair, skin tone and proportions; change only the specified outfit and accessories.\n\nThis is a Thanksgiving outfit for a character in a kids' co-op escape game for ages 8 and up: friendly and cozy, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no plaid, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no feathers, no stalks, no straps hanging loose). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Harvest Song Harmony: her same long straight black hair with bangs, the music-note hair clips now solid golden-orange; a pumpkin-orange hoodie with the hood down and three soft wavy bands of warm brown across the chest (plain solid shapes, like a sound wave); her same small round gold music-box pendant; her piano-key wristband now in cream and brown; plain cream leggings; rust-red sneakers with cream soles. NO headphones",
+      "status": "generated",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a95f-227e-7861-9340-5cacc73dcd4d\\exec-fe401f11-480d-41b2-9d87-ebbea62d77c5.png",
+      "sha256": "b71fd8387cbe3c8f192a74f7d179fd79d0c5763986405bfd5657e29ffdcffcbb"
+    },
+    {
+      "order": 8,
+      "picture": "BACK view of Harvest Song Harmony, matching the reference exactly: the back of her long straight black hair, the golden-orange music-note clips peeking at the side, the back of the pumpkin-orange hoodie with the hood lying flat, cream leggings, rust-red sneakers with cream soles",
+      "references": [
+        "harvest-harmony\\front-toon.png"
+      ],
+      "file_name": "harvest-harmony\\back-toon.png",
+      "prompt": "Generate exactly ONE image of ONE character, BACK VIEW ONLY. No turnaround sheet or extra views. The standard describes FRONT and BACK conditionally; generate only the view requested in this row. The sole attached image is the finished new outfit from the front. Turn that same character directly around, matching the pose, proportions, outfit and colors. No face visible from behind.\n\nThis is a Thanksgiving outfit for a character in a kids' co-op escape game for ages 8 and up: friendly and cozy, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no stitching, no plaid, no dirt, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing. Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no feathers, no stalks, no straps hanging loose). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Harvest Song Harmony, matching the reference exactly: the back of her long straight black hair, the golden-orange music-note clips peeking at the side, the back of the pumpkin-orange hoodie with the hood lying flat, cream leggings, rust-red sneakers with cream soles",
+      "status": "generated",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a95f-227e-7861-9340-5cacc73dcd4d\\exec-3af13d2f-a4f6-41d8-aac9-2e850b3af25d.png",
+      "sha256": "2e669e0680e8463f7b38ed6d5b8e7cb35fdee4c7c0be6761e4fae8506a81db22"
+    }
+  ],
+  "status": "complete",
+  "verification": "All eight PNGs verified at 1024 x 1536; visually inspected for full-body single-view framing, character continuity, outfit details and matching front/back colors. Each back used only the preceding saved front."
+}

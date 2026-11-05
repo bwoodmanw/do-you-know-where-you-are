@@ -577,19 +577,8 @@ function Characters.host(name)
 	do
 		local hum = m:FindFirstChildOfClass("Humanoid")
 		local root = m.HumanoidRootPart
-		-- 4 Nov (Brent's photo: the Robot floating, stuck): measured from the
-		-- parts you can see (Avatar Setup's invisible helpers aren't the
-		-- floor), and now that the root is what collides it must end above
-		-- the feet - a root reaching below them stood the host on it, feet
-		-- in the air. Shrunk round its own middle (the joints don't move)
-		local vcf, vsize = ModelBounds(m)
-		local feet = vcf.Position.Y - vsize.Y / 2
-		local room = root.Position.Y - feet -- the middle of the root to the feet
-		if root.Size.Y / 2 > room - 0.5 then
-			local h = math.max(1, (room - 0.5) * 2)
-			root.Size = Vector3.new(math.min(root.Size.X, 3), h, math.min(root.Size.Z, 3))
-		end
-		local hip = (root.Position.Y - root.Size.Y / 2) - feet
+		local hcf, hsize = m:GetBoundingBox()
+		local hip = (root.Position.Y - root.Size.Y / 2) - (hcf.Position.Y - hsize.Y / 2)
 		if hum and hip > 0.1 then
 			hum.HipHeight = hip
 		end

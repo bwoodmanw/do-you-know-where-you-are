@@ -17,7 +17,7 @@ Table for each [Picture] and [file name] combination is below:
 [Picture] | [file name]
 [Sleigh Dash: a round golden jingle bell with a small red ribbon bow on top, tilted forward as if rushing ahead, with three orange speed streaks swooshing out behind it] | [skill-nutmeg.png]
 [Fog: a big puffy cloud, white with pale-blue shading, with soft curls of mist spilling out from underneath it] | [skill-cloud.png]
-[Peppermints: three round red-and-white swirl peppermint candies, one big in front and two smaller ones tucked behind it] | [skill-holly.png]
+[Peppermints: three red-and-white swirl peppermint candies, all the same size, lying in a slanted row from bottom-left to top-right and overlapping a little, the middle one in a clear cellophane wrapper twisted at both ends - not one big circle with two smaller circles on top] | [skill-holly.png]
 [Copycat: two matching simple person shapes standing side by side, the left one teal and the right one orange, with a curved two-way arrow looping over their heads between them] | [skill-clone.png]
 [Lullaby: two joined musical eighth notes in glossy purple, with a small golden crescent moon and a tiny twinkling star beside them, soft and sleepy] | [skill-harmony.png]
 ```
@@ -57,20 +57,26 @@ the shared Picture Standard with every generated icon.
 
 All five icons were generated with the built-in image tool, using the full
 Picture Standard and each Picture prompt without prompt changes or attached
-references. The selected generated sources were 1280 x 1280 and were
+references. The selected generated sources were 1254 x 1254 and were
 resampled to the requested 1024 x 1024 with alpha preserved.
 
 Saved in `art/ui-icons/`:
 
 - `skill-nutmeg.png`: golden jingle bell, red bow, three orange speed streaks.
 - `skill-cloud.png`: white/pale-blue cloud with curling mist below.
-- `skill-holly.png`: three peppermint candies, one large in front.
+- `skill-holly.png`: three equal-size peppermint candies in a diagonal row, with the middle candy wrapped.
 - `skill-clone.png`: matching teal/orange person shapes and two-way arrow.
 - `skill-harmony.png`: joined purple eighth notes, gold crescent and star.
 
 All five decode as RGBA PNGs with transparent background areas. Each was
 visually checked at full size and at 60 pixels against light and dark
 backgrounds. No Roblox upload or configuration change was performed.
+
+Holly's icon was regenerated with the revised prompt above: three equal-size
+candies overlapping slightly in a row from bottom-left to top-right, with
+only the middle candy in clear cellophane twisted at both ends. The updated
+transparent 1024 x 1024 PNG replaces `skill-holly.png`. The generation report
+records the revised prompt and source and retains the superseded record.
 
 ## Then
 

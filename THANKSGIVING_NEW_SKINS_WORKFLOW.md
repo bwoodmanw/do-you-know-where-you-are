@@ -17,7 +17,7 @@ id, Game Pass and pass picture -> Config.SKINS.
 
 ## Paste into ChatGPT
 
-Run the FRONT rows first: each BACK row attaches the front made just before it.
+Run all eight rows in table order, alternating FRONT then BACK for each character. Each BACK row attaches only the FRONT saved immediately before it.
 
 ```
 create new workflow to create images based on the [Picture Standard], [Reference] and [Picture]. For each picture, attach the [Reference] picture listed, then save to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\cranberry-holly\front-toon.png. The [Reference] is in "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[Reference]".
@@ -41,3 +41,37 @@ Table for each [Picture], [Reference] and [file name] combination is below:
    no look-alikes or logos, nothing thin sticking out), then make the 3D
    models and check them.
 2. The pass pictures and the Game Passes come after the models are approved.
+
+## Reusable generation workflow
+
+The ordered workflow is saved in `tools/workflows/thanksgiving-new-skins.json`.
+It preserves the supplied Picture Standard and each Picture row, with the
+complete final prompt and sole reference recorded for each output. Reference
+and output paths both resolve from `art/model-input`.
+
+| Order | Picture | Sole reference | Save to |
+|---|---|---|---|
+| 1 | Cranberry Spice Holly, front | `holly/front-toon.png` | `cranberry-holly/front-toon.png` |
+| 2 | Cranberry Spice Holly, back | `cranberry-holly/front-toon.png` | `cranberry-holly/back-toon.png` |
+| 3 | Pumpkin Patch Clone, front | `clone/front-toon.png` | `pumpkin-clone/front-toon.png` |
+| 4 | Pumpkin Patch Clone, back | `pumpkin-clone/front-toon.png` | `pumpkin-clone/back-toon.png` |
+| 5 | Autumn Breeze Cloud, front | `cloud/front-toon.png` | `autumn-cloud/front-toon.png` |
+| 6 | Autumn Breeze Cloud, back | `autumn-cloud/front-toon.png` | `autumn-cloud/back-toon.png` |
+| 7 | Harvest Song Harmony, front | `harmony/front-toon.png` | `harvest-harmony/front-toon.png` |
+| 8 | Harvest Song Harmony, back | `harvest-harmony/front-toon.png` | `harvest-harmony/back-toon.png` |
+
+Use the built-in image generator, one image per row, with an opaque light-gray
+background. Inspect and save the front before generating its back. Clone's
+front jacket is orange on the picture's left and green on its right; the back
+reverses those sides. Preserve existing artwork when rerunning: use versioned
+filenames unless replacement is explicitly requested. The manifest records
+completion and saved image metadata as generation proceeds.
+
+## Generated outputs (4 Nov 2026)
+
+All eight images in the table above are saved at their requested paths as
+1024 x 1536 PNGs, generated with the built-in image generator. Each back
+used the saved front immediately before it as its sole reference. The
+manifest contains the exact prompts, source output paths, dimensions and
+SHA-256 hashes. All PNG files were verified and the images visually reviewed
+for character continuity, outfit details, A-pose and matching pair colors.
