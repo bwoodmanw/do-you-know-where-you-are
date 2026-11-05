@@ -107,6 +107,13 @@ PROFILES = {
     # Jingle Bell Echo: the red goggle strap smeared wide through the brown
     # curls at the sides and back, with pale streaks from the white collar
     "jinglebell-echo": {"hair": brown_hair, "bad": lambda c: ((c[:, 0] > 120) & (c[:, 1] < 0.45 * c[:, 0]) & (c[:, 2] < 0.6 * c[:, 0])) | ((c.sum(axis=1) > 420) & (c[:, 2] > 0.75 * c[:, 0])), "head_bad": None, "top": False, "ends": False, "head": 0.22, "zcut": 0.55},
+    # Snowflake Nutmeg: her brown reindeer ears smeared down the sides of the
+    # white hood (the "hair" here is the hood; the ears stand up on top)
+    "snowflake-nutmeg": {"hair": lambda c: c.min(axis=1) > 200, "bad": lambda c: (c.sum(axis=1) < 600) & (c[:, 0] > c[:, 2] + 20), "head_bad": None, "top": False, "ends": False, "head": 0.25, "zcut": 0.55},
+    # Carol Singer Harmony: ghosts of her gold music-note clip and skin-brown
+    # patches in the back and sides of her black hair (her red beret stays:
+    # red has far less green)
+    "carol-harmony": {"hair": dark_hair, "bad": lambda c: yellowish(c) | ((c.sum(axis=1) >= 150) & (c[:, 0] > c[:, 2] + 15) & (c[:, 1] > 0.5 * c[:, 0])), "head_bad": None, "top": False, "ends": True, "head": 0.25, "zcut": 0.6},
     "autumn-cloud": {"hair": lambda c: (c.min(axis=1) > 165) & (c[:, 2] >= c[:, 0] - 12), "bad": orange, "head_bad": None, "top": True, "ends": False, "head": 0.25, "zcut": 0.85,
                      "pale": (0.13, lambda c: (c[:, 0] > 190) & (c[:, 2] < c[:, 0] - 25) & (c[:, 1] > 0.6 * c[:, 0]))},
 }

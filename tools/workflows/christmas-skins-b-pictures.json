@@ -1,0 +1,297 @@
+{
+  "name": "Christmas skins picture workflow B: Snowflake Nutmeg, First Snow Cloud, Sugar Plum Holly, Nutcracker Clone and Carol Singer Harmony",
+  "created": "2026-11-05",
+  "reference_root": "art/model-input",
+  "output_root": "art/model-input",
+  "generation_mode": "built-in image_gen",
+  "picture_standard": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.",
+  "instructions": [
+    "Process all ten assets strictly in table order. Include the complete picture_standard verbatim, two newlines, then the row picture verbatim in every prompt.",
+    "Resolve references beneath reference_root; inspect and attach only the listed reference for each row.",
+    "Save and verify each FRONT at its file_name before generating the next BACK; attach that newly saved FRONT as the BACK reference.",
+    "Create missing output folders; preserve existing artwork unless replacement is explicitly requested.",
+    "Inspect likeness, full-body A-pose, arm gaps, outfit details, colors, smooth surfaces, background, no text/logos, and front/back consistency.",
+    "Record generated source, saved path, dimensions, SHA-256 and visual validation for each image."
+  ],
+  "assets": [
+    {
+      "order": 1,
+      "picture": "FRONT view of Snowflake Nutmeg: the same reindeer girl with her same face, brown braids, and her hoodie's same antlers and ears, but the reindeer hoodie is now snowy white with a pale ice-blue belly patch; her bell is now silver; an ice-blue scarf wrapped snugly at her neck (ends tucked in); pale ice-blue mittens; light-gray leggings; white boots with ice-blue tops",
+      "references": [
+        "nutmeg\\front-toon.png"
+      ],
+      "file_name": "snowflake-nutmeg\\front-toon.png",
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Snowflake Nutmeg: the same reindeer girl with her same face, brown braids, and her hoodie's same antlers and ears, but the reindeer hoodie is now snowy white with a pale ice-blue belly patch; her bell is now silver; an ice-blue scarf wrapped snugly at her neck (ends tucked in); pale ice-blue mittens; light-gray leggings; white boots with ice-blue tops",
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad3c-408d-7292-9ead-c03e62eb0d66\\exec-c3792652-48e0-4c62-bf5a-bc4dd7449974.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\snowflake-nutmeg\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "ef3aabaaf93473ea88bdc6adaff466bd68cec203c9860b97477b7a2f261147e4",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\nutmeg\\front-toon.png"
+      ],
+      "validation": "Inspected: Nutmeg likeness, brown braids, original antlers and ears, white hoodie with ice-blue belly, silver bell, tucked blue scarf, blue mittens, gray leggings and white boots with blue tops. Full-body A-pose and arm gaps. Soft 3D form lighting remains visible."
+    },
+    {
+      "order": 2,
+      "picture": "BACK view of Snowflake Nutmeg, matching the reference exactly: the back of the snowy-white reindeer hood with its antlers and ears, her brown braids, the ice-blue scarf, the back of the white hoodie, ice-blue mittens, light-gray leggings, white boots with ice-blue tops",
+      "references": [
+        "snowflake-nutmeg\\front-toon.png"
+      ],
+      "file_name": "snowflake-nutmeg\\back-toon.png",
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Snowflake Nutmeg, matching the reference exactly: the back of the snowy-white reindeer hood with its antlers and ears, her brown braids, the ice-blue scarf, the back of the white hoodie, ice-blue mittens, light-gray leggings, white boots with ice-blue tops",
+      "status": "completed",
+      "depends_on": 1,
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad3c-408d-7292-9ead-c03e62eb0d66\\exec-ac1e6cfe-d291-4124-9ac2-2a81eb1ecb23.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\snowflake-nutmeg\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "f6b83a0d286046de0a2c429382189a07f0dbf2cf162a70dcfcbcb8ce47a24ad4",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\snowflake-nutmeg\\front-toon.png"
+      ],
+      "validation": "Inspected: direct rear A-pose, white reindeer hood with matching ears and antlers, brown braids, tucked ice-blue scarf and mittens, gray leggings, white boots with blue tops. Matches saved front colors and proportions; soft 3D lighting remains visible.",
+      "reference_front_sha256": "ef3aabaaf93473ea88bdc6adaff466bd68cec203c9860b97477b7a2f261147e4"
+    },
+    {
+      "order": 3,
+      "picture": "FRONT view of First Snow Cloud: her same almost-white chin-length bob with its faint pale-blue tint, plus a round pale-blue pom-pom beanie on top; a puffy ice-blue snow jacket (a clearly stronger blue than her hair) with the hood down and big round white buttons, the same shape as her yellow raincoat; pale-blue mittens; white snow pants; chunky silver-blue snow boots",
+      "references": [
+        "cloud\\front-toon.png"
+      ],
+      "file_name": "snow-cloud\\front-toon.png",
+      "prompt": "Generate exactly ONE image containing ONE character, FRONT VIEW ONLY. This is only a front-view outfit image. The standard's BACK-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.\n\nThis is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of First Snow Cloud: her same almost-white chin-length bob with its faint pale-blue tint, plus a round pale-blue pom-pom beanie on top; a puffy ice-blue snow jacket (a clearly stronger blue than her hair) with the hood down and big round white buttons, the same shape as her yellow raincoat; pale-blue mittens; white snow pants; chunky silver-blue snow boots\n\nOutfit clarification: the new snow outfit has NO backpack and NO shoulder straps. Remove the original white backpack straps and buckles completely; the blue jacket is unobstructed except for its specified round white buttons. Keep her face, hair, proportions, pose and the specified outfit unchanged.",
+      "status": "completed",
+      "discarded_attempts": [
+        {
+          "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad3c-408d-7292-9ead-c03e62eb0d66\\exec-ae26fec1-2b6b-42c5-b815-993b4a93e0bb.png",
+          "reason": "Inherited backpack shoulder straps that do not belong to the requested snow outfit."
+        },
+        {
+          "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad3c-408d-7292-9ead-c03e62eb0d66\\exec-1598a64f-c3c0-44d8-8e18-e7432697a72b.png",
+          "reason": "Generated a two-view sheet instead of one front image."
+        }
+      ],
+      "prompt_clarification": "Outfit clarification: the new snow outfit has NO backpack and NO shoulder straps. Remove the original white backpack straps and buckles completely; the blue jacket is unobstructed except for its specified round white buttons. Keep her face, hair, proportions, pose and the specified outfit unchanged.",
+      "view_instruction": "Generate exactly ONE image containing ONE character, FRONT VIEW ONLY. This is only a front-view outfit image. The standard's BACK-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad3c-408d-7292-9ead-c03e62eb0d66\\exec-b992c400-55c9-454a-afb5-7be24e36ff19.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\snow-cloud\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "ac3bc82e1b1cc239d02a405a32faa117dd338c89f3353b2b1140f5e437396a7c",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\cloud\\front-toon.png"
+      ],
+      "validation": "Inspected: same Cloud identity, blue eyes and almost-white bob, smooth pale-blue pom-pom beanie, stronger blue coat in raincoat silhouette with round white buttons and hood down, pale-blue mittens, white pants, silver-blue boots. No backpack straps; one full-body front A-pose. Soft 3D lighting remains visible."
+    },
+    {
+      "order": 4,
+      "picture": "BACK view of First Snow Cloud, matching the reference exactly: the back of her almost-white bob under the pale-blue pom-pom beanie, the back of the ice-blue snow jacket with the hood lying flat, pale-blue mittens, white snow pants, silver-blue snow boots",
+      "references": [
+        "snow-cloud\\front-toon.png"
+      ],
+      "file_name": "snow-cloud\\back-toon.png",
+      "prompt": "Generate exactly ONE image containing ONE character, BACK VIEW ONLY. This is only a back-view outfit image. The standard's FRONT-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.\n\nThis is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of First Snow Cloud, matching the reference exactly: the back of her almost-white bob under the pale-blue pom-pom beanie, the back of the ice-blue snow jacket with the hood lying flat, pale-blue mittens, white snow pants, silver-blue snow boots",
+      "status": "completed",
+      "depends_on": 3,
+      "discarded_attempts": [
+        {
+          "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad3c-408d-7292-9ead-c03e62eb0d66\\exec-16e904f4-486e-4898-ba63-e4d09287a9af.png",
+          "reason": "Regenerate after correcting the front to remove inherited backpack straps."
+        }
+      ],
+      "view_instruction": "Generate exactly ONE image containing ONE character, BACK VIEW ONLY. This is only a back-view outfit image. The standard's FRONT-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad3c-408d-7292-9ead-c03e62eb0d66\\exec-581b2eac-51c9-4a58-adc2-9fd0b022386d.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\snow-cloud\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "3e4fbcd9055da01025e95b4b3543e7529287a0628d660c0690510dd7ad63c404",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\snow-cloud\\front-toon.png"
+      ],
+      "validation": "Recovered and inspected the previously generated rear: matching Cloud bob, beanie, blue coat and lowered hood, mittens, white pants and silver-blue boots. Full-body rear A-pose with arm gaps; no backpack straps. Soft form lighting remains visible.",
+      "reference_front_sha256": "ac3bc82e1b1cc239d02a405a32faa117dd338c89f3353b2b1140f5e437396a7c"
+    },
+    {
+      "order": 5,
+      "picture": "FRONT view of Sugar Plum Holly: her same long straight golden-blonde hair, but her peppermint hair bows become two round plum-purple bows; a plum-purple party dress with a short puffy skirt (one solid shape, not see-through, no net layers) and a wide pink sash at the waist; a small solid pink star-shaped clip at the collar; pink tights; plum-purple shoes",
+      "references": [
+        "holly\\front-toon.png"
+      ],
+      "file_name": "sugarplum-holly\\front-toon.png",
+      "prompt": "Generate exactly ONE image containing ONE character, FRONT VIEW ONLY. This is only a front-view outfit image. The standard's BACK-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.\n\nThis is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Sugar Plum Holly: her same long straight golden-blonde hair, but her peppermint hair bows become two round plum-purple bows; a plum-purple party dress with a short puffy skirt (one solid shape, not see-through, no net layers) and a wide pink sash at the waist; a small solid pink star-shaped clip at the collar; pink tights; plum-purple shoes",
+      "status": "completed",
+      "view_instruction": "Generate exactly ONE image containing ONE character, FRONT VIEW ONLY. This is only a front-view outfit image. The standard's BACK-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad49-0658-7483-b66e-214ca3c73292\\exec-1ae1532c-d0d9-41c4-b544-a59a32c15193.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sugarplum-holly\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "4335aed8be9b2152e8c8a834e31ef76f8ea494822201b0fa1d7d99b3f07a6fa5",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\holly\\front-toon.png"
+      ],
+      "validation": "Inspected: Holly face, green eyes, loose golden hair preserved; plum bows and smooth opaque puffy dress, pink sash and star, pink tights and plum shoes. Single full-body front A-pose, open hands and arm gaps, no text or logos. Soft 3D form lighting remains visible."
+    },
+    {
+      "order": 6,
+      "picture": "BACK view of Sugar Plum Holly, matching the reference exactly: the back of her long golden-blonde hair with the plum-purple bows at both sides, the back of the plum-purple dress with the pink sash tied in a small flat bow, pink tights, plum-purple shoes",
+      "references": [
+        "sugarplum-holly\\front-toon.png"
+      ],
+      "file_name": "sugarplum-holly\\back-toon.png",
+      "prompt": "Generate exactly ONE image containing ONE character, BACK VIEW ONLY. This is only a back-view outfit image. The standard's FRONT-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.\n\nThis is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Sugar Plum Holly, matching the reference exactly: the back of her long golden-blonde hair with the plum-purple bows at both sides, the back of the plum-purple dress with the pink sash tied in a small flat bow, pink tights, plum-purple shoes",
+      "status": "completed",
+      "depends_on": 5,
+      "view_instruction": "Generate exactly ONE image containing ONE character, BACK VIEW ONLY. This is only a back-view outfit image. The standard's FRONT-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad49-0658-7483-b66e-214ca3c73292\\exec-f4716b9f-e15b-43a0-a0c8-0dd5854ab93a.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sugarplum-holly\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "d78716b6233cc204a819aa0a26b0ee0a7eafdcf61c4968735da34ad449580984",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sugarplum-holly\\front-toon.png"
+      ],
+      "validation": "Inspected: direct rear, matching long blonde hair with plum bows, plum dress and pink sash tied in compact bow, pink tights and plum shoes. Matching proportions and A-pose, arm gaps; no text or logos. Soft form lighting remains visible.",
+      "reference_front_sha256": "4335aed8be9b2152e8c8a834e31ef76f8ea494822201b0fa1d7d99b3f07a6fa5"
+    },
+    {
+      "order": 7,
+      "picture": "FRONT view of Nutcracker Clone: his same short curly black hair and his same round goggles pushed up on his forehead, now with gold rims; a smart toy-soldier jacket split down the middle - the left half bright red, the right half royal blue - with a row of round gold buttons and small flat gold shoulder pads close to the shoulders; a white belt; his same chunky round wrist gadget, now gold with a plain dark screen; black trousers with NO pockets; shiny black boots",
+      "references": [
+        "clone\\front-toon.png"
+      ],
+      "file_name": "nutcracker-clone\\front-toon.png",
+      "prompt": "Generate exactly ONE image containing ONE character, FRONT VIEW ONLY. This is only a front-view outfit image. The standard's BACK-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.\n\nThis is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Nutcracker Clone: his same short curly black hair and his same round goggles pushed up on his forehead, now with gold rims; a smart toy-soldier jacket split down the middle - the left half bright red, the right half royal blue - with a row of round gold buttons and small flat gold shoulder pads close to the shoulders; a white belt; his same chunky round wrist gadget, now gold with a plain dark screen; black trousers with NO pockets; shiny black boots\n\nButton placement clarification: exactly ONE straight vertical column of round gold buttons centered along the jacket's middle opening. No double-breasted layout and no two columns of buttons. Front image left half red, right half royal blue.",
+      "status": "completed",
+      "view_instruction": "Generate exactly ONE image containing ONE character, FRONT VIEW ONLY. This is only a front-view outfit image. The standard's BACK-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad49-0658-7483-b66e-214ca3c73292\\exec-4d6c1d4c-c0b6-4185-90ca-01dc87905369.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\nutcracker-clone\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "820d84aed2d1b7bfaf2e95db9909bf66c6616152fbc5d91b1cd9e5ea5d31bd38",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\clone\\front-toon.png"
+      ],
+      "validation": "Inspected: Clone identity, gold-rimmed goggles, gold wrist gadget with dark screen, red picture-left and royal-blue picture-right jacket, one central column of gold buttons, compact gold shoulder pads, white belt, pocketless black trousers and black boots. Full-body A-pose with arm gaps, no text or logos. Soft form lighting remains visible.",
+      "discarded_attempts": [
+        {
+          "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad49-0658-7483-b66e-214ca3c73292\\exec-ce95e702-5616-4fdc-9b8c-6cadf4af109d.png",
+          "sha256": "2fbe2ca891b0fba90c922f468ba31756e63ae2c3b5f7d7ae75743e493d4d5aad",
+          "reason": "Two button columns instead of one central vertical row."
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "picture": "BACK view of Nutcracker Clone, matching the reference exactly: the back of his curly black hair with the gold-rimmed goggles, the back of the toy-soldier jacket (seen from behind, the red half is on the RIGHT of the picture and the royal-blue half on the LEFT), gold shoulder pads, white belt, black trousers, black boots",
+      "references": [
+        "nutcracker-clone\\front-toon.png"
+      ],
+      "file_name": "nutcracker-clone\\back-toon.png",
+      "prompt": "Generate exactly ONE image containing ONE character, BACK VIEW ONLY. This is only a back-view outfit image. The standard's FRONT-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.\n\nThis is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Nutcracker Clone, matching the reference exactly: the back of his curly black hair with the gold-rimmed goggles, the back of the toy-soldier jacket (seen from behind, the red half is on the RIGHT of the picture and the royal-blue half on the LEFT), gold shoulder pads, white belt, black trousers, black boots\n\nRear-view construction clarification: the goggles remain on his FRONT forehead as shown in the attached front. From directly behind, show only the simple smooth gold goggle strap around the sides/back of his curly hair. NO lenses, NO round goggle eyepieces and NO face visible on the back of his head. Rear jacket blue on picture LEFT and red on picture RIGHT. Keep the gold wrist gadget on picture LEFT in this rear view.",
+      "status": "completed",
+      "depends_on": 7,
+      "view_instruction": "Generate exactly ONE image containing ONE character, BACK VIEW ONLY. This is only a back-view outfit image. The standard's FRONT-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad49-0658-7483-b66e-214ca3c73292\\exec-3a16a321-8555-4f63-a378-9bacd309e6e1.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\nutcracker-clone\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "eb817ab930d326d2e9d93a8ea2449c125da244326dac2846b9193a591001bce1",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\nutcracker-clone\\front-toon.png"
+      ],
+      "validation": "Inspected: direct rear, curly black hair with plain gold goggle strap and no rear lenses; jacket blue on picture left and red on picture right, gold shoulder pads, white belt, gold wrist gadget correctly reversed to picture left, black trousers and boots. Matching A-pose, arm gaps and colors; soft form lighting remains visible.",
+      "reference_front_sha256": "820d84aed2d1b7bfaf2e95db9909bf66c6616152fbc5d91b1cd9e5ea5d31bd38",
+      "discarded_attempts": [
+        {
+          "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad49-0658-7483-b66e-214ca3c73292\\exec-8c2d4ca2-a8ef-4b72-b099-8a3167d4e9bb.png",
+          "sha256": "f622a6cbaadbc65480645c9f86fc92dbfa93fcec68ec11fc2b8f6dc2a50d37ff",
+          "reason": "Goggle lenses incorrectly appeared on the back of his head."
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "picture": "FRONT view of Carol Singer Harmony: her same long straight black hair with bangs, the music-note hair clips now solid gold; a small round red beret; a knee-length deep-green winter coat with a smooth solid white collar, cuffs and hem and round gold buttons; a short red scarf wrapped snugly at her neck (ends tucked in); her same small round gold music-box pendant; plain white tights; red boots. NO headphones, NO earmuffs",
+      "references": [
+        "harmony\\front-toon.png"
+      ],
+      "file_name": "carol-harmony\\front-toon.png",
+      "prompt": "Generate exactly ONE image containing ONE character, FRONT VIEW ONLY. This is only a front-view outfit image. The standard's BACK-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.\n\nThis is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Carol Singer Harmony: her same long straight black hair with bangs, the music-note hair clips now solid gold; a small round red beret; a knee-length deep-green winter coat with a smooth solid white collar, cuffs and hem and round gold buttons; a short red scarf wrapped snugly at her neck (ends tucked in); her same small round gold music-box pendant; plain white tights; red boots. NO headphones, NO earmuffs",
+      "status": "completed",
+      "view_instruction": "Generate exactly ONE image containing ONE character, FRONT VIEW ONLY. This is only a front-view outfit image. The standard's BACK-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad49-0658-7483-b66e-214ca3c73292\\exec-b4fbae14-7644-4828-a00e-fb1c93b10ff4.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\carol-harmony\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "f338bc47414555b8741940e6e47f61e9e998092402091a439b74eaaa1bc4e152",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\harmony\\front-toon.png"
+      ],
+      "validation": "Inspected: Harmony face, black hair, bangs, brown eyes and gold music-note clips preserved; red beret, deep-green coat with smooth white collar cuffs and hem, gold buttons, snug red scarf, same music-box pendant, white tights and plain red boots. No headphones or earmuffs. Full-body A-pose and clear arm gaps; soft 3D form lighting remains visible."
+    },
+    {
+      "order": 10,
+      "picture": "BACK view of Carol Singer Harmony, matching the reference exactly: the back of her long straight black hair under the red beret, the gold note clips at the side, the red scarf, the back of the deep-green coat with its white collar and hem, white tights, red boots",
+      "references": [
+        "carol-harmony\\front-toon.png"
+      ],
+      "file_name": "carol-harmony\\back-toon.png",
+      "prompt": "Generate exactly ONE image containing ONE character, BACK VIEW ONLY. This is only a back-view outfit image. The standard's FRONT-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.\n\nThis is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Carol Singer Harmony, matching the reference exactly: the back of her long straight black hair under the red beret, the gold note clips at the side, the red scarf, the back of the deep-green coat with its white collar and hem, white tights, red boots\n\nRear-view construction clarification: her long straight black hair falls naturally down her back OVER the rear of the collar and scarf, ending at the same length as the front reference. The scarf encircles her neck underneath the hair; do not place a red scarf or a white front-style split collar on top of the middle of her hanging hair. Small scarf/collar edges may show at the sides of the neck under her hair. Show one continuous plain coat back, no front buttons or front pockets on the back. Preserve the exact beret tilt with sides reversed for a rear view, and put the gold clips on picture left.",
+      "status": "completed",
+      "depends_on": 9,
+      "view_instruction": "Generate exactly ONE image containing ONE character, BACK VIEW ONLY. This is only a back-view outfit image. The standard's FRONT-view wording is conditional and does not request another view. No turnaround sheet, no second figure, no multiple views.",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad49-0658-7483-b66e-214ca3c73292\\exec-22cb0d6a-c2d0-4200-9cdd-6120e79af115.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\carol-harmony\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "33ecfc2edc00be1308468184e01fdb739d6a45481ce369fce061c47eecbfffd0",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\carol-harmony\\front-toon.png"
+      ],
+      "validation": "Inspected: direct rear, red beret tilted consistently, gold clips on picture left, long straight black hair naturally over rear collar and scarf, continuous deep-green coat back with white cuffs and hem, white tights and red boots. Full-body A-pose with clear arm gaps, no headphones or earmuffs. Soft form lighting remains visible.",
+      "reference_front_sha256": "f338bc47414555b8741940e6e47f61e9e998092402091a439b74eaaa1bc4e152",
+      "discarded_attempts": [
+        {
+          "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad49-0658-7483-b66e-214ca3c73292\\exec-cb91bcae-30f4-4a07-951c-a0e5b058f7dc.png",
+          "sha256": "cce8e6dbef78d9e59f41bef061ae480e7d9410865137a8e7ba2942fe84a5ec49",
+          "reason": "Scarf and split front-style collar incorrectly overlaid the hanging rear hair."
+        }
+      ]
+    }
+  ],
+  "status": "completed",
+  "completed": "2026-11-05",
+  "verification": {
+    "images": 10,
+    "front_back_dependencies": 5,
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "request_rows_and_standard_match": true,
+    "file_hashes_verified": true,
+    "notes": "Soft 3D form lighting and slight background tonal variation remain visible; surfaces are smooth, without fabric grain or glitter. Clone buttons and rear goggle construction corrected; Harmony rear hair layering corrected."
+  }
+}

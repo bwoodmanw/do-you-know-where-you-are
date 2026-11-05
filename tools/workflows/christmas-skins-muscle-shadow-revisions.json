@@ -1,0 +1,118 @@
+{
+  "name": "Christmas skins revisions: Muscle winter hat and festive Silent Night Shadow",
+  "reference_root": "art/model-input",
+  "output_root": "art/model-input",
+  "generation_mode": "built-in image_gen",
+  "picture_standard": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.",
+  "path_normalization": "Pasted form-feed and backspace path characters resolved to backslash + front/back using existing reference names.",
+  "instructions": [
+    "Generate four rows strictly in order, with the complete standard and row picture in every prompt.",
+    "Inspect and attach each listed reference; save and verify each front before generating its matching back from that saved front.",
+    "Use exact destinations and create missing directories. Current prior versions are preserved as v1-nohat for Muscle and v1-plain for Shadow.",
+    "Inspect likeness, A-pose, smooth surfaces, requested outfit and accessories, and front/back consistency. Record source, saved path, dimensions, SHA-256 and visual checks."
+  ],
+  "assets": [
+    {
+      "order": 1,
+      "picture": "FRONT view of Holiday Sweater Muscle, exactly the same boy in exactly the same outfit as the attached picture (red holiday sweater with the green band and white zigzags, green-and-white wristbands, dark-green shorts, white socks with red tops, red sneakers), with ONE change: he now wears a snug red winter knit hat (smooth, no knit texture) pulled down over the top of his spiky brown hair, with a wide white folded cuff around the bottom and one big round white pom-pom on top. Some spiky brown hair shows below the cuff at the sides and over his forehead. No headband now",
+      "references": [
+        "sweater-muscle\\front-toon-v1-nohat.png"
+      ],
+      "file_name": "sweater-muscle\\front-toon.png",
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Holiday Sweater Muscle, exactly the same boy in exactly the same outfit as the attached picture (red holiday sweater with the green band and white zigzags, green-and-white wristbands, dark-green shorts, white socks with red tops, red sneakers), with ONE change: he now wears a snug red winter knit hat (smooth, no knit texture) pulled down over the top of his spiky brown hair, with a wide white folded cuff around the bottom and one big round white pom-pom on top. Some spiky brown hair shows below the cuff at the sides and over his forehead. No headband now\n\nGenerate only ONE FRONT view of ONE character in this image, full body and centered. No second figure, no turnaround sheet and no split panels. The other view instructions in the standard apply only to other rows.",
+      "prompt_clarification": "Generate only ONE FRONT view of ONE character in this image, full body and centered. No second figure, no turnaround sheet and no split panels. The other view instructions in the standard apply only to other rows.",
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-405a1688-c6a9-4569-af00-2eba82c62107.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sweater-muscle\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "7f181ff4d299d6d0bd1576792f74f8d59be62b00c5e9d734ac78c0751d9786c5",
+      "validation": "Inspected: same Muscle likeness and outfit; snug smooth red winter hat with wide white cuff and big white pom-pom, brown hair showing at forehead/sides, no headband. Full-body A-pose. Fine sock ribbing inherited from reference remains.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sweater-muscle\\front-toon-v1-nohat.png"
+      ],
+      "reference_sha256": [
+        "4d043ec542c0a7c4af5c24237019d112150528abc2e75ae63511d9a0ed8ac9b9"
+      ]
+    },
+    {
+      "order": 2,
+      "picture": "BACK view of Holiday Sweater Muscle, matching the reference exactly: the back of the snug red winter hat with its white cuff and the white pom-pom on top, spiky brown hair below the cuff, the back of the red sweater with the green band and white zigzags going all the way round, green-and-white wristbands, dark-green shorts, white socks with red tops, red sneakers",
+      "references": [
+        "sweater-muscle\\front-toon.png"
+      ],
+      "file_name": "sweater-muscle\\back-toon.png",
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Holiday Sweater Muscle, matching the reference exactly: the back of the snug red winter hat with its white cuff and the white pom-pom on top, spiky brown hair below the cuff, the back of the red sweater with the green band and white zigzags going all the way round, green-and-white wristbands, dark-green shorts, white socks with red tops, red sneakers\n\nGenerate only ONE BACK view of ONE character in this image, full body and centered. No second figure, no turnaround sheet and no split panels. The other view instructions in the standard apply only to other rows.",
+      "prompt_clarification": "Generate only ONE BACK view of ONE character in this image, full body and centered. No second figure, no turnaround sheet and no split panels. The other view instructions in the standard apply only to other rows.",
+      "status": "completed",
+      "depends_on": 1,
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad00-ad0d-7173-8e98-730d4fb34720\\exec-479acc7a-0c55-4985-94a2-a24fa0bfd678.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sweater-muscle\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "7ea945271c8667b7c9f7efef017912bd7d910e8d09dbbc90a58ba1439bc16080",
+      "validation": "Inspected: direct rear A-pose; matching snug red hat, wide white cuff/pom-pom, brown hair below cuff, sweater band/zigzag, wristbands, green shorts, white socks/red tops and red-white sneakers.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\sweater-muscle\\front-toon.png"
+      ],
+      "reference_sha256": [
+        "7f181ff4d299d6d0bd1576792f74f8d59be62b00c5e9d734ac78c0751d9786c5"
+      ]
+    },
+    {
+      "order": 3,
+      "picture": "FRONT view of Silent Night Shadow, a cozy Christmas-night ninja: his same black hair, purple eyes and face; his face mask now deep red; a deep red hood up over his head with a wide smooth white band round the edge and a round white pom-pom on its tip, like a Christmas stocking cap; a midnight-navy hoodie scattered with big simple solid white snowflake shapes and small solid gold stars, like a starry Christmas night sky; a snug forest-green scarf wrapped close around his neck (no loose ends); forest-green fingerless gloves; a gold belt with a small round gold bell at the buckle; midnight-navy jogger pants with a few small white snowflakes near the bottom, NO pockets; plain deep red sneakers with white soles",
+      "references": [
+        "shadow\\front-toon.png"
+      ],
+      "file_name": "silentnight-shadow\\front-toon.png",
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nFRONT view of Silent Night Shadow, a cozy Christmas-night ninja: his same black hair, purple eyes and face; his face mask now deep red; a deep red hood up over his head with a wide smooth white band round the edge and a round white pom-pom on its tip, like a Christmas stocking cap; a midnight-navy hoodie scattered with big simple solid white snowflake shapes and small solid gold stars, like a starry Christmas night sky; a snug forest-green scarf wrapped close around his neck (no loose ends); forest-green fingerless gloves; a gold belt with a small round gold bell at the buckle; midnight-navy jogger pants with a few small white snowflakes near the bottom, NO pockets; plain deep red sneakers with white soles\n\nGenerate only ONE FRONT view of ONE character in this image, full body and centered. No second figure, no turnaround sheet and no split panels. The other view instructions in the standard apply only to other rows. The requested snowflakes and stars are simple solid costume shapes, as explicitly specified in this row.",
+      "prompt_clarification": "Generate only ONE FRONT view of ONE character in this image, full body and centered. No second figure, no turnaround sheet and no split panels. The other view instructions in the standard apply only to other rows. The requested snowflakes and stars are simple solid costume shapes, as explicitly specified in this row.",
+      "status": "completed",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad48-d598-75c2-aa6e-90389f3e7a47\\exec-4bad3233-7a5a-4786-8e3e-432be6785dda.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\silentnight-shadow\\front-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "82c60c02729fee40bb5cf96ef490807d2f6b5ffa46c4b8c92282ca72ad122758",
+      "validation": "Inspected: same black hair, purple eyes, skin tone and proportions with friendly eyes; deep-red stocking hood and mask, white trim/pom-pom, snug green scarf, green fingerless gloves, navy snowflake/star hoodie and pocket-free joggers, gold bell belt, red sneakers with white soles. Full-body front A-pose and smooth solid-color surfaces.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\shadow\\front-toon.png"
+      ],
+      "reference_sha256": [
+        "9b8865a35ac10bf99dbeb89e41425b27a74666320971fb33ee38b6a5cbc60f6e"
+      ]
+    },
+    {
+      "order": 4,
+      "picture": "BACK view of Silent Night Shadow, matching the reference exactly: the back of the deep red hood with its white edge band and white pom-pom, the green scarf around his neck, the back of the midnight-navy hoodie with the same big white snowflakes and small gold stars, the gold belt, green fingerless gloves, navy joggers with small white snowflakes near the bottom, deep red sneakers with white soles",
+      "references": [
+        "silentnight-shadow\\front-toon.png"
+      ],
+      "file_name": "silentnight-shadow\\back-toon.png",
+      "prompt": "This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.\n\nBACK view of Silent Night Shadow, matching the reference exactly: the back of the deep red hood with its white edge band and white pom-pom, the green scarf around his neck, the back of the midnight-navy hoodie with the same big white snowflakes and small gold stars, the gold belt, green fingerless gloves, navy joggers with small white snowflakes near the bottom, deep red sneakers with white soles\n\nGenerate only ONE BACK view of ONE character in this image, full body and centered. No second figure, no turnaround sheet and no split panels. The other view instructions in the standard apply only to other rows.",
+      "prompt_clarification": "Generate only ONE BACK view of ONE character in this image, full body and centered. No second figure, no turnaround sheet and no split panels. The other view instructions in the standard apply only to other rows.",
+      "status": "completed",
+      "depends_on": 3,
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ad48-d598-75c2-aa6e-90389f3e7a47\\exec-fed29cbc-6605-42cd-8b09-a520e393b68e.png",
+      "saved_path": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\silentnight-shadow\\back-toon.png",
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "sha256": "4e3712f862914969ed9372685ef99e75dd1f590a051760b11bcfbef22d466f24",
+      "validation": "Inspected: direct rear full-body A-pose matching saved front proportions and colors; deep-red hood with white edge and correctly reversed pom-pom side, snug green scarf and fingerless gloves, navy hoodie with white snowflakes/gold stars, gold belt, pocket-free navy joggers with snowflakes, deep-red shoes/white soles. No face visible, text or logos.",
+      "attached_reference_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\silentnight-shadow\\front-toon.png"
+      ],
+      "reference_sha256": [
+        "82c60c02729fee40bb5cf96ef490807d2f6b5ffa46c4b8c92282ca72ad122758"
+      ]
+    }
+  ]
+}
