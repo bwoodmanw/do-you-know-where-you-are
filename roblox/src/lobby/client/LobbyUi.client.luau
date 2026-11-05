@@ -797,12 +797,32 @@ local function card(parent, x, y, w, h, onClick)
 	b.Activated:Connect(onClick)
 	return { button = b, name = name, sub = sub, stroke = stroke }
 end
--- the building cards share one row (900 wide): 3 at 290, more get narrower
+-- 4 Nov (Brent): both rows scroll left and right (like the character row),
+-- so more buildings and floors fit: cards keep their size
+local function mapRow(y, h)
+	local s = Instance.new("ScrollingFrame")
+	s.Position = UDim2.fromOffset(14, y - 6)
+	s.Size = UDim2.fromOffset(912, h + 12 + 8)
+	s.BackgroundTransparency = 1
+	s.BorderSizePixel = 0
+	s.ScrollingDirection = Enum.ScrollingDirection.X
+	s.ScrollBarThickness = 8
+	s.ScrollBarImageColor3 = Color3.fromRGB(255, 138, 31)
+	s.VerticalScrollBarInset = Enum.ScrollBarInset.None
+	s.CanvasSize = UDim2.fromOffset(912, 0)
+	s.ZIndex = 41
+	s.Parent = mapScreen
+	return s
+end
+local buildingRow = mapRow(92, 190)
+local floorRow = mapRow(300, 220)
+-- the building cards: 3 fill the row at 290; more are 180 wide and scroll
 local nb = #Progress.buildingsFor(Seasons.active() and Seasons.active().id)
 local bgap = nb <= 3 and 15 or 10
-local bw = nb <= 3 and 290 or math.floor((900 - (nb - 1) * bgap) / nb)
+local bw = nb <= 3 and 290 or 180
+buildingRow.CanvasSize = UDim2.fromOffset(12 + nb * (bw + bgap), 0)
 for i, bld in ipairs(Progress.buildingsFor(Seasons.active() and Seasons.active().id)) do
-	buildingCards[bld.id] = card(mapScreen, 20 + (i - 1) * (bw + bgap), 92, bw, 190, function()
+	buildingCards[bld.id] = card(buildingRow, 6 + (i - 1) * (bw + bgap), 6, bw, 190, function()
 		if amLeader then
 			opt("building", bld.id)
 		else
@@ -810,8 +830,17 @@ for i, bld in ipairs(Progress.buildingsFor(Seasons.active() and Seasons.active()
 		end
 	end)
 end
-for i = 1, 4 do
-	floorCards[i] = card(mapScreen, 20 + (i - 1) * 305, 300, 290, 220, function()
+-- as many floor cards as the biggest building has floors
+local mostFloors = 4
+do
+	local per = {}
+	for _, m in ipairs(Progress.MAPS) do
+		per[m.building] = (per[m.building] or 0) + 1
+		mostFloors = math.max(mostFloors, per[m.building])
+	end
+end
+for i = 1, mostFloors do
+	floorCards[i] = card(floorRow, 6 + (i - 1) * 305, 6, 290, 220, function()
 		local id = floorCards[i].mapId
 		if id then
 			remotes.VoteMap:FireServer(id)
@@ -1031,12 +1060,14 @@ local function paintParty(p)
 			table.insert(floors, m)
 		end
 	end
-	-- three floors fill the row; four (with the Basement) share it
+	-- three floors fill the row; four (with the Basement) share it; more scroll
 	local wide = #floors >= 4 and 214 or 290
-	for i = 1, 4 do
+	local step = wide + 10 + (wide == 290 and 5 or 0)
+	floorRow.CanvasSize = UDim2.fromOffset(12 + #floors * step, 0)
+	for i = 1, #floorCards do
 		local c, m = floorCards[i], floors[i]
 		c.button.Size = UDim2.fromOffset(wide, 220)
-		c.button.Position = UDim2.fromOffset(20 + (i - 1) * (wide + 10 + (wide == 290 and 5 or 0)), 300)
+		c.button.Position = UDim2.fromOffset(6 + (i - 1) * step, 6)
 		c.button.Visible = m ~= nil
 		c.mapId = nil
 		if m then
