@@ -1,0 +1,168 @@
+{
+  "workflow": "tools/workflows/new-character-skill-icons.json",
+  "generated_on": "2026-11-04",
+  "generation_tool": "built-in image_gen",
+  "transparent_background_requested": true,
+  "assets": [
+    {
+      "file_name": "skill-nutmeg.png",
+      "prompt": "A single button icon for a kids' co-op escape game for ages 8 and up, in exactly the same style as the game's other skill icons (a crossed wrench and screwdriver, a pair of headphones): one bold, chunky object in a glossy cartoon style with soft bright highlights, a thick dark-purple outline around the whole shape, rich purple and warm orange-gold accents, centered and filling most of the square. Fully transparent background - a PNG with no backdrop, no circle, no frame, no shadow box. It must still read clearly when shrunk to 60 pixels, so keep it simple with big shapes. No logos, brand marks, words, letters or numbers. Not taken from any existing game, film or cartoon. Square, 1024 x 1024.\n\nSleigh Dash: a round golden jingle bell with a small red ribbon bow on top, tilted forward as if rushing ahead, with three orange speed streaks swooshing out behind it",
+      "references": [],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-fb9ed210-4af6-406f-842b-62cbfbe0d1d8.png",
+      "generated_width": 1254,
+      "generated_height": 1254,
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\ui-icons\\skill-nutmeg.png",
+      "width": 1024,
+      "height": 1024,
+      "postprocessing": "Resampled to requested 1024 x 1024 using System.Drawing HighQualityBicubic, preserving alpha; no background added.",
+      "format": "PNG",
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fully_transparent_fraction": 0.5202
+    },
+    {
+      "file_name": "skill-cloud.png",
+      "prompt": "A single button icon for a kids' co-op escape game for ages 8 and up, in exactly the same style as the game's other skill icons (a crossed wrench and screwdriver, a pair of headphones): one bold, chunky object in a glossy cartoon style with soft bright highlights, a thick dark-purple outline around the whole shape, rich purple and warm orange-gold accents, centered and filling most of the square. Fully transparent background - a PNG with no backdrop, no circle, no frame, no shadow box. It must still read clearly when shrunk to 60 pixels, so keep it simple with big shapes. No logos, brand marks, words, letters or numbers. Not taken from any existing game, film or cartoon. Square, 1024 x 1024.\n\nFog: a big puffy cloud, white with pale-blue shading, with soft curls of mist spilling out from underneath it",
+      "references": [],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-dd2aa6ab-11db-48c3-8664-b5a6631ee121.png",
+      "generated_width": 1254,
+      "generated_height": 1254,
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\ui-icons\\skill-cloud.png",
+      "width": 1024,
+      "height": 1024,
+      "postprocessing": "Resampled to requested 1024 x 1024 using System.Drawing HighQualityBicubic, preserving alpha; no background added.",
+      "format": "PNG",
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fully_transparent_fraction": 0.3262
+    },
+    {
+      "file_name": "skill-holly.png",
+      "prompt": "A single button icon for a kids' co-op escape game for ages 8 and up, in exactly the same style as the game's other skill icons (a crossed wrench and screwdriver, a pair of headphones): one bold, chunky object in a glossy cartoon style with soft bright highlights, a thick dark-purple outline around the whole shape, rich purple and warm orange-gold accents, centered and filling most of the square. Fully transparent background - a PNG with no backdrop, no circle, no frame, no shadow box. It must still read clearly when shrunk to 60 pixels, so keep it simple with big shapes. No logos, brand marks, words, letters or numbers. Not taken from any existing game, film or cartoon. Square, 1024 x 1024.\n\nPeppermints: three red-and-white swirl peppermint candies, all the same size, lying in a slanted row from bottom-left to top-right and overlapping a little, the middle one in a clear cellophane wrapper twisted at both ends - not one big circle with two smaller circles on top",
+      "references": [],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-386cda89-443f-4cfa-bc78-e668cbfe1d97.png",
+      "generated_width": 1254,
+      "generated_height": 1254,
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\ui-icons\\skill-holly.png",
+      "width": 1024,
+      "height": 1024,
+      "postprocessing": "Resampled to requested 1024 x 1024 using System.Drawing HighQualityBicubic, preserving alpha; no background added.",
+      "format": "PNG",
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "fully_transparent_fraction": 0.4891,
+      "visual_check": "Three equal-size peppermint candies overlapping in a bottom-left to top-right diagonal; only the middle candy has clear cellophane with twisted ends. Glossy finish and dark-purple outline; no visible words or logos."
+    },
+    {
+      "file_name": "skill-clone.png",
+      "prompt": "A single button icon for a kids' co-op escape game for ages 8 and up, in exactly the same style as the game's other skill icons (a crossed wrench and screwdriver, a pair of headphones): one bold, chunky object in a glossy cartoon style with soft bright highlights, a thick dark-purple outline around the whole shape, rich purple and warm orange-gold accents, centered and filling most of the square. Fully transparent background - a PNG with no backdrop, no circle, no frame, no shadow box. It must still read clearly when shrunk to 60 pixels, so keep it simple with big shapes. No logos, brand marks, words, letters or numbers. Not taken from any existing game, film or cartoon. Square, 1024 x 1024.\n\nCopycat: two matching simple person shapes standing side by side, the left one teal and the right one orange, with a curved two-way arrow looping over their heads between them",
+      "references": [],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-9bf7c452-673a-40c0-a989-feb56b489c11.png",
+      "generated_width": 1254,
+      "generated_height": 1254,
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\ui-icons\\skill-clone.png",
+      "width": 1024,
+      "height": 1024,
+      "postprocessing": "Resampled to requested 1024 x 1024 using System.Drawing HighQualityBicubic, preserving alpha; no background added.",
+      "format": "PNG",
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fully_transparent_fraction": 0.4335
+    },
+    {
+      "file_name": "skill-harmony.png",
+      "prompt": "A single button icon for a kids' co-op escape game for ages 8 and up, in exactly the same style as the game's other skill icons (a crossed wrench and screwdriver, a pair of headphones): one bold, chunky object in a glossy cartoon style with soft bright highlights, a thick dark-purple outline around the whole shape, rich purple and warm orange-gold accents, centered and filling most of the square. Fully transparent background - a PNG with no backdrop, no circle, no frame, no shadow box. It must still read clearly when shrunk to 60 pixels, so keep it simple with big shapes. No logos, brand marks, words, letters or numbers. Not taken from any existing game, film or cartoon. Square, 1024 x 1024.\n\nLullaby: two joined musical eighth notes in glossy purple, with a small golden crescent moon and a tiny twinkling star beside them, soft and sleepy",
+      "references": [],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-90aae49f-9392-4147-87d6-5dfc837bf0bd.png",
+      "generated_width": 1254,
+      "generated_height": 1254,
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\ui-icons\\skill-harmony.png",
+      "width": 1024,
+      "height": 1024,
+      "postprocessing": "Resampled to requested 1024 x 1024 using System.Drawing HighQualityBicubic, preserving alpha; no background added.",
+      "format": "PNG",
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "fully_transparent_fraction": 0.5201
+    }
+  ],
+  "status": "complete",
+  "visual_checks": [
+    "Five icons inspected at full size and at 60 pixels on white and dark-purple backgrounds; all remain recognizable.",
+    "Glossy chunky shapes with dark-purple outlines; no visible text, logos, backdrop, circle or frame.",
+    "Nutmeg: golden bell, red bow, three orange speed streaks. Cloud: puffy white/pale-blue cloud and curling mist. Holly: three equal-size peppermints in a diagonal row, middle candy wrapped with twisted ends.",
+    "Clone: matching teal-left and orange-right figures, curved two-way arrow above. Harmony: two joined purple eighth notes, gold crescent and star."
+  ],
+  "superseded_assets": [
+    {
+      "file_name": "skill-holly.png",
+      "prompt": "A single button icon for a kids' co-op escape game for ages 8 and up, in exactly the same style as the game's other skill icons (a crossed wrench and screwdriver, a pair of headphones): one bold, chunky object in a glossy cartoon style with soft bright highlights, a thick dark-purple outline around the whole shape, rich purple and warm orange-gold accents, centered and filling most of the square. Fully transparent background - a PNG with no backdrop, no circle, no frame, no shadow box. It must still read clearly when shrunk to 60 pixels, so keep it simple with big shapes. No logos, brand marks, words, letters or numbers. Not taken from any existing game, film or cartoon. Square, 1024 x 1024.\n\nPeppermints: three round red-and-white swirl peppermint candies, one big in front and two smaller ones tucked behind it",
+      "references": [],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1a7f5-e59e-7103-9bd4-b254c3fd3776\\exec-5b08b6cf-8db8-4525-97a6-948d80584c64.png",
+      "generated_width": 1254,
+      "generated_height": 1254,
+      "destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\ui-icons\\skill-holly.png",
+      "width": 1024,
+      "height": 1024,
+      "postprocessing": "Resampled to requested 1024 x 1024 using System.Drawing HighQualityBicubic, preserving alpha; no background added.",
+      "format": "PNG",
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "fully_transparent_fraction": 0.4164
+    }
+  ]
+}

@@ -32,6 +32,9 @@ Config.UI_ICONS = { -- art/ui-icons/*.png (ids checked on Roblox's API, 9 Oct)
 	["skill-tinker"] = 125253090151263, ["skill-shadow"] = 122833619672235, ["skill-brainy"] = 88694764071896,
 	["skill-muscle"] = 111012437636051, ["skill-glow"] = 79995490435238, ["skill-patch"] = 124927699659337,
 	["skill-echo"] = 104667451078873, ["skill-bramble"] = 111735284994326,
+	-- 4 Nov: the new characters' (checked on Roblox: images, Brent's uploads); Holly's to come
+	["skill-nutmeg"] = 130558478857131, ["skill-cloud"] = 121339475435162, ["skill-clone"] = 73709798548335,
+	["skill-harmony"] = 85934320538971,
 	["emote-wave"] = 91108624177477, ["emote-point"] = 119927036397486, ["emote-cheer"] = 87893385946810,
 	["emote-laugh"] = 100088092280645, ["emote-dance1"] = 102728279626825, ["emote-dance2"] = 133487841239662,
 	["emote-dance3"] = 106045742443407, ["emote-stop"] = 129902482804856,
