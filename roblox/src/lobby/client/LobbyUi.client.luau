@@ -156,6 +156,15 @@ end
 -- friends online elsewhere (a Roblox invite to come here)
 local inviteBox -- built on first use
 local inParty = false
+local partyHidden = false -- (4 Nov) the party panel closed with X, the party still open
+local reopenParty -- set with the party panel: shows it again
+local function busyInParty()
+	if inParty then
+		notice("You're in a party - tap \u{1F388} Party to go back to it, or Leave it first.")
+		return true
+	end
+	return false
+end
 local function invite()
 	if inviteBox then
 		inviteBox:Destroy()
@@ -474,12 +483,22 @@ local function setBadge(b, text)
 	end
 end
 local quick = tileBtn(menu, "quick", "\u{26A1}", "Quick Play", { Size = UDim2.fromOffset(310, 100), BackgroundColor3 = Color3.fromRGB(70, 209, 96), TextColor3 = NIGHT }, function()
+	if busyInParty() then
+		return
+	end
 	remotes.QuickPlay:FireServer()
 end)
 tileBtn(menu, "solo", "\u{25B6}", "Solo", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(0, 112) }, function()
+	if busyInParty() then
+		return
+	end
 	remotes.CreateParty:FireServer(true)
 end)
 tileBtn(menu, "party", "\u{1F388}", "Party", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(162, 112) }, function()
+	-- 4 Nov (Brent): in a party already (its panel closed with X) - back to it
+	if inParty and reopenParty then
+		return reopenParty()
+	end
 	remotes.CreateParty:FireServer(false)
 end)
 local charsBtn = tileBtn(menu, "characters", "\u{1F9D2}", "Characters", { Size = UDim2.fromOffset(148, 146), Position = UDim2.fromOffset(0, 268) })
@@ -490,6 +509,9 @@ tileBtn(rightBar, "invite", "\u{2709}", "Invite", { Size = UDim2.fromOffset(104,
 local joinBox -- the friends' parties list (made below); the Join tile opens it
 local joinOpen = false
 local joinBtn = tileBtn(rightBar, "join", "\u{1F389}", "Join", { Size = UDim2.fromOffset(104, 96), Position = UDim2.fromOffset(0, 104) }, function()
+	if busyInParty() then
+		return
+	end
 	joinOpen = not joinOpen
 	if joinBox then
 		joinBox.Visible = joinOpen and menu.Visible
@@ -869,8 +891,17 @@ Gamepad.bind(Enum.KeyCode.DPadUp, function()
 		Gamepad.select(startBtn.Visible and startBtn or mapBtn)
 	end
 end)
-button(partyBox, "Leave", { Size = UDim2.fromOffset(130, 48), Position = UDim2.new(1, -150, 1, -64) }, function()
+local leaveBtn = button(partyBox, "Leave", { Size = UDim2.fromOffset(130, 48), Position = UDim2.new(1, -150, 1, -64) }, function()
 	remotes.LeaveParty:FireServer()
+end)
+-- 4 Nov (Brent): X closes the panel and keeps the party - tap Party to come
+-- back; Leave (End party, for the one who made it) is the way out
+button(partyBox, "\u{2715}", { Size = UDim2.fromOffset(44, 44), Position = UDim2.new(1, -54, 0, 10), BackgroundColor3 = Color3.fromRGB(232, 80, 91), ZIndex = 5 }, function()
+	partyHidden = true
+	partyBox.Visible = false
+	menu.Visible = true
+	rightBar.Visible = true
+	notice("Your party is still open - tap \u{1F388} Party to go back to it.")
 end)
 
 -- 10 Oct (Brent): the vote countdown on the party panel; Start waits for
@@ -902,9 +933,12 @@ end
 local function paintParty(p)
 	current = p
 	inParty = p ~= nil
-	partyBox.Visible = p ~= nil
-	menu.Visible = p == nil
-	rightBar.Visible = p == nil
+	if not p then
+		partyHidden = false
+	end
+	partyBox.Visible = p ~= nil and not partyHidden
+	menu.Visible = p == nil or partyHidden
+	rightBar.Visible = p == nil or partyHidden
 	joinBox.Visible = p == nil and joinOpen
 	if not p then
 		mapView.mine, mapView.shared = nil, false
@@ -912,6 +946,12 @@ local function paintParty(p)
 		return
 	end
 	amLeader = p.leaderId == player.UserId
+	-- (4 Nov) the one who made the party ends it for everyone
+	leaveBtn.Text = (amLeader and p.max > 1) and "\u{1F6AA} End party" or "Leave"
+	reopenParty = function()
+		partyHidden = false
+		paintParty(current)
+	end
 	partyTitle.Text = p.max == 1 and "Solo game - choose a floor, then Start" or ((amLeader and "Your party" or (p.leader .. "'s party")) .. "  (" .. #p.members .. "/" .. p.max .. ")")
 	for i = 1, Config.MAX_PARTY do
 		local m = p.members[i]
