@@ -4675,7 +4675,7 @@ do
 			if #caught == 0 then
 				Effects.zone(feet, Color3.fromRGB(180, 140, 230), reach * 2, 2.5)
 				say("info", "\u{1F3B5} The host is " .. math.max(1, math.floor(nearest - reach)) .. " studs outside your Lullaby (the purple circle). Sing when he's inside it.", nil, plr)
-				return false
+				return "miss" -- (5 Nov) a short wait, not the whole recharge
 			end
 			local seconds = plr:GetAttribute("LullabyTime") or Hm.seconds
 			for _, h in ipairs(caught) do
@@ -5393,6 +5393,8 @@ local function runSkill(plr, skill, pos, slot)
 	if v2 ~= nil then
 		if v2 == "free" then
 			quest(plr, "skill") -- worked, and the button is ready again at once (Cloud's Fog Bank)
+		elseif v2 == "miss" then
+			plr:SetAttribute(coolKey, now + 3) -- (5 Nov) Harmony's Lullaby missed: try again in 3 s
 		elseif v2 then
 			-- Tinker's Rocket Boots: a rocket run after each Toolkit
 			if skill == "tinker" and not slot and plr:GetAttribute("Power20") == "boots" then

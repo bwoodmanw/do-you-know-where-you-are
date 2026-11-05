@@ -3203,3 +3203,39 @@ do
 		end
 	end)
 end
+
+-- 5 Nov (Brent): Harmony sees her Lullaby's reach - a faint purple circle at
+-- her feet, on her screen only, while the Lullaby is ready to sing
+do
+	local circle = Instance.new("Part")
+	circle.Name = "LullabyReach"
+	circle.Shape = Enum.PartType.Cylinder
+	circle.Material = Enum.Material.Neon
+	circle.Color = Color3.fromRGB(180, 140, 230)
+	circle.Transparency = 0.85
+	circle.Anchored, circle.CanCollide, circle.CanQuery, circle.CanTouch, circle.CastShadow = true, false, false, false, false
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	RunService.RenderStepped:Connect(function()
+		local char = player.Character
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		local now = workspace:GetServerTimeNow()
+		local show = hrp ~= nil and player:GetAttribute("Skill") == "harmony" and RoundState:GetAttribute("Status") == "playing"
+			and not player:GetAttribute("Caged") and not player:GetAttribute("Escaped")
+			and (player:GetAttribute("CoolUntil") or 0) <= now and (player:GetAttribute("LullabyUntil") or 0) <= now
+		if not show then
+			circle.Parent = nil
+			return
+		end
+		params.FilterDescendantsInstances = { char, circle }
+		local hit = workspace:Raycast(hrp.Position, Vector3.new(0, -14, 0), params)
+		if not hit then
+			circle.Parent = nil
+			return
+		end
+		local d = (player:GetAttribute("LullabyRange") or Config.HARMONY.range) * 2
+		circle.Size = Vector3.new(0.1, d, d)
+		circle.CFrame = CFrame.new(hrp.Position.X, hit.Position.Y + 0.08, hrp.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
+		circle.Parent = workspace.CurrentCamera
+	end)
+end
