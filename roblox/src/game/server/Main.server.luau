@@ -1676,6 +1676,76 @@ local function nearDoorway(x, y)
 	end
 	return false
 end
+-- Crumbles' crumbs (Christmas, 4 Nov): a little patch of gingerbread crumbs
+-- where he walks; a kid stepping on one crunches it and he comes to look
+function round.hostCrumbs(_, pos, hostModel)
+	if state.status ~= "playing" then
+		return false
+	end
+	local s = Config.HOST_SKILLS.crumbs
+	state.crumbs = state.crumbs or {}
+	for i = #state.crumbs, 1, -1 do
+		if not state.crumbs[i].Parent then
+			table.remove(state.crumbs, i)
+		end
+	end
+	if #state.crumbs >= s.max then
+		return false
+	end
+	for _, g in ipairs(state.crumbs) do
+		if (Vector3.new(g.Position.X, 0, g.Position.Z) - Vector3.new(pos.X, 0, pos.Z)).Magnitude < s.clear * T then
+			return false
+		end
+	end
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { hostModel }
+	local hit = workspace:Raycast(pos, Vector3.new(0, -40, 0), params)
+	local floorY = hit and hit.Position.Y or 0
+	local g = Instance.new("Part")
+	g.Name = "Crumbs"
+	g.Shape = Enum.PartType.Cylinder
+	g.Size = Vector3.new(0.2, 5, 5)
+	g.CFrame = CFrame.new(pos.X, floorY + 0.1, pos.Z) * CFrame.Angles(0, 0, math.rad(90))
+	g.Color = Color3.fromRGB(176, 108, 58)
+	g.Material = Enum.Material.Sand
+	g.Transparency = 0.2
+	g.Anchored, g.CanCollide, g.CanQuery = true, false, false
+	g.Parent = world.root
+	-- a few bigger crumbs and an icing chip on top
+	for i = 1, 6 do
+		local a = i / 6 * math.pi * 2 + math.random()
+		local b = Instance.new("Part")
+		b.Anchored, b.CanCollide, b.CanQuery, b.CanTouch, b.CastShadow = true, false, false, false, false
+		b.Size = Vector3.new(0.6, 0.35, 0.5) * (0.7 + math.random() * 0.6)
+		b.CFrame = CFrame.new(pos.X + math.cos(a) * 1.4, floorY + 0.25, pos.Z + math.sin(a) * 1.4) * CFrame.Angles(0, a, 0)
+		b.Color = i == 1 and Color3.fromRGB(250, 250, 250) or Color3.fromRGB(150, 90, 45)
+		b.Material = Enum.Material.SmoothPlastic
+		b.Parent = g
+	end
+	table.insert(state.crumbs, g)
+	g.Touched:Connect(function(hitPart)
+		local plr = Players:GetPlayerFromCharacter(hitPart.Parent)
+		if not plr or not g.Parent or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped")
+			or plr:GetAttribute("Crawling") or (plr:GetAttribute("SneakUntil") or 0) > workspace:GetServerTimeNow() then
+			return
+		end
+		local at = g.Position
+		g:Destroy()
+		Effects.sound(at, "candy", 1)
+		say("info", "CRUNCH! " .. plr.DisplayName .. " stepped on Crumbles' crumbs - he heard that!", { userId = plr.UserId })
+		if host and host.model then
+			host:alert(at)
+		end
+	end)
+	task.delay(s.last, function()
+		if g.Parent then
+			g:Destroy()
+		end
+	end)
+	return true
+end
+
 function round.hostGummy(_, pos, hostModel)
 	if state.status ~= "playing" then
 		return false

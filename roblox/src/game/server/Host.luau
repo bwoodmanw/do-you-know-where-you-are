@@ -622,6 +622,15 @@ function Host:step(dt)
 		end
 	end
 
+	-- Crumbles drops gingerbread crumbs as he goes (4 Nov; the round decides where)
+	if self.skill == "crumbs" and now >= (self.nextSkill or 0) then
+		if self.round:hostCrumbs(self.root.Position, self.model) then
+			self.nextSkill = now + (Config.HOST_SKILLS.crumbs.cooldown[string.lower(self.diff.name)] or 10)
+		else
+			self.nextSkill = now + 1
+		end
+	end
+
 	-- the Anglerfish Keeper leaves fake presents as he patrols (the round decides where)
 	if self.skill == "fakegift" and self.mode ~= "hunt" and now >= (self.nextSkill or 0) then
 		if self.round:hostFakeGift(self.root.Position, self.model) then

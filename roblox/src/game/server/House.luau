@@ -60,6 +60,11 @@ local FLOOR = {
 	straw = { Enum.Material.Sand, Color3.fromRGB(212, 176, 96) },
 	dirt = { Enum.Material.Ground, Color3.fromRGB(112, 82, 56) },
 	barnwood = { Enum.Material.WoodPlanks, Color3.fromRGB(120, 80, 52) },
+	-- Candy Cane Lane (Christmas, 4 Nov)
+	gingerbread = { Enum.Material.SmoothPlastic, Color3.fromRGB(176, 108, 58) },
+	peppermint = { Enum.Material.CeramicTiles, Color3.fromRGB(240, 236, 236) },
+	frostwood = { Enum.Material.WoodPlanks, Color3.fromRGB(150, 170, 190) },
+	snow = { Enum.Material.Snow, Color3.fromRGB(236, 242, 250) },
 }
 
 local Shapes = require(game:GetService("ReplicatedStorage").Shared.Shapes) -- stretched balls (eggs, fish bodies) need a sphere mesh
@@ -860,6 +865,49 @@ local function barnFurniture(root, kind, x, y)
 	return false
 end
 
+-- Candy Cane Lane's furniture (Christmas, 4 Nov): piles of wrapped presents
+-- (for shelves) and toy workbenches (for tables); anything else falls back
+local XMAS_WRAP = { Color3.fromRGB(210, 40, 50), Color3.fromRGB(40, 140, 80), Color3.fromRGB(60, 110, 220), Color3.fromRGB(240, 190, 50), Color3.fromRGB(150, 80, 200) }
+local function xmasFurniture(root, kind, x, y)
+	if kind == "presents" then
+		-- a heap of wrapped boxes with ribbons, tall enough to block the way
+		local k = x * 7 + y * 13
+		local boxes = { { 0, 0, 3.4 }, { 0, 3.4, 2.8 }, { 0.6, 6.2, 2.2 }, { -0.4, 8.4, 1.6 } }
+		for i, b in ipairs(boxes) do
+			local s = b[3]
+			local wrap = XMAS_WRAP[(k + i) % #XMAS_WRAP + 1]
+			local ribbon = XMAS_WRAP[(k + i + 2) % #XMAS_WRAP + 1]
+			local c = at(x, y, b[2] + s / 2) + Vector3.new(b[1], 0, 0)
+			local turn = CFrame.Angles(0, math.rad((k + i * 37) % 40 - 20), 0)
+			part(root, { Name = "Present", Size = Vector3.new(s * 1.6, s, s * 1.4), CFrame = CFrame.new(c) * turn, Material = Enum.Material.SmoothPlastic, Color = wrap })
+			part(root, { Name = "Ribbon", Size = Vector3.new(s * 1.62, s + 0.04, 0.35), CFrame = CFrame.new(c) * turn, Material = Enum.Material.SmoothPlastic, Color = ribbon, CanCollide = false })
+			part(root, { Name = "Ribbon", Size = Vector3.new(0.35, s + 0.04, s * 1.42), CFrame = CFrame.new(c) * turn, Material = Enum.Material.SmoothPlastic, Color = ribbon, CanCollide = false })
+		end
+		part(root, { Name = "PresentBlock", Size = Vector3.new(T, 10, T * 0.8), Position = at(x, y, 5), Transparency = 1 })
+		return true
+	elseif kind == "workbench" then
+		-- a wooden workbench with a toy on it (a little train, a top or a drum)
+		part(root, { Name = "Workbench", Size = Vector3.new(T, 0.6, T * 0.8), Position = at(x, y, 3.4), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(140, 92, 52) })
+		for _, dx in ipairs({ -1, 1 }) do
+			for _, dz in ipairs({ -1, 1 }) do
+				part(root, { Name = "BenchLeg", Size = Vector3.new(0.5, 3.1, 0.5), Position = at(x, y, 1.55) + Vector3.new(dx * (T / 2 - 0.6), 0, dz * (T * 0.4 - 0.6)), Material = Enum.Material.WoodPlanks, Color = Color3.fromRGB(110, 72, 42) })
+			end
+		end
+		local toy = (x + y) % 3
+		local top = at(x, y, 3.7)
+		if toy == 0 then
+			part(root, { Name = "ToyTrain", Size = Vector3.new(2.4, 1.2, 1.2), Position = top + Vector3.new(0, 0.6, 0), Color = Color3.fromRGB(210, 40, 50) })
+			part(root, { Name = "ToyChimney", Size = Vector3.new(0.5, 0.8, 0.5), Position = top + Vector3.new(0.8, 1.6, 0), Color = Color3.fromRGB(40, 40, 50) })
+		elseif toy == 1 then
+			part(root, { Name = "ToyTop", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.2, 1.6), Position = top + Vector3.new(0, 0.7, 0), Color = Color3.fromRGB(60, 110, 220) })
+		else
+			part(root, { Name = "ToyDrum", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1, 1.6, 1.6), CFrame = CFrame.new(top + Vector3.new(0, 0.5, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(240, 190, 50) })
+		end
+		return true
+	end
+	return false
+end
+
 -- the hospital's furniture: medicine cabinets, a reception counter, steel
 -- tables and desks, beds with rails
 local function hospitalFurniture(root, kind, x, y)
@@ -1005,6 +1053,8 @@ function House.build(map)
 					-- a fish tank, pool, kelp, submarine, bones, coral or the great tank
 				elseif map.theme == "barn" and barnFurniture(root, kind, x, y) then
 					-- a hay bale, a feed trough or a row of corn
+				elseif map.theme == "xmas" and xmasFurniture(root, kind, x, y) then
+					-- a pile of presents or a toy workbench (Candy Cane Lane)
 				elseif kind == "table" then
 					part(root, { Name = "Table", Size = Vector3.new(T, 0.6, T), Position = at(x, y, 3.4), Material = Enum.Material.Fabric, Color = Color3.fromRGB(242, 233, 247) })
 					part(root, { Name = "TableSkirt", Size = Vector3.new(T - 0.2, 3, T - 0.2), Position = at(x, y, 1.6), Material = Enum.Material.Fabric, Color = Color3.fromRGB(255, 138, 31) })

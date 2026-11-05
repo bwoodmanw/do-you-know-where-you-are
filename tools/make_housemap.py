@@ -836,6 +836,33 @@ def plan_barn():
     return p
 
 
+# ---------------------------------------------------------------- Candy Cane Lane (Christmas, floor 0)
+# A secret seasonal floor (open to everyone during Christmas, from the Lobby),
+# like the Harvest Barn: the Secret Basement's checked 3 x 3 grid with a toy
+# workshop street's rooms, floors and furniture (piles of presents for
+# shelves, workbenches for tables; the brick pillars stand as candy-cane
+# posts). A normal escape: keys, locks and the color code. Host: Crumbles.
+def plan_candylane():
+    p = plan_basement()
+    p.id, p.name = 'lane_a', 'Candy Cane Lane'
+    p.building, p.floor_no, p.theme = 'candycanelane', 0, 'xmas'
+    p.exit_style, p.exit_text = 'garden', 'Out through the town gate!'
+    rooms = {'Wine Cellar': 'Cocoa Cafe', 'Cellar Stairs': 'Town Gate', 'Pumpkin Cellar': 'Gingerbread House',
+             'Coal Room': 'Toy Factory', 'Boiler Room': 'Wrapping Room', 'Workshop': 'Toy Workshop',
+             'Laundry': 'Ornament Shop', 'Cellar Entrance': 'Candy Cane Street', 'Old Storage': 'Sleigh Garage'}
+    floor_kinds = {'boards': 'gingerbread', 'tiles': 'peppermint', 'wood': 'frostwood'}
+    for n in [f[5] for f in p.floors]:
+        assert n in rooms, n
+    p.floors = [(x0, y0, x1, y1, floor_kinds.get(k, k), rooms[n]) for x0, y0, x1, y1, k, n in p.floors]
+    # the street outside is snowy
+    p.floors = [(x0, y0, x1, y1, 'snow' if n == 'Candy Cane Street' else k, n) for x0, y0, x1, y1, k, n in p.floors]
+    kinds = {'shelf': 'presents', 'table': 'workbench'}
+    p.furniture = [(x0, y0, x1, y1, kinds.get(k, k)) for x0, y0, x1, y1, k in p.furniture]
+    names = {'L1': 'Cocoa Cafe door', 'L2': 'Town Gate door'}
+    p.fixed = [dict(o, name=names[o['id']]) if o['id'] in names else o for o in p.fixed]
+    return p
+
+
 # ---------------------------------------------------------------- floor 2: the Bedrooms
 def plan_bedrooms():
     p = Plan('bed_a', 'The Party House - Bedrooms')
@@ -1243,6 +1270,7 @@ ward = add_closets(plan_wards())
 lab = add_closets(plan_labs())
 cellar = add_closets(plan_basement())
 barn = add_closets(plan_barn())
+lane = add_closets(plan_candylane())
 school = add_closets(plan_school())
 school2 = add_closets(plan_school2())
 school3 = add_closets(plan_school3())
@@ -1263,7 +1291,8 @@ for p in (a, mirror(a, 'b', 'The Party House'), add_closets(plan_c()), bed, mirr
           funhouse, mirror(funhouse, 'funhouse_b', 'Carnival - The Funhouse'),
           mainhall, mirror(mainhall, 'mainhall_b', 'Sunken Aquarium - Main Hall'), deepsea, mirror(deepsea, 'deepsea_b', 'Sunken Aquarium - Deep Sea'),
           rooftop, mirror(rooftop, 'rooftop_b', 'Sunken Aquarium - Rooftop Pools'),
-          barn, mirror(barn, 'barn_b', 'The Harvest Barn')):
+          barn, mirror(barn, 'barn_b', 'The Harvest Barn'),
+          lane, mirror(lane, 'lane_b', 'Candy Cane Lane')):
     problems, zone_of, allopen = check(p)
     floor, wall = slots(p, zone_of, allopen)
     print('plan %s: zones %s; %d floor slots, %d wall slots (zone 2: %d)' % (
@@ -1298,7 +1327,7 @@ out = ['--[[',
        '\tpassage), D the big exit door, C the host\'s door.',
        '\tReturns building -> floor number -> list of plans.',
        ']]', '', 'return {']
-for bld in ('partyhouse', 'gummy', 'hospital', 'school', 'carnival', 'aquarium', 'harvestbarn'):
+for bld in ('partyhouse', 'gummy', 'hospital', 'school', 'carnival', 'aquarium', 'harvestbarn', 'candycanelane'):
  out.append('\t%s = {' % bld)
  for fl in sorted({pfl for p, _, _, _, pfl in plans if p.building == bld}):
   out.append('\t[%d] = {' % fl)

@@ -36,6 +36,8 @@ Progress.MAPS = {
 	-- season floors (11 Oct): open to everyone while their season runs
 	-- (Config.SEASONS), hidden the rest of the year; no floor above them
 	{ id = "harvestbarn", building = "harvestbarn", floor = 0, name = "The Harvest Barn", icon = "\u{1F983}", ready = true, secret = true, season = "thanksgiving" },
+	-- 4 Nov (Brent): Christmas's building, every year 1 Dec - 4 Jan
+	{ id = "candycanelane", building = "candycanelane", floor = 0, name = "Candy Cane Lane", icon = "\u{1F36C}", ready = true, secret = true, season = "christmas" },
 }
 
 Progress.BUILDINGS = {
@@ -46,6 +48,7 @@ Progress.BUILDINGS = {
 	{ id = "carnival", name = "Creepy Carnival" },
 	{ id = "aquarium", name = "Sunken Aquarium" },
 	{ id = "harvestbarn", name = "The Harvest Barn", season = "thanksgiving" },
+	{ id = "candycanelane", name = "Candy Cane Lane", season = "christmas" },
 }
 
 -- the buildings to show now: every year-round one, and a season's own while

@@ -102,6 +102,7 @@ Config.LOOK = {
 		school = { ambient = rgb(95, 85, 80), outdoor = rgb(115, 102, 96), tint = rgb(255, 244, 226) },
 		carnival = { ambient = rgb(100, 78, 88), outdoor = rgb(120, 92, 105), tint = rgb(255, 236, 222) },
 		aquarium = { ambient = rgb(70, 90, 115), outdoor = rgb(85, 108, 135), tint = rgb(226, 240, 255) },
+		xmas = { ambient = rgb(95, 90, 115), outdoor = rgb(120, 125, 150), tint = rgb(240, 246, 255) }, -- Candy Cane Lane
 	},
 	lobby = { ambient = rgb(85, 76, 100), outdoor = rgb(125, 115, 145), tint = rgb(255, 242, 230) },
 }
@@ -147,7 +148,7 @@ Config.ANIM = {
 	plainRun = { shadow = true, brainy = true },
 	run = 507767714, -- Roblox's plain R15 run
 	-- the hosts
-	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie" },
+	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie", crumbles = "zombie" },
 	-- hosts that play no body animation and glide (16 Oct: the Robot toon is a
 	-- lamp on wheels - a walk animation tied it in knots)
 	hostStill = { robot = true },
@@ -238,6 +239,11 @@ Config.HOST_SKILLS = {
 	-- max, each lasts `last` s); open one and it tells him where you are.
 	-- Brainy and Glow can pop a fake safely.
 	fakegift = { max = 3, last = 60, show = 3, clear = 4, cooldown = { easy = 35, normal = 25, hard = 20, nightmare = 15 } },
+	-- Crumbles the Gingerbread Giant (Christmas, 4 Nov): crumb patches as he
+	-- walks (at most `max`, each lasts `last` s, `clear` tiles apart); a kid
+	-- who steps on one crunches it and he hears where (Shadow sneaking and
+	-- crawling kids step softly)
+	crumbs = { max = 5, last = 45, clear = 2, cooldown = { easy = 14, normal = 10, hard = 8, nightmare = 6 } },
 }
 -- the hosts: the model in ServerStorage/Characters and the skill. Each game
 -- picks one: half the time the building's own, otherwise one of the others.
@@ -253,8 +259,10 @@ Config.HOSTS = {
 	anglerfish = { model = "HostAnglerfish", name = "the Anglerfish Keeper", skill = "fakegift", tint = Color3.fromRGB(60, 110, 130), lure = true },
 	-- the Harvest Barn's host (Thanksgiving): only in the barn, always there
 	gobbler = { model = "HostGobbler", name = "the Gobbler", tint = Color3.fromRGB(126, 72, 40), hidden = true },
+	-- Candy Cane Lane's host (Christmas, 4 Nov): only there, always there
+	crumbles = { model = "HostCrumbles", name = "Crumbles the Gingerbread Giant", skill = "crumbs", tint = Color3.fromRGB(176, 108, 58), hidden = true },
 }
-Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear", aquarium = "anglerfish", harvestbarn = "gobbler" }
+Config.BUILDING_HOST = { partyhouse = "pumpkin", gummy = "gummy", hospital = "robot", school = "caretaker", carnival = "clownbear", aquarium = "anglerfish", harvestbarn = "gobbler", candycanelane = "crumbles" }
 -- the "escaped all floors" badge counts these buildings' floors (its badge says 9 floors)
 Config.ALL_FLOORS_BUILDINGS = { partyhouse = true, gummy = true, hospital = true }
 Config.CLUES = 3
