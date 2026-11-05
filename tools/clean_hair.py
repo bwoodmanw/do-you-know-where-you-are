@@ -87,6 +87,18 @@ PROFILES = {
     "holly": {"hair": yellow_hair, "bad": lambda c: red_or_green(c), "head_bad": pinkish, "top": True, "ends": True},
     # 4 Nov (Brent): the goggles' orange on the top and back of his hair
     "clone": {"hair": dark_hair, "bad": orange, "head_bad": dull_brown, "top": False, "ends": False, "head": 0.2, "zcut": 0.7}  # (0.5 left orange on his crown behind the goggles)  # (0.3 reached his collar),
+    ,
+    # 4 Nov, the Thanksgiving skins: the same smears from their accessories
+    # Harvest Gala Clone: the gold goggles on the top and back of his hair
+    "gala-clone": {"hair": dark_hair, "bad": lambda c: orange(c) | yellowish(c), "head_bad": dull_brown, "top": False, "ends": False, "head": 0.2, "zcut": 0.7},
+    # Cranberry Spice Holly: the cranberry clusters and leaves round her head,
+    # the sweater's red and brown on her hair ends
+    "cranberry-holly": {"hair": yellow_hair, "bad": lambda c: red_or_green(c) | (orange(c) & ~yellow_hair(c)), "head_bad": pinkish, "top": True, "ends": True},
+    # Pumpkin Pie Harmony: skin-brown blended into the sides of her black hair
+    "pie-harmony": {"hair": dark_hair, "bad": lambda c: (c.sum(axis=1) >= 150) & (c[:, 0] < 175) & (c[:, 0] > c[:, 2] + 15), "head_bad": None, "top": True, "ends": True},  # (zcut 0.8 painted hair over her ear and jaw)
+    # Autumn Breeze Cloud: the orange leaf clip smeared over her pale hair
+    "autumn-cloud": {"hair": lambda c: (c.min(axis=1) > 165) & (c[:, 2] >= c[:, 0] - 12), "bad": orange, "head_bad": None, "top": True, "ends": False, "head": 0.25, "zcut": 0.85,
+                     "pale": (0.13, lambda c: (c[:, 0] > 190) & (c[:, 2] < c[:, 0] - 25) & (c[:, 1] > 0.6 * c[:, 0]))},
 }
 
 
@@ -198,6 +210,10 @@ def clean(name):
         # on the head a few pale-pink in-betweens of the smear go too
         if cen[f, 1] > head_y and prof["head_bad"]:
             bad |= prof["head_bad"](c)
+        # (autumn-cloud) the pale blend of a clip into white hair, only high
+        # on the head - above the ears and face, where there is no skin
+        if prof.get("pale") and cen[f, 1] > hi[1] - prof["pale"][0] * size[1]:
+            bad |= prof["pale"][1](c)
         if bad.any():
             tex[pts[bad, 1], pts[bad, 0]] = hair.astype(np.uint8)
             changed += int(bad.sum())
