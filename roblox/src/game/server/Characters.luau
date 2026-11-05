@@ -558,7 +558,8 @@ function Characters.host(name)
 			d.Anchored = false
 		end
 	end
-	fitHeight(m, HOST_HEIGHT)
+	-- 4 Nov (Brent): the Robot a little shorter (it caught in rooms)
+	fitHeight(m, (Config.HOST_HEIGHTS and Config.HOST_HEIGHTS[name]) or HOST_HEIGHT)
 	m.PrimaryPart = m.HumanoidRootPart
 	fixRoot(m, m.HumanoidRootPart, name) -- 17 Oct (Brent could not find the Pumpkin host)
 	-- 4 Nov (Brent: the Robot got stuck in rooms): only the root collides, as

@@ -1303,6 +1303,65 @@ RoundState:GetAttributeChangedSignal("Status"):Connect(function()
 	end
 end)
 
+-- 4 Nov (Brent: playing Cloud, he never saw her high shelves - they sit up
+-- near the ceiling against a wall): on Cloud's screen only, a big cloud
+-- marker over each one through the walls, and a tip when a floor has some
+do
+	local marks = {}
+	local told = 0
+	local function isCloud()
+		return player:GetAttribute("Skill") == "cloud"
+	end
+	local function mark(m)
+		local shelf = m:FindFirstChild("Shelf")
+		if marks[m] or not shelf then
+			return
+		end
+		local bb = Instance.new("BillboardGui")
+		bb.Name = "CloudShelfMark"
+		bb.Size = UDim2.fromOffset(60, 60)
+		bb.StudsOffset = Vector3.new(0, 3, 0)
+		bb.AlwaysOnTop = true
+		bb.MaxDistance = 120
+		bb.Adornee = shelf
+		bb.Enabled = isCloud()
+		local t = Instance.new("TextLabel")
+		t.BackgroundTransparency = 1
+		t.Size = UDim2.fromScale(1, 1)
+		t.Text = "\u{2601}"
+		t.TextScaled = true
+		t.TextColor3 = Color3.fromRGB(235, 245, 255)
+		t.Parent = bb
+		bb.Parent = player:WaitForChild("PlayerGui")
+		marks[m] = bb
+		m.AncestryChanged:Connect(function()
+			if not m:IsDescendantOf(workspace) then
+				bb:Destroy()
+				marks[m] = nil
+			end
+		end)
+		if isCloud() and os.clock() - told > 30 then
+			told = os.clock()
+			toast("\u{2601} Look up! High shelves with a little cloud (the \u{2601} marks) - stand under one and hold E to float up.", 6)
+		end
+	end
+	workspace.DescendantAdded:Connect(function(d)
+		if d.Name == "CloudShelf" and d:IsA("Model") then
+			task.defer(mark, d)
+		end
+	end)
+	for _, d in ipairs(workspace:GetDescendants()) do
+		if d.Name == "CloudShelf" and d:IsA("Model") then
+			mark(d)
+		end
+	end
+	player:GetAttributeChangedSignal("Skill"):Connect(function()
+		for _, bb in pairs(marks) do
+			bb.Enabled = isCloud()
+		end
+	end)
+end
+
 -- ---------- skills that are buttons: Shadow, Patch, Echo ----------
 local aiming = false
 local aimCopySlot = nil -- (4 Nov) aiming for Clone's copied noise (slot 1 / 2)

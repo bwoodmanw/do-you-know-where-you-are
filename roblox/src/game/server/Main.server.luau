@@ -2551,6 +2551,9 @@ function round.placeCloudSpots()
 			table.insert(state.extraTaken, { s.x, s.y })
 		end
 	end
+	if RunService:IsStudio() then
+		print("[Cloud] high shelves on this floor: " .. #spots) -- (4 Nov: Brent saw none)
+	end
 	for i, s in ipairs(spots) do
 		local wall = Vector3.new(s.d[1], 0, s.d[2])
 		local base = House.at(s.x, s.y, 0) + wall * (T / 2 - 1)
@@ -4032,8 +4035,15 @@ do
 				say("info", "\u{1F3B5} Save your Lullaby for when the host is out.", nil, plr)
 				return false
 			end
-			if (host.root.Position - hrp.Position).Magnitude > (plr:GetAttribute("LullabyRange") or Hm.range) then
-				say("info", "\u{1F3B5} The host is too far away to hear your Lullaby - sing when he's closer.", nil, plr)
+			-- 4 Nov (Brent: no clear reach): measured flat (not up and down), and
+			-- a too-far host is told in studs
+			local reach = plr:GetAttribute("LullabyRange") or Hm.range
+			local hum = hrp.Parent and hrp.Parent:FindFirstChildOfClass("Humanoid")
+			local feet = hrp.Position - Vector3.new(0, hrp.Size.Y / 2 + (hum and hum.HipHeight or 2), 0) -- (the floor under her)
+			local flat = Vector3.new(host.root.Position.X - hrp.Position.X, 0, host.root.Position.Z - hrp.Position.Z).Magnitude
+			if flat > reach then
+				Effects.zone(feet, Color3.fromRGB(180, 140, 230), reach * 2, 1.2)
+				say("info", "\u{1F3B5} The host is " .. math.floor(flat) .. " studs away - your Lullaby reaches " .. reach .. " (the purple circle). Sing when he's inside it.", nil, plr)
 				return false
 			end
 			local seconds = plr:GetAttribute("LullabyTime") or Hm.seconds
@@ -4043,7 +4053,11 @@ do
 				host:stun(1) -- Crescendo: a full stop first
 			end
 			plr:SetAttribute("LullabyUntil", workspace:GetServerTimeNow() + seconds)
-			Effects.ring(hrp.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(180, 140, 230), (plr:GetAttribute("LullabyRange") or Hm.range) * 2, 1)
+			Effects.ring(feet, Color3.fromRGB(180, 140, 230), reach * 2, 1)
+			-- the whole reach stays on the floor a moment; purple notes circle the
+			-- host for as long as he is slowed
+			Effects.zone(feet, Color3.fromRGB(180, 140, 230), reach * 2, 1.5)
+			Effects.stars(host.model, seconds, Color3.fromRGB(190, 140, 255))
 			-- Chorus (level 10): every friend's recharge 5 s nearer
 			if p10 == "chorus" then
 				local now2 = workspace:GetServerTimeNow()
@@ -4868,6 +4882,7 @@ SingEncore.OnServerEvent:Connect(function(plr)
 	plr:SetAttribute("EncoreUsed", true)
 	host.slowUntil = os.clock() + Config.HARMONY.encore
 	host.slowMult = Config.HARMONY.slow
+	Effects.stars(host.model, Config.HARMONY.encore, Color3.fromRGB(190, 140, 255)) -- (4 Nov) notes while he's slow
 	say("info", "\u{1F3B6} Encore! " .. plr.DisplayName .. "'s song fills the whole floor - the host is slow for " .. Config.HARMONY.encore .. " s!")
 end)
 

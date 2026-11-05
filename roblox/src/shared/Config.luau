@@ -645,6 +645,9 @@ Config.STUDIO_MAP = "aquarium" -- partyhouse(_2, _3, _b = the secret Basement), 
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); nil = random
 Config.STUDIO_HOST = nil
+-- 4 Nov (Brent: the Robot got stuck in rooms): a host drawn shorter than the
+-- usual 12 studs (rooms are 14 tall), by its model name
+Config.HOST_HEIGHTS = { HostRobot = 11 }
 -- characters' skin without the bumpy normal map (smoother faces); false to keep it
 Config.FLAT_CHARACTER_SKIN = true
 Config.MAX_PARTY = 6

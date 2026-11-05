@@ -311,7 +311,21 @@ function Effects.aura(player, kind, seconds)
 end
 
 -- dizzy stars circling a head (the host stunned by a skill)
-function Effects.stars(model, seconds)
+-- 4 Nov (Brent: Harmony's Lullaby showed no reach): a flat disc on the floor
+-- the full size of an area (size = across, studs) that stays a moment, then
+-- fades - so everyone sees exactly how far it reaches
+function Effects.zone(position, color, size, seconds)
+	if typeof(position) ~= "Vector3" then
+		return
+	end
+	local disc = fxPart({ Shape = Enum.PartType.Cylinder, Material = Enum.Material.Neon, Color = color, Transparency = 0.6,
+		Size = Vector3.new(0.12, size, size), CFrame = CFrame.new(position + Vector3.new(0, 0.12, 0)) * CFrame.Angles(0, 0, math.rad(90)) })
+	TweenService:Create(disc, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In, 0, false, (seconds or 1.5) - 0.6), { Transparency = 1 }):Play()
+	Debris:AddItem(disc, (seconds or 1.5) + 0.1)
+end
+
+-- (color: 4 Nov, purple notes over the host while Harmony's Lullaby slows him)
+function Effects.stars(model, seconds, color)
 	local head = model and (model:FindFirstChild("Head") or model.PrimaryPart)
 	if not head or not head:IsA("BasePart") then
 		return
@@ -319,9 +333,9 @@ function Effects.stars(model, seconds)
 	local root = model.PrimaryPart or head
 	local stars = {}
 	for i = 1, 3 do
-		local s = fxPart({ Shape = Enum.PartType.Ball, Material = Enum.Material.Neon, Color = Color3.fromRGB(255, 225, 90), Size = Vector3.new(0.7, 0.7, 0.7) })
+		local s = fxPart({ Shape = Enum.PartType.Ball, Material = Enum.Material.Neon, Color = color or Color3.fromRGB(255, 225, 90), Size = Vector3.new(0.7, 0.7, 0.7) })
 		local l = Instance.new("PointLight")
-		l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 225, 90), 5, 1
+		l.Color, l.Range, l.Brightness = color or Color3.fromRGB(255, 225, 90), 5, 1
 		l.Parent = s
 		stars[i] = s
 	end
