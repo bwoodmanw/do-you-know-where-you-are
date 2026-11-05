@@ -258,7 +258,7 @@ local redFlash = frame(gui, { Size = UDim2.fromScale(1, 1), BackgroundColor3 = C
 local scareView = Instance.new("ViewportFrame")
 scareView.Size = UDim2.fromScale(1, 1)
 scareView.BackgroundColor3 = Color3.new(0, 0, 0)
-scareView.Ambient = Color3.fromRGB(150, 110, 90)
+scareView.Ambient = Color3.fromRGB(185, 150, 130) -- 4 Nov: brighter (Brent's photo: a dark face)
 scareView.LightColor = Color3.fromRGB(255, 170, 90)
 scareView.LightDirection = Vector3.new(0, -0.6, -1)
 scareView.ZIndex = 52
@@ -311,7 +311,11 @@ local function jumpscare()
 		-- have a real Head part - aim a little below its middle (a hat, a stalk
 		-- or ears make it tall), sized by its width, as the catch close-up does
 		local hr = math.max(head.Size.X, head.Size.Z) / 2
-		scareFace = { head = head, dir = dir, r = hr, face = head.Position - Vector3.new(0, head.Size.Y * 0.12, 0) }
+		scareFace = { head = head, dir = dir, r = hr, face = head.Position - Vector3.new(0, head.Size.Y * 0.04, 0) }
+		-- 4 Nov (Brent's photo: the face dark, lit only round its edges): the
+		-- light was fixed, so a host facing the other way was lit from behind -
+		-- now it shines from the camera's side, a little from above
+		scareView.LightDirection = Vector3.new(-dir.X, -0.45, -dir.Z)
 	end
 	scareView.Visible = scareFace ~= nil
 	local cam = workspace.CurrentCamera
@@ -321,8 +325,8 @@ local function jumpscare()
 		local f = os.clock() - t0
 		if scareFace then
 			-- rush in on the face
-			local d = scareFace.r * (4.2 - math.min(1, f * 2.5) * 1.2) -- 4 Nov (Brent: face cut off, twice): ends farther (was 2.8, then 3.3)
-			local aim = (scareFace.face or scareFace.head.Position) - Vector3.new(0, scareFace.r * 0.1, 0)
+			local d = scareFace.r * (4.8 - math.min(1, f * 2.5) * 1.2) -- 4 Nov (Brent: face cut off, 3 times): ends farther (was 2.8, 3.3, 4.2)
+			local aim = scareFace.face or scareFace.head.Position -- (4 Nov: centred on the head - its top was cut off)
 			scareCam.CFrame = CFrame.lookAt(aim + scareFace.dir * d + Vector3.new((math.random() - 0.5) * 0.15, 0, 0), aim)
 		end
 		if scareImg then
