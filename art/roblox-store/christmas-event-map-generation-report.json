@@ -1,0 +1,48 @@
+{
+  "name": "Christmas event and map pictures",
+  "tool": "built-in image_gen",
+  "assets": [
+    {
+      "order": 1,
+      "file_name": "event-christmas.png",
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA SQUARE picture, the Christmas event picture. Crumbles the Gingerbread Giant (the first picture) stomps toward the camera down a snowy candy-striped street, frowning in a funny, not scary way, one big hand reaching for a shiny red-and-white candy cane. Darting out of his way on the left, Nutmeg the reindeer kid (the second picture) grins as she dashes; on the right, Holly (the third picture) giggles behind a big wrapped present. Behind them: little toy-shop houses with warm glowing windows, candy-cane lamp posts, a big lit Christmas tree, gently falling snow, a deep blue night sky. Keep the LEFT third of the picture calm and darker (sky and snow only, no characters) so the game's title can sit beside it.\n\nAttached references in order:\nImage 1: Crumbles character identity: preserve the attached design, colors and costume.\nImage 2: Nutmeg character identity: preserve the attached face, hair, eyes, skin tone, clothes and colors.\nImage 3: Holly character identity: preserve the attached face, hair, eyes, skin tone, clothes and colors.\nImage 4: Rendering style, soft light, glossy rounded shapes and night atmosphere only; design the Christmas street described above.\n\nComposition clarification: keep Nutmeg to the left of Crumbles, but place all three characters entirely within the RIGHT two thirds. The LEFT third must contain only calm, darker sky and snow, with no characters or props. Do not render a title or any other text.\n\nGenerate one opaque PNG image, square (1:1).\n\nTARGETED EDIT: Image 5 is the current draft. The first FOUR attachments remain the original character and style references in the exact order listed above. Use Image 5 as the edit target. Remove the ENTIRE leftmost toy shop located behind Nutmeg, including its roof, chimney, garlands, striped awning, candy-cane lamp, glowing windows, toy displays, stone foundation and rocky bank. Also remove the small distant pine trees at the far left. Replace that entire left-hand background with one continuous natural open deep-blue night sky and softly rolling blue snowy ground, gently falling snow. Keep the snow's perspective and illumination naturally continuous with the snowy street; no abrupt vertical edge, no panel, no seam. Leave only the toy-shop houses behind Crumbles and Holly in the background on the RIGHT, plus the lit Christmas tree. Keep Crumbles, Nutmeg, Holly, the wrapped present and the candy cane exactly as they are in Image 5. Preserve Crumbles' three peppermint buttons. The entire left third should contain ONLY quiet darker night sky and snow, with no buildings, trees, props or character parts. Move Nutmeg a small amount right if needed to ensure this. No text or logo. Square composition. This is a local background removal and natural fill; preserve the rest of the illustration.",
+      "ordered_references": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\host-crumbles\\front-toon.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Nutmeg.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Holly.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-harvestbarn.png"
+      ],
+      "submitted_image_paths": [
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\model-input\\host-crumbles\\front-toon.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Nutmeg.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\portraits\\Holly.png",
+        "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\maps\\building-harvestbarn.png",
+        "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-54d4ceda-29b9-4f50-b3aa-0fee37185594.png"
+      ],
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-3c168dd0-6132-4364-b0ad-dbd6ad43ebb1.png",
+      "status": "generated",
+      "review_notes": "Reviewed square composition, three character designs, three peppermint buttons, funny chase action, Holly and present, candy cane, warm Christmas night setting, and open dark title area. No visible text, logos or obvious famous-character resemblance. Minor silhouette overlap near the title area's right boundary.",
+      "prior_drafts": [
+        {
+          "source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-d910718d-3d90-4021-b7c3-b366d7da20d2.png",
+          "note": "Refined title space."
+        },
+        {
+          "source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-967ca5fc-8e5f-49d6-95a4-89ebfc3a00fa.png",
+          "note": "Removed abrupt vertical background edge and restored third button."
+        },
+        {
+          "source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-54d4ceda-29b9-4f50-b3aa-0fee37185594.png",
+          "note": "Cleared left shop from title area."
+        }
+      ],
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\event-christmas.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "sha256": "f905f65905b58bbbe96a198fbeb09b0b42b181da211cf0c8cc9158dcbc6ec8ff",
+      "review_status": "visually_checked"
+    }
+  ]
+}

@@ -40,6 +40,19 @@ EVENTS = {
                "November 1 - 30"],
         accent=(255, 170, 50),
     ),
+    # 5 Nov: the square picture from CHRISTMAS_EVENT_MAP_PICTURE_WORKFLOW.md
+    "christmas": dict(
+        art="art/roblox-store/event-christmas.png",
+        icon="art/roblox-store/cane-icon-512.png",
+        sky=((8, 16, 52), (26, 40, 92)),
+        kicker="CHRISTMAS EVENT",
+        title=["CANDY CANE", "HUNT"],
+        lines=["Candy canes hidden on every floor",
+               "Escape Candy Cane Lane from Crumbles",
+               "Nutmeg and Holly join the crew",
+               "December 1 - 31"],
+        accent=(255, 110, 110),
+    ),
 }
 
 
@@ -58,6 +71,8 @@ def make(key, out):
     rnd = random.Random(5)
     for _ in range(140):
         x, y, r = rnd.randrange(W), rnd.randrange(H), rnd.choice((1, 2, 2, 3))
+        if x < 1000 and 130 < y < 830:
+            continue  # (5 Nov) none among the words: a star there reads as a dot in the text
         d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 240, 200))
     # the picture on the right, fading into the sky on its left edge
     S = 960

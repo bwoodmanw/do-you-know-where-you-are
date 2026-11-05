@@ -54,10 +54,34 @@ skins - they must all be in the game on Nov 1.**
 - **Category:** Quest. **Start Place:** Escape Crew. **Privacy:** Public.
 - **Submit for Featuring:** on - only possible if created by **October 24**.
 
-## 3. Christmas
+## 3. Christmas - Candy Cane Hunt (Dec 1 - Jan 1; page by Nov 23)
 
-Ideas, dates and decisions: `SEASONAL_EVENTS.md` (10 Oct). Added here
-once its build is under way. **Submit for Featuring only works when the event is
+Picture: `art/roblox-store/events/event-christmas.png` (1920 x 1080; made by
+`tools/make_event_art.py christmas` from the square picture
+`art/roblox-store/event-christmas.png`, 5 Nov). **This page promises Candy
+Cane Lane, Crumbles, the candy canes, the Christmas Shop, Nutmeg and Holly -
+they must all be in the game on Dec 1.**
+
+- **Title:** Christmas Candy Cane Hunt
+- **Subtitle:** Find candy canes and escape Candy Cane Lane
+- **Description:**
+  Christmas comes to Escape Crew! Six candy canes are hidden on every floor
+  of every building - grab them while you escape. Then sneak through Candy
+  Cane Lane, a snowy toy town open only during the event, where Crumbles the
+  Gingerbread Giant drops crumbs as he stomps around. Step on them and CRUNCH,
+  he comes running! Spend candy canes in the Lobby's Christmas Shop on boosts,
+  a Gift Box Hideout and a Cocoa Thermos, or save up for Nutmeg the reindeer
+  kid. Holly the peppermint trap-setter joins the crew too. Find 50 candy
+  canes for the Candy Cane Collector badge. The event ends January 1, so
+  gather your crew!
+- **Starts:** December 1, 12:00 AM Eastern Time (November 30, 9:00 PM
+  Pacific) - the moment Thanksgiving ends.
+- **Ends:** January 1, 12:00 AM Eastern Time (December 31, 9:00 PM
+  Pacific). The Christmas Shop stays open through January 7.
+- **Category:** Quest. **Start Place:** Escape Crew. **Privacy:** Public.
+- **Submit for Featuring:** on - only possible if created by **November 23**.
+
+Ideas, dates and decisions: `SEASONAL_EVENTS.md` (10 Oct). **Submit for Featuring only works when the event is
 created at least 7 days before it starts** - Thanksgiving (starts 1 Nov
 2026, 12:00 AM Eastern, the moment Halloween ends) needs its page by
 **24 Oct 2026**; Christmas (starts 1 Dec) by **23 Nov 2026**. Their pictures will be made the same way.

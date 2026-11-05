@@ -1,0 +1,145 @@
+{
+  "name": "Christmas event and map pictures",
+  "reference_root": "art",
+  "output_root": "art/roblox-store",
+  "picture_standard": "This is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.",
+  "generation_tool": "image_gen",
+  "reference_order_policy": "Attach every listed reference in its exact listed order. The LAST image controls rendering style. Do not sort or deduplicate.",
+  "save_policy": "Create missing output folders. Copy the reviewed generated PNG to output_root/file_name. Preserve existing artwork on reruns unless replacement is explicitly requested; otherwise save a versioned sibling and record its actual path.",
+  "report_path": "art/roblox-store/christmas-event-map-generation-report.json",
+  "assets": [
+    {
+      "order": 1,
+      "name": "Christmas event",
+      "file_name": "event-christmas.png",
+      "picture": "A SQUARE picture, the Christmas event picture. Crumbles the Gingerbread Giant (the first picture) stomps toward the camera down a snowy candy-striped street, frowning in a funny, not scary way, one big hand reaching for a shiny red-and-white candy cane. Darting out of his way on the left, Nutmeg the reindeer kid (the second picture) grins as she dashes; on the right, Holly (the third picture) giggles behind a big wrapped present. Behind them: little toy-shop houses with warm glowing windows, candy-cane lamp posts, a big lit Christmas tree, gently falling snow, a deep blue night sky. Keep the LEFT third of the picture calm and darker (sky and snow only, no characters) so the game's title can sit beside it.",
+      "references": [
+        "model-input\\host-crumbles\\front-toon.png",
+        "roblox-store\\portraits\\Nutmeg.png",
+        "roblox-store\\portraits\\Holly.png",
+        "roblox-store\\maps\\building-harvestbarn.png"
+      ],
+      "reference_roles": [
+        "Crumbles character identity: preserve the attached design, colors and costume.",
+        "Nutmeg character identity: preserve the attached face, hair, eyes, skin tone, clothes and colors.",
+        "Holly character identity: preserve the attached face, hair, eyes, skin tone, clothes and colors.",
+        "Rendering style, soft light, glossy rounded shapes and night atmosphere only; design the Christmas street described above."
+      ],
+      "aspect_ratio": "1:1",
+      "transparent_background": false,
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA SQUARE picture, the Christmas event picture. Crumbles the Gingerbread Giant (the first picture) stomps toward the camera down a snowy candy-striped street, frowning in a funny, not scary way, one big hand reaching for a shiny red-and-white candy cane. Darting out of his way on the left, Nutmeg the reindeer kid (the second picture) grins as she dashes; on the right, Holly (the third picture) giggles behind a big wrapped present. Behind them: little toy-shop houses with warm glowing windows, candy-cane lamp posts, a big lit Christmas tree, gently falling snow, a deep blue night sky. Keep the LEFT third of the picture calm and darker (sky and snow only, no characters) so the game's title can sit beside it.\n\nAttached references in order:\nImage 1: Crumbles character identity: preserve the attached design, colors and costume.\nImage 2: Nutmeg character identity: preserve the attached face, hair, eyes, skin tone, clothes and colors.\nImage 3: Holly character identity: preserve the attached face, hair, eyes, skin tone, clothes and colors.\nImage 4: Rendering style, soft light, glossy rounded shapes and night atmosphere only; design the Christmas street described above.\n\nComposition clarification: keep Nutmeg to the left of Crumbles, but place all three characters entirely within the RIGHT two thirds. The LEFT third must contain only calm, darker sky and snow, with no characters or props. Do not render a title or any other text.\n\nGenerate one opaque PNG image, square (1:1).",
+      "review_checks": [
+        "Square composition with all three characters matching their own references.",
+        "Left third contains only calm, darker sky and snow; Nutmeg is left of Crumbles within the remaining two thirds.",
+        "Crumbles has a funny frown and reaches for the candy cane; Holly giggles behind a wrapped present."
+      ],
+      "status": "generated",
+      "generated_source": "C:\\Users\\bwood\\.codex\\generated_images\\01a1ab3a-2eb9-71a3-a808-81ed582b6e08\\exec-3c168dd0-6132-4364-b0ad-dbd6ad43ebb1.png",
+      "saved_destination": "C:\\Users\\bwood\\OneDrive\\Documents\\Kids Games\\Do You Know Where You Are\\art\\roblox-store\\event-christmas.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "sha256": "f905f65905b58bbbe96a198fbeb09b0b42b181da211cf0c8cc9158dcbc6ec8ff",
+      "review_status": "visually_checked"
+    },
+    {
+      "order": 2,
+      "name": "Candy Cane Lane",
+      "file_name": "maps\\building-candycanelane.png",
+      "picture": "A WIDE 16:9 picture of Candy Cane Lane, a new place in the game, seen from a little above and to the side, in exactly the same style, angle, framing and night lighting as the attached picture (another building in the game): a short snowy street of toy-shop buildings - a big gingerbread house with white icing trim and candy-cane pillars by its door, a toy factory with a big round clock and a chimney puffing white smoke, a wrapping room with a giant bow on its roof - candy-cane striped lamp posts, strings of colored Christmas lights, wrapped presents and toy soldiers' empty sentry boxes along the street, a big lit Christmas tree at the end, snow on every roof, a deep blue night sky with falling snow. No people.",
+      "references": [
+        "roblox-store\\maps\\building-harvestbarn.png"
+      ],
+      "reference_roles": [
+        "Rendering style, slightly elevated side angle, framing and night lighting; design Candy Cane Lane rather than copying the Harvest Barn."
+      ],
+      "aspect_ratio": "16:9",
+      "transparent_background": false,
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of Candy Cane Lane, a new place in the game, seen from a little above and to the side, in exactly the same style, angle, framing and night lighting as the attached picture (another building in the game): a short snowy street of toy-shop buildings - a big gingerbread house with white icing trim and candy-cane pillars by its door, a toy factory with a big round clock and a chimney puffing white smoke, a wrapping room with a giant bow on its roof - candy-cane striped lamp posts, strings of colored Christmas lights, wrapped presents and toy soldiers' empty sentry boxes along the street, a big lit Christmas tree at the end, snow on every roof, a deep blue night sky with falling snow. No people.\n\nAttached references in order:\nImage 1: Rendering style, slightly elevated side angle, framing and night lighting; design Candy Cane Lane rather than copying the Harvest Barn.\n\nThe factory clock has hands on a plain face, with no numbers, letters or markings.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.",
+      "review_checks": [
+        "Wide 16:9; reference camera, framing and night lighting.",
+        "Gingerbread house, toy factory, wrapping room and lit Christmas tree; no people.",
+        "Toy factory clock has hands but no numbers, letters or markings."
+      ],
+      "status": "pending"
+    },
+    {
+      "order": 3,
+      "name": "Frostpeak Lodge",
+      "file_name": "maps\\building-frostpeak.png",
+      "picture": "A WIDE 16:9 picture of Frostpeak Lodge, a new place in the game, seen from a little above and to the side, in exactly the same style, angle, framing and night lighting as the attached picture (another building in the game): a big three-story wooden mountain ski lodge half buried in deep snow on a snowy mountainside, warm glowing windows, a stone chimney with smoke, a small bell tower on top with a bronze bell, icicles along the roof edges, skis and sleds leaning by the door, snowy pine trees around it, big shaggy footprints in the snow leading round the side of the lodge, a starry night sky with a few green-and-blue northern lights. No people, no creature.",
+      "references": [
+        "roblox-store\\maps\\building-harvestbarn.png"
+      ],
+      "reference_roles": [
+        "Rendering style, slightly elevated side angle, framing and night lighting; design Frostpeak Lodge rather than copying the Harvest Barn."
+      ],
+      "aspect_ratio": "16:9",
+      "transparent_background": false,
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of Frostpeak Lodge, a new place in the game, seen from a little above and to the side, in exactly the same style, angle, framing and night lighting as the attached picture (another building in the game): a big three-story wooden mountain ski lodge half buried in deep snow on a snowy mountainside, warm glowing windows, a stone chimney with smoke, a small bell tower on top with a bronze bell, icicles along the roof edges, skis and sleds leaning by the door, snowy pine trees around it, big shaggy footprints in the snow leading round the side of the lodge, a starry night sky with a few green-and-blue northern lights. No people, no creature.\n\nAttached references in order:\nImage 1: Rendering style, slightly elevated side angle, framing and night lighting; design Frostpeak Lodge rather than copying the Harvest Barn.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.",
+      "review_checks": [
+        "Wide 16:9; three-story snowy lodge with bell tower, shaggy footprints and northern lights.",
+        "No people or creatures."
+      ],
+      "status": "pending"
+    },
+    {
+      "order": 4,
+      "name": "Lodge Hall",
+      "file_name": "maps\\floor-frostpeak-hall.png",
+      "picture": "A WIDE 16:9 picture of the inside of the Lodge Hall, the ground floor of the snowy mountain lodge, in exactly the same style, angle, framing and lighting as the attached picture (another floor in the game): a big cozy wooden hall with a roaring stone fireplace, thick rugs, comfy armchairs, a long wooden table with mugs of cocoa, snowshoes and skis on the walls, a coat rack with scarves, windows showing falling snow outside, a staircase going up. Warm firelight and a little spooky shadow in the corners. No people.",
+      "references": [
+        "roblox-store\\maps\\floor-school-ground.png"
+      ],
+      "reference_roles": [
+        "Rendering style, camera angle, framing and lighting; design the Lodge Hall described above."
+      ],
+      "aspect_ratio": "16:9",
+      "transparent_background": false,
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of the inside of the Lodge Hall, the ground floor of the snowy mountain lodge, in exactly the same style, angle, framing and lighting as the attached picture (another floor in the game): a big cozy wooden hall with a roaring stone fireplace, thick rugs, comfy armchairs, a long wooden table with mugs of cocoa, snowshoes and skis on the walls, a coat rack with scarves, windows showing falling snow outside, a staircase going up. Warm firelight and a little spooky shadow in the corners. No people.\n\nAttached references in order:\nImage 1: Rendering style, camera angle, framing and lighting; design the Lodge Hall described above.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.",
+      "review_checks": [
+        "Wide 16:9; cozy wooden hall, fireplace, cocoa table and staircase; no people."
+      ],
+      "status": "pending"
+    },
+    {
+      "order": 5,
+      "name": "Guest Rooms",
+      "file_name": "maps\\floor-frostpeak-rooms.png",
+      "picture": "A WIDE 16:9 picture of the Guest Rooms, the middle floor of the snowy mountain lodge, in exactly the same style, angle, framing and lighting as the attached picture (another floor in the game): a long creaky wooden corridor with plain wooden doors (no numbers), one open onto a cozy guest room with a quilted bed, a wardrobe and a frosty window, a laundry cart piled with towels, wall lamps glowing warm, big shaggy footprints of snow melting along the carpet. A little spooky, still cozy. No people.",
+      "references": [
+        "roblox-store\\maps\\floor-school-classrooms.png"
+      ],
+      "reference_roles": [
+        "Rendering style, camera angle, framing and lighting; design the Guest Rooms described above."
+      ],
+      "aspect_ratio": "16:9",
+      "transparent_background": false,
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of the Guest Rooms, the middle floor of the snowy mountain lodge, in exactly the same style, angle, framing and lighting as the attached picture (another floor in the game): a long creaky wooden corridor with plain wooden doors (no numbers), one open onto a cozy guest room with a quilted bed, a wardrobe and a frosty window, a laundry cart piled with towels, wall lamps glowing warm, big shaggy footprints of snow melting along the carpet. A little spooky, still cozy. No people.\n\nAttached references in order:\nImage 1: Rendering style, camera angle, framing and lighting; design the Guest Rooms described above.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.",
+      "review_checks": [
+        "Wide 16:9; plain unnumbered doors, open guest room, laundry cart and melting snowy footprints; no people."
+      ],
+      "status": "pending"
+    },
+    {
+      "order": 6,
+      "name": "Bell Tower",
+      "file_name": "maps\\floor-frostpeak-belltower.png",
+      "picture": "A WIDE 16:9 picture of the Bell Tower, the top floor of the snowy mountain lodge, in exactly the same style, angle, framing and lighting as the attached picture (another floor in the game): a dusty wooden attic under the roof beams with a big bronze bell hanging in the middle, old trunks and boxes, a rope ladder, a round window with moonlight and snow blowing in, icicles hanging from the beams, a few old lanterns glowing. A little spooky, still cozy. No people.",
+      "references": [
+        "roblox-store\\maps\\floor-school-clocktower.png"
+      ],
+      "reference_roles": [
+        "Rendering style, camera angle, framing and lighting; design the Bell Tower described above."
+      ],
+      "aspect_ratio": "16:9",
+      "transparent_background": false,
+      "prompt": "Picture Standard:\nThis is for a kids' co-op escape game for ages 8 and up: friendly, funny, cozy and a little spooky, never scary. Rich, polished 3D animated-movie style (soft light, glossy rounded shapes), in the same style as the LAST attached picture. Keep every character exactly as in its attached picture (face, hair, eye color, skin tone, clothes and colors). No text, no letters, no numbers, no logos or brand marks. Nothing that looks like a famous character from a film, cartoon or game.\n\nPicture:\nA WIDE 16:9 picture of the Bell Tower, the top floor of the snowy mountain lodge, in exactly the same style, angle, framing and lighting as the attached picture (another floor in the game): a dusty wooden attic under the roof beams with a big bronze bell hanging in the middle, old trunks and boxes, a rope ladder, a round window with moonlight and snow blowing in, icicles hanging from the beams, a few old lanterns glowing. A little spooky, still cozy. No people.\n\nAttached references in order:\nImage 1: Rendering style, camera angle, framing and lighting; design the Bell Tower described above.\n\nGenerate one opaque PNG image, wide landscape with an exact 16:9 aspect ratio.",
+      "review_checks": [
+        "Wide 16:9; attic beams, bronze bell, trunks, rope ladder, snowy round window and lanterns; no people."
+      ],
+      "status": "pending"
+    }
+  ]
+}
