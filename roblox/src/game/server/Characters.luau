@@ -583,6 +583,14 @@ function Characters.host(name)
 		local top = vcf.Position.Y + vsize.Y / 2
 		local wide = root.Size.X > 3 or root.Size.Z > 3
 		local low = root.Position.Y - root.Size.Y / 2 < feet + 0.5
+		-- 5 Nov (Brent: the Robot still way off the ground): the hip height
+		-- is measured from the root's bottom, so a root reaching past the
+		-- feet held the body up in the air. Its height is trimmed around its
+		-- own middle (the model isn't in the world yet, and the joints hang
+		-- off the root's middle, so nothing moves) to end just above the feet
+		if low and root.Position.Y - feet > 1 then
+			root.Size = Vector3.new(root.Size.X, math.max(0.5, (root.Position.Y - feet - 0.2) * 2), root.Size.Z)
+		end
 		if wide or low then
 			local bottom = feet + 1
 			local h = math.max(2, math.min(top, root.Position.Y + root.Size.Y / 2) - bottom)
@@ -611,7 +619,9 @@ function Characters.host(name)
 	do
 		local hum = m:FindFirstChildOfClass("Humanoid")
 		local root = m.HumanoidRootPart
-		local hcf, hsize = m:GetBoundingBox()
+		-- (5 Nov) from the feet you can see - Avatar Setup's invisible helpers
+		-- and the collision pillar aren't the floor
+		local hcf, hsize = ModelBounds(m)
 		local hip = (root.Position.Y - root.Size.Y / 2) - (hcf.Position.Y - hsize.Y / 2)
 		if hum and hip > 0.1 then
 			hum.HipHeight = hip

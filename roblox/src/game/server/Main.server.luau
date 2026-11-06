@@ -5736,8 +5736,88 @@ SetDifficulty.OnServerEvent:Connect(function(plr, key)
 		return say("info", "Only the party leader can change the difficulty.", nil, plr)
 	end
 	if typeof(key) == "string" and Config.DIFFICULTY[key] and not (host and host.model) then
+		-- 5 Nov: set once the escape timer runs (the floor is made for it)
+		if state.status == "playing" and state.endsAt and state.endsAt ~= math.huge then
+			return say("info", "The difficulty is set once the game starts - pick it in the Lobby or before everyone has chosen.", nil, plr)
+		end
 		RoundState:SetAttribute("Difficulty", key)
 		say("info", "Difficulty: " .. Config.DIFFICULTY[key].name)
+	end
+end)
+
+-- 5 Nov (Brent: some Hard / Nightmare games had a 3-color code): the floor is
+-- made for the difficulty when the round starts, but it can still change
+-- while characters are chosen (the leader's picker, or a player arriving with
+-- the Lobby's choice). Until the timer starts the round follows it: the code
+-- gets its 4th color (an unpopped trick balloon becomes balloon 4) or loses
+-- it, the clues change by the difference, and the timer and host use the new
+-- difficulty when they start. After that it stays as it was.
+RoundState:GetAttributeChangedSignal("Difficulty"):Connect(function()
+	local key = RoundState:GetAttribute("Difficulty") or "normal"
+	local new, old = Config.DIFFICULTY[key], Config.DIFFICULTY[state.diff or ""]
+	if not new or not old or key == state.diff or state.status ~= "playing" or not world or not state.code then
+		return
+	end
+	if (state.endsAt and state.endsAt ~= math.huge) or (host and host.model) or (state.towerFloor or 1) > 1 then
+		RoundState:SetAttribute("Difficulty", state.diff) -- too late: back to this game's
+		return
+	end
+	state.diff = key
+	-- clues: the new difficulty's count, less any already used
+	state.cluesLeft = math.max(0, state.cluesLeft + (new.clues or 0) - (old.clues or 0))
+	RoundState:SetAttribute("CluesLeft", state.cluesLeft)
+	-- the code's length
+	local want, have = new.code or 3, #state.code
+	if want ~= have then
+		local balloons = {}
+		for _, e in pairs(world.objects) do
+			if e.def.kind == "balloon" then
+				table.insert(balloons, e)
+			end
+		end
+		local function relabel(e)
+			if e.label and not e.popped then
+				e.label.Text = tostring(e.def.n)
+			end
+			if e.prompt then
+				e.prompt.ObjectText = "Balloon " .. e.def.n
+			end
+		end
+		if want > have then
+			for i = have + 1, want do
+				state.code[i] = Config.COLORS[math.random(1, #Config.COLORS)]
+				local tricks = {}
+				for _, e in ipairs(balloons) do
+					if e.def.decoy and not e.popped then
+						table.insert(tricks, e)
+					end
+				end
+				if #tricks > 0 then
+					local e = tricks[math.random(1, #tricks)]
+					e.def.decoy = nil
+					e.def.n = i
+					relabel(e)
+				end
+			end
+		else
+			for i = have, want + 1, -1 do
+				state.code[i] = nil
+				state.known[i] = nil
+				RoundState:SetAttribute("Known" .. i, nil)
+				for _, e in ipairs(balloons) do
+					if not e.def.decoy and e.def.n == i then
+						e.def.decoy = true
+						e.def.n = math.random(1, want)
+						relabel(e)
+					end
+				end
+			end
+		end
+		RoundState:SetAttribute("CodeLen", want)
+		RoundState:SetAttribute("MapJson", HttpService:JSONEncode(MapGen.forClient(HouseMap)))
+	end
+	if RunService:IsStudio() then
+		print("[Difficulty] " .. new.name .. " before the timer: the code has " .. #state.code .. " colors, " .. state.cluesLeft .. " clues")
 	end
 end)
 
