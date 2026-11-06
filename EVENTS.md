@@ -58,21 +58,27 @@ skins - they must all be in the game on Nov 1.**
 
 Picture: `art/roblox-store/events/event-christmas.png` (1920 x 1080; made by
 `tools/make_event_art.py christmas` from the square picture
-`art/roblox-store/event-christmas.png`, 5 Nov). **This page promises Candy
-Cane Lane, Crumbles, the candy canes, the Christmas Shop, Nutmeg and Holly -
-they must all be in the game on Dec 1.**
+`art/roblox-store/event-christmas.png`, 5 Nov; remade 5 Nov evening with
+Claus Manor and Elfy). **This page promises Candy Cane Lane, Crumbles, Claus
+Manor, Mr and Mrs Claus, the Toy Elf decoys, Elfy, the candy canes, the
+Christmas Shop with 13 Christmas skins, Nutmeg and Holly - they must all be
+in the game on Dec 1.**
 
 - **Title:** Christmas Candy Cane Hunt
-- **Subtitle:** Find candy canes and escape Candy Cane Lane
+- **Subtitle:** Candy canes, Claus Manor and Elfy
 - **Description:**
   Christmas comes to Escape Crew! Six candy canes are hidden on every floor
-  of every building - grab them while you escape. Then sneak through Candy
-  Cane Lane, a snowy toy town open only during the event, where Crumbles the
-  Gingerbread Giant drops crumbs as he stomps around. Step on them and CRUNCH,
-  he comes running! Spend candy canes in the Lobby's Christmas Shop on boosts,
-  a Gift Box Hideout and a Cocoa Thermos, or save up for Nutmeg the reindeer
-  kid. Holly the peppermint trap-setter joins the crew too. Find 50 candy
-  canes for the Candy Cane Collector badge. The event ends January 1, so
+  of every building - grab them while you escape. Sneak through Candy Cane
+  Lane, a snowy toy town where Crumbles the Gingerbread Giant drops crumbs as
+  he stomps around. Step on them and CRUNCH, he comes running! Then creep
+  into Claus Manor, where grumpy Mr and Mrs Claus guard three floors of
+  presents. Open every real present to unlock the door - but some are
+  decoys, and a jingling Toy Elf pops out and calls the Clauses! Open 150
+  presents to win Elfy, the limited-edition elf you can only earn during the
+  event. Spend candy canes in the Lobby's Christmas Shop on boosts and 13
+  Christmas skins, or save up for Nutmeg the reindeer kid. Holly the
+  peppermint trap-setter joins the crew too. Find 50 candy canes for the
+  Candy Cane Collector badge. Both Christmas buildings close January 1, so
   gather your crew!
 - **Starts:** December 1, 12:00 AM Eastern Time (November 30, 9:00 PM
   Pacific) - the moment Thanksgiving ends.

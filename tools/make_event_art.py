@@ -49,6 +49,8 @@ EVENTS = {
         title=["CANDY CANE", "HUNT"],
         lines=["Candy canes hidden on every floor",
                "Escape Candy Cane Lane from Crumbles",
+               "Hunt presents past Mr and Mrs Claus",
+               "Win Elfy, the limited-edition elf",
                "Nutmeg and Holly join the crew",
                "December 1 - 31"],
         accent=(255, 110, 110),
@@ -71,7 +73,7 @@ def make(key, out):
     rnd = random.Random(5)
     for _ in range(140):
         x, y, r = rnd.randrange(W), rnd.randrange(H), rnd.choice((1, 2, 2, 3))
-        if x < 1000 and 130 < y < 830:
+        if x < 1000 and 130 < y < 960:
             continue  # (5 Nov) none among the words: a star there reads as a dot in the text
         d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 240, 200))
     # the picture on the right, fading into the sky on its left edge
