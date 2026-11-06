@@ -768,6 +768,9 @@ Config.CHARACTER_ASSETS = {
 	ShadowSilentNight = 77927722211304, -- 5 Nov: Silent Night Shadow (checked on Roblox: Model 'ShadowSilentNight', Brent's upload)
 	GlowTwinkle = 99378436384952, -- 5 Nov: Twinkle Lights Glow (checked on Roblox: Model 'GlowTinkle' - saved with that spelling, Brent's upload)
 	TinkerToymaker = 134408108781470, -- 5 Nov: Toy Maker Tinker (checked on Roblox: Model 'TinkerToyMaker', Brent's upload)
+	MuscleSweater = 91184977563726, -- 5 Nov: Holiday Sweater Muscle (checked on Roblox: Model 'MuscleSweater', Brent's upload)
+	EchoJingle = 97602416714516, -- 5 Nov: Jingle Bell Echo (checked on Roblox: Model 'EchoJingle', Brent's upload)
+	BrambleEvergreen = 122988096493064, -- 5 Nov: Evergreen Bramble (checked on Roblox: Model 'BrambleEvergreen', Brent's upload)
 	HostYeti = 138655463727624, -- 5 Nov: Frostfoot the Yeti, Frostpeak Lodge's host (New Year's; checked on Roblox: Model 'FrostFoot', Brent's upload)
 	CloneGala = 137284317587849, -- 5 Nov: Harvest Gala Clone (checked on Roblox: Model, Brent's upload)
 	HollyCranberry = 139043771129248, -- 5 Nov: Cranberry Spice Holly (checked on Roblox: Model 'HollyCranberry', Brent's upload)
@@ -1074,9 +1077,9 @@ Config.SKINS = {
 	{ id = "shadow_silentnight", skill = "shadow", name = "Silent Night Shadow", model = "ShadowSilentNight", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "glow_twinkle", skill = "glow", name = "Twinkle Lights Glow", model = "GlowTwinkle", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "tinker_toymaker", skill = "tinker", name = "Toy Maker Tinker", model = "TinkerToymaker", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "muscle_sweater", skill = "muscle", name = "Holiday Sweater Muscle", model = "MuscleSweater", cane = 150, pass = 0, hidden = true },
-	{ id = "echo_jingle", skill = "echo", name = "Jingle Bell Echo", model = "EchoJingle", cane = 150, pass = 0, hidden = true },
-	{ id = "bramble_evergreen", skill = "bramble", name = "Evergreen Bramble", model = "BrambleEvergreen", cane = 150, pass = 0, hidden = true },
+	{ id = "muscle_sweater", skill = "muscle", name = "Holiday Sweater Muscle", model = "MuscleSweater", cane = 150, pass = 0 }, -- 5 Nov: model saved
+	{ id = "echo_jingle", skill = "echo", name = "Jingle Bell Echo", model = "EchoJingle", cane = 150, pass = 0 }, -- 5 Nov: model saved
+	{ id = "bramble_evergreen", skill = "bramble", name = "Evergreen Bramble", model = "BrambleEvergreen", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "nutmeg_snowflake", skill = "nutmeg", name = "Snowflake Nutmeg", model = "NutmegSnowflake", cane = 150, pass = 0, hidden = true },
 	{ id = "cloud_snow", skill = "cloud", name = "First Snow Cloud", model = "CloudSnow", cane = 150, pass = 0, hidden = true },
 	{ id = "holly_sugarplum", skill = "holly", name = "Sugar Plum Holly", model = "HollySugarplum", cane = 150, pass = 0, hidden = true },
