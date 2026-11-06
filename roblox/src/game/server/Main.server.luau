@@ -332,7 +332,12 @@ local function applyMods(plr)
 	plr:SetAttribute("LullabyRange", Config.HARMONY.range + (m.lullabyRange or 0))
 	plr:SetAttribute("LullabyRun", Config.HARMONY.runTime + (m.lullabyRun or 0)) -- (5 Nov) the speed burst
 	-- 7 Nov (Brent: the +1 clue picks replaced by each character's own)
-	plr:SetAttribute("ToolkitStamina", m.toolkitStamina or 0)
+	plr:SetAttribute("ButtonStamina", m.buttonStamina or 0) -- (7 Nov) % back each time your own button works
+	plr:SetAttribute("ButtonBurst", m.buttonBurst or 0) -- (7 Nov) s of a 10% run each time
+	plr:SetAttribute("ShieldStamina", m.shieldStamina or 0) -- (7 Nov) Patch
+	plr:SetAttribute("FreeStamina", m.freeStamina or 0)
+	plr:SetAttribute("RescueCool", m.rescueCool or 0)
+	plr:SetAttribute("FreeSneak", m.freeSneak or 0)
 	plr:SetAttribute("MouseTime", Config.MOUSE.seconds + (m.mouseTime or 0))
 	plr:SetAttribute("BootsTime", Config.ROCKET_BOOTS.seconds + (m.bootsTime or 0))
 	plr:SetAttribute("PoundRange", Config.POUND.range + (m.poundRange or 0))
@@ -1445,6 +1450,25 @@ local function wirePrompts()
 					Effects.ring(world.objects.cage.outside - Vector3.new(0, 2.8, 0), Color3.fromRGB(255, 210, 63), 26, 0.9)
 					-- (7 Nov) Patch's Hero Points / Golden Rescue: more for each friend
 					addPoints(plr, (20 + (plr:GetAttribute("RescuePoints") or 0)) * freed)
+					-- 7 Nov (Brent): Patch's Pep Talk (stamina), Safe Exit (unseen a
+					-- moment), Quick Patch-up / Rescue Rush (her Shield sooner)
+					if plr:GetAttribute("Skill") == "patch" then
+						local nowR = workspace:GetServerTimeNow()
+						local fs, sn = plr:GetAttribute("FreeStamina") or 0, plr:GetAttribute("FreeSneak") or 0
+						for _, p in ipairs(freedList) do
+							if fs > 0 then
+								Boost:FireClient(p, "plus", fs)
+							end
+							if sn > 0 then
+								p:SetAttribute("SneakUntil", math.max(p:GetAttribute("SneakUntil") or 0, nowR + sn))
+								Effects.aura(p, "sneak", sn)
+							end
+						end
+						local rc = plr:GetAttribute("RescueCool") or 0
+						if rc > 0 and (plr:GetAttribute("CoolUntil") or 0) > nowR then
+							plr:SetAttribute("CoolUntil", math.max(nowR, plr:GetAttribute("CoolUntil") - rc))
+						end
+					end
 					-- 7 Nov (Brent: Medic Run wasn't worth taking): each friend Patch
 					-- frees leaves with a Party Shield; she and they get a speed burst
 					if plr:GetAttribute("Skill") == "patch" and plr:GetAttribute("Power20") == "medicrun" then
@@ -4345,7 +4369,7 @@ do
 	-- Elfy's wind-up toy soldier (5 Nov): marches `march` studs a second along
 	-- `dir` (stopping at walls) for Config.ELFY.toy s (+band); every `every`
 	-- s each host within earshot goes after it (as after Echo's noise)
-	function round.windUpToy(plr, hrp, dir, band, stun)
+	function round.windUpToy(plr, hrp, dir, band, stun, dash)
 		local E = Config.ELFY
 		stun = stun or E.toyStun -- (5 Nov) a host reaching the toy is stunned
 		local seconds = (plr:GetAttribute("ToyTime") or E.toy) + (band and E.band or 0) -- (7 Nov: Long Spring)
@@ -4402,13 +4426,18 @@ do
 		Effects.burst(ground + Vector3.new(0, 1, 0), "noise")
 		task.spawn(function()
 			local start, last, nextCall = os.clock(), os.clock(), 0
+			-- 7 Nov (Brent: Wrapped Up - the toy stayed right by Elfy's present):
+			-- it dashes off fast first, and the hosts are called only once it's away
+			if dash then
+				nextCall = start + E.wrappedDash * 0.6
+			end
 			while m.Parent and state == myState and state.status == "playing" do
 				local now = os.clock()
 				local t = now - start
 				if t >= seconds then
 					break
 				end
-				local step = (now - last) * E.march
+				local step = (now - last) * ((dash and t < E.wrappedDash) and E.wrappedMarch or E.march)
 				last = now
 				local hit = workspace:Raycast(pos + Vector3.new(0, 1, 0), dir * (step + 1.2), params)
 				if hit then
@@ -4457,11 +4486,6 @@ do
 			Effects.icon(plr, "\u{1F527}", 1.6)
 			Effects.at(plr, "pick")
 			say("info", "\u{1F527} Toolkit ready: your next lock or keypad picks in an instant.", nil, plr)
-			-- (7 Nov) Spare Battery / Bigger Battery: some stamina back
-			local ts = plr:GetAttribute("ToolkitStamina") or 0
-			if ts > 0 then
-				Boost:FireClient(plr, "plus", ts)
-			end
 			if p10 == "mouse" then
 				windUpMouse(plr)
 			end
@@ -4683,7 +4707,7 @@ do
 		elseif skill == "elfy" then
 			-- Wind-up Toy (5 Nov): a toy soldier marches off straight ahead
 			-- jingling; the hosts within earshot go after it
-			round.windUpToy(plr, hrp, hrp.CFrame.LookVector, p10 == "band")
+			round.windUpToy(plr, hrp, hrp.CFrame.LookVector, p10 == "band", nil, p10 == "wrapped")
 			if p10 == "wrapped" then
 				applyBoost(plr, "giftbox", Config.ELFY.wrapped)
 				say("info", "\u{1F381} " .. plr.DisplayName .. " set down a wind-up toy and hid inside a present!")
@@ -4824,7 +4848,7 @@ do
 						for _, a in ipairs({ "SneakTime", "GlowRange", "FlareTime", "FlareRange", "FlareStamina", "EchoRange", "BurstMult", "BurstTime",
 							"BarricadeHold", "VineTime", "ThinkTime", "HealAmount", "HealShield", "CloneTime", "DashTime", "PullRange", "NoseRange",
 							"FogRadius", "FogTime", "PatchTime", "PatchRadius", "SlipTime",
-							"ToolkitStamina", "MouseTime", "BootsTime", "PoundRange", "SelfShield", "LureTime", "VineSlow", "ToyTime" }) do
+							"MouseTime", "BootsTime", "PoundRange", "SelfShield", "LureTime", "VineSlow", "ToyTime" }) do
 							if k.p:GetAttribute(a) ~= nil then
 								plr:SetAttribute(a, k.p:GetAttribute(a))
 							end
@@ -5604,6 +5628,29 @@ GrowHedge.OnServerEvent:Connect(function(plr)
 	end
 end)
 
+-- 7 Nov (Brent: the ladder's repeats replaced): each time a player's own
+-- button works (not a copy), the ladder's stamina back (ButtonStamina %) and a
+-- run (ButtonBurst s at Config.BUTTON_BURST) - never cutting a faster run short
+local function afterButton(plr, slot, now)
+	if slot then
+		return
+	end
+	local bs = plr:GetAttribute("ButtonStamina") or 0
+	if bs > 0 then
+		Boost:FireClient(plr, "plus", bs)
+	end
+	local bb = plr:GetAttribute("ButtonBurst") or 0
+	if bb > 0 then
+		local mult = Config.BUTTON_BURST
+		local u, m0 = plr:GetAttribute("TeamBurstUntil") or 0, plr:GetAttribute("TeamBurstMult") or 1
+		if not (u > now and m0 > mult) then
+			plr:SetAttribute("TeamBurstMult", mult)
+			plr:SetAttribute("TeamBurstUntil", math.max(u > now and u or 0, now + bb))
+			Effects.aura(plr, "speed", bb)
+		end
+	end
+end
+
 -- a skill used by its own button - or (4 Nov) one of Clone's copies of a
 -- friend's (slot 1 / 2), which runs just like the friend's own, at its basic
 -- strength (Full Copy: the friend's), with its own recharge CopyCool1 / 2
@@ -5639,6 +5686,7 @@ local function runSkill(plr, skill, pos, slot)
 				Effects.aura(plr, "speed", bs)
 				say("info", "\u{1F680} Rocket Boots! Run!", nil, plr)
 			end
+			afterButton(plr, slot, now)
 			plr:SetAttribute(coolKey, now + cd * coolMult)
 			quest(plr, "skill")
 		end
@@ -5664,6 +5712,9 @@ local function runSkill(plr, skill, pos, slot)
 						p:SetAttribute("Shield", true)
 						p:SetAttribute("SelfShieldAt", nil)
 						given += 1
+						if (plr:GetAttribute("ShieldStamina") or 0) > 0 then
+							Boost:FireClient(p, "plus", plr:GetAttribute("ShieldStamina")) -- (7 Nov: Healing Touch)
+						end
 					elseif d < nd then
 						nearest, nd = p, d
 					end
@@ -5674,6 +5725,9 @@ local function runSkill(plr, skill, pos, slot)
 			nearest:SetAttribute("Shield", true)
 			nearest:SetAttribute("SelfShieldAt", nil)
 			given += 1
+			if (plr:GetAttribute("ShieldStamina") or 0) > 0 then
+				Boost:FireClient(nearest, "plus", plr:GetAttribute("ShieldStamina")) -- (7 Nov: Healing Touch)
+			end
 		end
 		if given == 0 then
 			if plr:GetAttribute("Shield") and plr:GetAttribute("SelfShieldAt") == nil then
@@ -5782,6 +5836,7 @@ local function runSkill(plr, skill, pos, slot)
 	plr:SetAttribute("SkillSecond", false)
 	-- Shadow's recharge starts when the sneak ends (never hidden all the time)
 	local after = skill == "shadow" and (plr:GetAttribute("SneakTime") or 6) or 0
+	afterButton(plr, slot, now)
 	plr:SetAttribute(coolKey, now + after + cd * coolMult)
 	quest(plr, "skill")
 end

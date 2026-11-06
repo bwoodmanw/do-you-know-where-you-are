@@ -218,11 +218,11 @@ local SPECIAL = {
 		},
 		[7] = {
 			{ id = "toolbelt", name = "Tool Belt", say = "Toolkit recharges 10% faster", mods = { cooldownMult = 0.9 } },
-			{ id = "battery7", name = "Spare Battery", say = "Each Toolkit also gives you 15% stamina", mods = { toolkitStamina = 15 } }, -- 7 Nov (Brent): was a +1 free clue
+			{ id = "battery7", name = "Spare Battery", say = "Each Toolkit also gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[9] = {
 			{ id = "expert", name = "Expert Hands", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
-			{ id = "cloak", name = "Gadget Cloak", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "jet9", name = "Jet Pack", say = "After each Toolkit you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[10] = {
 			{ id = "mouse10", name = "Wind-up Mouse", say = "Toolkit also lets a squeaky toy mouse run off - the host chases it for 5 s", mods = { p10 = "mouse" } },
@@ -234,15 +234,15 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "mouse13", name = "Long Run Mouse", say = "Your Wind-up Mouse (level 10) runs 2 s longer", mods = { mouseTime = 2 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "belt13", name = "Light Tool Belt", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "pack13", name = "Battery Pack", say = "Each Toolkit also gives you 10% stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "tk15", name = "Oiled Toolkit", say = "Toolkit recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "battery15", name = "Bigger Battery", say = "Each Toolkit also gives you 10% more stamina", mods = { toolkitStamina = 10 } }, -- 7 Nov (Brent): was a +1 free clue
+			{ id = "battery15", name = "Bigger Battery", say = "Each Toolkit also gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[17] = {
 			{ id = "hands17", name = "Steady Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
-			{ id = "quiet17", name = "Soft Soles", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "wheels17", name = "Turbo Wheels", say = "After each Toolkit you run 10% faster for 2 s more", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "tk19", name = "Turbo Toolkit", say = "Toolkit recharges 20% faster", mods = { cooldownMult = 0.8 } },
@@ -260,15 +260,15 @@ local SPECIAL = {
 		},
 		[5] = {
 			{ id = "ghost", name = "Longer Sneak", say = "Sneak lasts 2 s longer", mods = { sneakTime = 2 } },
-			{ id = "blur", name = "Light Feet", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "step5", name = "Shadow Step", say = "Each Sneak starts with a run: 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
-			{ id = "shade", name = "Shade", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "breath7", name = "Night Breath", say = "Each Sneak gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 			{ id = "rest", name = "Quick Rest", say = "Sneak recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[9] = {
 			{ id = "phantom", name = "Phantom", say = "Sneak lasts 2 s longer", mods = { sneakTime = 2 } },
-			{ id = "dash", name = "Quick Breath", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "swift9", name = "Swift Shadow", say = "Your Sneak's run lasts 1 s longer", mods = { buttonBurst = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[10] = {
 			{ id = "clone10", name = "Shadow Clone", say = "Sneak also sends a dark copy of you running off - the host chases it for 4 s", mods = { p10 = "clone" } },
@@ -276,11 +276,11 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "clone11", name = "Lasting Shadow", say = "Your clone fools the host 1 s longer", mods = { cloneTime = 1 } },
-			{ id = "silent11", name = "Silent", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "dark11", name = "Dark Breath", say = "Each Sneak gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[13] = {
 			{ id = "rest13", name = "Short Rest", say = "Sneak recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "dash13", name = "Quick Hands", say = "Hold things 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "slip13", name = "Slip Away", say = "Your Sneak's run lasts 1 s longer", mods = { buttonBurst = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "clone15", name = "Deep Shadow", say = "Your clone fools the host 1 s longer", mods = { cloneTime = 1 } },
@@ -288,7 +288,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "rest17", name = "Swift Rest", say = "Sneak recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "shade17", name = "Light Fingers", say = "Hold things 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "second17", name = "Second Shadow", say = "Each Sneak gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "clone19", name = "Living Shadow", say = "Your clone fools the host 1 s longer", mods = { cloneTime = 1 } },
@@ -328,19 +328,19 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "read13", name = "Fast Reader", say = "Read and use things 15% faster", mods = { holdMult = 0.85 } },
-			{ id = "watch13", name = "Watchful", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "eureka13", name = "Eureka!", say = "Each Think! gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "think15", name = "Bright Idea", say = "Think! recharges 20% faster", mods = { cooldownMult = 0.8 } },
-			{ id = "lungs15", name = "Deep Thinker", say = "5% more stamina", mods = { staminaMult = 1.05 } },
+			{ id = "thought15", name = "Long Thought", say = "The Think! arrow stays 3 s longer", mods = { thinkTime = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[17] = {
 			{ id = "hint17", name = "Deep Think", say = "The Think! arrow stays 5 s longer", mods = { thinkTime = 5 } },
-			{ id = "dash17", name = "Fresh Air", say = "7% more stamina", mods = { staminaMult = 1.07 } },
+			{ id = "brain17", name = "Brain Dash", say = "After each Think! you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "think19", name = "Brainwave", say = "Think! recharges 25% faster", mods = { cooldownMult = 0.75 } },
-			{ id = "quiet19", name = "Library Voice", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "focus19", name = "Deep Focus", say = "The Think! arrow stays 3 s longer", mods = { thinkTime = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[20] = {
 			{ id = "photo20", name = "Photographic Memory", say = "Your first Think! each game also shows one color of the door code (not on Nightmare)", mods = { p20 = "photo" } },
@@ -353,8 +353,8 @@ local SPECIAL = {
 			{ id = "tough", name = "Tough", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[5] = {
-			{ id = "sprinter", name = "Stay Low", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
-			{ id = "stamina", name = "Strong Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "warmup5", name = "Warm Up", say = "After each barricade you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
+			{ id = "breath5", name = "Big Breath", say = "Each barricade gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
 			{ id = "push", name = "Strong Push", say = "Shove, free friends and search 10% faster", mods = { holdMult = 0.9 } },
@@ -374,7 +374,7 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "hold13", name = "Solid Barricade", say = "The host is stuck at your barricade 1 s longer", mods = { barricadeHold = 1 } },
-			{ id = "lungs13", name = "Big Chest", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "quake13", name = "Earthquake", say = "Your Ground Pound (level 10) reaches 2 studs further", mods = { poundRange = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "build15", name = "Fast Builder", say = "Your button recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -382,7 +382,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "hold17", name = "Rock Barricade", say = "The host is stuck at your barricade 1 s longer", mods = { barricadeHold = 1 } },
-			{ id = "sprint17", name = "Crouch", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "snack17", name = "Protein Snack", say = "Each barricade gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "titan19", name = "Mighty", say = "The host is stuck at your barricade 1 s longer", mods = { barricadeHold = 1 } },
@@ -400,7 +400,7 @@ local SPECIAL = {
 		},
 		[5] = {
 			{ id = "sun", name = "Bright Beam", say = "Your light reaches 4 studs further", mods = { glowRange = 4 } },
-			{ id = "dazzle", name = "Twinkle", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "warm5", name = "Warm Light", say = "Your Flare gives friends 3% more stamina", mods = { flareStamina = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
 			{ id = "lamp", name = "Big Lamp", say = "Your light reaches 4 studs further", mods = { glowRange = 4 } },
@@ -408,7 +408,7 @@ local SPECIAL = {
 		},
 		[9] = {
 			{ id = "flood", name = "Floodlight", say = "Your light reaches 4 studs further", mods = { glowRange = 4 } },
-			{ id = "flash", name = "Flash", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "linger9", name = "Lingering Light", say = "Your Flare lasts 1 s longer", mods = { flareTime = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[10] = {
 			{ id = "nightlight10", name = "Night Light", say = "Flare also leaves a lamp: the room stays lit 20 s, and anyone who comes near it gets 50% stamina once", mods = { p10 = "nightlight" } }, -- (5 Nov, Brent)
@@ -420,11 +420,11 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "quick13", name = "Quick Spark", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "dim13", name = "Busy Hands", say = "Hold things 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "speed13", name = "Light Speed", say = "After each Flare you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "flare15", name = "Longer Flare", say = "Flare lasts 2 s longer, reaches 4 studs further, +2% stamina", mods = { flareTime = 2, flareRange = 4, flareStamina = 2 } },
-			{ id = "worm15", name = "Glow Worm", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "wide15", name = "Wide Flare", say = "Your Flare reaches friends 4 studs further", mods = { flareRange = 4 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[17] = {
 			{ id = "quick17", name = "Bright Spark", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -445,7 +445,7 @@ local SPECIAL = {
 			{ id = "quickheal", name = "Quick Shield", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[5] = {
-			{ id = "guardian", name = "Soft Shoes", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "touch5", name = "Healing Touch", say = "Each friend you shield also gets 20% stamina", mods = { shieldStamina = 20 } }, -- 7 Nov (Brent: a repeat replaced)
 			{ id = "medic", name = "Helper", say = "Free friends from the cage 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[7] = {
@@ -465,20 +465,20 @@ local SPECIAL = {
 			{ id = "nurse11", name = "Gentle Hands", say = "Free friends from the cage 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[13] = {
-			{ id = "lungs13", name = "Fresh Air", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "patchup13", name = "Quick Patch-up", say = "Freeing friends takes 10 s off your Shield's recharge", mods = { rescueCool = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 			{ id = "shield13", name = "Own Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[15] = {
-			{ id = "hero15", name = "Hero Points", say = "+10 points for every friend you free from the cage", mods = { rescuePoints = 10 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "nurse15", name = "Second Wind", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "pep15", name = "Pep Talk", say = "Friends you free from the cage get 30% stamina", mods = { freeStamina = 30 } }, -- 7 Nov (Brent: a repeat replaced)
+			{ id = "hug15", name = "Warm Hug", say = "Each friend you shield also gets 15% more stamina", mods = { shieldStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[17] = {
-			{ id = "quiet17", name = "Quiet Shoes", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "exit17", name = "Safe Exit", say = "Friends you free are unseen by the host for 3 s", mods = { freeSneak = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 			{ id = "bubble17", name = "Strong Bubble", say = "Your shield on yourself lasts 10 s longer", mods = { selfShield = 10 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[19] = {
 			{ id = "care19", name = "Golden Heart", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "hero19", name = "Golden Rescue", say = "+15 points for every friend you free from the cage", mods = { rescuePoints = 15 } }, -- 7 Nov (Brent): was a +1 free clue
+			{ id = "rush19", name = "Rescue Rush", say = "Freeing friends takes 10 s more off your Shield's recharge", mods = { rescueCool = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[20] = {
 			{ id = "guardian20", name = "Jailbreak", say = "A Jailbreak button: once a game, within 35 studs of the cage, everyone in it is freed after 1 s", mods = { p20 = "guardian" } }, -- (5 Nov, Brent; was Guardian)
@@ -491,12 +491,12 @@ local SPECIAL = {
 			{ id = "echoquick", name = "Quick Echo", say = "Noise recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[5] = {
-			{ id = "radar", name = "Good Ears", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "breather5", name = "Breather", say = "Each noise gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 			{ id = "echofast", name = "Quick Burst", say = "Your burst lasts 1 s longer", mods = { burstTime = 1 } },
 		},
 		[7] = {
 			{ id = "far", name = "Far Throw", say = "Throw a noise 10 studs further", mods = { echoRange = 10 } },
-			{ id = "hush", name = "Hush", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "catchy7", name = "Catchy Tune", say = "The host follows your noise 1 s longer", mods = { lureTime = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[9] = {
 			{ id = "boomer", name = "Boomer", say = "Throw a noise 15 studs further", mods = { echoRange = 15 } },
@@ -512,7 +512,7 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "quick13", name = "Quick Echo", say = "Noise recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "ears13", name = "Nimble", say = "Hold things 15% faster", mods = { holdMult = 0.85 } },
+			{ id = "singer13", name = "Singer's Breath", say = "Each noise gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "burst15", name = "Strong Burst", say = "Your burst: 2% faster and 1 s longer", mods = { burstMult = 0.02, burstTime = 1 } },
@@ -520,7 +520,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "lure17", name = "Long Echo", say = "The host follows your noise 1 s longer", mods = { lureTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "lungs17", name = "Singer's Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "beat17", name = "Speedy Beat", say = "Your burst: 2% faster", mods = { burstMult = 0.02 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "burst19", name = "Rush", say = "Your burst: 2% faster", mods = { burstMult = 0.02 } },
@@ -534,10 +534,10 @@ local SPECIAL = {
 	bramble = {
 		[3] = {
 			{ id = "whisper", name = "Plant Whisperer", say = "Ask the plant 20% faster", mods = { holdMult = 0.8 } },
-			{ id = "roots", name = "Deep Roots", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "leaves3", name = "Fresh Leaves", say = "Each Vines gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[5] = {
-			{ id = "camo", name = "Leafy", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "deep5", name = "Deep Roots", say = "Vines last 1 s longer", mods = { vineTime = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 			{ id = "bloom", name = "Bloom", say = "Your team starts knowing one color of the code (one a game, not on Nightmare)", mods = { revealOne = true } },
 		},
 		[7] = {
@@ -545,7 +545,7 @@ local SPECIAL = {
 			{ id = "vines", name = "Ivy", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[9] = {
-			{ id = "thicket", name = "Thicket", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "spring9", name = "Spring Leaves", say = "After each Vines you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 			{ id = "seedling9", name = "Seedling", say = "Vines last 1 s longer", mods = { vineTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[10] = {
@@ -558,7 +558,7 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "quick13", name = "Fast Growth", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "roots13", name = "Strong Roots", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "sap13", name = "Sap Drink", say = "Each Vines gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "vine15", name = "Bramble Wall", say = "Vines last 2 s longer", mods = { vineTime = 2 } },
@@ -582,11 +582,11 @@ local SPECIAL = {
 	harmony = {
 		[3] = {
 			{ id = "verse3", name = "Long Verse", say = "Lullaby lasts 1 s longer", mods = { lullabyTime = 1 } },
-			{ id = "breath3", name = "Deep Breath", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "control3", name = "Breath Control", say = "Each Lullaby gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[5] = {
 			{ id = "tempo5", name = "Quick Tempo", say = "Lullaby recharges 10% faster", mods = { cooldownMult = 0.9 } },
-			{ id = "hum5", name = "Soft Hum", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "carry5", name = "Carrying Voice", say = "Lullaby reaches 3 studs further", mods = { lullabyRange = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
 			{ id = "voice7", name = "Big Voice", say = "Lullaby reaches 5 studs further", mods = { lullabyRange = 5 } },
@@ -594,7 +594,7 @@ local SPECIAL = {
 		},
 		[9] = {
 			{ id = "verse9", name = "Second Verse", say = "Lullaby lasts 1 s longer", mods = { lullabyTime = 1 } },
-			{ id = "keys9", name = "Piano Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+			{ id = "step9", name = "Quick Step", say = "Lullaby's speed burst lasts 1 s longer", mods = { lullabyRun = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[10] = {
 			{ id = "chorus10", name = "Chorus", say = "Lullaby also takes 5 s off every friend's recharge", mods = { p10 = "chorus" } },
@@ -602,11 +602,11 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "tempo11", name = "Allegro", say = "Lullaby recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "lungs11", name = "Singer's Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "lungs11b", name = "Singer's Lungs", say = "Each Lullaby gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[13] = {
 			{ id = "voice13", name = "Echoing Voice", say = "Lullaby reaches 5 studs further", mods = { lullabyRange = 5 } },
-			{ id = "hum13", name = "Whisper", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "loud13", name = "Loud Chorus", say = "Lullaby reaches 3 studs further", mods = { lullabyRange = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "ear15", name = "Perfect Pitch", say = "Listen to the music box 20% faster", mods = { holdMult = 0.8 } },
@@ -614,7 +614,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "dance17", name = "Dance Steps", say = "Lullaby's speed burst lasts 2 s longer (5 s)", mods = { lullabyRun = 2 } }, -- 5 Nov (Brent; was Encore Tip, a second +1 clue)
-			{ id = "keys17", name = "Quick Keys", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "practice17", name = "Encore Practice", say = "Lullaby recharges 10% faster", mods = { cooldownMult = 0.9 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "tempo19", name = "Presto", say = "Lullaby recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -630,11 +630,11 @@ local SPECIAL = {
 	clone = {
 		[3] = {
 			{ id = "study3", name = "Quick Study", say = "Copycat recharges 10% faster", mods = { cooldownMult = 0.9 } },
-			{ id = "lungs3", name = "Twin Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "fresh3", name = "Fresh Copy", say = "Each Copycat gives you 20% stamina", mods = { buttonStamina = 20 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[5] = {
-			{ id = "mask5", name = "Mirror Mask", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
-			{ id = "hands5", name = "Copy Hands", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+			{ id = "look5", name = "Mirror Look", say = "Copy a friend up to 5 studs further away", mods = { copyReach = 5 } }, -- 7 Nov (Brent: a repeat replaced)
+			{ id = "dash5", name = "Copy Dash", say = "After each Copycat you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
 			{ id = "learner7", name = "Fast Learner", say = "Copycat recharges 10% faster", mods = { cooldownMult = 0.9 } },
@@ -642,7 +642,7 @@ local SPECIAL = {
 		},
 		[9] = {
 			{ id = "look9", name = "Longer Look", say = "The host hesitates 0.5 s longer before grabbing you", mods = { lookAlike = 0.5 } },
-			{ id = "gadget9", name = "Gadget Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "twin9", name = "Twin Breath", say = "Each Copycat gives you 15% more stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[10] = {
 			{ id = "fullcopy10", name = "Full Copy", say = "A copied skill works at your friend's own strength, upgrades and all", mods = { p10 = "fullcopy" } },
@@ -654,7 +654,7 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "reach13", name = "Long Reach", say = "Copy a friend up to 10 studs further away", mods = { copyReach = 10 } },
-			{ id = "nimble13", name = "Nimble", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "confuse13", name = "Confusing Look", say = "The host hesitates 0.25 s longer before grabbing you", mods = { lookAlike = 0.25 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "smart15", name = "Smart Copy", say = "Copycat recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -662,7 +662,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "far17", name = "Far Copy", say = "Copy a friend up to 5 studs further away", mods = { copyReach = 5 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "hush17", name = "Hush", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "mirror17", name = "Mirror Run", say = "Your Copy Dash lasts 2 s longer", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "master19", name = "Master Copier", say = "Copycat recharges 10% faster", mods = { cooldownMult = 0.9 } },
@@ -678,11 +678,11 @@ local SPECIAL = {
 	holly = {
 		[3] = {
 			{ id = "fresh3", name = "Fresh Mints", say = "Your peppermints stay 5 s longer", mods = { patchTime = 5 } },
-			{ id = "cocoa3", name = "Warm Mittens", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "tea3", name = "Peppermint Tea", say = "Each Peppermint Slide gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[5] = {
 			{ id = "quick5", name = "Quick Hands", say = "Peppermint Slide recharges 10% faster", mods = { cooldownMult = 0.9 } },
-			{ id = "quiet5", name = "Snowy Steps", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "rush5", name = "Candy Rush", say = "After each Peppermint Slide you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
 			{ id = "wide7", name = "Handful", say = "Your peppermint patch is 1 stud wider all round", mods = { patchSize = 1 } },
@@ -690,7 +690,7 @@ local SPECIAL = {
 		},
 		[9] = {
 			{ id = "fresh9", name = "Long-lasting", say = "Your peppermints stay 5 s longer", mods = { patchTime = 5 } },
-			{ id = "hands9", name = "Nimble Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+			{ id = "sugar9", name = "Sugar Boost", say = "Each Peppermint Slide gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[10] = {
 			{ id = "trap10", name = "Holly Trap", say = "A ring of holly round your peppermints: the host is caught 3 s instead of slipping 2 s", mods = { p10 = "hollytrap" } },
@@ -698,11 +698,11 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "quick11", name = "Sweet Rush", say = "Peppermint Slide recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "lungs11", name = "Minty Breath", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "feet11", name = "Sweet Feet", say = "Your Candy Rush lasts 1 s longer", mods = { buttonBurst = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[13] = {
 			{ id = "wide13", name = "Big Handful", say = "Your peppermint patch is 1 stud wider all round", mods = { patchSize = 1 } },
-			{ id = "quiet13", name = "Tinsel Cloak", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "mint13", name = "Long-lasting Mint", say = "Your peppermints stay 5 s longer", mods = { patchTime = 5 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "slip15", name = "Extra Slippery", say = "The host is stuck 1 s longer - slipping, or caught in your Holly Trap", mods = { slipTime = 1 } },
@@ -710,7 +710,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "bag17", name = "Big Bag", say = "Your peppermint patch is 1 stud wider all round", mods = { patchSize = 1 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "hands17", name = "Gift Wrapper", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "wrap17", name = "Quick Wrap", say = "Peppermint Slide recharges 10% faster", mods = { cooldownMult = 0.9 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "quick19", name = "Peppermint Pro", say = "Peppermint Slide recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -724,19 +724,19 @@ local SPECIAL = {
 	-- Elfy (5 Nov, CLAUS_MANOR.md): Workshop Helper, Wind-up Toy
 	elfy = {
 		[3] = {
-			{ id = "cocoa3", name = "Cocoa Break", say = "6% more stamina", mods = { staminaMult = 1.06 } },
-			{ id = "nimble3", name = "Nimble Elf", say = "Hold things 6% faster", mods = { holdMult = 0.94 } },
+			{ id = "cocoa3b", name = "Cocoa Break", say = "Each Wind-up Toy gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
+			{ id = "friendly3", name = "Friendly Elf", say = "Workshop Helper reaches friends 3 studs further away", mods = { helpNear = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[5] = {
 			{ id = "quick5", name = "Quick Wind", say = "Wind-up Toy recharges 10% faster", mods = { cooldownMult = 0.9 } },
-			{ id = "quiet5", name = "Soft Slippers", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "sprint5", name = "Elf Sprint", say = "After each Wind-up Toy you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
 			{ id = "spring7", name = "Long Spring", say = "Your Wind-up Toy marches 1 s longer", mods = { toyTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "lungs7", name = "Candy Fuel", say = "8% more stamina", mods = { staminaMult = 1.08 } },
+			{ id = "fuel7", name = "Candy Fuel", say = "Each Wind-up Toy gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[9] = {
-			{ id = "hands9", name = "Tiny Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+			{ id = "busy9", name = "Busy Elf", say = "Workshop Helper reaches friends 3 studs further away", mods = { helpNear = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 			{ id = "quick9", name = "Spring Key", say = "Wind-up Toy recharges 10% faster", mods = { cooldownMult = 0.9 } },
 		},
 		[10] = {
@@ -745,19 +745,19 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "quick11", name = "Oiled Gears", say = "Wind-up Toy recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "quiet11", name = "Tiptoe", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "wind11", name = "Extra Wind", say = "Your Wind-up Toy marches 1 s longer", mods = { toyTime = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[13] = {
 			{ id = "helping13", name = "Helping Hands", say = "Workshop Helper reaches friends 5 studs further away", mods = { helpNear = 5 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "hands13", name = "Fast Wrapper", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "escape13", name = "Quick Escape", say = "Your Elf Sprint lasts 1 s longer", mods = { buttonBurst = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "shield15", name = "Tinsel Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
 			{ id = "quick15", name = "Wound Tight", say = "Wind-up Toy recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[17] = {
-			{ id = "lungs17", name = "Peppermint Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
-			{ id = "quiet17", name = "Snow Cloak", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "tall17", name = "Tall Toy", say = "Your Wind-up Toy marches 1 s longer", mods = { toyTime = 1 } }, -- 7 Nov (Brent: a repeat replaced)
+			{ id = "pal17", name = "Workshop Pal", say = "Workshop Helper reaches friends 4 studs further away", mods = { helpNear = 4 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "quick19", name = "Master Toymaker", say = "Wind-up Toy recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -773,11 +773,11 @@ local SPECIAL = {
 	cloud = {
 		[3] = {
 			{ id = "thick3", name = "Thick Fog", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } },
-			{ id = "coat3", name = "Raincoat", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "rain3", name = "Rain Drink", say = "Each fog gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[5] = {
 			{ id = "quick5", name = "Quick Cloud", say = "Fog recharges 10% faster", mods = { cooldownMult = 0.9 } },
-			{ id = "drizzle5", name = "Drizzle", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "drift5", name = "Slow Drift", say = "Your fog lasts 1 s longer", mods = { fogTime = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
 			{ id = "last7", name = "Lasting Fog", say = "Your fog lasts 1 s longer", mods = { fogTime = 1 } },
@@ -785,7 +785,7 @@ local SPECIAL = {
 		},
 		[9] = {
 			{ id = "wide9", name = "Wide Fog", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } },
-			{ id = "light9", name = "Light Hands", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+			{ id = "tail9", name = "Tailwind", say = "After each fog you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[10] = {
 			{ id = "rolling10", name = "Rolling Fog", say = "Your fog drifts along with you", mods = { p10 = "rolling" } },
@@ -793,7 +793,7 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "fast11", name = "Fast Cloud", say = "Fog recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "lungs11", name = "Cloud Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "lungs11b", name = "Cloud Lungs", say = "Each fog gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[13] = {
 			{ id = "long13", name = "Longer Fog", say = "Your fog lasts 1 s longer", mods = { fogTime = 1 } },
@@ -805,11 +805,11 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "mist17b", name = "Silver Mist", say = "Your fog lasts 1 s longer", mods = { fogTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "mist17", name = "Mist Step", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "gust17", name = "Gust", say = "Your fog's run lasts 1 s longer", mods = { buttonBurst = 1 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[19] = {
 			{ id = "season19", name = "Storm Season", say = "Fog recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "nimble19", name = "Nimble Cloud", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "wall19", name = "Fog Wall", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[20] = {
 			{ id = "storm20", name = "Storm Cloud", say = "Tap where to throw your fog: lightning stops the host 3 s, friends near you get 25% stamina and run 10% faster for 5 s", mods = { p20 = "storm" } },
@@ -821,11 +821,11 @@ local SPECIAL = {
 	nutmeg = {
 		[3] = {
 			{ id = "nose3", name = "Keen Nose", say = "Good Nose reaches 5 studs further", mods = { noseRange = 5 } },
-			{ id = "scarf3", name = "Warm Scarf", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+			{ id = "harness3", name = "Strong Harness", say = "Pull a friend from 3 studs further away", mods = { pullRange = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[5] = {
 			{ id = "hooves5", name = "Quick Hooves", say = "Sleigh Dash recharges 10% faster", mods = { cooldownMult = 0.9 } },
-			{ id = "coat5", name = "Snowy Coat", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "carrot5", name = "Carrot Snack", say = "Each Sleigh Dash gives you 15% stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
 			{ id = "dash7", name = "Long Dash", say = "Sleigh Dash lasts 0.25 s longer", mods = { dashTime = 0.25 } },
@@ -833,7 +833,7 @@ local SPECIAL = {
 		},
 		[9] = {
 			{ id = "nose9", name = "Keener Nose", say = "Good Nose reaches 5 studs further", mods = { noseRange = 5 } },
-			{ id = "mittens9", name = "Mittens", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+			{ id = "start9", name = "Quick Start", say = "Sleigh Dash lasts 0.25 s longer", mods = { dashTime = 0.25 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[10] = {
 			{ id = "jingledash10", name = "Jingle Dash", say = "Every Sleigh Dash rings your bell: a host within 20 studs freezes 2 s", mods = { p10 = "jingledash" } },
@@ -841,11 +841,11 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "sleigh11", name = "Swift Sleigh", say = "Sleigh Dash recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "lungs11", name = "Reindeer Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+			{ id = "lungs11b", name = "Reindeer Lungs", say = "Each Sleigh Dash gives you 10% more stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[13] = {
 			{ id = "dash13", name = "Longer Dash", say = "Sleigh Dash lasts 0.25 s longer", mods = { dashTime = 0.25 } },
-			{ id = "hooves13", name = "Soft Hooves", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+			{ id = "team13", name = "Team Harness", say = "Pull a friend from 3 studs further away", mods = { pullRange = 3 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[15] = {
 			{ id = "nose15", name = "Super Nose", say = "Good Nose reaches 10 studs further", mods = { noseRange = 10 } },
@@ -857,7 +857,7 @@ local SPECIAL = {
 		},
 		[19] = {
 			{ id = "turbo19", name = "Turbo Sleigh", say = "Sleigh Dash recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "nimble19", name = "Nimble Hooves", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+			{ id = "sniffer19", name = "Super Sniffer", say = "Good Nose reaches 5 studs further", mods = { noseRange = 5 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[20] = {
 			{ id = "bells20", name = "Jingle Bells", say = "A Jingle Bells button: once a game, when you choose, the host freezes 7 s, wherever he is", mods = { p20 = "bells" } },
@@ -880,8 +880,10 @@ Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRang
 	lookAlike = true, copyReach = true, -- Clone (4 Nov)
 	lullabyTime = true, lullabyRange = true, lullabyRun = true, -- Harmony (4 Nov; lullabyRun 5 Nov)
 	-- 7 Nov (Brent: the +1 clue picks replaced): Tinker, Muscle, Patch, Echo, Bramble, Elfy
-	toolkitStamina = true, mouseTime = true, bootsTime = true, poundRange = true, selfShield = true,
-	rescuePoints = true, lureTime = true, vineSlow = true, toyTime = true, helpNear = true }
+	mouseTime = true, bootsTime = true, poundRange = true, selfShield = true,
+	rescuePoints = true, lureTime = true, vineSlow = true, toyTime = true, helpNear = true,
+	-- 7 Nov (Brent: the repeats replaced): any character's own button, and Patch's
+	buttonStamina = true, buttonBurst = true, shieldStamina = true, freeStamina = true, rescueCool = true, freeSneak = true }
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

@@ -1420,6 +1420,14 @@ player:GetAttributeChangedSignal("Skill"):Connect(paintSkill)
 paintSkill()
 local function useSkill()
 	local s = player:GetAttribute("Skill")
+	-- 7 Nov (Brent: no way to take back an aimed skill): the button (or R)
+	-- again while aiming puts it away - nothing thrown, no recharge
+	if aiming then
+		aiming = false
+		aimCopySlot = nil
+		toast("Put away - nothing thrown.", 2)
+		return
+	end
 	-- Echo's noise and Cloud's Storm Cloud (level 20, 4 Nov) are thrown where you aim
 	local storm = s == "cloud" and player:GetAttribute("Power20") == "storm"
 	local what = storm and "\u{26C8} storm cloud" or "\u{1F3A7} noise"
@@ -1434,7 +1442,7 @@ local function useSkill()
 	elseif s == "echo" or storm then
 		aiming = true
 		aimCopySlot = nil
-		toast("Tap or click a spot to throw your " .. what .. " there.", 3)
+		toast("Tap or click a spot to throw your " .. what .. " there - or tap the button again to cancel.", 4)
 	elseif SKILL_TEXT[s] then
 		remotes.UseSkill:FireServer()
 	else
@@ -1486,6 +1494,12 @@ do
 		if not id or player:GetAttribute("Skill") ~= "clone" or player:GetAttribute("Caged") or player:GetAttribute("Escaped") then
 			return
 		end
+		if aiming and aimCopySlot == slot then
+			aiming = false
+			aimCopySlot = nil
+			toast("Put away - nothing thrown.", 2)
+			return
+		end
 		if id == "echo" then
 			if Gamepad.on() then
 				local spot = Gamepad.aimPoint({ player.Character }, 300)
@@ -1495,7 +1509,7 @@ do
 			else
 				aiming = true
 				aimCopySlot = slot
-				toast("Tap or click a spot to throw your copied \u{1F3A7} noise there.", 3)
+				toast("Tap or click a spot to throw your copied \u{1F3A7} noise there - or tap the button again to cancel.", 4)
 			end
 		else
 			remotes.UseCopy:FireServer(slot)

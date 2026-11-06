@@ -436,6 +436,8 @@ Config.JAILBREAK = { reach = 35, hold = 1 }
 -- every friend she frees from the cage leaves with a Party Shield, and she and
 -- they run `speed` times as fast for `seconds`
 Config.MEDIC_RUN = { speed = 1.2, seconds = 6 }
+-- the ladder's run after your own button (7 Nov): this much faster
+Config.BUTTON_BURST = 1.1
 -- Bramble's Vine Swing (5 Nov): to the next doorway within `tiles`, `speed`
 -- times as fast; friends within `near` studs come along
 Config.VINE_SWING = { tiles = 6, speed = 3, near = 8 }
@@ -463,7 +465,9 @@ Config.ECHO_LURE = 5
 -- game): every friend's skill button is ready again at once
 -- (5 Nov, Brent) a host reaching a toy is stunned `toyStun` s (Toy Parade's
 -- `paradeStun`); Workshop Rush also gives everyone `rushStamina`% stamina
-Config.ELFY = { help = 0.15, helpNear = 20, toy = 6, march = 6, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5, toyStun = 1, paradeStun = 2, rushStamina = 25 }
+-- (7 Nov, Brent) Wrapped Up: the toy first runs `wrappedMarch` studs a second
+-- for `wrappedDash` s (about 30 studs) so the host is led away from the present
+Config.ELFY = { wrappedDash = 1.5, wrappedMarch = 20, help = 0.15, helpNear = 20, toy = 6, march = 6, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5, toyStun = 1, paradeStun = 2, rushStamina = 25 }
 -- Echo's Sharp Ears (4 Nov): within this many studs Echo sees the host through walls
 Config.ECHO_EARS = 30
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
