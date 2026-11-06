@@ -630,7 +630,7 @@ Config.SEASONS = {
 -- `seconds`; the Cocoa Thermos fills the stamina of friends within `reach`
 Config.GIFTBOX = { seconds = 10 }
 Config.THERMOS = { reach = 24 }
-Config.STUDIO_SEASON_DATE = { 2026, 12, 3 } -- 3 Nov: trying Christmas (set back to nil when done)
+Config.STUDIO_SEASON_DATE = { 2026, 11, 10 } -- 6 Nov: trying Thanksgiving (was { 2026, 12, 3 } for Christmas; nil when done)
 -- the Turkey Roundup (Thanksgiving, the Harvest Barn - Brent, 11 Oct):
 -- `turkeys` runaway turkeys run from any kid closer than `flee` studs, at
 -- `speed` (walking is Config.WALK, running Config.RUN - cornering them

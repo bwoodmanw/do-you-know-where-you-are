@@ -17,6 +17,12 @@
 	6 Nov (Brent): the course is longer - the old perch is the first landing,
 	a swing crosses to a second, three more pads climb to the Sky Perch.
 	Fireworks when you reach the star, and it's gone for you until tomorrow.
+
+	6 Nov (Brent): Thanksgiving (to 1 Dec) dresses the course for the harvest -
+	a garland of autumn leaves with a lantern to grab in place of the string of
+	lights, a slippery log covered in wet leaves in place of the ice, a golden
+	feather in place of the star, hay bales and pumpkins on the landings; the
+	second stand has a tractor (the first, the turkey).
 ]]
 
 local Players = game:GetService("Players")
@@ -169,6 +175,12 @@ local function buildCourse(folder, season)
 		for _, s in ipairs(L.rails) do
 			part(folder, { Name = "LandingRail", Size = Vector3.new(s[3], 2.4, s[4]), Position = A + Vector3.new(s[1], 1.2, s[2]), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood, Transparency = 0.2 })
 		end
+		if season == "thanksgiving" then
+			-- a hay bale and a pumpkin in a corner (to look at: you walk through them)
+			local c = w / 2 - 1.2
+			part(folder, { Name = "LandingHay", Size = Vector3.new(1.8, 1.1, 1.2), Position = A + Vector3.new(-c, 0.55, c), Color = Color3.fromRGB(225, 190, 90), Material = Enum.Material.Fabric, CanCollide = false, CanQuery = false })
+			part(folder, { Name = "LandingPumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(1.3, 1, 1.3), Position = A + Vector3.new(-c + 0.2, 1.6, c), Color = Color3.fromRGB(235, 120, 30), Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false })
+		end
 	end
 	-- the swing from the first landing to the second: two tall posts, a bar,
 	-- a platform on two ropes (at rest here; it swings on each player's screen)
@@ -182,7 +194,8 @@ local function buildCourse(folder, season)
 			part(m, { Name = "SwingPost", Size = Vector3.new(1, PV.Y + 1, 1), Position = Vector3.new(PV.X + dx, (PV.Y + 1) / 2, PV.Z), Color = look.post, Material = look.postMat })
 		end
 		part(m, { Name = "SwingBar", Size = Vector3.new(10, 1, 1), Position = PV + Vector3.new(0, 0.5, 0), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood })
-		local seat = part(m, { Name = "SwingSeat", Size = Vector3.new(6, 0.8, 6), Position = PV - Vector3.new(0, S.radius, 0), Color = look.pads[1], Material = Enum.Material.WoodPlanks })
+		local hay = season == "thanksgiving"
+		local seat = part(m, { Name = "SwingSeat", Size = Vector3.new(6, 0.8, 6), Position = PV - Vector3.new(0, S.radius, 0), Color = hay and Color3.fromRGB(225, 190, 90) or look.pads[1], Material = hay and Enum.Material.Fabric or Enum.Material.WoodPlanks })
 		seat:SetAttribute("Pivot", PV)
 		seat:SetAttribute("Radius", S.radius)
 		seat:SetAttribute("Swing", S.swing)
@@ -203,28 +216,55 @@ local function buildCourse(folder, season)
 		local postX = PV.X + 11
 		part(m, { Name = "LightPost", Size = Vector3.new(1.2, PV.Y + 1, 1.2), Position = Vector3.new(postX, (PV.Y + 1) / 2, PV.Z), Color = look.post, Material = look.postMat })
 		part(m, { Name = "LightArm", Size = Vector3.new(postX - PV.X + 1, 1, 1), Position = Vector3.new((postX + PV.X) / 2, PV.Y + 0.5, PV.Z), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood })
-		local strand = part(m, { Name = "LightStrand", Size = Vector3.new(0.2, 0.2, S.radius), CFrame = CFrame.lookAt(PV - Vector3.new(0, S.radius / 2, 0), PV - Vector3.new(0, S.radius, 0)), Color = Color3.fromRGB(30, 90, 40), Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CanTouch = false })
+		-- (Thanksgiving: a rope garland of autumn leaves, a glowing harvest lantern to grab)
+		local fall = season == "thanksgiving"
+		local strand = part(m, { Name = "LightStrand", Size = Vector3.new(0.2, 0.2, S.radius), CFrame = CFrame.lookAt(PV - Vector3.new(0, S.radius / 2, 0), PV - Vector3.new(0, S.radius, 0)), Color = fall and Color3.fromRGB(150, 110, 60) or Color3.fromRGB(30, 90, 40), Material = fall and Enum.Material.Fabric or Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CanTouch = false })
 		strand:SetAttribute("Strand", true)
 		local BULBS = { Color3.fromRGB(255, 60, 70), Color3.fromRGB(70, 220, 110), Color3.fromRGB(255, 210, 60), Color3.fromRGB(80, 150, 255) }
+		local LEAVES = { Color3.fromRGB(230, 110, 30), Color3.fromRGB(200, 50, 35), Color3.fromRGB(240, 190, 50), Color3.fromRGB(150, 80, 35) }
 		for k = 1, 9 do
-			local b = part(m, { Name = "LightBulb", Shape = Enum.PartType.Ball, Size = Vector3.new(0.55, 0.75, 0.55), Position = PV - Vector3.new(0, S.radius * k / 10, 0), Color = BULBS[(k - 1) % #BULBS + 1], Material = Enum.Material.Neon, CanCollide = false, CanQuery = false, CanTouch = false })
+			local b
+			if fall then
+				-- a flat leaf on the rope (the client keeps it along the rope)
+				b = part(m, { Name = "LightBulb", Size = Vector3.new(1, 0.12, 0.8), Position = PV - Vector3.new(0, S.radius * k / 10, 0), Color = LEAVES[(k - 1) % #LEAVES + 1], Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CanTouch = false })
+			else
+				b = part(m, { Name = "LightBulb", Shape = Enum.PartType.Ball, Size = Vector3.new(0.55, 0.75, 0.55), Position = PV - Vector3.new(0, S.radius * k / 10, 0), Color = BULBS[(k - 1) % #BULBS + 1], Material = Enum.Material.Neon, CanCollide = false, CanQuery = false, CanTouch = false })
+			end
 			b:SetAttribute("Along", k / 10)
 		end
-		local handle = part(m, { Name = "LightGrab", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.6, 1.6), Position = PV - Vector3.new(0, S.radius, 0), Color = Color3.fromRGB(255, 230, 120), Material = Enum.Material.Neon, CanCollide = false, CanQuery = false, CanTouch = false })
+		local handle = part(m, { Name = "LightGrab", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.6, 1.6), Position = PV - Vector3.new(0, S.radius, 0), Color = fall and Color3.fromRGB(255, 150, 40) or Color3.fromRGB(255, 230, 120), Material = Enum.Material.Neon, CanCollide = false, CanQuery = false, CanTouch = false })
 		handle:SetAttribute("Pivot", PV)
 		handle:SetAttribute("Radius", S.radius)
 		handle:SetAttribute("Swing", S.swing)
 		handle:SetAttribute("Period", S.period)
+		-- what the player's screen says and plays on a grab
+		handle:SetAttribute("Hint", fall and "\u{1F342} Jump to let go!" or "\u{1F384} Jump to let go!")
+		handle:SetAttribute("Sound", fall and "plant" or "bell")
 		local glow = Instance.new("PointLight")
-		glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 220, 140), 12, 1.2
+		glow.Color, glow.Range, glow.Brightness = fall and Color3.fromRGB(255, 170, 80) or Color3.fromRGB(255, 220, 140), 12, 1.2
 		glow.Parent = handle
 	end
 	-- the ice bridge: narrow, no rails, slippery
 	do
 		local I = Play.ICE
 		local len = (I.to - I.from).Magnitude
-		local ice = part(folder, { Name = "IceBridge", Size = Vector3.new(I.width, 1, len), CFrame = CFrame.lookAt((I.from + I.to) / 2 - Vector3.new(0, 0.5, 0), I.to - Vector3.new(0, 0.5, 0)), Color = Color3.fromRGB(175, 225, 255), Material = Enum.Material.Ice, Transparency = 0.15 })
+		local fall = season == "thanksgiving"
+		local bcf = CFrame.lookAt((I.from + I.to) / 2 - Vector3.new(0, 0.5, 0), I.to - Vector3.new(0, 0.5, 0))
+		local ice = part(folder, { Name = "IceBridge", Size = Vector3.new(I.width, 1, len), CFrame = bcf, Color = fall and Color3.fromRGB(125, 82, 48) or Color3.fromRGB(175, 225, 255), Material = fall and Enum.Material.Wood or Enum.Material.Ice, Transparency = fall and 0 or 0.15 })
 		ice.CustomPhysicalProperties = PhysicalProperties.new(0.9, 0, 0.5, 100, 1)
+		if fall then
+			-- (Thanksgiving) a log: rounded bark sides, wet leaves on top (only to
+			-- look at - the slide is the bridge's, on each player's screen)
+			for _, sx in ipairs({ -1, 1 }) do
+				part(folder, { Name = "LogBark", Shape = Enum.PartType.Cylinder, Size = Vector3.new(len, 1.4, 1.4), CFrame = bcf * CFrame.new(sx * (I.width / 2 - 0.3), -0.2, 0) * CFrame.Angles(0, math.rad(90), 0), Color = Color3.fromRGB(95, 62, 38), Material = Enum.Material.Wood, CanCollide = false, CanQuery = false })
+			end
+			local LEAVES = { Color3.fromRGB(230, 110, 30), Color3.fromRGB(200, 50, 35), Color3.fromRGB(240, 190, 50), Color3.fromRGB(150, 80, 35) }
+			for k = 1, 16 do
+				local along = (k - 0.5) / 16 - 0.5
+				local across = math.sin(k * 2.3) * (I.width / 2 - 0.5)
+				part(folder, { Name = "WetLeaf", Size = Vector3.new(0.9, 0.06, 0.7), CFrame = bcf * CFrame.new(across, 0.53, along * len) * CFrame.Angles(0, k * 1.7, 0), Color = LEAVES[k % #LEAVES + 1], Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CanTouch = false })
+			end
+		end
 		local sign = part(folder, { Name = "IceSign", Size = Vector3.new(5, 1.4, 0.3), Position = I.from + Vector3.new(-2.6, 2.4, -1.5), Color = Color3.fromRGB(40, 22, 62), Material = Enum.Material.SmoothPlastic })
 		local gui = Instance.new("SurfaceGui")
 		gui.Face = Enum.NormalId.Front -- (toward the landing: you read it before you step on)
@@ -235,8 +275,8 @@ local function buildCourse(folder, season)
 		tl.BackgroundTransparency = 1
 		tl.TextScaled = true
 		tl.Font = Enum.Font.FredokaOne
-		tl.TextColor3 = Color3.fromRGB(175, 225, 255)
-		tl.Text = "\u{2744} Slippery! Go slow!"
+		tl.TextColor3 = fall and Color3.fromRGB(255, 180, 70) or Color3.fromRGB(175, 225, 255)
+		tl.Text = fall and "\u{1F342} Slippery leaves! Go slow!" or "\u{2744} Slippery! Go slow!"
 		tl.Parent = gui
 	end
 	-- the Sky Perch: a railed platform with a star
@@ -247,7 +287,9 @@ local function buildCourse(folder, season)
 	for _, s in ipairs({ { PW / 2, 0, 0.4, PW }, { -PW / 2, 0, 0.4, PW }, { 0, PW / 2, PW, 0.4 } }) do
 		part(folder, { Name = "PerchRail", Size = Vector3.new(s[3], 2.4, s[4]), Position = P + Vector3.new(s[1], 1.2, s[2]), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood, Transparency = 0.2 })
 	end
-	local star = part(folder, { Name = "PerchStar", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2.4, 2.4), Position = P + Vector3.new(0, 2.2, 0), Color = Color3.fromRGB(255, 220, 80), Material = Enum.Material.Neon, CanCollide = false })
+	-- (Thanksgiving: a golden feather, tall and thin, leaning - the Feather Hunt's)
+	local feather = season == "thanksgiving"
+	local star = part(folder, { Name = "PerchStar", Shape = Enum.PartType.Ball, Size = feather and Vector3.new(0.7, 3.6, 1.6) or Vector3.new(2.4, 2.4, 2.4), CFrame = CFrame.new(P + Vector3.new(0, feather and 2.6 or 2.2, 0)) * CFrame.Angles(0, 0, feather and math.rad(18) or 0), Color = feather and Color3.fromRGB(255, 200, 60) or Color3.fromRGB(255, 220, 80), Material = Enum.Material.Neon, CanCollide = false })
 	local l = Instance.new("PointLight")
 	l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 220, 120), 18, 1.5
 	l.Parent = star
@@ -332,6 +374,31 @@ local function rideModel(kind)
 		bit({ Name = "HeadLamp", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.45, 0.3), CFrame = CFrame.new(0, 1.55, -2.25), Color = Color3.fromRGB(255, 245, 200), Material = Enum.Material.Neon })
 		bit({ Name = "TailLamp", Size = Vector3.new(1.2, 0.25, 0.1), CFrame = CFrame.new(0, 1.3, 2.52), Color = Color3.fromRGB(230, 40, 50), Material = Enum.Material.Neon })
 		seat = 2.3
+	elseif kind == "tractor" then
+		-- 6 Nov (Brent): a harvest tractor for Thanksgiving - big back wheels,
+		-- a low hood in front (the rider's legs go over it), a hay bale behind
+		local TRED, DARK, TIRE = Color3.fromRGB(200, 45, 40), Color3.fromRGB(40, 40, 46), Color3.fromRGB(28, 28, 30)
+		body = bit({ Name = "RideBody", Size = Vector3.new(1.6, 0.8, 4), CFrame = CFrame.new(0, 1.3, 0), Color = TRED, Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "TractorHood", Size = Vector3.new(1.4, 0.9, 1.8), CFrame = CFrame.new(0, 1.75, -1.3), Color = TRED, Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "TractorGrille", Size = Vector3.new(1.3, 0.7, 0.1), CFrame = CFrame.new(0, 1.75, -2.25), Color = Color3.fromRGB(170, 170, 178), Material = Enum.Material.Metal })
+		for _, lx in ipairs({ -0.45, 0.45 }) do
+			bit({ Name = "TractorLamp", Shape = Enum.PartType.Ball, Size = Vector3.new(0.3, 0.3, 0.15), CFrame = CFrame.new(lx, 2.0, -2.3), Color = Color3.fromRGB(255, 245, 200), Material = Enum.Material.Neon })
+		end
+		bit({ Name = "TractorStack", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1.3, 0.3, 0.3), CFrame = CFrame.new(0.45, 2.8, -1.8) * CYL, Color = DARK, Material = Enum.Material.Metal })
+		bit({ Name = "TractorSeat", Size = Vector3.new(1.2, 0.3, 1), CFrame = CFrame.new(0, 2.15, 1.1), Color = DARK, Material = Enum.Material.Fabric })
+		bit({ Name = "TractorSeatBack", Size = Vector3.new(1.2, 0.8, 0.2), CFrame = CFrame.new(0, 2.6, 1.65), Color = DARK, Material = Enum.Material.Fabric })
+		bit({ Name = "SteeringColumn", Size = Vector3.new(0.2, 0.9, 0.2), CFrame = CFrame.new(0, 2.4, -0.3) * CFrame.Angles(math.rad(-30), 0, 0), Color = DARK, Material = Enum.Material.Metal })
+		bit({ Name = "SteeringWheel", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.12, 0.9, 0.9), CFrame = CFrame.new(0, 2.85, -0.05) * CFrame.Angles(math.rad(-40), 0, 0) * CFrame.Angles(0, math.rad(90), 0), Color = DARK, Material = Enum.Material.SmoothPlastic })
+		for _, sx in ipairs({ -1.25, 1.25 }) do
+			-- (a cylinder's axis is X: wheels turn about it)
+			bit({ Name = "BigWheel", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.7, 2.6, 2.6), CFrame = CFrame.new(sx, 1.3, 1.0), Color = TIRE, Material = Enum.Material.SmoothPlastic })
+			bit({ Name = "WheelHub", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.75, 1.1, 1.1), CFrame = CFrame.new(sx, 1.3, 1.0), Color = Color3.fromRGB(235, 190, 70), Material = Enum.Material.SmoothPlastic })
+			bit({ Name = "Fender", Size = Vector3.new(0.8, 0.15, 1.9), CFrame = CFrame.new(sx, 2.68, 1.0), Color = TRED, Material = Enum.Material.SmoothPlastic })
+			bit({ Name = "FrontWheel", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.5, 1.2, 1.2), CFrame = CFrame.new(sx * 0.72, 0.6, -1.8), Color = TIRE, Material = Enum.Material.SmoothPlastic })
+		end
+		bit({ Name = "TractorHay", Size = Vector3.new(1.5, 0.9, 0.9), CFrame = CFrame.new(0, 1.3, 2.45), Color = Color3.fromRGB(225, 190, 90), Material = Enum.Material.Fabric })
+		bit({ Name = "TractorPumpkin", Shape = Enum.PartType.Ball, Size = Vector3.new(0.8, 0.65, 0.8), CFrame = CFrame.new(0.3, 2.05, 2.45), Color = Color3.fromRGB(235, 120, 30), Material = Enum.Material.SmoothPlastic })
+		seat = 2.3
 	else
 		-- a broomstick: you sit astride the handle
 		body = bit({ Name = "RideBody", Shape = Enum.PartType.Cylinder, Size = Vector3.new(6, 0.35, 0.35), CFrame = CFrame.new(0, 1.6, 0) * CFrame.Angles(0, math.rad(90), 0), Color = Color3.fromRGB(110, 70, 40), Material = Enum.Material.Wood })
@@ -355,11 +422,12 @@ local RIDES = {
 	sleigh = { name = "Santa's Sleigh", verb = "Ride the sleigh", sign = "\u{1F6F7} Santa's Sleigh - press to ride!" },
 	broom = { name = "the Broomstick", verb = "Ride the broom", sign = "\u{1F9F9} the Broomstick - hop on!" },
 	snowmobile = { name = "the Snowmobile", verb = "Ride the snowmobile", sign = "\u{2744} the Snowmobile - zoom!" }, -- 6 Nov
+	tractor = { name = "the Harvest Tractor", verb = "Ride the tractor", sign = "\u{1F69C} the Harvest Tractor - hop on!" }, -- 6 Nov
 }
 -- each stand's ride in each season (6 Nov: a second stand, the snowmobile at Christmas)
 local STANDS = {
 	{ at = Play.STAND, rides = { thanksgiving = "turkey", christmas = "sleigh", halloween = "broom" } },
-	{ at = Play.STAND2, rides = { christmas = "snowmobile" } },
+	{ at = Play.STAND2, rides = { christmas = "snowmobile", thanksgiving = "tractor" } },
 }
 
 function Play.start(remote, notice)
@@ -463,7 +531,7 @@ function Play.start(remote, notice)
 		-- the ride sized to the rider: a sleigh about as long as they are tall
 		local _, csize = ModelBounds(char)
 		local tall = math.max(3, csize.Y)
-		local scale = tall / (kind == "turkey" and 5 or (kind == "sleigh" or kind == "snowmobile") and 4.4 or 4)
+		local scale = tall / (kind == "turkey" and 5 or (kind == "sleigh" or kind == "snowmobile" or kind == "tractor") and 4.4 or 4)
 		m:ScaleTo(scale)
 		seat *= scale
 		m.Name = "Ride"

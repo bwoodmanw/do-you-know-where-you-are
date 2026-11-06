@@ -215,8 +215,11 @@ do
 					elseif os.clock() - letGoAt > 0.8 and hum.FloorMaterial == Enum.Material.Air and (hrp.Position - hang).Magnitude < 4 then
 						grabbed = true
 						hum.PlatformStand = true
+						-- (6 Nov: the season's words and sound, from the handle)
+						local say = handle:GetAttribute("Hint")
+						hint.Text = typeof(say) == "string" and say or "\u{1F384} Jump to let go!"
 						hint.Visible = true
-						sound(Config.SOUNDS.bell, handle, 0.4)
+						sound(Config.SOUNDS[handle:GetAttribute("Sound") or "bell"] or Config.SOUNDS.bell, handle, 0.4)
 					end
 				end
 			end
