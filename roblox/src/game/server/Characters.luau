@@ -571,6 +571,40 @@ function Characters.host(name)
 			d.CanCollide = false
 		end
 	end
+	-- 5 Nov (Brent: the Robot still sticks in doorways): a root wider than 3
+	-- studs, or one reaching down past the feet, catches on doorframes and
+	-- steps. Then the root stops colliding and a slim invisible pillar (2.5
+	-- studs across, ending above the feet) welded to it does the colliding.
+	-- The root isn't resized or moved, so the body and its joints stay put
+	do
+		local root = m.HumanoidRootPart
+		local vcf, vsize = ModelBounds(m)
+		local feet = vcf.Position.Y - vsize.Y / 2
+		local top = vcf.Position.Y + vsize.Y / 2
+		local wide = root.Size.X > 3 or root.Size.Z > 3
+		local low = root.Position.Y - root.Size.Y / 2 < feet + 0.5
+		if wide or low then
+			local bottom = feet + 1
+			local h = math.max(2, math.min(top, root.Position.Y + root.Size.Y / 2) - bottom)
+			local pillar = Instance.new("Part")
+			pillar.Name = "HostCollider"
+			pillar.Size = Vector3.new(2.5, h, 2.5)
+			pillar.CFrame = CFrame.new(root.Position.X, bottom + h / 2, root.Position.Z) * root.CFrame.Rotation
+			pillar.Transparency = 1
+			pillar.CanCollide, pillar.CanQuery, pillar.CanTouch, pillar.CastShadow = true, false, false, false
+			pillar.Massless = true
+			pillar.Anchored = false
+			local weld = Instance.new("WeldConstraint")
+			weld.Part0, weld.Part1 = root, pillar
+			weld.Parent = pillar
+			pillar.Parent = m
+			root.CanCollide = false
+			if game:GetService("RunService"):IsStudio() then
+				print(string.format("[Characters] host %s: root %s was %s - a 2.5-stud pillar %.1f tall collides instead", name, tostring(root.Size),
+					wide and low and "wide and below the feet" or wide and "wide" or "below the feet", h))
+			end
+		end
+	end
 	-- 16 Oct (Brent: every host floated): with Roblox's automatic scaling off,
 	-- the hip height no longer grew with the host - set it from the model
 	-- itself, as for the kids (the root's bottom to the lowest part)

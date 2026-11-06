@@ -5571,11 +5571,11 @@ ElfyPower.OnServerEvent:Connect(function(plr)
 		end
 		say("info", "\u{1F941} Toy Parade! " .. plr.DisplayName .. " sent three toys marching off - the host can't follow them all!")
 	else
-		-- (5 Nov, Brent) every friend, anywhere in the house: skill button
-		-- (and Clone's copies) ready at once
+		-- (5 Nov, Brent) every friend, anywhere in the house - and Elfy's own
+		-- Wind-up Toy too: skill buttons (and Clone's copies) ready at once
 		local now = workspace:GetServerTimeNow()
 		for _, p in ipairs(Players:GetPlayers()) do
-			if p ~= plr and not p:GetAttribute("Escaped") then
+			if not p:GetAttribute("Escaped") then
 				local was = false
 				for _, k in ipairs({ "CoolUntil", "CopyCool1", "CopyCool2" }) do
 					if (p:GetAttribute(k) or 0) > now then
@@ -5588,7 +5588,7 @@ ElfyPower.OnServerEvent:Connect(function(plr)
 				end
 			end
 		end
-		say("info", "\u{1F6E0} Workshop Rush! " .. plr.DisplayName .. " fixed everyone's gadgets - every friend's skill is ready to use again!")
+		say("info", "\u{1F6E0} Workshop Rush! " .. plr.DisplayName .. " fixed everyone's gadgets - every skill is ready to use again!")
 	end
 end)
 

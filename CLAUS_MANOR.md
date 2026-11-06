@@ -104,8 +104,9 @@ like the runaway turkey). He isn't a playable character.
 - **Level 20**, pick one:
   - **Toy Parade**: a button, once a game: three toys march off in three
     directions at once.
-  - **Workshop Rush**: a button, once a game: every friend's skill button
-    (and Clone's copies) is ready to use again at once (Brent, 5 Nov - was
+  - **Workshop Rush**: a button, once a game: every skill button on the
+    team, Elfy's own Wind-up Toy included (and Clone's copies), is ready to
+    use again at once (Brent, 5 Nov - was
     twice-as-fast holding for 10 s).
 
 ## The pictures needed

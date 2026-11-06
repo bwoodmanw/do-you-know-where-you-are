@@ -765,7 +765,7 @@ local SPECIAL = {
 		},
 		[20] = {
 			{ id = "parade20", name = "Toy Parade", say = "A Toy Parade button: once a game, three toys march off in three directions at once", mods = { p20 = "parade" } },
-			{ id = "rush20", name = "Workshop Rush", say = "A Workshop Rush button: once a game, every friend's skill is ready to use again at once", mods = { p20 = "rush" } },
+			{ id = "rush20", name = "Workshop Rush", say = "A Workshop Rush button: once a game, every skill on the team - yours too - is ready to use again at once", mods = { p20 = "rush" } },
 		},
 	},
 	-- Cloud (4 Nov, NEW_CHARACTERS.md): Float Up, Fog; fogSize (studs wider) /
