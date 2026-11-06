@@ -366,8 +366,10 @@ Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, 
 -- Tune (always on): friends within `tune` studs of her get their stamina back
 -- `tuneRegen` times as fast. Lullaby: the host within `range` studs walks at
 -- `slow` of his speed for `seconds`. Chorus (10): every friend's recharge -5 s.
--- Encore (20): its own button, once a game - the whole floor, `encore` s
-Config.HARMONY = { listen = 3, tune = 12, tuneRegen = 1.5, range = 25, slow = 0.5, seconds = 6, chorus = 5, encore = 8 }
+-- Encore (20): its own button, once a game - the whole floor, `encore` s.
+-- 5 Nov (Brent): as she sings, she and every friend inside the circle run
+-- `run` times as fast for `runTime` s (Dance Steps, 17: +2 s)
+Config.HARMONY = { listen = 3, tune = 12, tuneRegen = 1.5, range = 25, slow = 0.5, seconds = 6, chorus = 5, encore = 8, run = 1.15, runTime = 3 }
 -- Clone (4 Nov, NEW_CHARACTERS.md). Copycat (90 s, the longest - it brings a
 -- whole skill): copies the button of the nearest friend within `reach` studs (two
 -- with Copy Two); alone, one is picked at random. Each copy is its own button with the
@@ -513,7 +515,7 @@ Config.SKILL_INFO = {
 	harmony = { parts = {
 		{ kind = "hold", name = "Music Box", text = "The music box behind the first locked door plays the door code - only Harmony hears it." },
 		{ kind = "passive", name = "In Tune", text = "Friends near her get their stamina back faster." },
-		{ kind = "press", name = "Lullaby", text = "The host near her walks at half speed for 6 seconds." },
+		{ kind = "press", name = "Lullaby", text = "The host near her walks at half speed for 6 seconds - and she and friends inside the circle get a 3-second burst of speed." },
 	} },
 	clone = { parts = {
 		{ kind = "passive", name = "Look-alike", text = "The host stops for a second before grabbing Clone - is it really him?" },
@@ -771,6 +773,7 @@ Config.CHARACTER_ASSETS = {
 	MuscleSweater = 91184977563726, -- 5 Nov: Holiday Sweater Muscle (checked on Roblox: Model 'MuscleSweater', Brent's upload)
 	EchoJingle = 97602416714516, -- 5 Nov: Jingle Bell Echo (checked on Roblox: Model 'EchoJingle', Brent's upload)
 	BrambleEvergreen = 122988096493064, -- 5 Nov: Evergreen Bramble (checked on Roblox: Model 'BrambleEvergreen', Brent's upload)
+	NutmegSnowflake = 123422279329361, -- 5 Nov: Snowflake Nutmeg (checked on Roblox: Model 'NutmegSnowflake', Brent's upload)
 	HostYeti = 138655463727624, -- 5 Nov: Frostfoot the Yeti, Frostpeak Lodge's host (New Year's; checked on Roblox: Model 'FrostFoot', Brent's upload)
 	CloneGala = 137284317587849, -- 5 Nov: Harvest Gala Clone (checked on Roblox: Model, Brent's upload)
 	HollyCranberry = 139043771129248, -- 5 Nov: Cranberry Spice Holly (checked on Roblox: Model 'HollyCranberry', Brent's upload)
@@ -1080,7 +1083,7 @@ Config.SKINS = {
 	{ id = "muscle_sweater", skill = "muscle", name = "Holiday Sweater Muscle", model = "MuscleSweater", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "echo_jingle", skill = "echo", name = "Jingle Bell Echo", model = "EchoJingle", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "bramble_evergreen", skill = "bramble", name = "Evergreen Bramble", model = "BrambleEvergreen", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "nutmeg_snowflake", skill = "nutmeg", name = "Snowflake Nutmeg", model = "NutmegSnowflake", cane = 150, pass = 0, hidden = true },
+	{ id = "nutmeg_snowflake", skill = "nutmeg", name = "Snowflake Nutmeg", model = "NutmegSnowflake", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "cloud_snow", skill = "cloud", name = "First Snow Cloud", model = "CloudSnow", cane = 150, pass = 0, hidden = true },
 	{ id = "holly_sugarplum", skill = "holly", name = "Sugar Plum Holly", model = "HollySugarplum", cane = 150, pass = 0, hidden = true },
 	{ id = "clone_nutcracker", skill = "clone", name = "Nutcracker Clone", model = "CloneNutcracker", cane = 150, pass = 0, hidden = true },

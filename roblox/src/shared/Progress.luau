@@ -613,7 +613,7 @@ local SPECIAL = {
 			{ id = "shield15", name = "Harmony Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[17] = {
-			{ id = "tip17", name = "Encore Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "dance17", name = "Dance Steps", say = "Lullaby's speed burst lasts 2 s longer (5 s)", mods = { lullabyRun = 2 } }, -- 5 Nov (Brent; was Encore Tip, a second +1 clue)
 			{ id = "keys17", name = "Quick Keys", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[19] = {
@@ -878,7 +878,7 @@ Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRang
 	fogSize = true, fogTime = true, -- Cloud (4 Nov)
 	patchTime = true, patchSize = true, slipTime = true, -- Holly (4 Nov)
 	lookAlike = true, copyReach = true, -- Clone (4 Nov)
-	lullabyTime = true, lullabyRange = true } -- Harmony (4 Nov)
+	lullabyTime = true, lullabyRange = true, lullabyRun = true } -- Harmony (4 Nov; lullabyRun 5 Nov)
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

@@ -329,6 +329,7 @@ local function applyMods(plr)
 	-- Harmony (4 Nov): how long and how far her Lullaby
 	plr:SetAttribute("LullabyTime", Config.HARMONY.seconds + (m.lullabyTime or 0))
 	plr:SetAttribute("LullabyRange", Config.HARMONY.range + (m.lullabyRange or 0))
+	plr:SetAttribute("LullabyRun", Config.HARMONY.runTime + (m.lullabyRun or 0)) -- (5 Nov) the speed burst
 	if skill ~= "clone" then
 		plr:SetAttribute("Copy1", nil)
 		plr:SetAttribute("Copy2", nil)
@@ -4687,6 +4688,24 @@ do
 				Effects.stars(h.model, seconds, Color3.fromRGB(190, 140, 255))
 			end
 			plr:SetAttribute("LullabyUntil", workspace:GetServerTimeNow() + seconds)
+			-- 5 Nov (Brent): she and every friend inside the circle run faster
+			-- for a moment (a stronger burst already running is kept)
+			do
+				local run = plr:GetAttribute("LullabyRun") or Hm.runTime
+				local now2 = workspace:GetServerTimeNow()
+				for _, p in ipairs(Players:GetPlayers()) do
+					local h = hrpOf(p)
+					if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped")
+						and Vector3.new(h.Position.X - hrp.Position.X, 0, h.Position.Z - hrp.Position.Z).Magnitude <= reach then
+						local busy = (p:GetAttribute("TeamBurstUntil") or 0) > now2 and (p:GetAttribute("TeamBurstMult") or 1) > Hm.run
+						if not busy then
+							p:SetAttribute("TeamBurstMult", Hm.run)
+							p:SetAttribute("TeamBurstUntil", now2 + run)
+							Effects.aura(p, "speed", run)
+						end
+					end
+				end
+			end
 			-- 5 Nov (Brent: it has to feel instant): the whole reach lights up at
 			-- once (no ring spreading out); purple notes circle the host for as
 			-- long as he is slowed - the slow itself starts the moment she sings
