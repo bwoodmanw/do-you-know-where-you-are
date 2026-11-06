@@ -388,19 +388,27 @@ function Play.start(remote, notice)
 		m:ScaleTo(scale)
 		seat *= scale
 		m.Name = "Ride"
-		-- the rider sits on the seat: the hips go up by the seat's height
-		-- (sitting lowers them by about a leg's length, which the hip height
-		-- keeps for the legs - so the seat height is the lift)
+		-- 6 Nov (Brent: riders sat sunk in the sleigh and the snowmobile, the
+		-- seat up at their chest): sitting, the rider's seat is their hips -
+		-- the bottom of the root part (the legs fold forward from there). The
+		-- ride's seat goes right under it; the rider is raised only when the
+		-- seat is higher than their hips (else the ride would sink in the floor)
 		local hip = hum.HipHeight
-		local lift = seat * 0.75
+		local hrpBottom = hrp.Position.Y - hrp.Size.Y / 2 -- the floor + the hip height
+		local floorY = hrpBottom - hip
+		local sitY = hrpBottom - 0.3 -- where they sit (a little below the hip joints)
+		local lift = math.max(0, floorY + seat - sitY)
 		hum.HipHeight = hip + lift
-		-- the ride under the rider: its bottom on the floor, facing their way
-		local floorY = hrp.Position.Y - hrp.Size.Y / 2 - hip
+		-- the ride under the rider, facing their way: its seat at their seat
+		-- (after the lift) - its bottom on the floor, or a little above it for
+		-- long legs
 		local bcf, bsize = m:GetBoundingBox()
 		local pivotUp = m:GetPivot().Position.Y - (bcf.Position.Y - bsize.Y / 2)
+		local rideBottom = sitY + lift - seat
 		local look = hrp.CFrame.LookVector * Vector3.new(1, 0, 1)
 		look = look.Magnitude > 0.01 and look.Unit or Vector3.new(0, 0, -1)
-		local base = CFrame.lookAt(Vector3.new(hrp.Position.X, floorY + pivotUp + lift, hrp.Position.Z), Vector3.new(hrp.Position.X, floorY + pivotUp + lift, hrp.Position.Z) + look)
+		local at = Vector3.new(hrp.Position.X, rideBottom + pivotUp, hrp.Position.Z)
+		local base = CFrame.lookAt(at, at + look)
 		m:PivotTo(base)
 		-- welded to the rider's root where they will sit (they rise by `lift`)
 		local weld = Instance.new("Weld")
