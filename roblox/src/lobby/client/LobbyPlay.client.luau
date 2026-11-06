@@ -110,6 +110,141 @@ do
 	end)
 end
 
+-- ---------- the string of lights and the ice bridge (6 Nov, Brent) ----------
+-- The lights swing here in time with everyone's (the server's clock). Jump at
+-- the glowing handle to grab it; you hang on as it swings; jump again to let
+-- go - you fly off the way it was swinging. On the ice bridge you keep
+-- sliding the way you were going and the ice nudges you sideways
+do
+	local UserInputService = game:GetService("UserInputService")
+	local handle, parts, lastH
+	local grabbed, letGoAt, swingVel = false, 0, Vector3.zero
+	local hint = Instance.new("TextLabel")
+	do
+		local g = Instance.new("ScreenGui")
+		g.Name = "SwingHint"
+		g.ResetOnSpawn = false
+		g.Parent = player:WaitForChild("PlayerGui")
+		hint.Size = UDim2.fromOffset(300, 40)
+		hint.AnchorPoint = Vector2.new(0.5, 0)
+		hint.Position = UDim2.new(0.5, 0, 0, 172)
+		hint.BackgroundColor3 = Color3.fromRGB(40, 22, 62)
+		hint.BackgroundTransparency = 0.2
+		hint.TextColor3 = Color3.fromRGB(255, 230, 120)
+		hint.Font = Enum.Font.FredokaOne
+		hint.TextScaled = true
+		hint.Text = "\u{1F384} Jump to let go!"
+		hint.Visible = false
+		hint.Parent = g
+		local c = Instance.new("UICorner")
+		c.CornerRadius = UDim.new(0, 10)
+		c.Parent = hint
+	end
+	local function letGo(jump)
+		if not grabbed then
+			return
+		end
+		grabbed = false
+		letGoAt = os.clock()
+		hint.Visible = false
+		local char = player.Character
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		if hum then
+			hum.PlatformStand = false
+			hum:ChangeState(Enum.HumanoidStateType.Freefall)
+		end
+		if hrp then
+			hrp.AssemblyLinearVelocity = swingVel + Vector3.new(0, jump and 28 or 0, 0)
+		end
+	end
+	UserInputService.JumpRequest:Connect(function()
+		if grabbed and os.clock() - letGoAt > 0.3 then
+			letGo(true)
+		end
+	end)
+	player.CharacterAdded:Connect(function()
+		grabbed = false
+		hint.Visible = false
+	end)
+	local slide, slideOn = Vector3.zero, false
+	RunService.Stepped:Connect(function(_, dt)
+		if not handle or not handle.Parent then
+			handle, lastH = nil, nil
+			local f = workspace:FindFirstChild("LobbyPlay")
+			local c = f and f:FindFirstChild("BounceCourse")
+			local m = c and c:FindFirstChild("LightSwing")
+			handle = m and m:FindFirstChild("LightGrab")
+			parts = {}
+			if m then
+				for _, d in ipairs(m:GetChildren()) do
+					if d.Name == "LightBulb" or d.Name == "LightStrand" then
+						table.insert(parts, d)
+					end
+				end
+			end
+		end
+		local char = player.Character
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		if handle then
+			local P, R = handle:GetAttribute("Pivot"), handle:GetAttribute("Radius")
+			if typeof(P) == "Vector3" and R then
+				local t = workspace:GetServerTimeNow()
+				local a = math.rad(handle:GetAttribute("Swing") or 40) * math.sin(t * 2 * math.pi / (handle:GetAttribute("Period") or 5))
+				local dir = Vector3.new(0, -math.cos(a), math.sin(a))
+				local H = P + dir * R
+				if lastH and dt > 0 then
+					swingVel = (H - lastH) / dt
+				end
+				lastH = H
+				handle.CFrame = CFrame.new(H)
+				for _, d in ipairs(parts) do
+					if d.Name == "LightStrand" then
+						d.Size = Vector3.new(0.2, 0.2, R)
+						d.CFrame = CFrame.lookAt(P + dir * (R / 2), H)
+					else
+						d.CFrame = CFrame.lookAt(P + dir * (R * (d:GetAttribute("Along") or 0.5)), H)
+					end
+				end
+				if hum and hrp and hum.Health > 0 then
+					local hang = H - Vector3.new(0, 2.6, 0)
+					if grabbed then
+						hrp.CFrame = CFrame.lookAt(hang, hang + Vector3.new(0, 0, 1))
+						hrp.AssemblyLinearVelocity = swingVel
+					elseif os.clock() - letGoAt > 0.8 and hum.FloorMaterial == Enum.Material.Air and (hrp.Position - hang).Magnitude < 4 then
+						grabbed = true
+						hum.PlatformStand = true
+						hint.Visible = true
+						sound(Config.SOUNDS.bell, handle, 0.4)
+					end
+				end
+			end
+		end
+		-- the ice bridge
+		if hum and hrp and not grabbed then
+			local params = RaycastParams.new()
+			params.FilterType = Enum.RaycastFilterType.Exclude
+			params.FilterDescendantsInstances = { char }
+			local hit = hum.FloorMaterial ~= Enum.Material.Air and workspace:Raycast(hrp.Position, Vector3.new(0, -8, 0), params)
+			local v = hrp.AssemblyLinearVelocity
+			if hit and hit.Instance.Name == "IceBridge" then
+				if not slideOn then
+					slide = Vector3.new(v.X, 0, v.Z)
+					slideOn = true
+				end
+				local across = hit.Instance.CFrame.RightVector
+				local k = math.clamp((dt or 1 / 60) * 60, 0.2, 3)
+				slide = slide * (1 - 0.015 * k) + hum.MoveDirection * hum.WalkSpeed * 0.015 * k
+					+ across * math.sin(workspace:GetServerTimeNow() * 1.7) * 0.04 * k
+				hrp.AssemblyLinearVelocity = Vector3.new(slide.X, v.Y, slide.Z)
+			else
+				slideOn = false
+			end
+		end
+	end)
+end
+
 -- ---------- the Sky Perch's star: fireworks, then gone till tomorrow (6 Nov) ----------
 task.spawn(function()
 	local TweenService = game:GetService("TweenService")

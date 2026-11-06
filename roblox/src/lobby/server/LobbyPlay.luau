@@ -42,13 +42,33 @@ Play.PADS = {
 	{ -79, -56, 50, 82, true }, -- on the second landing (`true`: no post, it sits on the deck)
 	{ -69, -63, 57, 82 },
 	{ -77, -72, 65, 70 },
+	-- 6 Nov (Brent): past the light swing, from the landing across the gap
+	{ -62, -47, 73, 82, true },
+	{ -55, -40, 80, 82 },
+	{ -64, -33, 88, 82 },
 }
-Play.PERCH = Vector3.new(-64, 73, -80) -- the Sky Perch's floor (top middle; 6 Nov: higher, past the swing)
+-- the Sky Perch (top middle, 8 x 8): 6 Nov (Brent) at the end of the ice
+-- bridge, past the swing, the string of lights and five more pads
+Play.PERCH = Vector3.new(-70, 96, 8)
+Play.PERCH_SIZE = 8
 -- the landings on the way, each a railed deck on a post (rails: x, z offsets and size)
 Play.LANDINGS = {
 	{ at = Vector3.new(-82, 49, -20), rails = { { -6, 0, 0.4, 12 }, { 0, 6, 12, 0.4 } } },
 	{ at = Vector3.new(-80, 49, -54.4), rails = { { -6, 0, 0.4, 12 } } },
+	-- 6 Nov: the old Sky Perch (the string of lights hangs off its +z edge),
+	-- the landing across the gap, and the start of the ice bridge (8 x 8)
+	{ at = Vector3.new(-64, 73, -80), rails = { { 6, 0, 0.4, 12 }, { 0, -6, 12, 0.4 } } },
+	{ at = Vector3.new(-62, 72, -51), rails = { { -6, 0, 0.4, 12 } } },
+	{ at = Vector3.new(-70, 96, -24), size = 8, rails = { { -4, 0, 0.4, 8 } } },
 }
+-- the string of Christmas lights (6 Nov, Brent): hangs `radius` from the
+-- pivot and swings `swing` degrees along +z every `period` s - jump at its
+-- end from the old perch to grab it, jump again to let go over the landing
+-- across the gap (it swings on each player's screen: LobbyPlay.client)
+Play.LIGHTS = { pivot = Vector3.new(-62, 92, -64), radius = 14, swing = 40, period = 5 }
+-- the ice bridge from the last landing to the Sky Perch: slippery (the
+-- sliding is on each player's screen) and no rails
+Play.ICE = { from = Vector3.new(-70, 96, -20), to = Vector3.new(-70, 96, 4), width = 3 }
 -- the swing between them: a platform hanging `radius` below the pivot,
 -- swinging `swing` degrees each way every `period` seconds - level with each
 -- landing's edge at the end of its swing (the swing moves on each player's
@@ -56,7 +76,7 @@ Play.LANDINGS = {
 Play.SWING = { pivot = Vector3.new(-80, 57.8, -37.2), radius = 12, swing = 40, period = 5 }
 Play.STAND = Vector3.new(-58, 0, 52) -- the ride stand (clear of the Christmas snow pile at -55, 45)
 Play.STAND2 = Vector3.new(-72, 0, 56) -- 6 Nov: the second stand (the snowmobile at Christmas)
-Play.PERCH_POINTS = 10
+Play.PERCH_POINTS = 25 -- (6 Nov: was 10 - the course is much longer now)
 Play.RIDE_SPEED = 1.6 -- (the client multiplies its walk and run by this)
 
 local function part(parent, props)
@@ -143,7 +163,8 @@ local function buildCourse(folder, season)
 	-- 6 Nov (Brent): the landings on the way - the old perch is the first
 	for _, L in ipairs(Play.LANDINGS) do
 		local A = L.at
-		part(folder, { Name = "LandingFloor", Size = Vector3.new(12, 1, 12), Position = A - Vector3.new(0, 0.5, 0), Color = Color3.fromRGB(90, 60, 110), Material = Enum.Material.WoodPlanks })
+		local w = L.size or 12
+		part(folder, { Name = "LandingFloor", Size = Vector3.new(w, 1, w), Position = A - Vector3.new(0, 0.5, 0), Color = Color3.fromRGB(90, 60, 110), Material = Enum.Material.WoodPlanks })
 		part(folder, { Name = "LandingPost", Shape = Enum.PartType.Cylinder, Size = Vector3.new(A.Y - 1, 2.6, 2.6), CFrame = CFrame.new(A.X, (A.Y - 1) / 2, A.Z) * CYL, Color = look.post, Material = look.postMat })
 		for _, s in ipairs(L.rails) do
 			part(folder, { Name = "LandingRail", Size = Vector3.new(s[3], 2.4, s[4]), Position = A + Vector3.new(s[1], 1.2, s[2]), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood, Transparency = 0.2 })
@@ -171,11 +192,59 @@ local function buildCourse(folder, season)
 			rope:SetAttribute("Side", dx)
 		end
 	end
+	-- 6 Nov (Brent): the string of Christmas lights - a tall post with an arm,
+	-- a strand with bulbs and a glowing handle at its end (at rest here)
+	do
+		local S = Play.LIGHTS
+		local PV = S.pivot
+		local m = Instance.new("Model")
+		m.Name = "LightSwing"
+		m.Parent = folder
+		local postX = PV.X + 11
+		part(m, { Name = "LightPost", Size = Vector3.new(1.2, PV.Y + 1, 1.2), Position = Vector3.new(postX, (PV.Y + 1) / 2, PV.Z), Color = look.post, Material = look.postMat })
+		part(m, { Name = "LightArm", Size = Vector3.new(postX - PV.X + 1, 1, 1), Position = Vector3.new((postX + PV.X) / 2, PV.Y + 0.5, PV.Z), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood })
+		local strand = part(m, { Name = "LightStrand", Size = Vector3.new(0.2, 0.2, S.radius), CFrame = CFrame.lookAt(PV - Vector3.new(0, S.radius / 2, 0), PV - Vector3.new(0, S.radius, 0)), Color = Color3.fromRGB(30, 90, 40), Material = Enum.Material.SmoothPlastic, CanCollide = false, CanQuery = false, CanTouch = false })
+		strand:SetAttribute("Strand", true)
+		local BULBS = { Color3.fromRGB(255, 60, 70), Color3.fromRGB(70, 220, 110), Color3.fromRGB(255, 210, 60), Color3.fromRGB(80, 150, 255) }
+		for k = 1, 9 do
+			local b = part(m, { Name = "LightBulb", Shape = Enum.PartType.Ball, Size = Vector3.new(0.55, 0.75, 0.55), Position = PV - Vector3.new(0, S.radius * k / 10, 0), Color = BULBS[(k - 1) % #BULBS + 1], Material = Enum.Material.Neon, CanCollide = false, CanQuery = false, CanTouch = false })
+			b:SetAttribute("Along", k / 10)
+		end
+		local handle = part(m, { Name = "LightGrab", Shape = Enum.PartType.Ball, Size = Vector3.new(1.6, 1.6, 1.6), Position = PV - Vector3.new(0, S.radius, 0), Color = Color3.fromRGB(255, 230, 120), Material = Enum.Material.Neon, CanCollide = false, CanQuery = false, CanTouch = false })
+		handle:SetAttribute("Pivot", PV)
+		handle:SetAttribute("Radius", S.radius)
+		handle:SetAttribute("Swing", S.swing)
+		handle:SetAttribute("Period", S.period)
+		local glow = Instance.new("PointLight")
+		glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 220, 140), 12, 1.2
+		glow.Parent = handle
+	end
+	-- the ice bridge: narrow, no rails, slippery
+	do
+		local I = Play.ICE
+		local len = (I.to - I.from).Magnitude
+		local ice = part(folder, { Name = "IceBridge", Size = Vector3.new(I.width, 1, len), CFrame = CFrame.lookAt((I.from + I.to) / 2 - Vector3.new(0, 0.5, 0), I.to - Vector3.new(0, 0.5, 0)), Color = Color3.fromRGB(175, 225, 255), Material = Enum.Material.Ice, Transparency = 0.15 })
+		ice.CustomPhysicalProperties = PhysicalProperties.new(0.9, 0, 0.5, 100, 1)
+		local sign = part(folder, { Name = "IceSign", Size = Vector3.new(5, 1.4, 0.3), Position = I.from + Vector3.new(-2.6, 2.4, -1.5), Color = Color3.fromRGB(40, 22, 62), Material = Enum.Material.SmoothPlastic })
+		local gui = Instance.new("SurfaceGui")
+		gui.Face = Enum.NormalId.Front -- (toward the landing: you read it before you step on)
+		gui.CanvasSize = Vector2.new(300, 84)
+		gui.Parent = sign
+		local tl = Instance.new("TextLabel")
+		tl.Size = UDim2.fromScale(1, 1)
+		tl.BackgroundTransparency = 1
+		tl.TextScaled = true
+		tl.Font = Enum.Font.FredokaOne
+		tl.TextColor3 = Color3.fromRGB(175, 225, 255)
+		tl.Text = "\u{2744} Slippery! Go slow!"
+		tl.Parent = gui
+	end
 	-- the Sky Perch: a railed platform with a star
 	local P = Play.PERCH
-	part(folder, { Name = "PerchFloor", Size = Vector3.new(12, 1, 12), Position = P - Vector3.new(0, 0.5, 0), Color = Color3.fromRGB(90, 60, 110), Material = Enum.Material.WoodPlanks })
+	local PW = Play.PERCH_SIZE or 12
+	part(folder, { Name = "PerchFloor", Size = Vector3.new(PW, 1, PW), Position = P - Vector3.new(0, 0.5, 0), Color = Color3.fromRGB(90, 60, 110), Material = Enum.Material.WoodPlanks })
 	part(folder, { Name = "PerchPost", Shape = Enum.PartType.Cylinder, Size = Vector3.new(P.Y - 1, 2.6, 2.6), CFrame = CFrame.new(P.X, (P.Y - 1) / 2, P.Z) * CYL, Color = look.post, Material = look.postMat })
-	for _, s in ipairs({ { 6, 0, 0.4, 12 }, { 0, -6, 12, 0.4 } }) do
+	for _, s in ipairs({ { PW / 2, 0, 0.4, PW }, { -PW / 2, 0, 0.4, PW }, { 0, PW / 2, PW, 0.4 } }) do
 		part(folder, { Name = "PerchRail", Size = Vector3.new(s[3], 2.4, s[4]), Position = P + Vector3.new(s[1], 1.2, s[2]), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood, Transparency = 0.2 })
 	end
 	local star = part(folder, { Name = "PerchStar", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2.4, 2.4), Position = P + Vector3.new(0, 2.2, 0), Color = Color3.fromRGB(255, 220, 80), Material = Enum.Material.Neon, CanCollide = false })
@@ -199,22 +268,32 @@ local function rideModel(kind)
 	local RED, GOLD, BROWN = Color3.fromRGB(196, 36, 44), Color3.fromRGB(235, 190, 70), Color3.fromRGB(120, 70, 35)
 	local body, seat
 	if kind == "sleigh" then
-		-- Santa's sleigh: about 3 tall, 6 long; you sit in the middle
-		body = bit({ Name = "RideBody", Size = Vector3.new(3.4, 1.6, 5), CFrame = CFrame.new(0, 1.9, 0), Color = RED, Material = Enum.Material.SmoothPlastic })
-		bit({ Name = "SleighBack", Size = Vector3.new(3.4, 1.8, 0.6), CFrame = CFrame.new(0, 3.3, 2.2), Color = RED, Material = Enum.Material.SmoothPlastic })
-		bit({ Name = "SleighFront", Size = Vector3.new(3.4, 1, 0.5), CFrame = CFrame.new(0, 3, -2.3) * CFrame.Angles(math.rad(-25), 0, 0), Color = RED, Material = Enum.Material.SmoothPlastic })
-		bit({ Name = "SleighTrim", Size = Vector3.new(3.5, 0.25, 5.1), CFrame = CFrame.new(0, 2.75, 0), Color = GOLD, Material = Enum.Material.SmoothPlastic })
+		-- Santa's sleigh: about 3 tall, 6 long. 6 Nov (Brent: the rider looked
+		-- sunk in it - it was one solid box with the seat on top): a floor, low
+		-- walls round a seat well and a bench at the back; you sit in the well
+		body = bit({ Name = "RideBody", Size = Vector3.new(3.4, 0.6, 5), CFrame = CFrame.new(0, 1.4, 0), Color = RED, Material = Enum.Material.SmoothPlastic })
+		for _, sx in ipairs({ -1.55, 1.55 }) do
+			bit({ Name = "SleighSide", Size = Vector3.new(0.3, 1.2, 5), CFrame = CFrame.new(sx, 2.3, 0), Color = RED, Material = Enum.Material.SmoothPlastic })
+			bit({ Name = "SleighTrim", Size = Vector3.new(0.4, 0.2, 5.1), CFrame = CFrame.new(sx, 2.95, 0), Color = GOLD, Material = Enum.Material.SmoothPlastic })
+		end
+		bit({ Name = "SleighNose", Size = Vector3.new(3.4, 1.2, 0.3), CFrame = CFrame.new(0, 2.3, -2.35), Color = RED, Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "SleighFront", Size = Vector3.new(3.4, 0.9, 0.4), CFrame = CFrame.new(0, 3.1, -2.45) * CFrame.Angles(math.rad(-25), 0, 0), Color = RED, Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "SleighBack", Size = Vector3.new(3.4, 1.5, 0.4), CFrame = CFrame.new(0, 2.45, 2.3), Color = RED, Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "SleighBackTrim", Size = Vector3.new(3.5, 0.2, 0.5), CFrame = CFrame.new(0, 3.25, 2.3), Color = GOLD, Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "SleighBench", Size = Vector3.new(2.8, 0.5, 1.8), CFrame = CFrame.new(0, 1.95, 1.1), Color = Color3.fromRGB(120, 20, 30), Material = Enum.Material.Fabric })
 		for _, sx in ipairs({ -1.4, 1.4 }) do
 			bit({ Name = "Runner", Size = Vector3.new(0.25, 0.25, 6.2), CFrame = CFrame.new(sx, 0.15, -0.3), Color = GOLD, Material = Enum.Material.Metal })
 			bit({ Name = "RunnerCurl", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 1.1, 0.5), CFrame = CFrame.new(sx, 0.6, -3.4), Color = GOLD, Material = Enum.Material.Metal })
 			bit({ Name = "RunnerLeg", Size = Vector3.new(0.25, 1.1, 0.25), CFrame = CFrame.new(sx, 0.7, 1.4), Color = GOLD, Material = Enum.Material.Metal })
 			bit({ Name = "RunnerLeg", Size = Vector3.new(0.25, 1.1, 0.25), CFrame = CFrame.new(sx, 0.7, -1.4), Color = GOLD, Material = Enum.Material.Metal })
 		end
-		-- (6 Nov, Brent: it sat over the rider's head) smaller, in the back corner
-		bit({ Name = "PresentSack", Shape = Enum.PartType.Ball, Size = Vector3.new(1.3, 1.3, 1.1), CFrame = CFrame.new(1.05, 3.1, 1.45), Color = Color3.fromRGB(150, 100, 60), Material = Enum.Material.Fabric })
+		-- presents in the front corners of the well, by the rider's feet (6 Nov:
+		-- the sack sat by the rider's head)
+		bit({ Name = "SleighPresent", Size = Vector3.new(0.9, 0.8, 0.9), CFrame = CFrame.new(-0.85, 2.1, -1.6), Color = Color3.fromRGB(40, 140, 70), Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "SleighPresent", Size = Vector3.new(0.8, 0.7, 0.8), CFrame = CFrame.new(0.9, 2.05, -1.7), Color = GOLD, Material = Enum.Material.SmoothPlastic })
 		local bell = bit({ Name = "SleighBell", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.6, 0.6), CFrame = CFrame.new(1.8, 2.6, -2), Color = GOLD, Material = Enum.Material.Metal })
 		bell.Name = "SleighBell"
-		seat = 2.7
+		seat = 2.2 -- the bench's top
 	elseif kind == "turkey" then
 		-- a big friendly turkey: you sit on its back
 		body = bit({ Name = "RideBody", Shape = Enum.PartType.Ball, Size = Vector3.new(3.2, 2.8, 4), CFrame = CFrame.new(0, 2.2, 0), Color = BROWN, Material = Enum.Material.SmoothPlastic })
