@@ -1074,6 +1074,8 @@ local function showChar()
 		end
 	end
 	infoLevel.Text = "\u{2B50} Level " .. level .. "  (" .. xp .. " XP)\n" .. (n > 0 and (n .. " upgrade" .. (n == 1 and "" or "s") .. " chosen") or "Level up by playing as " .. sk.name .. " - choose upgrades in the Lobby.")
+	infoName.Text = sk.name .. "  \u{00B7}  Lv " .. level -- (5 Nov, Brent)
+	info:SetAttribute("ViewSkill", sk.id) -- (5 Nov) the Upgrades panel follows it
 	local mine = player:GetAttribute("Skill") == sk.id
 	-- 3 Nov: a character you unlock (Nutmeg) shows a lock until it's yours
 	local locked = Config.CHARACTER_UNLOCK[sk.id] ~= nil and not table.find(string.split(player:GetAttribute("Unlocked") or "", ","), sk.id)
@@ -3238,5 +3240,84 @@ do
 		circle.Size = Vector3.new(0.1, d, d)
 		circle.CFrame = CFrame.new(hrp.Position.X, hit.Position.Y + 0.08, hrp.Position.Z) * CFrame.Angles(0, 0, math.rad(90))
 		circle.Parent = workspace.CurrentCamera
+	end)
+end
+
+-- 5 Nov (Brent): the character picker's Upgrades button - the skill-tree
+-- choices made for the character on show, level by level (X closes)
+do
+	infoLevel.Size = UDim2.new(1, -134, 0, 48)
+	local panel = frame(picker, { Size = UDim2.fromOffset(460, 400), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), BackgroundColor3 = Color3.fromRGB(43, 29, 64), Visible = false, ZIndex = 40 })
+	corner(panel, 16)
+	local title = label(panel, { Size = UDim2.new(1, -80, 0, 40), Position = UDim2.fromOffset(18, 10), Text = "", TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 41 })
+	button(panel, "X", { Size = UDim2.fromOffset(44, 40), Position = UDim2.new(1, -56, 0, 10), BackgroundColor3 = Color3.fromRGB(150, 50, 60), ZIndex = 41 }, function()
+		panel.Visible = false
+	end)
+	local list = Instance.new("ScrollingFrame")
+	list.Size = UDim2.new(1, -24, 1, -64)
+	list.Position = UDim2.fromOffset(12, 56)
+	list.BackgroundTransparency = 1
+	list.BorderSizePixel = 0
+	list.ScrollBarThickness = 6
+	list.AutomaticCanvasSize = Enum.AutomaticSize.Y
+	list.CanvasSize = UDim2.new()
+	list.ZIndex = 41
+	list.Parent = panel
+	local lay = Instance.new("UIListLayout")
+	lay.Padding = UDim.new(0, 6)
+	lay.SortOrder = Enum.SortOrder.LayoutOrder
+	lay.Parent = list
+	local function fill()
+		for _, c in ipairs(list:GetChildren()) do
+			if c:IsA("GuiObject") then
+				c:Destroy()
+			end
+		end
+		local id = info:GetAttribute("ViewSkill")
+		local name = id
+		for _, s in ipairs(Config.SKILLS) do
+			if s.id == id then
+				name = s.name
+			end
+		end
+		local data = profileData()
+		local xp = data and data.xp and data.xp[id] or 0
+		local level = Progress.level(xp)
+		local picks = data and data.picks and data.picks[id] or {}
+		title.Text = "\u{26A1} " .. tostring(name) .. "'s upgrades  \u{00B7}  Lv " .. level
+		local any = false
+		for lv = 2, 20 do
+			local options = Progress.choices(id, lv)
+			if options and lv <= level then
+				any = true
+				local pick
+				for _, o in ipairs(options) do
+					if o.id == picks[tostring(lv)] then
+						pick = o
+					end
+				end
+				label(list, { Size = UDim2.new(1, -10, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = lv, TextScaled = false, TextSize = 17, TextWrapped = true,
+					TextXAlignment = Enum.TextXAlignment.Left, RichText = true, ZIndex = 42,
+					Text = "<b>Lv " .. lv .. "</b>  " .. (pick and ("<font color=\"#FFB446\">" .. pick.name .. "</font>: " .. pick.say) or "<i>not chosen yet - choose it in the Lobby</i>") })
+			end
+		end
+		if not any then
+			label(list, { Size = UDim2.new(1, -10, 0, 60), TextScaled = false, TextSize = 17, TextWrapped = true, ZIndex = 42,
+				Text = "No upgrades yet - play as " .. tostring(name) .. " to level up, then choose them in the Lobby." })
+		end
+	end
+	button(info, "\u{26A1} Upgrades", { Size = UDim2.fromOffset(112, 34), Position = UDim2.new(1, -124, 0, 222), BackgroundColor3 = Color3.fromRGB(70, 140, 220), ZIndex = 23 }, function()
+		fill()
+		panel.Visible = true
+	end)
+	info:GetAttributeChangedSignal("ViewSkill"):Connect(function()
+		if panel.Visible then
+			fill()
+		end
+	end)
+	picker:GetPropertyChangedSignal("Visible"):Connect(function()
+		if not picker.Visible then
+			panel.Visible = false
+		end
 	end)
 end

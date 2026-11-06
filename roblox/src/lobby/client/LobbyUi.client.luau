@@ -2854,6 +2854,27 @@ repaintChars = function()
 			end
 		end
 		allWaiting += n
+		-- 5 Nov (Brent): the level on every tile
+		do
+			local lvTag = charBtns[x.id]:FindFirstChild("Lv")
+			if not lvTag then
+				lvTag = Instance.new("TextLabel")
+				lvTag.Name = "Lv"
+				lvTag.Size = UDim2.fromOffset(46, 20)
+				lvTag.Position = UDim2.fromOffset(4, 4)
+				lvTag.BackgroundColor3 = Color3.fromRGB(40, 22, 62)
+				lvTag.BackgroundTransparency = 0.15
+				lvTag.TextColor3 = Color3.fromRGB(255, 210, 63)
+				lvTag.Font = Enum.Font.GothamBold
+				lvTag.TextScaled = true
+				lvTag.ZIndex = charBtns[x.id].ZIndex + 2
+				local cr = Instance.new("UICorner")
+				cr.CornerRadius = UDim.new(0, 6)
+				cr.Parent = lvTag
+				lvTag.Parent = charBtns[x.id]
+			end
+			lvTag.Text = "Lv " .. Progress.level((profile.xp and profile.xp[x.id]) or 0)
+		end
 		local lock = charBtns[x.id]:FindFirstChild("Lock")
 		if lock then
 			lock.Visible = Config.CHARACTER_UNLOCK[x.id] ~= nil and not table.find(string.split(player:GetAttribute("Unlocked") or "", ","), x.id)
