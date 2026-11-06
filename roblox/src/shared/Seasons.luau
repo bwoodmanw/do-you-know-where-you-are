@@ -146,6 +146,19 @@ function Seasons.decor(now)
 	return s and s.id or nil
 end
 
+-- 6 Nov: whether a skin is out yet - not hidden, and its `from` date
+-- ({ year, month, day }, US Eastern midnight) reached
+function Seasons.skinOut(skin, now)
+	if skin.hidden then
+		return false
+	end
+	local f = skin.from
+	if f then
+		return (now or Seasons.clock()) >= Seasons.easternMidnight(f[1], f[2], f[3])
+	end
+	return true
+end
+
 -- a season by id
 function Seasons.get(id)
 	for _, s in ipairs(Config.SEASONS or {}) do

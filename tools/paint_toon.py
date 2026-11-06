@@ -42,6 +42,12 @@ def no_face(name):
 # the side picture's head out of line (no side painting on the head; 16 Oct)
 HOODED = {"shadow", "ghostly-shadow", "gobble-shadow", "chef-brainy"}
 FACING_MIN, FACING_FULL = 0.12, 0.45  # blend from side-on to fully facing
+# 6 Nov (Brent: Toy Maker Tinker's brown chin, like stubble): models whose
+# chin keeps Stable Fast 3D's brown - too far from skin for even_skin's
+# check. Their chin (the middle of the jaw, mouth down to the neck) is
+# painted the picture's skin: where the front picture sees skin there, and
+# underneath (facing down) where it is a warm brown, not the clothes
+CHIN_SKIN = {"toymaker-tinker"}
 
 
 def outline(img):
@@ -236,6 +242,25 @@ def even_skin(name, V, F, uv, fn, tex, sel, pic, fg_mask, align):
         tx, ty = pts[ok, 0], pts[ok, 1]
         tex[ty, tx] = col[ok] * (1 - w) + skin * w
         changed += int(ok.sum())
+    if name in CHIN_SKIN:
+        chin = region & (dxc < 0.075 * h) & (c[:, 1] < hi[1] - 0.20 * h)
+        fixed = 0
+        for f in np.nonzero(chin)[0]:
+            pts, bc = raster(uvpx[F[f]], TW, TH)
+            if pts is None or len(pts) == 0:
+                continue
+            col = tex[pts[:, 1], pts[:, 0]].astype(np.float32)
+            if fn[f, 1] > -0.4:
+                ix, iy = to_pic(bc @ V[F[f]])
+                pc = pic[iy, ix].astype(np.float32)
+                ok = fg_mask[iy, ix] & (np.linalg.norm(pc - skin, axis=1) < 45)
+            else:
+                r, g, b = col[:, 0], col[:, 1], col[:, 2]
+                ok = (r > g) & (g > b) & (r - b > 30) & (r < 235)  # warm brown, not the green shirt or red overalls
+            if ok.any():
+                tex[pts[ok, 1], pts[ok, 0]] = skin
+                fixed += int(ok.sum())
+        print(f"{name}: chin painted skin ({fixed} texels)")
     print(f"{name}: even skin on the jaw, chin and neck ({changed} texels, skin {skin.astype(int).tolist()}"
           + (f", hair {hair.astype(int).tolist()})" if hair is not None else ")"))
     return tex

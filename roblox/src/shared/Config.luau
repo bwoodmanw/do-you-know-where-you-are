@@ -1089,19 +1089,21 @@ Config.SKINS = {
 	-- candy canes in the Christmas Shop during the event, or a 99-Robux Game
 	-- Pass any time once `pass` has its id. hidden until the model is saved
 	-- (CHARACTER_ASSETS) - take `hidden` off then. Elfy has no Christmas skin.
-	{ id = "patch_skater", skill = "patch", name = "Ice Skater Patch", model = "PatchSkater", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "brainy_gingerbread", skill = "brainy", name = "Gingerbread Brainy", model = "BrainyGingerbread", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "shadow_silentnight", skill = "shadow", name = "Silent Night Shadow", model = "ShadowSilentNight", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "glow_twinkle", skill = "glow", name = "Twinkle Lights Glow", model = "GlowTwinkle", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "tinker_toymaker", skill = "tinker", name = "Toy Maker Tinker", model = "TinkerToymaker", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "muscle_sweater", skill = "muscle", name = "Holiday Sweater Muscle", model = "MuscleSweater", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "echo_jingle", skill = "echo", name = "Jingle Bell Echo", model = "EchoJingle", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "bramble_evergreen", skill = "bramble", name = "Evergreen Bramble", model = "BrambleEvergreen", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "nutmeg_snowflake", skill = "nutmeg", name = "Snowflake Nutmeg", model = "NutmegSnowflake", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "cloud_snow", skill = "cloud", name = "First Snow Cloud", model = "CloudSnow", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "holly_sugarplum", skill = "holly", name = "Sugar Plum Holly", model = "HollySugarplum", cane = 150, pass = 0 }, -- 6 Nov: model saved
-	{ id = "clone_nutcracker", skill = "clone", name = "Nutcracker Clone", model = "CloneNutcracker", cane = 150, pass = 0 }, -- 6 Nov: model saved
-	{ id = "harmony_carol", skill = "harmony", name = "Carol Singer Harmony", model = "HarmonyCarol", cane = 150, pass = 0 }, -- 6 Nov: model saved
+	-- `from` (6 Nov, Brent): not in the Lobby's Shop or Skins window before
+	-- that date ({ year, month, day }, Eastern) - owned ones always show
+	{ id = "patch_skater", skill = "patch", name = "Ice Skater Patch", model = "PatchSkater", cane = 150, pass = 2074868887, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "brainy_gingerbread", skill = "brainy", name = "Gingerbread Brainy", model = "BrainyGingerbread", cane = 150, pass = 2075018871, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "shadow_silentnight", skill = "shadow", name = "Silent Night Shadow", model = "ShadowSilentNight", cane = 150, pass = 2075480856, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "glow_twinkle", skill = "glow", name = "Twinkle Lights Glow", model = "GlowTwinkle", cane = 150, pass = 2074280891, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "tinker_toymaker", skill = "tinker", name = "Toy Maker Tinker", model = "TinkerToymaker", cane = 150, pass = 2076230845, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "muscle_sweater", skill = "muscle", name = "Holiday Sweater Muscle", model = "MuscleSweater", cane = 150, pass = 2075498873, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "echo_jingle", skill = "echo", name = "Jingle Bell Echo", model = "EchoJingle", cane = 150, pass = 2074310910, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "bramble_evergreen", skill = "bramble", name = "Evergreen Bramble", model = "BrambleEvergreen", cane = 150, pass = 2074628876, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "nutmeg_snowflake", skill = "nutmeg", name = "Snowflake Nutmeg", model = "NutmegSnowflake", cane = 150, pass = 2074700910, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "cloud_snow", skill = "cloud", name = "First Snow Cloud", model = "CloudSnow", cane = 150, pass = 2075918891, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "holly_sugarplum", skill = "holly", name = "Sugar Plum Holly", model = "HollySugarplum", cane = 150, pass = 2074616887, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "clone_nutcracker", skill = "clone", name = "Nutcracker Clone", model = "CloneNutcracker", cane = 150, pass = 2074256857, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
+	{ id = "harmony_carol", skill = "harmony", name = "Carol Singer Harmony", model = "HarmonyCarol", cane = 150, pass = 2075378885, from = { 2026, 12, 1 } }, -- 6 Nov: pass checked on Roblox (99 Robux, for sale)
 }
 -- every Thanksgiving skin's Game Pass price (Managed pricing off - PASSES.md);
 -- the Skins window's Robux button shows it (the Shop reads each pass's price)

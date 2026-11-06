@@ -2179,7 +2179,7 @@ do
 		for _, sk in ipairs(Config.SKILLS) do
 			local now, later = {}, {}
 			for _, skin in ipairs(Config.SKINS or {}) do
-				if skin.skill == sk.id and not skin.hidden then
+				if skin.skill == sk.id and Seasons.skinOut(skin) then -- (6 Nov: `from`, the Christmas skins on Dec 1)
 					local price, ps = Seasons.skinPrice(skin)
 					if price and Seasons.openWindow(ps.id) then
 						table.insert(now, skin)
@@ -2590,7 +2590,8 @@ local function paintSkins()
 	end
 	local mine = {}
 	for _, skin in ipairs(Config.SKINS or {}) do
-		if skin.skill == selected and not skin.hidden and ((skin.pass or 0) > 0 or Seasons.skinPrice(skin) or skinOwned[skin.id]) then
+		-- (6 Nov: a skin not out yet shows only to whoever owns it)
+		if skin.skill == selected and not skin.hidden and (Seasons.skinOut(skin) or skinOwned[skin.id]) and ((skin.pass or 0) > 0 or Seasons.skinPrice(skin) or skinOwned[skin.id]) then
 			table.insert(mine, skin)
 		end
 	end
@@ -2663,7 +2664,12 @@ local function paintSkins()
 				end
 				m:PivotTo(CFrame.Angles(0, math.pi, 0))
 				m.Parent = vp
-				local bcf, bsize = m:GetBoundingBox()
+				-- (6 Nov: the visible body, as the big view - Twinkle Lights Glow's
+				-- invisible parts put the camera over her head)
+				local bcf, bsize = require(ReplicatedStorage.Shared.ModelBounds)(m, true)
+				if not bcf then
+					bcf, bsize = m:GetBoundingBox()
+				end
 				local focus = Vector3.new(bcf.Position.X, bcf.Position.Y + bsize.Y * 0.3, bcf.Position.Z)
 				local cam = Instance.new("Camera")
 				cam.FieldOfView = 30

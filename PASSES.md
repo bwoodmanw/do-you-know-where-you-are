@@ -120,23 +120,26 @@ same steps as below.
 | 33 | Nutcracker Clone | `pass-nutcracker-clone.png` | 99 | Clone as a toy soldier: a red and royal-blue jacket with gold buttons and gold shoulder trim, plus his gold goggles. Looks only - Clone's skills stay the same. Wear it from Characters in the Lobby. |
 | 34 | Carol Singer Harmony | `pass-carol-harmony.png` | 99 | Harmony ready to sing carols: a red beret, a green coat with a white collar, a red scarf and a gold bell. Looks only - Harmony's skills stay the same. Wear it from Characters in the Lobby. |
 
-## Christmas pass ids (fill in as they come)
+## Christmas pass ids (all 13, checked on Roblox 6 Nov: 99 Robux, for sale)
+
+In the game they wait for Dec 1 (`from` in Config.SKINS): not in the Lobby's
+Shop or Skins window before then, unless already owned.
 
 | Skin | Pass id |
 |---|---|
-| Ice Skater Patch | |
-| Gingerbread Brainy | |
-| Silent Night Shadow | |
-| Twinkle Lights Glow | |
-| Toy Maker Tinker | |
-| Holiday Sweater Muscle | |
-| Jingle Bell Echo | |
-| Evergreen Bramble | |
-| Snowflake Nutmeg | |
-| First Snow Cloud | |
-| Sugar Plum Holly | |
-| Nutcracker Clone | |
-| Carol Singer Harmony | |
+| Ice Skater Patch | 2074868887 |
+| Gingerbread Brainy | 2075018871 |
+| Silent Night Shadow | 2075480856 |
+| Twinkle Lights Glow | 2074280891 |
+| Toy Maker Tinker | 2076230845 |
+| Holiday Sweater Muscle | 2075498873 |
+| Jingle Bell Echo | 2074310910 |
+| Evergreen Bramble | 2074628876 |
+| Snowflake Nutmeg | 2074700910 |
+| First Snow Cloud | 2075918891 |
+| Sugar Plum Holly | 2074616887 |
+| Nutcracker Clone | 2074256857 |
+| Carol Singer Harmony | 2075378885 |
 
 ## Steps (for each pass)
 
