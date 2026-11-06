@@ -1551,7 +1551,7 @@ end)
 -- Tap boosts (Candy, Energy Drink, Extra Clue) sit in the bag until used;
 -- keys 1 and 2 on a keyboard. Shield and Head Start work by themselves and
 -- show as ON badges (the shield greys out once it has saved you).
-local boostBar = frame(gui, { Size = UDim2.fromOffset(318, 56), Position = TOUCH and UDim2.new(1, -328, 1, -390) or UDim2.new(1, -328, 1, -250), BackgroundTransparency = 1 }) -- with the bigger tiles (10 Oct)
+local boostBar = frame(gui, { Size = UDim2.fromOffset(318, 56), Position = TOUCH and UDim2.new(1, -328, 1, -452) or UDim2.new(1, -328, 1, -312), BackgroundTransparency = 1 }) -- with the bigger tiles (10 Oct); 5 Nov (Brent): just above the action tiles - with a third row (a level-20 button) they covered it
 local boostList = Instance.new("UIListLayout")
 boostList.FillDirection = Enum.FillDirection.Horizontal
 boostList.HorizontalAlignment = Enum.HorizontalAlignment.Right
