@@ -4139,6 +4139,21 @@ do
 		local hrp = hrpOf(plr)
 		local spots = hrp and doorwaysNear(hrp.Position, Config.VINES.reach) or {}
 		local spot = spots[1]
+		-- 5 Nov (Brent): of the doorways tied for nearest, the one she faces
+		if spot and hrp then
+			local look = Vector3.new(hrp.CFrame.LookVector.X, 0, hrp.CFrame.LookVector.Z)
+			local bestDot = -math.huge
+			for _, s in ipairs(spots) do
+				if s.d == spots[1].d then
+					local to = House.at(s.mx, s.my, 0) - hrp.Position
+					to = Vector3.new(to.X, 0, to.Z)
+					local dot = (to.Magnitude > 0.1 and look.Magnitude > 0.1) and to.Unit:Dot(look.Unit) or 1
+					if dot > bestDot then
+						spot, bestDot = s, dot
+					end
+				end
+			end
+		end
 		if not spot then
 			say("info", "\u{1F33F} Stand in or next to a doorway to grow your Holly Hedge there.", nil, plr)
 			return false
