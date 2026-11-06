@@ -481,7 +481,7 @@ local SPECIAL = {
 			{ id = "hint19", name = "First Aid Kit", say = "+1 free clue for the team", mods = { clues = 1 } },
 		},
 		[20] = {
-			{ id = "guardian20", name = "Guardian", say = "Once a game, a caged friend is freed the moment you come near the cage", mods = { p20 = "guardian" } },
+			{ id = "guardian20", name = "Jailbreak", say = "A Jailbreak button: once a game, everyone in the cage is freed - from anywhere", mods = { p20 = "guardian" } }, -- (5 Nov, Brent; was Guardian)
 			{ id = "medicrun20", name = "Medic Run", say = "Run 10% faster while a friend is near you", mods = { p20 = "medicrun" } },
 		},
 	},
@@ -705,7 +705,7 @@ local SPECIAL = {
 			{ id = "quiet13", name = "Tinsel Cloak", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
 		},
 		[15] = {
-			{ id = "slip15", name = "Extra Slippery", say = "The host slips 1 s longer", mods = { slipTime = 1 } },
+			{ id = "slip15", name = "Extra Slippery", say = "The host is stuck 1 s longer - slipping, or caught in your Holly Trap", mods = { slipTime = 1 } },
 			{ id = "shield15", name = "Candy Armor", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[17] = {
@@ -718,7 +718,7 @@ local SPECIAL = {
 		},
 		[20] = {
 			{ id = "hedge20", name = "Holly Hedge", say = "A Holly Hedge button: once a game, a prickly hedge fills a doorway 10 s - the host can't get past, kids squeeze through", mods = { p20 = "hedge" } },
-			{ id = "storm20", name = "Candy Storm", say = "Your peppermint patch is twice as big", mods = { p20 = "candystorm" } },
+			{ id = "storm20", name = "Candy Storm", say = "Your peppermint patch is twice as big, and friends nearby get 25% stamina", mods = { p20 = "candystorm" } },
 		},
 	},
 	-- Elfy (5 Nov, CLAUS_MANOR.md): Workshop Helper, Wind-up Toy
@@ -764,8 +764,8 @@ local SPECIAL = {
 			{ id = "tip19", name = "North Pole Map", say = "+1 free clue for the team", mods = { clues = 1 } },
 		},
 		[20] = {
-			{ id = "parade20", name = "Toy Parade", say = "A Toy Parade button: once a game, three toys march off in three directions at once", mods = { p20 = "parade" } },
-			{ id = "rush20", name = "Workshop Rush", say = "A Workshop Rush button: once a game, every skill on the team - yours too - is ready to use again at once", mods = { p20 = "rush" } },
+			{ id = "parade20", name = "Toy Parade", say = "A Toy Parade button: once a game, three toys march off in three directions at once - a host that reaches one is stunned 2 s", mods = { p20 = "parade" } },
+			{ id = "rush20", name = "Workshop Rush", say = "A Workshop Rush button: once a game, every skill on the team - yours too - is ready again at once, and everyone gets 25% stamina", mods = { p20 = "rush" } },
 		},
 	},
 	-- Cloud (4 Nov, NEW_CHARACTERS.md): Float Up, Fog; fogSize (studs wider) /
@@ -861,7 +861,7 @@ local SPECIAL = {
 		},
 		[20] = {
 			{ id = "bells20", name = "Jingle Bells", say = "A Jingle Bells button: once a game, when you choose, the host freezes 7 s, wherever he is", mods = { p20 = "bells" } },
-			{ id = "riders20", name = "Two Riders", say = "Sleigh Dash pulls the two nearest friends along", mods = { p20 = "riders" } },
+			{ id = "riders20", name = "Two Riders", say = "Sleigh Dash pulls the two nearest friends along, and lasts 0.25 s longer", mods = { p20 = "riders" } },
 		},
 	},
 }

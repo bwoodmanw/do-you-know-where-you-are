@@ -449,7 +449,9 @@ Config.ECHO_LURE = 5
 -- (10): Elfy hides in a present for `wrapped` s as he sets it down. Toy
 -- Parade (20, once a game): three toys at once. Workshop Rush (20, once a
 -- game): every friend's skill button is ready again at once
-Config.ELFY = { help = 0.15, helpNear = 20, toy = 6, march = 6, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5 }
+-- (5 Nov, Brent) a host reaching a toy is stunned `toyStun` s (Toy Parade's
+-- `paradeStun`); Workshop Rush also gives everyone `rushStamina`% stamina
+Config.ELFY = { help = 0.15, helpNear = 20, toy = 6, march = 6, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5, toyStun = 1, paradeStun = 2, rushStamina = 25 }
 -- Echo's Sharp Ears (4 Nov): within this many studs Echo sees the host through walls
 Config.ECHO_EARS = 30
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
@@ -510,7 +512,7 @@ Config.SKILL_INFO = {
 	} },
 	elfy = { parts = {
 		{ kind = "passive", name = "Workshop Helper", text = "Friends near Elfy get their skills back 15% faster." },
-		{ kind = "press", name = "Wind-up Toy", text = "Sets down a wind-up toy soldier that marches off jingling for 6 seconds - the host goes after the noise." },
+		{ kind = "press", name = "Wind-up Toy", text = "Sets down a wind-up toy soldier that marches off jingling for 6 seconds - the host goes after the noise, and trips over it (1 second)." },
 	} },
 	harmony = { parts = {
 		{ kind = "hold", name = "Music Box", text = "The music box behind the first locked door plays the door code - only Harmony hears it." },
@@ -774,6 +776,7 @@ Config.CHARACTER_ASSETS = {
 	EchoJingle = 97602416714516, -- 5 Nov: Jingle Bell Echo (checked on Roblox: Model 'EchoJingle', Brent's upload)
 	BrambleEvergreen = 122988096493064, -- 5 Nov: Evergreen Bramble (checked on Roblox: Model 'BrambleEvergreen', Brent's upload)
 	NutmegSnowflake = 123422279329361, -- 5 Nov: Snowflake Nutmeg (checked on Roblox: Model 'NutmegSnowflake', Brent's upload)
+	CloudSnow = 101394414280783, -- 5 Nov: First Snow Cloud (checked on Roblox: Model 'CloudSnow', Brent's upload)
 	HostYeti = 138655463727624, -- 5 Nov: Frostfoot the Yeti, Frostpeak Lodge's host (New Year's; checked on Roblox: Model 'FrostFoot', Brent's upload)
 	CloneGala = 137284317587849, -- 5 Nov: Harvest Gala Clone (checked on Roblox: Model, Brent's upload)
 	HollyCranberry = 139043771129248, -- 5 Nov: Cranberry Spice Holly (checked on Roblox: Model 'HollyCranberry', Brent's upload)
@@ -1084,7 +1087,7 @@ Config.SKINS = {
 	{ id = "echo_jingle", skill = "echo", name = "Jingle Bell Echo", model = "EchoJingle", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "bramble_evergreen", skill = "bramble", name = "Evergreen Bramble", model = "BrambleEvergreen", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "nutmeg_snowflake", skill = "nutmeg", name = "Snowflake Nutmeg", model = "NutmegSnowflake", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "cloud_snow", skill = "cloud", name = "First Snow Cloud", model = "CloudSnow", cane = 150, pass = 0, hidden = true },
+	{ id = "cloud_snow", skill = "cloud", name = "First Snow Cloud", model = "CloudSnow", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "holly_sugarplum", skill = "holly", name = "Sugar Plum Holly", model = "HollySugarplum", cane = 150, pass = 0, hidden = true },
 	{ id = "clone_nutcracker", skill = "clone", name = "Nutcracker Clone", model = "CloneNutcracker", cane = 150, pass = 0, hidden = true },
 	{ id = "harmony_carol", skill = "harmony", name = "Carol Singer Harmony", model = "HarmonyCarol", cane = 150, pass = 0, hidden = true },

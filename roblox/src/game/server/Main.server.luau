@@ -96,6 +96,7 @@ local RingBells = remote("RingBells") -- client -> server: Nutmeg's Jingle Bells
 local GrowHedge = remote("GrowHedge") -- client -> server: Holly's Holly Hedge (level 20), once a game
 local UseCopy = remote("UseCopy") -- client -> server: Clone's copied skill (slot 1 / 2, optional position)
 local SingEncore = remote("SingEncore") -- client -> server: Harmony's Encore (level 20), once a game
+local Jailbreak = remote("Jailbreak") -- client -> server: Patch's Jailbreak (level 20, 5 Nov), once a game
 local ElfyPower = remote("ElfyPower") -- client -> server: Elfy's Toy Parade or Workshop Rush (level 20), once a game
 local AskClue = remote("AskClue")
 local Say = remote("Say") -- client -> server: phrase index
@@ -4247,8 +4248,9 @@ do
 	-- Elfy's wind-up toy soldier (5 Nov): marches `march` studs a second along
 	-- `dir` (stopping at walls) for Config.ELFY.toy s (+band); every `every`
 	-- s each host within earshot goes after it (as after Echo's noise)
-	function round.windUpToy(plr, hrp, dir, band)
+	function round.windUpToy(plr, hrp, dir, band, stun)
 		local E = Config.ELFY
+		stun = stun or E.toyStun -- (5 Nov) a host reaching the toy is stunned
 		local seconds = E.toy + (band and E.band or 0)
 		local hear = band and E.bandHear or E.hear
 		dir = Vector3.new(dir.X, 0, dir.Z)
@@ -4327,6 +4329,19 @@ do
 						end
 					end
 				end
+				-- 5 Nov (Brent): a host that reaches the toy trips over it
+				local tripped = false
+				for _, h in ipairs({ host, host2 }) do
+					if not tripped and h and h.model and h.root and Vector3.new(h.root.Position.X - pos.X, 0, h.root.Position.Z - pos.Z).Magnitude <= 3.5 then
+						tripped = true
+						h:stun(stun)
+						Effects.sound(pos, "bonk", 0.8)
+						say("info", "\u{1F941} The host tripped over " .. plr.DisplayName .. "'s wind-up toy!")
+					end
+				end
+				if tripped then
+					break
+				end
 				task.wait()
 			end
 			if m.Parent then
@@ -4398,7 +4413,8 @@ do
 			-- screens steer them beside Nutmeg (DashFollow), no aiming
 			local nm = Config.NUTMEG
 			local now = workspace:GetServerTimeNow()
-			local seconds = plr:GetAttribute("DashTime") or nm.dash
+			-- (5 Nov, Brent) Two Riders: a quarter second longer for the extra rider
+			local seconds = (plr:GetAttribute("DashTime") or nm.dash) + (p20 == "riders" and 0.25 or 0)
 			local untilT = now + seconds
 			plr:SetAttribute("TeamBurstMult", nm.dashMult)
 			plr:SetAttribute("TeamBurstUntil", untilT)
@@ -4515,6 +4531,15 @@ do
 			local r = plr:GetAttribute("PatchRadius") or H.radius
 			local seconds = plr:GetAttribute("PatchTime") or H.patch
 			local trap = p10 == "hollytrap"
+			-- 5 Nov (Brent): Candy Storm also perks up friends nearby
+			if p20 == "candystorm" then
+				for _, p in ipairs(Players:GetPlayers()) do
+					local h = hrpOf(p)
+					if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude <= 16 then
+						Boost:FireClient(p, "plus", 25)
+					end
+				end
+			end
 			local ground = hrp.Position - Vector3.new(0, 2.9, 0)
 			local m = Instance.new("Model")
 			m.Name = "HollyPeppermints"
@@ -4881,22 +4906,8 @@ do
 							end
 						end
 						patch:SetAttribute("RunBonus", near and 1.1 or 1)
-					elseif p20 == "guardian" and ph and not patch:GetAttribute("Caged") then
-						state.oncePerGame = state.oncePerGame or {}
-						local cage = world.objects.cage
-						local cp = cage and (cage.part or cage.outside)
-						cp = typeof(cp) == "Instance" and cp.Position or cp
-						if not state.oncePerGame["guard" .. patch.UserId] and typeof(cp) == "Vector3" and (cp - ph.Position).Magnitude < 12 then
-							for _, p in ipairs(Players:GetPlayers()) do
-								if p:GetAttribute("Caged") and not state.oncePerGame["guard" .. patch.UserId] then
-									state.oncePerGame["guard" .. patch.UserId] = true
-									freeFromCage(p)
-									Effects.at(p, "heal")
-									say("info", "\u{1F607} Guardian! Patch freed " .. p.DisplayName .. " the moment she arrived.")
-								end
-							end
-						end
 					end
+					-- (5 Nov) Guardian is now Jailbreak, a button (below)
 				end
 			end
 		end
@@ -5586,7 +5597,7 @@ ElfyPower.OnServerEvent:Connect(function(plr)
 	if p20 == "parade" then
 		local look = hrp.CFrame.LookVector
 		for _, a in ipairs({ 0, 120, -120 }) do
-			round.windUpToy(plr, hrp, CFrame.Angles(0, math.rad(a), 0) * look, plr:GetAttribute("Power10") == "band")
+			round.windUpToy(plr, hrp, CFrame.Angles(0, math.rad(a), 0) * look, plr:GetAttribute("Power10") == "band", Config.ELFY.paradeStun)
 		end
 		say("info", "\u{1F941} Toy Parade! " .. plr.DisplayName .. " sent three toys marching off - the host can't follow them all!")
 	else
@@ -5605,10 +5616,36 @@ ElfyPower.OnServerEvent:Connect(function(plr)
 				if was and hrpOf(p) then
 					Effects.aura(p, "speed", 2)
 				end
+				if hrpOf(p) and not p:GetAttribute("Caged") then
+					Boost:FireClient(p, "plus", Config.ELFY.rushStamina) -- (5 Nov) and stamina
+				end
 			end
 		end
-		say("info", "\u{1F6E0} Workshop Rush! " .. plr.DisplayName .. " fixed everyone's gadgets - every skill is ready to use again!")
+		say("info", "\u{1F6E0} Workshop Rush! " .. plr.DisplayName .. " fixed everyone's gadgets - every skill is ready to use again, and +" .. Config.ELFY.rushStamina .. "% stamina!")
 	end
+end)
+
+-- Patch's Jailbreak (level 20; 5 Nov, Brent - was Guardian, which freed one
+-- friend when she reached the cage): its own button, once a game - everyone
+-- in the cage is freed, wherever Patch is. Not used up with nobody caged
+Jailbreak.OnServerEvent:Connect(function(plr)
+	if plr:GetAttribute("Skill") ~= "patch" or plr:GetAttribute("Power20") ~= "guardian" or plr:GetAttribute("JailbreakUsed")
+		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
+		return
+	end
+	local freed = {}
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p:GetAttribute("Caged") then
+			freeFromCage(p)
+			Effects.at(p, "heal")
+			table.insert(freed, p.DisplayName)
+		end
+	end
+	if #freed == 0 then
+		return say("info", "\u{1F513} Nobody is in the cage - save your Jailbreak for when a friend is caught.", nil, plr)
+	end
+	plr:SetAttribute("JailbreakUsed", true)
+	say("info", "\u{1F513} Jailbreak! " .. plr.DisplayName .. " freed " .. table.concat(freed, ", ") .. " from the cage!")
 end)
 
 SingEncore.OnServerEvent:Connect(function(plr)
@@ -6156,6 +6193,7 @@ function round.start()
 			p:SetAttribute("PocketsGiven", false) -- and Holly's Peppermint Pockets
 			p:SetAttribute("EncoreUsed", false) -- and Harmony's Encore
 			p:SetAttribute("ToyPowerUsed", false) -- and Elfy's Toy Parade / Workshop Rush
+			p:SetAttribute("JailbreakUsed", false) -- and Patch's Jailbreak (5 Nov)
 		end
 	end
 	towerCarry = nil

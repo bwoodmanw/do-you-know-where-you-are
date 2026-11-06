@@ -588,6 +588,7 @@ do
 		holly = { power = "hedge", used = "HedgeUsed", text = "\u{1F33F} Holly Hedge", remote = "GrowHedge", color = Color3.fromRGB(40, 120, 60) },
 		harmony = { power = "encore", used = "EncoreUsed", text = "\u{1F3B6} Encore", remote = "SingEncore", color = Color3.fromRGB(130, 80, 190) },
 		elfy = { power = "parade", used = "ToyPowerUsed", text = "\u{1F941} Toy Parade", remote = "ElfyPower", color = Color3.fromRGB(190, 40, 50) },
+		patch = { power = "guardian", used = "JailbreakUsed", text = "\u{1F513} Jailbreak", remote = "Jailbreak", color = Color3.fromRGB(60, 120, 200) }, -- (5 Nov)
 	}
 	-- (5 Nov) a character with a second level-20 button choice
 	local POWERS_ALT = {
