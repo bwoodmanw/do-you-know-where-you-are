@@ -522,7 +522,7 @@ function Host:step(dt)
 			self.hum.WalkSpeed *= Config.WADE.host
 		elseif below and below.Instance.Name == "Vines" then
 			-- Bramble's vines: slow going for the host only
-			self.hum.WalkSpeed *= Config.VINES.slow
+			self.hum.WalkSpeed *= below.Instance:GetAttribute("Slow") or Config.VINES.slow -- (7 Nov: Bramble's Thorny Vines)
 			if below.Instance:GetAttribute("Snapper") then
 				-- Snapper Plant: they snap shut the first time he steps in
 				below.Instance:SetAttribute("Snapper", nil)

@@ -331,6 +331,17 @@ local function applyMods(plr)
 	plr:SetAttribute("LullabyTime", Config.HARMONY.seconds + (m.lullabyTime or 0))
 	plr:SetAttribute("LullabyRange", Config.HARMONY.range + (m.lullabyRange or 0))
 	plr:SetAttribute("LullabyRun", Config.HARMONY.runTime + (m.lullabyRun or 0)) -- (5 Nov) the speed burst
+	-- 7 Nov (Brent: the +1 clue picks replaced by each character's own)
+	plr:SetAttribute("ToolkitStamina", m.toolkitStamina or 0)
+	plr:SetAttribute("MouseTime", Config.MOUSE.seconds + (m.mouseTime or 0))
+	plr:SetAttribute("BootsTime", Config.ROCKET_BOOTS.seconds + (m.bootsTime or 0))
+	plr:SetAttribute("PoundRange", Config.POUND.range + (m.poundRange or 0))
+	plr:SetAttribute("SelfShield", (Config.SELF_SHIELD or 30) + (m.selfShield or 0))
+	plr:SetAttribute("RescuePoints", m.rescuePoints or 0)
+	plr:SetAttribute("LureTime", Config.ECHO_LURE + (m.lureTime or 0))
+	plr:SetAttribute("VineSlow", math.max(0.1, Config.VINES.slow - (m.vineSlow or 0)))
+	plr:SetAttribute("ToyTime", Config.ELFY.toy + (m.toyTime or 0))
+	plr:SetAttribute("HelpNear", Config.ELFY.helpNear + (m.helpNear or 0))
 	if skill ~= "clone" then
 		plr:SetAttribute("Copy1", nil)
 		plr:SetAttribute("Copy2", nil)
@@ -1421,16 +1432,39 @@ local function wirePrompts()
 					return
 				end
 				local freed = 0
+				local freedList = {}
 				for _, p in ipairs(Players:GetPlayers()) do
 					if p:GetAttribute("Caged") and (freed == 0 or plr:GetAttribute("Skill") == "patch") then
 						freeFromCage(p)
 						freed += 1
+						table.insert(freedList, p)
 					end
 				end
 				if freed > 0 then
 					Effects.burst(world.objects.cage.outside, "rescue")
 					Effects.ring(world.objects.cage.outside - Vector3.new(0, 2.8, 0), Color3.fromRGB(255, 210, 63), 26, 0.9)
-					addPoints(plr, 20 * freed)
+					-- (7 Nov) Patch's Hero Points / Golden Rescue: more for each friend
+					addPoints(plr, (20 + (plr:GetAttribute("RescuePoints") or 0)) * freed)
+					-- 7 Nov (Brent: Medic Run wasn't worth taking): each friend Patch
+					-- frees leaves with a Party Shield; she and they get a speed burst
+					if plr:GetAttribute("Skill") == "patch" and plr:GetAttribute("Power20") == "medicrun" then
+						local mr = Config.MEDIC_RUN
+						local nowM = workspace:GetServerTimeNow()
+						table.insert(freedList, plr)
+						for _, p in ipairs(freedList) do
+							if p ~= plr then
+								p:SetAttribute("Shield", true)
+								p:SetAttribute("SelfShieldAt", nil) -- (keeps until a grab)
+							end
+							local busy = (p:GetAttribute("TeamBurstUntil") or 0) > nowM and (p:GetAttribute("TeamBurstMult") or 1) > mr.speed
+							if not busy then
+								p:SetAttribute("TeamBurstMult", mr.speed)
+								p:SetAttribute("TeamBurstUntil", nowM + mr.seconds)
+								Effects.aura(p, "speed", mr.seconds)
+							end
+						end
+						say("rescue", "\u{1F691} Medic Run! Shields on, everybody run!")
+					end
 					local pd = Profile.get(plr)
 					if pd then
 						pd.stats.rescues += freed
@@ -4061,7 +4095,7 @@ do
 		bit(Vector3.new(0.2, 0.8, 0.8), Vector3.new(0, 0.7, 0.2), Color3.fromRGB(230, 190, 80), Enum.Material.Foil, Enum.PartType.Block)
 		m.PrimaryPart = body
 		Effects.sound(body.Position, "noise", 0.8)
-		decoy(m, body.Position, to, Config.MOUSE.seconds)
+		decoy(m, body.Position, to, plr:GetAttribute("MouseTime") or Config.MOUSE.seconds)
 		say("info", plr.DisplayName .. " let a wind-up mouse go - squeak squeak! The host chases it.")
 	end
 
@@ -4227,6 +4261,7 @@ do
 		if snapper then
 			floor:SetAttribute("Snapper", true)
 		end
+		floor:SetAttribute("Slow", plr:GetAttribute("VineSlow")) -- (7 Nov: Thorny / Prickly Vines)
 		floor.Parent = m
 		for i = 1, 7 do
 			local v = Instance.new("Part")
@@ -4313,7 +4348,7 @@ do
 	function round.windUpToy(plr, hrp, dir, band, stun)
 		local E = Config.ELFY
 		stun = stun or E.toyStun -- (5 Nov) a host reaching the toy is stunned
-		local seconds = E.toy + (band and E.band or 0)
+		local seconds = (plr:GetAttribute("ToyTime") or E.toy) + (band and E.band or 0) -- (7 Nov: Long Spring)
 		local hear = band and E.bandHear or E.hear
 		dir = Vector3.new(dir.X, 0, dir.Z)
 		dir = dir.Magnitude > 0.05 and dir.Unit or Vector3.new(0, 0, 1)
@@ -4422,6 +4457,11 @@ do
 			Effects.icon(plr, "\u{1F527}", 1.6)
 			Effects.at(plr, "pick")
 			say("info", "\u{1F527} Toolkit ready: your next lock or keypad picks in an instant.", nil, plr)
+			-- (7 Nov) Spare Battery / Bigger Battery: some stamina back
+			local ts = plr:GetAttribute("ToolkitStamina") or 0
+			if ts > 0 then
+				Boost:FireClient(plr, "plus", ts)
+			end
 			if p10 == "mouse" then
 				windUpMouse(plr)
 			end
@@ -4783,7 +4823,8 @@ do
 					if p10 == "fullcopy" and k.p then
 						for _, a in ipairs({ "SneakTime", "GlowRange", "FlareTime", "FlareRange", "FlareStamina", "EchoRange", "BurstMult", "BurstTime",
 							"BarricadeHold", "VineTime", "ThinkTime", "HealAmount", "HealShield", "CloneTime", "DashTime", "PullRange", "NoseRange",
-							"FogRadius", "FogTime", "PatchTime", "PatchRadius", "SlipTime" }) do
+							"FogRadius", "FogTime", "PatchTime", "PatchRadius", "SlipTime",
+							"ToolkitStamina", "MouseTime", "BootsTime", "PoundRange", "SelfShield", "LureTime", "VineSlow", "ToyTime" }) do
 							if k.p:GetAttribute(a) ~= nil then
 								plr:SetAttribute(a, k.p:GetAttribute(a))
 							end
@@ -5068,16 +5109,8 @@ do
 				for _, patch in ipairs(Players:GetPlayers()) do
 					local p20 = patch:GetAttribute("Skill") == "patch" and patch:GetAttribute("Power20")
 					local ph = hrpOf(patch)
-					if p20 == "medicrun" and ph then
-						local near = false
-						for _, p in ipairs(Players:GetPlayers()) do
-							local h = hrpOf(p)
-							if p ~= patch and h and not p:GetAttribute("Caged") and (h.Position - ph.Position).Magnitude < 14 then
-								near = true
-							end
-						end
-						patch:SetAttribute("RunBonus", near and 1.1 or 1)
-					end
+					-- (7 Nov: Medic Run is now a shield and a burst for the friends she frees - at the cage)
+					local _ = p20 and ph
 					-- (5 Nov) Guardian is now Jailbreak, a button (below)
 				end
 			end
@@ -5515,7 +5548,7 @@ task.spawn(function()
 					if h and not p:GetAttribute("Escaped") then
 						for _, e in ipairs(elves) do
 							local eh = hrpOf(e)
-							if e ~= p and eh and (eh.Position - h.Position).Magnitude <= E.helpNear then
+							if e ~= p and eh and (eh.Position - h.Position).Magnitude <= (e:GetAttribute("HelpNear") or E.helpNear) then
 								near = true
 							end
 						end
@@ -5600,9 +5633,10 @@ local function runSkill(plr, skill, pos, slot)
 			-- Tinker's Rocket Boots: a rocket run after each Toolkit
 			if skill == "tinker" and not slot and plr:GetAttribute("Power20") == "boots" then
 				local rb = Config.ROCKET_BOOTS
+				local bs = plr:GetAttribute("BootsTime") or rb.seconds -- (7 Nov: Big Rockets)
 				plr:SetAttribute("TeamBurstMult", rb.mult)
-				plr:SetAttribute("TeamBurstUntil", now + rb.seconds)
-				Effects.aura(plr, "speed", rb.seconds)
+				plr:SetAttribute("TeamBurstUntil", now + bs)
+				Effects.aura(plr, "speed", bs)
 				say("info", "\u{1F680} Rocket Boots! Run!", nil, plr)
 			end
 			plr:SetAttribute(coolKey, now + cd * coolMult)
@@ -5648,7 +5682,7 @@ local function runSkill(plr, skill, pos, slot)
 				local mark = workspace:GetServerTimeNow()
 				plr:SetAttribute("Shield", true)
 				plr:SetAttribute("SelfShieldAt", mark)
-				local secs = Config.SELF_SHIELD or 30
+				local secs = plr:GetAttribute("SelfShield") or Config.SELF_SHIELD or 30 -- (7 Nov: Long Bubble)
 				plr:SetAttribute("SelfShieldUntil", mark + secs)
 				task.delay(secs, function()
 					if plr.Parent and plr:GetAttribute("SelfShieldAt") == mark and plr:GetAttribute("Shield") and (plr:GetAttribute("ExtraShields") or 0) == 0 then
@@ -5661,7 +5695,7 @@ local function runSkill(plr, skill, pos, slot)
 		end
 		Effects.at(plr, "heal")
 		Effects.ring(hrp.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(123, 227, 107), 36, 0.8)
-		say("heal", given == 0 and ("Patch gave herself a Party Shield (" .. (Config.SELF_SHIELD or 30) .. " s)!") or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!"), { userId = plr.UserId })
+		say("heal", given == 0 and ("Patch gave herself a Party Shield (" .. (plr:GetAttribute("SelfShield") or Config.SELF_SHIELD or 30) .. " s)!") or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!"), { userId = plr.UserId })
 	elseif skill == "muscle" then
 		local best, bd = nil, Config.BARRICADE.reach
 		for _, c in ipairs(world.crates or {}) do
@@ -5672,19 +5706,20 @@ local function runSkill(plr, skill, pos, slot)
 		end
 		if not best then
 			if plr:GetAttribute("Power10") == "pound" then
+				local pr = plr:GetAttribute("PoundRange") or Config.POUND.range -- (7 Nov: Big Stomp)
 				-- Ground Pound: no crate here, so stamp the floor
 				Effects.burst(hrp.Position, "shove")
 				Effects.sound(hrp.Position, "shove", 1.2)
 				local floorAt = hrp.Position - Vector3.new(0, 2.8, 0)
-				Effects.ring(floorAt, Color3.fromRGB(200, 160, 110), Config.POUND.range * 2, 0.6)
-				Effects.ring(floorAt, Color3.fromRGB(255, 230, 190), Config.POUND.range * 1.4, 0.5, 0.12)
+				Effects.ring(floorAt, Color3.fromRGB(200, 160, 110), pr * 2, 0.6)
+				Effects.ring(floorAt, Color3.fromRGB(255, 230, 190), pr * 1.4, 0.5, 0.12)
 				for _, p in ipairs(Players:GetPlayers()) do
 					local h = hrpOf(p)
 					if h and (h.Position - hrp.Position).Magnitude < 40 then
 						Boost:FireClient(p, "shake", p == plr and 1 or 0.6)
 					end
 				end
-				if hostNear(hrp.Position, Config.POUND.range) then
+				if hostNear(hrp.Position, pr) then
 					round:skillStun(Config.POUND.stun, "\u{1F4A5} GROUND POUND! " .. plr.DisplayName .. " stunned the host!", hrp.Position)
 				else
 					say("info", "\u{1F4A5} Ground Pound! (The host was too far away to feel it.)", nil, plr)
@@ -5725,7 +5760,7 @@ local function runSkill(plr, skill, pos, slot)
 			return say("info", "Throw it somewhere closer!", nil, plr)
 		end
 		for _, h in ipairs(liveHosts()) do -- (5 Nov) both Clauses
-			h:lure(pos, Config.ECHO_LURE)
+			h:lure(pos, plr:GetAttribute("LureTime") or Config.ECHO_LURE) -- (7 Nov: Long Echo)
 		end
 		Effects.burst(pos + Vector3.new(0, 1, 0), "noise")
 		Effects.ring(pos, Color3.fromRGB(255, 210, 63), 24, 0.9, 0.25)

@@ -218,7 +218,7 @@ local SPECIAL = {
 		},
 		[7] = {
 			{ id = "toolbelt", name = "Tool Belt", say = "Toolkit recharges 10% faster", mods = { cooldownMult = 0.9 } },
-			{ id = "gizmo", name = "Clue Gizmo", say = "+1 clue for the team", mods = { clues = 1 } },
+			{ id = "battery7", name = "Spare Battery", say = "Each Toolkit also gives you 15% stamina", mods = { toolkitStamina = 15 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[9] = {
 			{ id = "expert", name = "Expert Hands", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
@@ -233,12 +233,12 @@ local SPECIAL = {
 			{ id = "fingers11", name = "Nimble Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
 		},
 		[13] = {
-			{ id = "spare13", name = "Spare Clue", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "mouse13", name = "Long Run Mouse", say = "Your Wind-up Mouse (level 10) runs 2 s longer", mods = { mouseTime = 2 } }, -- 7 Nov (Brent): was a +1 free clue
 			{ id = "belt13", name = "Light Tool Belt", say = "10% more stamina", mods = { staminaMult = 1.1 } },
 		},
 		[15] = {
 			{ id = "tk15", name = "Oiled Toolkit", say = "Toolkit recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "steady15", name = "Spare Parts", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "battery15", name = "Bigger Battery", say = "Each Toolkit also gives you 10% more stamina", mods = { toolkitStamina = 10 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[17] = {
 			{ id = "hands17", name = "Steady Fingers", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
@@ -246,7 +246,7 @@ local SPECIAL = {
 		},
 		[19] = {
 			{ id = "tk19", name = "Turbo Toolkit", say = "Toolkit recharges 20% faster", mods = { cooldownMult = 0.8 } },
-			{ id = "dash19", name = "Master Plan", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "rockets19", name = "Big Rockets", say = "Rocket Boots (level 20) run 2 s longer", mods = { bootsTime = 2 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[20] = {
 			{ id = "mastertinker20", name = "Master Tinker", say = "Picking the big door's keypad shows the team two colors", mods = { p20 = "mastertinker" } },
@@ -378,7 +378,7 @@ local SPECIAL = {
 		},
 		[15] = {
 			{ id = "build15", name = "Fast Builder", say = "Your button recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "stride15", name = "Team Player", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "stomp15", name = "Big Stomp", say = "Your Ground Pound (level 10) reaches 3 studs further", mods = { poundRange = 3 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[17] = {
 			{ id = "hold17", name = "Rock Barricade", say = "The host is stuck at your barricade 1 s longer", mods = { barricadeHold = 1 } },
@@ -449,7 +449,7 @@ local SPECIAL = {
 			{ id = "medic", name = "Helper", say = "Free friends from the cage 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[7] = {
-			{ id = "care", name = "First Aid Book", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "bubble7", name = "Long Bubble", say = "Your shield on yourself lasts 10 s longer", mods = { selfShield = 10 } }, -- 7 Nov (Brent): was a +1 free clue
 			{ id = "nurse", name = "Nurse", say = "Free friends from the cage 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[9] = {
@@ -469,20 +469,20 @@ local SPECIAL = {
 			{ id = "shield13", name = "Own Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[15] = {
-			{ id = "care15", name = "Big Heart", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "hero15", name = "Hero Points", say = "+10 points for every friend you free from the cage", mods = { rescuePoints = 10 } }, -- 7 Nov (Brent): was a +1 free clue
 			{ id = "nurse15", name = "Second Wind", say = "6% more stamina", mods = { staminaMult = 1.06 } },
 		},
 		[17] = {
 			{ id = "quiet17", name = "Quiet Shoes", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
-			{ id = "dash17", name = "Pocket Notes", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "bubble17", name = "Strong Bubble", say = "Your shield on yourself lasts 10 s longer", mods = { selfShield = 10 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[19] = {
 			{ id = "care19", name = "Golden Heart", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "hint19", name = "First Aid Kit", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "hero19", name = "Golden Rescue", say = "+15 points for every friend you free from the cage", mods = { rescuePoints = 15 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[20] = {
 			{ id = "guardian20", name = "Jailbreak", say = "A Jailbreak button: once a game, within 35 studs of the cage, everyone in it is freed after 1 s", mods = { p20 = "guardian" } }, -- (5 Nov, Brent; was Guardian)
-			{ id = "medicrun20", name = "Medic Run", say = "Run 10% faster while a friend is near you", mods = { p20 = "medicrun" } },
+			{ id = "medicrun20", name = "Medic Run", say = "Every friend you free leaves with a Party Shield, and you and they run 20% faster for 6 s", mods = { p20 = "medicrun" } }, -- 7 Nov (Brent: was run 10% faster near a friend)
 		},
 	},
 	echo = {
@@ -519,7 +519,7 @@ local SPECIAL = {
 			{ id = "throw15", name = "Far Shout", say = "Throw a noise 10 studs further", mods = { echoRange = 10 } },
 		},
 		[17] = {
-			{ id = "quick17", name = "Echo Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "lure17", name = "Long Echo", say = "The host follows your noise 1 s longer", mods = { lureTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
 			{ id = "lungs17", name = "Singer's Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
 		},
 		[19] = {
@@ -546,7 +546,7 @@ local SPECIAL = {
 		},
 		[9] = {
 			{ id = "thicket", name = "Thicket", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
-			{ id = "sprout", name = "Sprout", say = "+1 clue for the team", mods = { clues = 1 } },
+			{ id = "seedling9", name = "Seedling", say = "Vines last 1 s longer", mods = { vineTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[10] = {
 			{ id = "snapper10", name = "Snapper Plant", say = "Your vines snap shut on the host the first time he steps in: held 2 s", mods = { p10 = "snapper" } },
@@ -554,7 +554,7 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "vine11", name = "Thick Vines", say = "Vines last 2 s longer", mods = { vineTime = 2 } },
-			{ id = "leafy11", name = "Seed Map", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "thorny11", name = "Thorny Vines", say = "The host wades through your vines even slower", mods = { vineSlow = 0.04 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[13] = {
 			{ id = "quick13", name = "Fast Growth", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
@@ -566,7 +566,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "quick17", name = "Spring Growth", say = "Vines recharge 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "sprout17", name = "Sprout", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "prickly17", name = "Prickly Vines", say = "The host wades through your vines even slower", mods = { vineSlow = 0.04 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[19] = {
 			{ id = "vine19", name = "Jungle", say = "Vines last 2 s longer", mods = { vineTime = 2 } },
@@ -590,7 +590,7 @@ local SPECIAL = {
 		},
 		[7] = {
 			{ id = "voice7", name = "Big Voice", say = "Lullaby reaches 5 studs further", mods = { lullabyRange = 5 } },
-			{ id = "notes7", name = "Song Sheet", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "note7", name = "Long Note", say = "Lullaby's speed burst lasts 1 s longer", mods = { lullabyRun = 1 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[9] = {
 			{ id = "verse9", name = "Second Verse", say = "Lullaby lasts 1 s longer", mods = { lullabyTime = 1 } },
@@ -638,7 +638,7 @@ local SPECIAL = {
 		},
 		[7] = {
 			{ id = "learner7", name = "Fast Learner", say = "Copycat recharges 10% faster", mods = { cooldownMult = 0.9 } },
-			{ id = "cluecopy7", name = "Clue Copy", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "eyes7", name = "Sharp Eyes", say = "Copy a friend up to 5 studs further away", mods = { copyReach = 5 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[9] = {
 			{ id = "look9", name = "Longer Look", say = "The host hesitates 0.5 s longer before grabbing you", mods = { lookAlike = 0.5 } },
@@ -650,7 +650,7 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "study11", name = "Quicker Study", say = "Copycat recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "notes11", name = "Copy Notes", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "take11", name = "Double Take", say = "The host hesitates 0.25 s longer before grabbing you", mods = { lookAlike = 0.25 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[13] = {
 			{ id = "reach13", name = "Long Reach", say = "Copy a friend up to 10 studs further away", mods = { copyReach = 10 } },
@@ -661,7 +661,7 @@ local SPECIAL = {
 			{ id = "shield15", name = "Copy Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[17] = {
-			{ id = "tip17", name = "Copy Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "far17", name = "Far Copy", say = "Copy a friend up to 5 studs further away", mods = { copyReach = 5 } }, -- 7 Nov (Brent): was a +1 free clue
 			{ id = "hush17", name = "Hush", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
 		},
 		[19] = {
@@ -686,7 +686,7 @@ local SPECIAL = {
 		},
 		[7] = {
 			{ id = "wide7", name = "Handful", say = "Your peppermint patch is 1 stud wider all round", mods = { patchSize = 1 } },
-			{ id = "tip7", name = "Candy Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "batch7", name = "Fresh Batch", say = "Your peppermints stay 5 s longer", mods = { patchTime = 5 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[9] = {
 			{ id = "fresh9", name = "Long-lasting", say = "Your peppermints stay 5 s longer", mods = { patchTime = 5 } },
@@ -709,7 +709,7 @@ local SPECIAL = {
 			{ id = "shield15", name = "Candy Armor", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[17] = {
-			{ id = "tip17", name = "Holiday Hint", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "bag17", name = "Big Bag", say = "Your peppermint patch is 1 stud wider all round", mods = { patchSize = 1 } }, -- 7 Nov (Brent): was a +1 free clue
 			{ id = "hands17", name = "Gift Wrapper", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[19] = {
@@ -732,7 +732,7 @@ local SPECIAL = {
 			{ id = "quiet5", name = "Soft Slippers", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
 		},
 		[7] = {
-			{ id = "tip7", name = "Workshop Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "spring7", name = "Long Spring", say = "Your Wind-up Toy marches 1 s longer", mods = { toyTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
 			{ id = "lungs7", name = "Candy Fuel", say = "8% more stamina", mods = { staminaMult = 1.08 } },
 		},
 		[9] = {
@@ -748,7 +748,7 @@ local SPECIAL = {
 			{ id = "quiet11", name = "Tiptoe", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
 		},
 		[13] = {
-			{ id = "tip13", name = "Elf Hint", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "helping13", name = "Helping Hands", say = "Workshop Helper reaches friends 5 studs further away", mods = { helpNear = 5 } }, -- 7 Nov (Brent): was a +1 free clue
 			{ id = "hands13", name = "Fast Wrapper", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
 		},
 		[15] = {
@@ -761,7 +761,7 @@ local SPECIAL = {
 		},
 		[19] = {
 			{ id = "quick19", name = "Master Toymaker", say = "Wind-up Toy recharges 15% faster", mods = { cooldownMult = 0.85 } },
-			{ id = "tip19", name = "North Pole Map", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "key19", name = "Big Wind-up Key", say = "Your Wind-up Toy marches 1 s longer", mods = { toyTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[20] = {
 			{ id = "parade20", name = "Toy Parade", say = "A Toy Parade button: once a game, three toys march off in three directions at once - a host that reaches one is stunned 2 s", mods = { p20 = "parade" } },
@@ -781,7 +781,7 @@ local SPECIAL = {
 		},
 		[7] = {
 			{ id = "last7", name = "Lasting Fog", say = "Your fog lasts 1 s longer", mods = { fogTime = 1 } },
-			{ id = "sky7", name = "Sky Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "puffy7", name = "Puffy Fog", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[9] = {
 			{ id = "wide9", name = "Wide Fog", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } },
@@ -804,7 +804,7 @@ local SPECIAL = {
 			{ id = "rain15", name = "Rain Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[17] = {
-			{ id = "rainbow17", name = "Rainbow Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "mist17b", name = "Silver Mist", say = "Your fog lasts 1 s longer", mods = { fogTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
 			{ id = "mist17", name = "Mist Step", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
 		},
 		[19] = {
@@ -829,7 +829,7 @@ local SPECIAL = {
 		},
 		[7] = {
 			{ id = "dash7", name = "Long Dash", say = "Sleigh Dash lasts 0.25 s longer", mods = { dashTime = 0.25 } },
-			{ id = "hunter7", name = "Present Hunter", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "sniff7", name = "Sniffer", say = "Good Nose reaches 5 studs further", mods = { noseRange = 5 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[9] = {
 			{ id = "nose9", name = "Keener Nose", say = "Good Nose reaches 5 studs further", mods = { noseRange = 5 } },
@@ -853,7 +853,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "team17", name = "Team Sleigh", say = "Pull a friend from 4 studs further away", mods = { pullRange = 4 } },
-			{ id = "tip17", name = "Holiday Tip", say = "+1 free clue for the team", mods = { clues = 1 } },
+			{ id = "games17", name = "Reindeer Games", say = "Sleigh Dash recharges 10% faster", mods = { cooldownMult = 0.9 } }, -- 7 Nov (Brent): was a +1 free clue
 		},
 		[19] = {
 			{ id = "turbo19", name = "Turbo Sleigh", say = "Sleigh Dash recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -878,7 +878,10 @@ Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRang
 	fogSize = true, fogTime = true, -- Cloud (4 Nov)
 	patchTime = true, patchSize = true, slipTime = true, -- Holly (4 Nov)
 	lookAlike = true, copyReach = true, -- Clone (4 Nov)
-	lullabyTime = true, lullabyRange = true, lullabyRun = true } -- Harmony (4 Nov; lullabyRun 5 Nov)
+	lullabyTime = true, lullabyRange = true, lullabyRun = true, -- Harmony (4 Nov; lullabyRun 5 Nov)
+	-- 7 Nov (Brent: the +1 clue picks replaced): Tinker, Muscle, Patch, Echo, Bramble, Elfy
+	toolkitStamina = true, mouseTime = true, bootsTime = true, poundRange = true, selfShield = true,
+	rescuePoints = true, lureTime = true, vineSlow = true, toyTime = true, helpNear = true }
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

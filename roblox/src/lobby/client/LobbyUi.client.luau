@@ -1441,6 +1441,7 @@ do
 		end
 		return label(parent, { Size = UDim2.fromOffset(size, size), Position = pos, Text = s.icon, ZIndex = z })
 	end
+	local chips = {} -- (7 Nov) hidden while the party panel is open
 	for slot, w in ipairs(open) do
 		local e = w.season
 		-- 5 Nov (Brent: the long banners sat under the snowball in the
@@ -1453,6 +1454,7 @@ do
 		bannerHolder.Size = UDim2.fromOffset(170, 38) -- (the same grid as Balance and Gift above)
 		bannerHolder.ZIndex = 5
 		bannerHolder.Parent = gui
+		table.insert(chips, bannerHolder)
 		itemPic(e, bannerHolder, 38, UDim2.fromOffset(0, 0), 6)
 		local banner = button(bannerHolder, "", { Position = UDim2.fromOffset(42, 0), Size = UDim2.new(1, -42, 1, 0), BackgroundColor3 = Color3.fromRGB(40, 22, 62), TextColor3 = Color3.fromRGB(255, 180, 70), ZIndex = 5 })
 		-- 3 Nov (Brent): the season's own shop window is gone - the banner opens
@@ -1480,6 +1482,15 @@ do
 		paint()
 		player:GetAttributeChangedSignal("ProfileJson"):Connect(paint)
 	end
+	-- 7 Nov (Brent: the season buttons sat on the party panel's Invite and
+	-- Leave on a phone): they hide while the panel is open, like Gift
+	local function chipsShown()
+		for _, c in ipairs(chips) do
+			c.Visible = not partyBox.Visible
+		end
+	end
+	partyBox:GetPropertyChangedSignal("Visible"):Connect(chipsShown)
+	chipsShown()
 
 	-- the owner's gift panel: the running season's item (or the one whose
 	-- shop is still open) or points, for anyone in this Lobby

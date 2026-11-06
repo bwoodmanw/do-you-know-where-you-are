@@ -432,6 +432,10 @@ Config.POUND = { range = 10, stun = 2 } -- Muscle's Ground Pound
 Config.NIGHT_LIGHT = { seconds = 20, range = 30, near = 20, stamina = 50 }
 -- Patch's Jailbreak (5 Nov): within `reach` studs of the cage, `hold` s to open it
 Config.JAILBREAK = { reach = 35, hold = 1 }
+-- Patch's Medic Run (level 20; 7 Nov, Brent - was 10% faster near a friend):
+-- every friend she frees from the cage leaves with a Party Shield, and she and
+-- they run `speed` times as fast for `seconds`
+Config.MEDIC_RUN = { speed = 1.2, seconds = 6 }
 -- Bramble's Vine Swing (5 Nov): to the next doorway within `tiles`, `speed`
 -- times as fast; friends within `near` studs come along
 Config.VINE_SWING = { tiles = 6, speed = 3, near = 8 }
