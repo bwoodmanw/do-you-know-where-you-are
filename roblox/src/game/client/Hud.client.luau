@@ -732,8 +732,7 @@ local function fitHold(prompt)
 	-- Tinker's Toolkit: the next pick is instant; Muscle's Bulldozer: every shove is
 	local instant = (only == "tinker" and player:GetAttribute("ToolkitReady") == true)
 		or (only == "muscle" and player:GetAttribute("Power20") == "bulldozer")
-		-- Bramble's Forest Friend: the big plant answers at once
-		or (prompt.ObjectText == "Big plant - Bramble" and player:GetAttribute("Power20") == "forest")
+
 	prompt.HoldDuration = instant and 0 or base * (player:GetAttribute("HoldMult") or 1)
 end
 ProximityPromptService.PromptShown:Connect(fitHold)
@@ -3321,3 +3320,24 @@ do
 		end
 	end)
 end
+
+-- 5 Nov (Brent): Bramble's Vine Swing - while VineUntil runs, you're carried
+-- straight to the doorway (VineTo); your own controls rest meanwhile
+RunService:BindToRenderStep("VineSwing", Enum.RenderPriority.Character.Value + 2, function()
+	if (player:GetAttribute("VineUntil") or 0) <= workspace:GetServerTimeNow() then
+		return
+	end
+	local to = player:GetAttribute("VineTo")
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	local hrp = char and char:FindFirstChild("HumanoidRootPart")
+	if typeof(to) ~= "Vector3" or not hum or not hrp then
+		return
+	end
+	local d = Vector3.new(to.X - hrp.Position.X, 0, to.Z - hrp.Position.Z)
+	if d.Magnitude < 2 then
+		player:SetAttribute("VineUntil", 0)
+		return
+	end
+	hum:Move(d.Unit, false)
+end)

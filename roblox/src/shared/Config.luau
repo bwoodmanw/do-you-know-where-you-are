@@ -369,7 +369,8 @@ Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, 
 -- Encore (20): its own button, once a game - the whole floor, `encore` s.
 -- 5 Nov (Brent): as she sings, she and every friend inside the circle run
 -- `run` times as fast for `runTime` s (Dance Steps, 17: +2 s)
-Config.HARMONY = { listen = 3, tune = 12, tuneRegen = 1.5, range = 25, slow = 0.5, seconds = 6, chorus = 5, encore = 8, run = 1.1, runTime = 3 } -- run: 10% (5 Nov, Brent)
+Config.HARMONY = { listen = 3, tune = 12, tuneRegen = 1.5, range = 25, slow = 0.5, seconds = 6, chorus = 5, encore = 8, run = 1.1, runTime = 3, -- run: 10% (5 Nov, Brent)
+	encoreStamina = 30, crescendoStop = 2, crescendoRun = 1.15 } -- (5 Nov, Brent) Encore +30% stamina; Crescendo 2 s stop, 15% burst
 -- Clone (4 Nov, NEW_CHARACTERS.md). Copycat (90 s, the longest - it brings a
 -- whole skill): copies the button of the nearest friend within `reach` studs (two
 -- with Copy Two); alone, one is picked at random. Each copy is its own button with the
@@ -426,7 +427,14 @@ Config.ROCKET_BOOTS = { mult = 1.2, seconds = 5 } -- Tinker's level-20 Rocket Bo
 Config.IRON_LUNGS_REGEN = 2 -- Muscle's level-10 Iron Lungs: stamina refills this many times as fast
 Config.MOUSE = { seconds = 5, run = 30 } -- Tinker's wind-up mouse
 Config.POUND = { range = 10, stun = 2 } -- Muscle's Ground Pound
-Config.NIGHT_LIGHT = { seconds = 60, range = 30 } -- Glow's lamp
+-- Glow's lamp (5 Nov, Brent: 20 s, was 60; anyone within `near` studs gets
+-- `stamina`% once)
+Config.NIGHT_LIGHT = { seconds = 20, range = 30, near = 20, stamina = 50 }
+-- Patch's Jailbreak (5 Nov): within `reach` studs of the cage, `hold` s to open it
+Config.JAILBREAK = { reach = 35, hold = 1 }
+-- Bramble's Vine Swing (5 Nov): to the next doorway within `tiles`, `speed`
+-- times as fast; friends within `near` studs come along
+Config.VINE_SWING = { tiles = 6, speed = 3, near = 8 }
 -- guard rails: a skill stun is at most `max` s (1 s on Nightmare) and the
 -- host can't be stunned by a skill again for `gap` s after one ends
 Config.SKILL_STUN = { max = 2, nightmare = 1, gap = 8 }

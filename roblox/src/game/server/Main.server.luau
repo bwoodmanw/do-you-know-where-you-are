@@ -4066,17 +4066,62 @@ do
 	end
 
 	-- a plain doorway near a spot (for Bramble's vines)
+	-- 5 Nov (Brent: Holly Hedge missed wide doorways): a doorway is an open
+	-- tile between rooms (outside every room's rectangle), 1 to 3 tiles wide;
+	-- one entry per doorway - the tile nearest you (x, y), its middle (mx,
+	-- my), how many tiles wide, and which way it runs (across)
+	local function inRoom(x, y)
+		for _, f in ipairs(HouseMap.floors) do
+			if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
+				return true
+			end
+		end
+		return false
+	end
+	local function doorCell(x, y)
+		return cellAt(x, y) == "." and not inRoom(x, y)
+	end
 	local function doorwaysNear(pos, reach)
 		local px, py = math.floor(pos.X / T), math.floor(pos.Z / T)
-		local found = {}
+		local byStart, found = {}, {}
 		for dx = -reach, reach do
 			for dy = -reach, reach do
 				local x, y = px + dx, py + dy
-				if cellAt(x, y) == "." then
-					local across = (cellAt(x - 1, y) == "#" and cellAt(x + 1, y) == "#") and "x"
-						or (cellAt(x, y - 1) == "#" and cellAt(x, y + 1) == "#") and "z" or nil
+				if doorCell(x, y) then
+					local across
+					if doorCell(x - 1, y) or doorCell(x + 1, y) then
+						across = "x"
+					elseif doorCell(x, y - 1) or doorCell(x, y + 1) then
+						across = "z"
+					elseif cellAt(x - 1, y) ~= "." and cellAt(x + 1, y) ~= "." then
+						across = "x"
+					elseif cellAt(x, y - 1) ~= "." and cellAt(x, y + 1) ~= "." then
+						across = "z"
+					end
 					if across then
-						table.insert(found, { x = x, y = y, across = across, d = math.abs(dx) + math.abs(dy) })
+						local sx, sy = across == "x" and 1 or 0, across == "z" and 1 or 0
+						local a, b = 0, 0
+						while a < 3 and doorCell(x - (a + 1) * sx, y - (a + 1) * sy) do
+							a += 1
+						end
+						while b < 3 and doorCell(x + (b + 1) * sx, y + (b + 1) * sy) do
+							b += 1
+						end
+						local width = a + b + 1
+						if width <= 3 then
+							local x0, y0 = x - a * sx, y - a * sy
+							local key = x0 .. "," .. y0
+							local d = math.abs(dx) + math.abs(dy)
+							local e = byStart[key]
+							if not e then
+								e = { x = x, y = y, across = across, d = d, width = width,
+									mx = x0 + (width - 1) / 2 * sx, my = y0 + (width - 1) / 2 * sy }
+								byStart[key] = e
+								table.insert(found, e)
+							elseif d < e.d then
+								e.x, e.y, e.d = x, y, d
+							end
+						end
 					end
 				end
 			end
@@ -4098,11 +4143,13 @@ do
 			say("info", "\u{1F33F} Stand in or next to a doorway to grow your Holly Hedge there.", nil, plr)
 			return false
 		end
-		local c = House.at(spot.x, spot.y, 0)
+		local c = House.at(spot.mx or spot.x, spot.my or spot.y, 0)
 		local m = Instance.new("Model")
 		m.Name = "HollyHedge"
 		local across = spot.across == "x" and Vector3.new(1, 0, 0) or Vector3.new(0, 0, 1)
-		for k = -2, 2 do
+		local half = math.max(2, math.ceil(((spot.width or 1) * T - 2) / 2.8)) -- (5 Nov) the whole doorway
+		local block = 6 + ((spot.width or 1) - 1) * T / 2
+		for k = -half, half do
 			for lvl = 0, 2 do
 				local bush = Instance.new("Part")
 				bush.Name = "Hedge"
@@ -4135,7 +4182,7 @@ do
 			local told = false
 			while os.clock() < stopAt and world == myWorld and state.status == "playing" do
 				local host = nearestHost(c) -- (5 Nov) the Claus at the hedge
-				if host and host.model and host.root and (Vector3.new(host.root.Position.X, 0, host.root.Position.Z) - Vector3.new(c.X, 0, c.Z)).Magnitude < 6 then
+				if host and host.model and host.root and (Vector3.new(host.root.Position.X, 0, host.root.Position.Z) - Vector3.new(c.X, 0, c.Z)).Magnitude < block then
 					host:stun(0.4) -- held at the hedge
 					if not told then
 						told = true
@@ -4406,6 +4453,67 @@ do
 			end
 			say("info", "\u{1F33F} " .. plr.DisplayName .. " grew vines across the doorway - the host will wade through slowly!")
 			plr:SetAttribute("VinesUntil", workspace:GetServerTimeNow() + seconds)
+			-- 5 Nov (Brent): Vine Swing (level 20) - a vine shoots to the next
+			-- doorway ahead (a clear path, the nearest in front first) and
+			-- swings her and the friends near her there, fast, at once
+			if p20 == "forest" then
+				local VS = Config.VINE_SWING
+				local here = spots[1]
+				local look = Vector3.new(hrp.CFrame.LookVector.X, 0, hrp.CFrame.LookVector.Z)
+				local params = RaycastParams.new()
+				params.FilterType = Enum.RaycastFilterType.Exclude
+				params.RespectCanCollide = true
+				local skip = {}
+				for _, p in ipairs(Players:GetPlayers()) do
+					if p.Character then
+						table.insert(skip, p.Character)
+					end
+				end
+				params.FilterDescendantsInstances = skip
+				local best, bestScore
+				for _, d in ipairs(doorwaysNear(hrp.Position, VS.tiles)) do
+					if d ~= here and (math.abs(d.mx - here.mx) + math.abs(d.my - here.my)) >= 2 then
+						local to = House.at(d.mx, d.my, 0) + Vector3.new(0, hrp.Position.Y - House.at(0, 0, 0).Y, 0)
+						local way = Vector3.new(to.X - hrp.Position.X, 0, to.Z - hrp.Position.Z)
+						if way.Magnitude > 4 and not workspace:Raycast(hrp.Position, way, params) then
+							local score = way.Magnitude - (look.Magnitude > 0.1 and way.Unit:Dot(look.Unit) > 0.3 and 1000 or 0)
+							if not bestScore or score < bestScore then
+								best, bestScore = to, score
+							end
+						end
+					end
+				end
+				if best then
+					local now3 = workspace:GetServerTimeNow()
+					local names = {}
+					for _, p in ipairs(Players:GetPlayers()) do
+						local h = hrpOf(p)
+						if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (p == plr or (h.Position - hrp.Position).Magnitude <= VS.near) then
+							local trip = (Vector3.new(best.X - h.Position.X, 0, best.Z - h.Position.Z)).Magnitude / (Config.WALK * VS.speed) + 0.8
+							p:SetAttribute("VineTo", best)
+							p:SetAttribute("VineUntil", now3 + trip)
+							p:SetAttribute("TeamBurstMult", VS.speed)
+							p:SetAttribute("TeamBurstUntil", now3 + trip)
+							Effects.aura(p, "speed", trip)
+							if p ~= plr then
+								table.insert(names, p.DisplayName)
+							end
+						end
+					end
+					-- the vine itself, for a moment
+					local mid = (hrp.Position + best) / 2 + Vector3.new(0, 2, 0)
+					local rope = Instance.new("Part")
+					rope.Name = "SwingVine"
+					rope.Anchored, rope.CanCollide, rope.CanQuery, rope.CanTouch = true, false, false, false
+					rope.Size = Vector3.new(0.4, 0.4, (best - hrp.Position).Magnitude)
+					rope.CFrame = CFrame.lookAt(mid, best + Vector3.new(0, 2, 0))
+					rope.Color = Color3.fromRGB(60, 140, 60)
+					rope.Material = Enum.Material.Grass
+					rope.Parent = world.root
+					game:GetService("Debris"):AddItem(rope, 2)
+					say("info", "\u{1F33F} Vine Swing! " .. plr.DisplayName .. (#names > 0 and (" swung off with " .. table.concat(names, " and ")) or " swung off") .. " to the next doorway!")
+				end
+			end
 			return true
 		elseif skill == "nutmeg" then
 			-- Sleigh Dash (3 Nov): double speed for DashTime seconds; the nearest
@@ -4708,7 +4816,7 @@ do
 				h.slowUntil = os.clock() + seconds
 				h.slowMult = Hm.slow
 				if p20 == "crescendo" then
-					h:stun(1) -- Crescendo: a full stop first
+					h:stun(Hm.crescendoStop) -- Crescendo: a full stop first (5 Nov: 2 s, was 1)
 				end
 				Effects.stars(h.model, seconds, Color3.fromRGB(190, 140, 255))
 			end
@@ -4717,14 +4825,15 @@ do
 			-- for a moment (a stronger burst already running is kept)
 			do
 				local run = plr:GetAttribute("LullabyRun") or Hm.runTime
+				local mult = p20 == "crescendo" and Hm.crescendoRun or Hm.run -- (5 Nov) Crescendo: 15%
 				local now2 = workspace:GetServerTimeNow()
 				for _, p in ipairs(Players:GetPlayers()) do
 					local h = hrpOf(p)
 					if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped")
 						and Vector3.new(h.Position.X - hrp.Position.X, 0, h.Position.Z - hrp.Position.Z).Magnitude <= reach then
-						local busy = (p:GetAttribute("TeamBurstUntil") or 0) > now2 and (p:GetAttribute("TeamBurstMult") or 1) > Hm.run
+						local busy = (p:GetAttribute("TeamBurstUntil") or 0) > now2 and (p:GetAttribute("TeamBurstMult") or 1) > mult
 						if not busy then
-							p:SetAttribute("TeamBurstMult", Hm.run)
+							p:SetAttribute("TeamBurstMult", mult)
 							p:SetAttribute("TeamBurstUntil", now2 + run)
 							Effects.aura(p, "speed", run)
 						end
@@ -4792,6 +4901,27 @@ do
 						end
 					end
 				end
+				-- 5 Nov (Brent): Little Sun - the Flare fills the whole room she's in,
+				-- and a host in that room is blinded 1 s
+				local sun = plr:GetAttribute("Power20") == "sun"
+				local function roomRect(pos)
+					local tx, ty = math.floor(pos.X / T), math.floor(pos.Z / T)
+					for _, fl in ipairs(HouseMap.floors) do
+						if tx >= fl.x0 and tx <= fl.x1 and ty >= fl.y0 and ty <= fl.y1 then
+							return fl
+						end
+					end
+					return nil
+				end
+				if sun then
+					local room = roomRect(hrp.Position)
+					for _, h in ipairs(liveHosts()) do
+						if room and roomRect(h.root.Position) == room then
+							h:stun(1)
+							say("info", "\u{2600} Little Sun! The host is blinded for a moment.")
+						end
+					end
+				end
 				task.spawn(function()
 					local stopAt = os.clock() + seconds
 					while os.clock() < stopAt and state == myState and state.status == "playing" do
@@ -4799,9 +4929,11 @@ do
 						if not gh then
 							break
 						end
+						local myRoom = sun and roomRect(gh.Position) or nil
 						for _, p in ipairs(Players:GetPlayers()) do
 							local h = hrpOf(p)
-							if h and not got[p] and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - gh.Position).Magnitude <= range then
+							if h and not got[p] and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped")
+								and ((h.Position - gh.Position).Magnitude <= range or (myRoom ~= nil and roomRect(h.Position) == myRoom)) then
 								got[p] = true
 								p:SetAttribute("TeamBurstMult", f.speed)
 								p:SetAttribute("TeamBurstUntil", workspace:GetServerTimeNow() + f.speedTime)
@@ -4832,6 +4964,26 @@ do
 				l.Color, l.Range, l.Brightness = Color3.fromRGB(255, 242, 160), Config.NIGHT_LIGHT.range, 1.5
 				l.Parent = lamp
 				lamp.Parent = world.root
+				-- 5 Nov (Brent): anyone who comes within `near` studs of the lamp
+				-- while it burns gets a stamina lift, once
+				do
+					local NL = Config.NIGHT_LIGHT
+					local lampState, warmed = state, {}
+					task.spawn(function()
+						while lamp.Parent and state == lampState and state.status == "playing" do
+							for _, p in ipairs(Players:GetPlayers()) do
+								local h = hrpOf(p)
+								if h and not warmed[p] and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - lamp.Position).Magnitude <= NL.near then
+									warmed[p] = true
+									Boost:FireClient(p, "plus", NL.stamina)
+									Effects.at(p, "light")
+									say("info", "\u{1F4A1} Glow's Night Light: +" .. NL.stamina .. "% stamina!", nil, p)
+								end
+							end
+							task.wait(0.3)
+						end
+					end)
+				end
 				local tx, ty = math.floor(hrp.Position.X / T), math.floor(hrp.Position.Z / T)
 				for _, f in ipairs(HouseMap.floors) do
 					if tx >= f.x0 and tx <= f.x1 and ty >= f.y0 and ty <= f.y1 and world.dark[f.name] then
@@ -5633,19 +5785,45 @@ Jailbreak.OnServerEvent:Connect(function(plr)
 		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return
 	end
-	local freed = {}
-	for _, p in ipairs(Players:GetPlayers()) do
-		if p:GetAttribute("Caged") then
-			freeFromCage(p)
-			Effects.at(p, "heal")
-			table.insert(freed, p.DisplayName)
-		end
+	-- 5 Nov (Brent): within JAILBREAK.reach studs of the cage; it takes `hold` s
+	local J = Config.JAILBREAK
+	local function cagePos()
+		local cage = world and world.objects and world.objects.cage
+		local cp = cage and (cage.part or cage.outside)
+		return typeof(cp) == "Instance" and cp.Position or (typeof(cp) == "Vector3" and cp or nil)
 	end
-	if #freed == 0 then
+	local function near()
+		local h, cp = hrpOf(plr), cagePos()
+		return h and cp and (h.Position - cp).Magnitude <= J.reach
+	end
+	local anyone = false
+	for _, p in ipairs(Players:GetPlayers()) do
+		anyone = anyone or p:GetAttribute("Caged") == true
+	end
+	if not anyone then
 		return say("info", "\u{1F513} Nobody is in the cage - save your Jailbreak for when a friend is caught.", nil, plr)
 	end
+	if not near() then
+		return say("info", "\u{1F513} Get within " .. J.reach .. " studs of the cage to use Jailbreak.", nil, plr)
+	end
 	plr:SetAttribute("JailbreakUsed", true)
-	say("info", "\u{1F513} Jailbreak! " .. plr.DisplayName .. " freed " .. table.concat(freed, ", ") .. " from the cage!")
+	say("info", "\u{1F513} " .. plr.DisplayName .. " is breaking the cage open...")
+	local myState = state
+	task.delay(J.hold, function()
+		if state ~= myState or state.status ~= "playing" or plr:GetAttribute("Caged") or not near() then
+			plr:SetAttribute("JailbreakUsed", false) -- interrupted: not used up
+			return say("info", "\u{1F513} Jailbreak stopped - try again.", nil, plr)
+		end
+		local freed = {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p:GetAttribute("Caged") then
+				freeFromCage(p)
+				Effects.at(p, "heal")
+				table.insert(freed, p.DisplayName)
+			end
+		end
+		say("info", "\u{1F513} Jailbreak! " .. plr.DisplayName .. " freed " .. (#freed > 0 and table.concat(freed, ", ") or "the cage") .. "!")
+	end)
 end)
 
 SingEncore.OnServerEvent:Connect(function(plr)
@@ -5662,7 +5840,13 @@ SingEncore.OnServerEvent:Connect(function(plr)
 		h.slowMult = Config.HARMONY.slow
 		Effects.stars(h.model, Config.HARMONY.encore, Color3.fromRGB(190, 140, 255)) -- (4 Nov) notes while he's slow
 	end
-	say("info", "\u{1F3B6} Encore! " .. plr.DisplayName .. "'s song fills the whole floor - the host is slow for " .. Config.HARMONY.encore .. " s!")
+	-- 5 Nov (Brent): and every friend gets a stamina lift
+	for _, p in ipairs(Players:GetPlayers()) do
+		if hrpOf(p) and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
+			Boost:FireClient(p, "plus", Config.HARMONY.encoreStamina)
+		end
+	end
+	say("info", "\u{1F3B6} Encore! " .. plr.DisplayName .. "'s song fills the whole floor - the host is slow for " .. Config.HARMONY.encore .. " s, and everyone gets +" .. Config.HARMONY.encoreStamina .. "% stamina!")
 end)
 
 UseSkill.OnServerEvent:Connect(function(plr, pos)

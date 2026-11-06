@@ -411,7 +411,7 @@ local SPECIAL = {
 			{ id = "flash", name = "Flash", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
 		},
 		[10] = {
-			{ id = "nightlight10", name = "Night Light", say = "Flare also leaves a lamp: the room stays lit for 60 s", mods = { p10 = "nightlight" } },
+			{ id = "nightlight10", name = "Night Light", say = "Flare also leaves a lamp: the room stays lit 20 s, and anyone who comes near it gets 50% stamina once", mods = { p10 = "nightlight" } }, -- (5 Nov, Brent)
 			{ id = "dazzle10", name = "Dazzle", say = "Flare makes the host stop and blink for 2 s if he is in your light", mods = { p10 = "dazzle" } },
 		},
 		[11] = {
@@ -435,7 +435,7 @@ local SPECIAL = {
 			{ id = "dim19", name = "Spark Plug", say = "Flare recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[20] = {
-			{ id = "sun20", name = "Little Sun", say = "Your light reaches 12 studs further - a whole room", mods = { glowRange = 12 } },
+			{ id = "sun20", name = "Little Sun", say = "Your light reaches 12 studs further, your Flare fills the whole room you're in, and a host in that room is blinded 1 s", mods = { glowRange = 12, p20 = "sun" } }, -- (5 Nov, Brent)
 			{ id = "beacon20", name = "Beacon", say = "Flare reaches the whole team, anywhere: 50% stamina and 5% faster for 8 s, and shows everyone through walls", mods = { p20 = "beacon" } },
 		},
 	},
@@ -481,7 +481,7 @@ local SPECIAL = {
 			{ id = "hint19", name = "First Aid Kit", say = "+1 free clue for the team", mods = { clues = 1 } },
 		},
 		[20] = {
-			{ id = "guardian20", name = "Jailbreak", say = "A Jailbreak button: once a game, everyone in the cage is freed - from anywhere", mods = { p20 = "guardian" } }, -- (5 Nov, Brent; was Guardian)
+			{ id = "guardian20", name = "Jailbreak", say = "A Jailbreak button: once a game, within 35 studs of the cage, everyone in it is freed after 1 s", mods = { p20 = "guardian" } }, -- (5 Nov, Brent; was Guardian)
 			{ id = "medicrun20", name = "Medic Run", say = "Run 10% faster while a friend is near you", mods = { p20 = "medicrun" } },
 		},
 	},
@@ -573,7 +573,7 @@ local SPECIAL = {
 			{ id = "thicket19", name = "Bark Skin", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[20] = {
-			{ id = "forest20", name = "Forest Friend", say = "The big plant answers you instantly, and +1 free clue for the team", mods = { p20 = "forest", clues = 1 } },
+			{ id = "forest20", name = "Vine Swing", say = "Vines in a doorway also swing you, and friends near you, fast to the next doorway ahead", mods = { p20 = "forest" } }, -- (5 Nov, Brent; was Forest Friend)
 			{ id = "overgrowth20", name = "Overgrowth", say = "Vines grow across two doorways at once", mods = { p20 = "overgrowth" } },
 		},
 	},
@@ -621,8 +621,8 @@ local SPECIAL = {
 			{ id = "verse19", name = "Last Verse", say = "Lullaby lasts 1 s longer", mods = { lullabyTime = 1 } },
 		},
 		[20] = {
-			{ id = "encore20", name = "Encore", say = "An Encore button: once a game, a lullaby for the whole floor - the host walks at half speed 8 s", mods = { p20 = "encore" } },
-			{ id = "crescendo20", name = "Crescendo", say = "Lullaby also stops the host 1 s first", mods = { p20 = "crescendo" } },
+			{ id = "encore20", name = "Encore", say = "An Encore button: once a game, a lullaby for the whole floor - the host walks at half speed 8 s, and every friend gets 30% stamina", mods = { p20 = "encore" } },
+			{ id = "crescendo20", name = "Crescendo", say = "Lullaby also stops the host 2 s first, and its speed burst is 15%", mods = { p20 = "crescendo" } },
 		},
 	},
 	-- Clone (4 Nov, NEW_CHARACTERS.md): Look-alike, Copycat; lookAlike (s) /
