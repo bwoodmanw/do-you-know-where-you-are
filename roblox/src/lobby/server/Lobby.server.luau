@@ -1698,6 +1698,10 @@ stallPrompt.Triggered:Connect(function(plr)
 end)
 Scene.dropOff()
 Scene.fun()
+-- 5 Nov (Brent): the bounce course to the Sky Perch and the season's ride
+require(script.Parent.LobbyPlay).start(remote, function(plr, text)
+	Notice:FireClient(plr, text)
+end)
 Scene.more(function(plr, text) -- 4 Nov: seesaw, merry-go-round, music tiles, wishing well
 	Notice:FireClient(plr, text)
 end)

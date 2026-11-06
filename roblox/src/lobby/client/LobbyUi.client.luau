@@ -649,9 +649,11 @@ do
 	local function apply()
 		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 		if hum then
-			hum.WalkSpeed = running and RUN or WALK
+			-- 5 Nov: 60% faster on a ride (LobbyPlay)
+			hum.WalkSpeed = (running and RUN or WALK) * (player:GetAttribute("Riding") and 1.6 or 1)
 		end
 	end
+	player:GetAttributeChangedSignal("Riding"):Connect(apply)
 	UserInputService.InputBegan:Connect(function(input, processed)
 		if not processed and (input.KeyCode == Enum.KeyCode.LeftShift or input.KeyCode == Enum.KeyCode.RightShift) then
 			running = true
