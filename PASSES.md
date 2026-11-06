@@ -96,6 +96,48 @@ steps as below.
 | Harvest Gala Clone | 2070612915 |
 | Pumpkin Pie Harmony | 2070930914 |
 
+## Christmas skins (6 Nov): 13 more passes
+
+Pictures made by `tools/make_pass_pictures.py --christmas ...` (a red-to-green
+circle with snowflakes; checked: every face matches its character, no logos):
+`art/roblox-store/passes/`, all 13 in `_christmas.png`. Each is also 150
+candy canes in the Christmas Shop in December. Price 99, Managed pricing off,
+same steps as below.
+
+| # | Name (type exactly) | Picture | Price | Description |
+|---|---|---|---|---|
+| 22 | Ice Skater Patch | `pass-skater-patch.png` | 99 | Patch ready for the ice rink: a puffy icy-blue skating jacket and skirt, white earmuffs and white skates with silver blades. Looks only - Patch's skills stay the same. Wear it from Characters in the Lobby. |
+| 23 | Gingerbread Brainy | `pass-gingerbread-brainy.png` | 99 | Brainy baked up for the holidays: a gingerbread-brown lab coat with white icing trim, peppermint buttons and a red-and-white propeller cap. Looks only - Brainy's skills stay the same. Wear it from Characters in the Lobby. |
+| 24 | Silent Night Shadow | `pass-silentnight-shadow.png` | 99 | Shadow sneaks through the snowy night: a navy snowflake sweater, a green scarf and a red hood with a winter hat. Looks only - Shadow's skills stay the same. Wear it from Characters in the Lobby. |
+| 25 | Twinkle Lights Glow | `pass-twinkle-glow.png` | 99 | Glow all lit up: a green coat wrapped in colorful twinkle lights, a cozy cream scarf and a light-bulb headband. Looks only - Glow's skills stay the same. Wear it from Characters in the Lobby. |
+| 26 | Toy Maker Tinker | `pass-toymaker-tinker.png` | 99 | Tinker in the toy workshop: red overalls over a green shirt, and his goggles on a green band. Looks only - Tinker's skills stay the same. Wear it from Characters in the Lobby. |
+| 27 | Holiday Sweater Muscle | `pass-sweater-muscle.png` | 99 | Muscle in his coziest best: a red holiday sweater with a green zigzag band and a red-and-white winter hat. Looks only - Muscle's skills stay the same. Wear it from Characters in the Lobby. |
+| 28 | Jingle Bell Echo | `pass-jinglebell-echo.png` | 99 | Echo rings in the season: a red coat with white trim, a green hoodie and red goggles with little jingle bells. Looks only - Echo's skills stay the same. Wear it from Characters in the Lobby. |
+| 29 | Evergreen Bramble | `pass-evergreen-bramble.png` | 99 | Bramble dressed as a little Christmas tree: an evergreen cape with ornaments and a holly-berry crown. Looks only - Bramble's skills stay the same. Wear it from Characters in the Lobby. |
+| 30 | Snowflake Nutmeg | `pass-snowflake-nutmeg.png` | 99 | Nutmeg in snowy white: a cozy hood with reindeer ears, a white coat, an icy-blue scarf and a silver bell. Looks only - Nutmeg's skills stay the same. Wear it from Characters in the Lobby. |
+| 31 | First Snow Cloud | `pass-snow-cloud.png` | 99 | Cloud ready for the first snowfall: a sky-blue winter coat and a matching pom-pom hat. Looks only - Cloud's skills stay the same. Wear it from Characters in the Lobby. |
+| 32 | Sugar Plum Holly | `pass-sugarplum-holly.png` | 99 | Holly as sweet as a sugar plum: a plum-purple dress with a pink sash, a little pink star and purple bows in her hair. Looks only - Holly's skills stay the same. Wear it from Characters in the Lobby. |
+| 33 | Nutcracker Clone | `pass-nutcracker-clone.png` | 99 | Clone as a toy soldier: a red and royal-blue jacket with gold buttons and gold shoulder trim, plus his gold goggles. Looks only - Clone's skills stay the same. Wear it from Characters in the Lobby. |
+| 34 | Carol Singer Harmony | `pass-carol-harmony.png` | 99 | Harmony ready to sing carols: a red beret, a green coat with a white collar, a red scarf and a gold bell. Looks only - Harmony's skills stay the same. Wear it from Characters in the Lobby. |
+
+## Christmas pass ids (fill in as they come)
+
+| Skin | Pass id |
+|---|---|
+| Ice Skater Patch | |
+| Gingerbread Brainy | |
+| Silent Night Shadow | |
+| Twinkle Lights Glow | |
+| Toy Maker Tinker | |
+| Holiday Sweater Muscle | |
+| Jingle Bell Echo | |
+| Evergreen Bramble | |
+| Snowflake Nutmeg | |
+| First Snow Cloud | |
+| Sugar Plum Holly | |
+| Nutcracker Clone | |
+| Carol Singer Harmony | |
+
 ## Steps (for each pass)
 
 1. **create.roblox.com** -> **Creations** -> **Escape Crew**.

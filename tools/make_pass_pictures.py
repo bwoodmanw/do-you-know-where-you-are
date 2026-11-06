@@ -77,10 +77,16 @@ def picture(folder):
     yy, xx = np.mgrid[0:S, 0:S]
     t = np.clip(np.hypot(xx - S / 2, yy - S * 0.4) / (S * 0.62), 0, 1)[..., None]
     inner, outer = np.array([232, 140, 60]), np.array([120, 52, 26])
+    if XMAS:
+        # 6 Nov: Christmas - a warm red middle to a deep pine green, snowflakes
+        inner, outer = np.array([214, 52, 60]), np.array([22, 84, 48])
     bg = Image.fromarray((inner * (1 - t) + outer * t).astype(np.uint8)).convert("RGBA")
     d = ImageDraw.Draw(bg)
     for (x, y, r) in [(70, 120, 9), (440, 150, 7), (95, 380, 6), (420, 400, 8), (380, 70, 5)]:
-        d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 214, 140, 255))
+        d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 255, 255, 255) if XMAS else (255, 214, 140, 255))
+    if XMAS:
+        for (x, y, r) in [(120, 60, 4), (470, 260, 5), (40, 260, 5), (300, 40, 3), (460, 330, 3)]:
+            d.ellipse((x - r, y - r, x + r, y + r), fill=(235, 245, 255, 255))
     bg.alpha_composite(crop, (18, 30))
     mask = Image.new("L", (S, S), 0)
     ImageDraw.Draw(mask).ellipse((2, 2, S - 3, S - 3), fill=255)
@@ -91,14 +97,19 @@ def picture(folder):
 
 # 5 Nov: name the folders to make only those (the new characters' skins:
 #   python tools/make_pass_pictures.py cranberry-holly autumn-cloud gala-clone pie-harmony)
-ONLY = sys.argv[1:]
+# 6 Nov: --christmas for the Christmas skins (python tools/make_pass_pictures.py
+#   --christmas skater-patch gingerbread-brainy ...) -> _christmas.png
+XMAS = "--christmas" in sys.argv
+ONLY = [a for a in sys.argv[1:] if a != "--christmas"]
 pics = []
 for f in ONLY or SKINS:
     p = picture(f)
     p.save(os.path.join(ROOT, "art", "roblox-store", "passes", "pass-%s.png" % f))
     pics.append(p)
-sheet = Image.new("RGBA", (3 * 260, 3 * 260), (30, 20, 40, 255))
+cols = 3 if len(pics) <= 9 else 4
+rows = (len(pics) + cols - 1) // cols
+sheet = Image.new("RGBA", (cols * 260, rows * 260), (30, 20, 40, 255))
 for i, p in enumerate(pics):
-    sheet.alpha_composite(p.resize((250, 250)), ((i % 3) * 260 + 5, (i // 3) * 260 + 5))
-sheet.save(os.path.join(ROOT, "art", "roblox-store", "passes", "_thanksgiving-new.png" if ONLY else "_thanksgiving.png"))
+    sheet.alpha_composite(p.resize((250, 250)), ((i % cols) * 260 + 5, (i // cols) * 260 + 5))
+sheet.save(os.path.join(ROOT, "art", "roblox-store", "passes", "_christmas.png" if XMAS else "_thanksgiving-new.png" if ONLY else "_thanksgiving.png"))
 print("wrote", len(pics), "pass pictures")
