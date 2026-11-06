@@ -767,6 +767,7 @@ Config.CHARACTER_ASSETS = {
 	ToyElf = 137802129295979, -- 5 Nov: the Toy Elf in Claus Manor (checked on Roblox: Model 'ToyElf', Brent's upload)
 	ShadowSilentNight = 77927722211304, -- 5 Nov: Silent Night Shadow (checked on Roblox: Model 'ShadowSilentNight', Brent's upload)
 	GlowTwinkle = 99378436384952, -- 5 Nov: Twinkle Lights Glow (checked on Roblox: Model 'GlowTinkle' - saved with that spelling, Brent's upload)
+	TinkerToymaker = 134408108781470, -- 5 Nov: Toy Maker Tinker (checked on Roblox: Model 'TinkerToyMaker', Brent's upload)
 	HostYeti = 138655463727624, -- 5 Nov: Frostfoot the Yeti, Frostpeak Lodge's host (New Year's; checked on Roblox: Model 'FrostFoot', Brent's upload)
 	CloneGala = 137284317587849, -- 5 Nov: Harvest Gala Clone (checked on Roblox: Model, Brent's upload)
 	HollyCranberry = 139043771129248, -- 5 Nov: Cranberry Spice Holly (checked on Roblox: Model 'HollyCranberry', Brent's upload)
@@ -1072,7 +1073,7 @@ Config.SKINS = {
 	{ id = "brainy_gingerbread", skill = "brainy", name = "Gingerbread Brainy", model = "BrainyGingerbread", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "shadow_silentnight", skill = "shadow", name = "Silent Night Shadow", model = "ShadowSilentNight", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "glow_twinkle", skill = "glow", name = "Twinkle Lights Glow", model = "GlowTwinkle", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "tinker_toymaker", skill = "tinker", name = "Toy Maker Tinker", model = "TinkerToymaker", cane = 150, pass = 0, hidden = true },
+	{ id = "tinker_toymaker", skill = "tinker", name = "Toy Maker Tinker", model = "TinkerToymaker", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "muscle_sweater", skill = "muscle", name = "Holiday Sweater Muscle", model = "MuscleSweater", cane = 150, pass = 0, hidden = true },
 	{ id = "echo_jingle", skill = "echo", name = "Jingle Bell Echo", model = "EchoJingle", cane = 150, pass = 0, hidden = true },
 	{ id = "bramble_evergreen", skill = "bramble", name = "Evergreen Bramble", model = "BrambleEvergreen", cane = 150, pass = 0, hidden = true },
