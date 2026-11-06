@@ -369,7 +369,7 @@ Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, 
 -- Encore (20): its own button, once a game - the whole floor, `encore` s.
 -- 5 Nov (Brent): as she sings, she and every friend inside the circle run
 -- `run` times as fast for `runTime` s (Dance Steps, 17: +2 s)
-Config.HARMONY = { listen = 3, tune = 12, tuneRegen = 1.5, range = 25, slow = 0.5, seconds = 6, chorus = 5, encore = 8, run = 1.15, runTime = 3 }
+Config.HARMONY = { listen = 3, tune = 12, tuneRegen = 1.5, range = 25, slow = 0.5, seconds = 6, chorus = 5, encore = 8, run = 1.1, runTime = 3 } -- run: 10% (5 Nov, Brent)
 -- Clone (4 Nov, NEW_CHARACTERS.md). Copycat (90 s, the longest - it brings a
 -- whole skill): copies the button of the nearest friend within `reach` studs (two
 -- with Copy Two); alone, one is picked at random. Each copy is its own button with the
@@ -515,7 +515,7 @@ Config.SKILL_INFO = {
 	harmony = { parts = {
 		{ kind = "hold", name = "Music Box", text = "The music box behind the first locked door plays the door code - only Harmony hears it." },
 		{ kind = "passive", name = "In Tune", text = "Friends near her get their stamina back faster." },
-		{ kind = "press", name = "Lullaby", text = "The host near her walks at half speed for 6 seconds - and she and friends inside the circle get a 3-second burst of speed." },
+		{ kind = "press", name = "Lullaby", text = "The host near her walks at half speed for 6 seconds - and she and friends inside the circle run 10% faster for 3 seconds." },
 	} },
 	clone = { parts = {
 		{ kind = "passive", name = "Look-alike", text = "The host stops for a second before grabbing Clone - is it really him?" },
