@@ -1428,9 +1428,10 @@ local function useSkill()
 		toast("Put away - nothing thrown.", 2)
 		return
 	end
-	-- Echo's noise and Cloud's Storm Cloud (level 20, 4 Nov) are thrown where you aim
-	local storm = s == "cloud" and player:GetAttribute("Power20") == "storm"
-	local what = storm and "\u{26C8} storm cloud" or "\u{1F3A7} noise"
+	-- Echo's noise is thrown where you aim (7 Nov: Cloud's Fog never is - her
+	-- Storm Cloud has its own button, below)
+	local storm = false
+	local what = "\u{1F3A7} noise"
 	if (s == "echo" or storm) and Gamepad.on() then
 		-- a controller throws it at the middle of the screen
 		local spot = Gamepad.aimPoint({ player.Character }, 300)
@@ -1470,6 +1471,56 @@ local function useSkill()
 	end
 end
 skillBtn.Activated:Connect(useSkill)
+-- 7 Nov (Brent): Cloud's Storm Cloud (level 20) - its own button beside Fog,
+-- thrown where you tap (G on a keyboard); it shares Fog's recharge
+do
+	local stormBtn = button(acts, "", { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(90, 95, 130), Visible = false })
+	local G = KEYS and " (G)" or ""
+	local function throwStorm()
+		if player:GetAttribute("Skill") ~= "cloud" or player:GetAttribute("Power20") ~= "storm" or player:GetAttribute("Caged") or player:GetAttribute("Escaped") then
+			return
+		end
+		if aiming then
+			aiming = false
+			aimCopySlot = nil
+			toast("Put away - nothing thrown.", 2)
+			return
+		end
+		local left = (player:GetAttribute("CoolUntil") or 0) - workspace:GetServerTimeNow()
+		if left > 0 then
+			toast("Your fog is recharging... " .. math.ceil(left) .. " seconds", 2)
+			return
+		end
+		if Gamepad.on() then
+			local spot = Gamepad.aimPoint({ player.Character }, 300)
+			if spot then
+				remotes.UseSkill:FireServer(spot)
+			else
+				toast("Point the camera at a floor or wall to throw your storm cloud there.", 3)
+			end
+		else
+			aiming = true
+			aimCopySlot = nil
+			toast("Tap or click a spot to throw your \u{26C8} storm cloud there - or tap Storm Cloud again to cancel.", 4)
+		end
+	end
+	stormBtn.Activated:Connect(throwStorm)
+	UserInputService.InputBegan:Connect(function(input, used)
+		if not used and input.KeyCode == Enum.KeyCode.G then
+			throwStorm()
+		end
+	end)
+	RunService.Heartbeat:Connect(function()
+		local on = player:GetAttribute("Skill") == "cloud" and player:GetAttribute("Power20") == "storm"
+		stormBtn.Visible = on
+		if on then
+			local left = math.ceil((player:GetAttribute("CoolUntil") or 0) - workspace:GetServerTimeNow())
+			stormBtn.Text = "\u{26C8} Storm Cloud" .. (left > 0 and ("  " .. left .. "s") or G)
+			stormBtn.AutoButtonColor = left <= 0
+			stormBtn.BackgroundColor3 = left > 0 and Color3.fromRGB(60, 70, 80) or Color3.fromRGB(90, 95, 130)
+		end
+	end)
+end
 -- R uses the skill from the keyboard
 UserInputService.InputBegan:Connect(function(input, used)
 	if not used and input.KeyCode == Enum.KeyCode.R then

@@ -4662,13 +4662,11 @@ do
 			-- Fog (4 Nov): a fog cloud where she stands (Storm Cloud: where she
 			-- tapped, up to Config.CLOUD.throw studs away) for FogTime seconds
 			local C = Config.CLOUD
-			local storm = p20 == "storm"
+			-- 7 Nov (Brent): with Storm Cloud she has two buttons - Fog (no spot:
+			-- the fog where she stands, as always) and Storm Cloud (a spot)
+			local storm = p20 == "storm" and typeof(pos) == "Vector3"
 			local center = hrp.Position
 			if storm then
-				if typeof(pos) ~= "Vector3" then
-					say("info", "\u{26C8} Tap where to throw your storm cloud.", nil, plr)
-					return false
-				end
 				local d = pos - hrp.Position
 				center = d.Magnitude > C.throw and (hrp.Position + d.Unit * C.throw) or pos
 				center = Vector3.new(center.X, hrp.Position.Y - 2.5, center.Z)
@@ -5729,7 +5727,10 @@ local function runSkill(plr, skill, pos, slot)
 				Boost:FireClient(nearest, "plus", plr:GetAttribute("ShieldStamina")) -- (7 Nov: Healing Touch)
 			end
 		end
-		if given == 0 then
+		-- 7 Nov (Brent: Shields for All didn't shield her): with it she
+		-- shields herself as well; without it, only when no friend needed one
+		local selfToo = given == 0 or plr:GetAttribute("HealShield") == true
+		if selfToo then
 			if plr:GetAttribute("Shield") and plr:GetAttribute("SelfShieldAt") == nil then
 				-- already holds a lasting shield: it stays as it is
 			else
@@ -5749,7 +5750,7 @@ local function runSkill(plr, skill, pos, slot)
 		end
 		Effects.at(plr, "heal")
 		Effects.ring(hrp.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(123, 227, 107), 36, 0.8)
-		say("heal", given == 0 and ("Patch gave herself a Party Shield (" .. (plr:GetAttribute("SelfShield") or Config.SELF_SHIELD or 30) .. " s)!") or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!"), { userId = plr.UserId })
+		say("heal", given == 0 and ("Patch gave herself a Party Shield (" .. (plr:GetAttribute("SelfShield") or Config.SELF_SHIELD or 30) .. " s)!") or ("Patch handed out " .. given .. (given == 1 and " Party Shield" or " Party Shields") .. " - one grab each!" .. (selfToo and " And one for herself." or "")), { userId = plr.UserId })
 	elseif skill == "muscle" then
 		local best, bd = nil, Config.BARRICADE.reach
 		for _, c in ipairs(world.crates or {}) do

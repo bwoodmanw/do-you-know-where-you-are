@@ -214,7 +214,7 @@ local SPECIAL = {
 		},
 		[5] = {
 			{ id = "master", name = "Handy", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
-			{ id = "gadget", name = "Gadget Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+			{ id = "pack13", name = "Battery Pack", say = "Each Toolkit also gives you 10% stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[7] = {
 			{ id = "toolbelt", name = "Tool Belt", say = "Toolkit recharges 10% faster", mods = { cooldownMult = 0.9 } },
@@ -234,7 +234,7 @@ local SPECIAL = {
 		},
 		[13] = {
 			{ id = "mouse13", name = "Long Run Mouse", say = "Your Wind-up Mouse (level 10) runs 2 s longer", mods = { mouseTime = 2 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "pack13", name = "Battery Pack", say = "Each Toolkit also gives you 10% stamina", mods = { buttonStamina = 10 } }, -- 7 Nov (Brent: a repeat replaced)
+			{ id = "gadget", name = "Gadget Shield", say = "Start every game with a Party Shield", mods = { shield = true } }, -- (7 Nov, Brent: Party Shield picks from level 11 - was level 5)
 		},
 		[15] = {
 			{ id = "tk15", name = "Oiled Toolkit", say = "Toolkit recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -350,7 +350,7 @@ local SPECIAL = {
 	muscle = {
 		[3] = {
 			{ id = "heave", name = "Big Heave", say = "Shove, free friends and search 10% faster", mods = { holdMult = 0.9 } },
-			{ id = "tough", name = "Tough", say = "Start every game with a Party Shield", mods = { shield = true } },
+			{ id = "build11", name = "Builder", say = "Your button recharges 10% faster", mods = { cooldownMult = 0.9 } },
 		},
 		[5] = {
 			{ id = "warmup5", name = "Warm Up", say = "After each barricade you run 10% faster for 2 s", mods = { buttonBurst = 2 } }, -- 7 Nov (Brent: a repeat replaced)
@@ -370,7 +370,7 @@ local SPECIAL = {
 		},
 		[11] = {
 			{ id = "heave11", name = "Heave Ho", say = "Shove, free friends and search 10% faster", mods = { holdMult = 0.9 } },
-			{ id = "build11", name = "Builder", say = "Your button recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "tough", name = "Tough", say = "Start every game with a Party Shield", mods = { shield = true } }, -- (7 Nov, Brent: Party Shield picks from level 11 - was level 3)
 		},
 		[13] = {
 			{ id = "hold13", name = "Solid Barricade", say = "The host is stuck at your barricade 1 s longer", mods = { barricadeHold = 1 } },
@@ -441,7 +441,7 @@ local SPECIAL = {
 	},
 	patch = {
 		[3] = {
-			{ id = "bigheal", name = "Shields for All", say = "Shield every friend nearby, not just one", mods = { healShield = true } },
+			{ id = "bigheal", name = "Shields for All", say = "Shield every friend nearby, not just one - and yourself too", mods = { healShield = true } },
 			{ id = "quickheal", name = "Quick Shield", say = "Shield recharges 15% faster", mods = { cooldownMult = 0.85 } },
 		},
 		[5] = {
@@ -481,7 +481,7 @@ local SPECIAL = {
 			{ id = "rush19", name = "Rescue Rush", say = "Freeing friends takes 10 s more off your Shield's recharge", mods = { rescueCool = 10 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[20] = {
-			{ id = "guardian20", name = "Jailbreak", say = "A Jailbreak button: once a game, within 35 studs of the cage, everyone in it is freed after 1 s", mods = { p20 = "guardian" } }, -- (5 Nov, Brent; was Guardian)
+			{ id = "guardian20", name = "Jailbreak", say = "A Jailbreak button: once a game, within 100 studs of the cage, everyone in it is freed after 1 s", mods = { p20 = "guardian" } }, -- (5 Nov, Brent; was Guardian)
 			{ id = "medicrun20", name = "Medic Run", say = "Every friend you free leaves with a Party Shield, and you and they run 20% faster for 6 s", mods = { p20 = "medicrun" } }, -- 7 Nov (Brent: was run 10% faster near a friend)
 		},
 	},
@@ -812,7 +812,7 @@ local SPECIAL = {
 			{ id = "wall19", name = "Fog Wall", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[20] = {
-			{ id = "storm20", name = "Storm Cloud", say = "Tap where to throw your fog: lightning stops the host 3 s, friends near you get 25% stamina and run 10% faster for 5 s", mods = { p20 = "storm" } },
+			{ id = "storm20", name = "Storm Cloud", say = "A Storm Cloud button beside Fog (they share a recharge): tap where to throw it - lightning stops the host 3 s, friends near you get 25% stamina and run 10% faster for 5 s", mods = { p20 = "storm" } },
 			{ id = "bank20", name = "Fog Bank", say = "Two fogs before Fog recharges", mods = { p20 = "bank" } },
 		},
 	},
