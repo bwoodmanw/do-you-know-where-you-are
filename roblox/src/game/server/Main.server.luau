@@ -4490,8 +4490,10 @@ do
 					if d ~= here and (math.abs(d.mx - here.mx) + math.abs(d.my - here.my)) >= 2 then
 						local to = House.at(d.mx, d.my, 0) + Vector3.new(0, hrp.Position.Y - House.at(0, 0, 0).Y, 0)
 						local way = Vector3.new(to.X - hrp.Position.X, 0, to.Z - hrp.Position.Z)
-						if way.Magnitude > 4 and not workspace:Raycast(hrp.Position, way, params) then
-							local score = way.Magnitude - (look.Magnitude > 0.1 and way.Unit:Dot(look.Unit) > 0.3 and 1000 or 0)
+						-- (5 Nov, Brent) only a doorway she faces (within about 70 degrees)
+						local ahead = look.Magnitude > 0.1 and way.Magnitude > 0.1 and way.Unit:Dot(look.Unit) > 0.35
+						if ahead and way.Magnitude > 4 and not workspace:Raycast(hrp.Position, way, params) then
+							local score = way.Magnitude
 							if not bestScore or score < bestScore then
 								best, bestScore = to, score
 							end
@@ -4527,6 +4529,8 @@ do
 					rope.Parent = world.root
 					game:GetService("Debris"):AddItem(rope, 2)
 					say("info", "\u{1F33F} Vine Swing! " .. plr.DisplayName .. (#names > 0 and (" swung off with " .. table.concat(names, " and ")) or " swung off") .. " to the next doorway!")
+				else
+					say("info", "\u{1F33F} No doorway ahead to swing to - face one (with a clear way there) next time.", nil, plr)
 				end
 			end
 			return true

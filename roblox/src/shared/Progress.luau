@@ -573,7 +573,7 @@ local SPECIAL = {
 			{ id = "thicket19", name = "Bark Skin", say = "Start every game with a Party Shield", mods = { shield = true } },
 		},
 		[20] = {
-			{ id = "forest20", name = "Vine Swing", say = "Vines in a doorway also swing you, and friends near you, fast to the next doorway ahead", mods = { p20 = "forest" } }, -- (5 Nov, Brent; was Forest Friend)
+			{ id = "forest20", name = "Vine Swing", say = "Vines in a doorway also swing you, and friends near you, fast to the doorway you face", mods = { p20 = "forest" } }, -- (5 Nov, Brent; was Forest Friend)
 			{ id = "overgrowth20", name = "Overgrowth", say = "Vines grow across two doorways at once", mods = { p20 = "overgrowth" } },
 		},
 	},
