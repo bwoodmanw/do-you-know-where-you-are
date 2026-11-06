@@ -959,11 +959,25 @@ do
 	end)
 end
 
+local quickCard -- 5 Nov: Quick Play's loading card (made below)
 local function paintParty(p)
 	current = p
 	inParty = p ~= nil
 	if not p then
 		partyHidden = false
+	end
+	-- 5 Nov (Brent): Quick Play goes straight to the floor - while it saves
+	-- and teleports, a loading card instead of the party's options (character
+	-- and difficulty are picked when you arrive)
+	if quickCard then
+		quickCard.show(p and p.quick and p or nil)
+	end
+	if p and p.quick then
+		partyBox.Visible = false
+		menu.Visible = false
+		rightBar.Visible = false
+		joinBox.Visible = false
+		return
 	end
 	partyBox.Visible = p ~= nil and not partyHidden
 	menu.Visible = p == nil or partyHidden
@@ -3274,4 +3288,38 @@ do
 		watch(Players.LocalPlayer.Character)
 	end
 	Players.LocalPlayer.CharacterAdded:Connect(watch)
+end
+
+-- 5 Nov (Brent): Quick Play's loading qcard
+do
+	local qcard = frame(gui, { Size = UDim2.fromOffset(420, 190), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Visible = false, ZIndex = 20 })
+	corner(qcard, 18)
+	local title = label(qcard, { Size = UDim2.new(1, -40, 0, 44), Position = UDim2.fromOffset(20, 16), Text = "\u{26A1} Quick Play", TextColor3 = PUMP, ZIndex = 21 })
+	local where = label(qcard, { Size = UDim2.new(1, -40, 0, 34), Position = UDim2.fromOffset(20, 62), Text = "", ZIndex = 21 })
+	label(qcard, { Size = UDim2.new(1, -40, 0, 22), Position = UDim2.fromOffset(20, 98), Text = "Pick your character and difficulty when you get there.", TextColor3 = Color3.fromRGB(185, 168, 207), ZIndex = 21 })
+	button(qcard, "Cancel", { Size = UDim2.fromOffset(140, 38), AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 134), ZIndex = 21 }, function()
+		remotes.LeaveParty:FireServer()
+	end)
+	local dots = 0
+	quickCard = {
+		show = function(p)
+			qcard.Visible = p ~= nil
+			if p then
+				local i = Progress.mapIndex(p.chosen or "partyhouse")
+				where.Text = "Off to " .. (i and Progress.MAPS[i].name or "the Party House") .. "..."
+			end
+		end,
+	}
+	task.spawn(function()
+		while true do
+			task.wait(0.5)
+			if qcard.Visible then
+				dots = dots % 3 + 1
+				title.Text = "\u{26A1} Quick Play" .. string.rep(".", dots)
+			end
+		end
+	end)
+	if current then
+		quickCard.show(current.quick and current or nil)
+	end
 end

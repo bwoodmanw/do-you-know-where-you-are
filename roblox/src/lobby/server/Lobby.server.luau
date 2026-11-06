@@ -521,6 +521,7 @@ local function snapshot(party)
 		chosen = chosenMap(party),
 		voteEnds = party.voteEnds,
 		tower = party.tower == true,
+		quick = party.quick == true,
 		unlocked = Progress.openMaps((Profile.get(party.leader) or { unlocked = { partyhouse = true } }).unlocked, Seasons.active() and Seasons.active().id),
 	}
 end
@@ -982,6 +983,7 @@ QuickPlay.OnServerEvent:Connect(function(plr)
 		difficulty = "normal",
 		spook = "spooky", -- 10 Oct: Spooky by default (Brent)
 		votes = { [tostring(plr.UserId)] = pick },
+		quick = true, -- 5 Nov (Brent): a loading card, not the party's options
 	}
 	nextId += 1
 	parties[party.id] = party
