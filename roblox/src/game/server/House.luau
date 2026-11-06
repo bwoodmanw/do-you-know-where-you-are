@@ -1077,6 +1077,15 @@ function House.build(map)
 				end
 			elseif c == "#" or c == "C" then
 				local mirror = map.theme == "carnival" and string.find(roomNameAt(map, x, y), "Mirror", 1, true) ~= nil
+				-- 5 Nov (Brent): a bonus store room carved into a mirror room keeps
+				-- plain walls (its 3 x 3 inside is round ix, iy: its walls are 2 out)
+				if mirror then
+					for _, o in ipairs(map.objects or {}) do
+						if o.bonus and o.ix and math.abs(x - o.ix) <= 2 and math.abs(y - o.iy) <= 2 then
+							mirror = false
+						end
+					end
+				end
 				-- the Aquarium's Shark Tunnel: walls of water behind glass
 				local tunnel = map.theme == "aquarium" and string.find(roomNameAt(map, x, y), "Tunnel", 1, true) ~= nil
 				part(root, {
