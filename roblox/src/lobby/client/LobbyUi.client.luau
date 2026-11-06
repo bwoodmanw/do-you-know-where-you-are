@@ -2625,7 +2625,8 @@ local function paintSkins()
 		local buyHere = not owned and price and Seasons.openWindow(ps.id)
 		local status = wearing == skin.id and "\u{2705} Wearing" or owned and "Tap to wear" or buyHere and "" or price and (price .. " " .. ps.many) or "Buy"
 		local image = skin.icon or (skin.pass and skinIcons[skin.pass])
-		local t = tile(image, skin.name, status, wearing == skin.id, function()
+		local t
+		t = tile(image, skin.name, status, wearing == skin.id, function()
 			if owned then
 				remotes.EquipSkin:FireServer(selected, skin.id)
 			elseif buyHere then
@@ -2636,6 +2637,41 @@ local function paintSkins()
 				MarketplaceService:PromptGamePassPurchase(player, skin.pass)
 			end
 		end)
+		-- 6 Nov (Brent: the Christmas skins showed no picture - theirs come with
+		-- their Game Passes): the skin's 3D model, head and shoulders, till then
+		if (image or 0) == 0 then
+			local previews = ReplicatedStorage:FindFirstChild("Previews")
+			local src = previews and previews:FindFirstChild(skin.model)
+			local picLabel = t:FindFirstChildOfClass("ImageLabel")
+			if src and picLabel then
+				local vp = Instance.new("ViewportFrame")
+				vp.Size = picLabel.Size
+				vp.Position = picLabel.Position
+				vp.BackgroundColor3 = Color3.fromRGB(88, 58, 120)
+				vp.BackgroundTransparency = 0
+				vp.Ambient = Color3.fromRGB(170, 160, 180)
+				vp.LightColor = Color3.fromRGB(255, 245, 230)
+				vp.LightDirection = Vector3.new(-0.4, -0.6, -1)
+				vp.ZIndex = picLabel.ZIndex
+				vp.Parent = t
+				corner(vp, 68)
+				local m = src:Clone()
+				for _, d in ipairs(m:GetDescendants()) do
+					if d:IsA("Humanoid") then
+						d.AutomaticScalingEnabled = false
+					end
+				end
+				m:PivotTo(CFrame.Angles(0, math.pi, 0))
+				m.Parent = vp
+				local bcf, bsize = m:GetBoundingBox()
+				local focus = Vector3.new(bcf.Position.X, bcf.Position.Y + bsize.Y * 0.3, bcf.Position.Z)
+				local cam = Instance.new("Camera")
+				cam.FieldOfView = 30
+				cam.CFrame = CFrame.lookAt(focus + Vector3.new(0, 0, bsize.Z / 2 + bsize.Y * 0.24 / math.tan(math.rad(15))), focus)
+				cam.Parent = vp
+				vp.CurrentCamera = cam
+			end
+		end
 		if buyHere then
 			local hasPass = (skin.pass or 0) > 0
 			local sb = button(t, tostring(price), { Size = UDim2.fromOffset(hasPass and 70 or 146, 26), Position = UDim2.fromOffset(5, 182), BackgroundColor3 = PUMP, TextColor3 = NIGHT, ZIndex = 24 }, function()
@@ -2860,8 +2896,10 @@ repaintChars = function()
 			if not lvTag then
 				lvTag = Instance.new("TextLabel")
 				lvTag.Name = "Lv"
-				lvTag.Size = UDim2.fromOffset(46, 20)
-				lvTag.Position = UDim2.fromOffset(4, 4)
+				-- 6 Nov (Brent): small, in the bottom-left corner (it hid the face at the top)
+				lvTag.Size = UDim2.fromOffset(34, 15)
+				lvTag.AnchorPoint = Vector2.new(0, 1)
+				lvTag.Position = UDim2.new(0, 2, 1, -2)
 				lvTag.BackgroundColor3 = Color3.fromRGB(40, 22, 62)
 				lvTag.BackgroundTransparency = 0.15
 				lvTag.TextColor3 = Color3.fromRGB(255, 210, 63)

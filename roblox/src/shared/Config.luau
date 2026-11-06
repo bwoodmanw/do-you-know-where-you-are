@@ -704,11 +704,11 @@ Config.ARRIVE_WAIT = 45 -- the first game waits this long at most for the rest o
 -- a party in the Lobby closes if it has not started after this many seconds
 Config.PARTY_HOLD = 180
 -- which floor a Studio Play test builds (there is no Lobby teleport in Studio)
-Config.STUDIO_MAP = "clausmanor" -- 5 Nov: trying Claus Manor (_2, _3 for its upper floors; candycanelane = Candy Cane Lane); partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3), aquarium(_2, _3)
+Config.STUDIO_MAP = "gummy" -- 6 Nov: the Robot test in the Gummy Bounce House (was clausmanor: Claus Manor (_2, _3 for its upper floors; candycanelane = Candy Cane Lane); partyhouse(_2, _3, _b = the secret Basement), gummy(_2, _3), hospital(_2, _3), school(_2, _3), carnival(_2, _3), aquarium(_2, _3)
 -- the Lobby's house model turns this many degrees to face the lawn (try 0 if it shows its back)
 Config.LOBBY_HOUSE_TURN = 180
 -- testing in Studio: force a host ("pumpkin", "gummy", "robot", "caretaker", "clownbear", "anglerfish"); nil = random
-Config.STUDIO_HOST = nil
+Config.STUDIO_HOST = "robot" -- 6 Nov: the Robot test (set back to nil when done)
 -- 4 Nov (Brent: the Robot got stuck in rooms): a host drawn shorter than the
 -- usual 12 studs (rooms are 14 tall), by its model name
 Config.HOST_HEIGHTS = { HostRobot = 11 }
@@ -784,6 +784,9 @@ Config.CHARACTER_ASSETS = {
 	EchoJingle = 97602416714516, -- 5 Nov: Jingle Bell Echo (checked on Roblox: Model 'EchoJingle', Brent's upload)
 	BrambleEvergreen = 122988096493064, -- 5 Nov: Evergreen Bramble (checked on Roblox: Model 'BrambleEvergreen', Brent's upload)
 	NutmegSnowflake = 123422279329361, -- 5 Nov: Snowflake Nutmeg (checked on Roblox: Model 'NutmegSnowflake', Brent's upload)
+	HarmonyCarol = 96481822832671, -- 6 Nov: Carol Singer Harmony (checked on Roblox: Model 'HarmonyCarol', Brent's upload)
+	HollySugarplum = 138314408857182, -- 6 Nov: Sugar Plum Holly (checked on Roblox: Model 'HollySugarPlum', Brent's upload)
+	CloneNutcracker = 73672189618458, -- 6 Nov: Nutcracker Clone (checked on Roblox: Model 'CloneNutcracker', Brent's upload)
 	CloudSnow = 101394414280783, -- 5 Nov: First Snow Cloud (checked on Roblox: Model 'CloudSnow', Brent's upload)
 	HostYeti = 138655463727624, -- 5 Nov: Frostfoot the Yeti, Frostpeak Lodge's host (New Year's; checked on Roblox: Model 'FrostFoot', Brent's upload)
 	CloneGala = 137284317587849, -- 5 Nov: Harvest Gala Clone (checked on Roblox: Model, Brent's upload)
@@ -1096,9 +1099,9 @@ Config.SKINS = {
 	{ id = "bramble_evergreen", skill = "bramble", name = "Evergreen Bramble", model = "BrambleEvergreen", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "nutmeg_snowflake", skill = "nutmeg", name = "Snowflake Nutmeg", model = "NutmegSnowflake", cane = 150, pass = 0 }, -- 5 Nov: model saved
 	{ id = "cloud_snow", skill = "cloud", name = "First Snow Cloud", model = "CloudSnow", cane = 150, pass = 0 }, -- 5 Nov: model saved
-	{ id = "holly_sugarplum", skill = "holly", name = "Sugar Plum Holly", model = "HollySugarplum", cane = 150, pass = 0, hidden = true },
-	{ id = "clone_nutcracker", skill = "clone", name = "Nutcracker Clone", model = "CloneNutcracker", cane = 150, pass = 0, hidden = true },
-	{ id = "harmony_carol", skill = "harmony", name = "Carol Singer Harmony", model = "HarmonyCarol", cane = 150, pass = 0, hidden = true },
+	{ id = "holly_sugarplum", skill = "holly", name = "Sugar Plum Holly", model = "HollySugarplum", cane = 150, pass = 0 }, -- 6 Nov: model saved
+	{ id = "clone_nutcracker", skill = "clone", name = "Nutcracker Clone", model = "CloneNutcracker", cane = 150, pass = 0 }, -- 6 Nov: model saved
+	{ id = "harmony_carol", skill = "harmony", name = "Carol Singer Harmony", model = "HarmonyCarol", cane = 150, pass = 0 }, -- 6 Nov: model saved
 }
 -- every Thanksgiving skin's Game Pass price (Managed pricing off - PASSES.md);
 -- the Skins window's Robux button shows it (the Shop reads each pass's price)

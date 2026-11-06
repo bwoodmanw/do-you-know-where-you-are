@@ -892,6 +892,25 @@ function Scene.christmas(folder)
 			end)
 		end)
 	end
+	-- 6 Nov (Brent): a smaller lit tree by the house, on the left (an open spot)
+	do
+		local at = Vector3.new(-52, 0, -76)
+		part(folder, { Name = "SmallTreeTrunk", Size = Vector3.new(1.4, 2, 1.4), Position = at + Vector3.new(0, 1, 0), Color = Color3.fromRGB(110, 70, 40), Material = Enum.Material.Wood })
+		for k = 0, 3 do
+			local dia = 8 - k * 1.8
+			part(folder, { Name = "SmallTreeTier", Shape = Enum.PartType.Cylinder, Size = Vector3.new(2, dia, dia), CFrame = CFrame.new(at + Vector3.new(0, 2.8 + k * 1.8, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = Color3.fromRGB(30, 115, 55), Material = Enum.Material.SmoothPlastic })
+			for j = 0, 5 do
+				local a = j / 6 * math.pi * 2 + k * 0.5
+				deco({ Name = "SmallTreeLight", Shape = Enum.PartType.Ball, Size = Vector3.new(0.55, 0.55, 0.55), Position = at + Vector3.new(math.cos(a) * dia / 2, 2.2 + k * 1.8, math.sin(a) * dia / 2), Color = ({ RED, GOLD, WHITE, Color3.fromRGB(70, 140, 255) })[(j + k) % 4 + 1], Material = Enum.Material.Neon })
+			end
+		end
+		local topStar = deco({ Name = "SmallTreeStar", Shape = Enum.PartType.Ball, Size = Vector3.new(1.3, 1.3, 1.3), Position = at + Vector3.new(0, 9.9, 0), Color = GOLD, Material = Enum.Material.Neon })
+		local glow = Instance.new("PointLight")
+		glow.Color, glow.Range, glow.Brightness = Color3.fromRGB(255, 210, 130), 18, 1.2
+		glow.Parent = topStar
+		present(at + Vector3.new(-3, 0, 3), Vector3.new(1.4, 1.1, 1.4), RED, GOLD)
+		present(at + Vector3.new(3.2, 0, 2.6), Vector3.new(1.2, 1.3, 1.2), GREEN, WHITE)
+	end
 	-- a big gold bell on a wooden post by the tree: ring it
 	do
 		local postAt = treeAt + Vector3.new(-11, 0, -3)

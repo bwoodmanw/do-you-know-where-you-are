@@ -11,7 +11,12 @@
 	sleigh at Christmas, a broomstick at Halloween. E rides it: the ride is
 	welded under you, you sit, run faster and jump higher (the sleigh and the
 	broom float down slowly). Get off with the button, by jumping off at the
-	stand, or by leaving the Lobby. One ride each.
+	stand, or by leaving the Lobby. One ride each. 6 Nov: a second stand with
+	a snowmobile at Christmas.
+
+	6 Nov (Brent): the course is longer - the old perch is the first landing,
+	a swing crosses to a second, three more pads climb to the Sky Perch.
+	Fireworks when you reach the star, and it's gone for you until tomorrow.
 ]]
 
 local Players = game:GetService("Players")
@@ -32,10 +37,25 @@ Play.PADS = {
 	{ -79, 12, 17, 82 },
 	{ -73, 1, 25, 82 },
 	{ -63, -6, 33, 82 },
-	{ -72, -14, 41, 70 },
+	{ -72, -14, 41, 70 }, -- up to the first landing (the old Sky Perch, 49 up)
+	-- 6 Nov (Brent: harder, with a swing): past the swing, from the second landing
+	{ -79, -56, 50, 82, true }, -- on the second landing (`true`: no post, it sits on the deck)
+	{ -69, -63, 57, 82 },
+	{ -77, -72, 65, 70 },
 }
-Play.PERCH = Vector3.new(-82, 49, -20) -- the Sky Perch's floor (top middle)
+Play.PERCH = Vector3.new(-64, 73, -80) -- the Sky Perch's floor (top middle; 6 Nov: higher, past the swing)
+-- the landings on the way, each a railed deck on a post (rails: x, z offsets and size)
+Play.LANDINGS = {
+	{ at = Vector3.new(-82, 49, -20), rails = { { -6, 0, 0.4, 12 }, { 0, 6, 12, 0.4 } } },
+	{ at = Vector3.new(-80, 49, -54.4), rails = { { -6, 0, 0.4, 12 } } },
+}
+-- the swing between them: a platform hanging `radius` below the pivot,
+-- swinging `swing` degrees each way every `period` seconds - level with each
+-- landing's edge at the end of its swing (the swing moves on each player's
+-- screen: LobbyPlay.client)
+Play.SWING = { pivot = Vector3.new(-80, 57.8, -37.2), radius = 12, swing = 40, period = 5 }
 Play.STAND = Vector3.new(-58, 0, 52) -- the ride stand (clear of the Christmas snow pile at -55, 45)
+Play.STAND2 = Vector3.new(-72, 0, 56) -- 6 Nov: the second stand (the snowmobile at Christmas)
 Play.PERCH_POINTS = 10
 Play.RIDE_SPEED = 1.6 -- (the client multiplies its walk and run by this)
 
@@ -71,7 +91,10 @@ local function buildCourse(folder, season)
 	for i, d in ipairs(Play.PADS) do
 		local x, z, top, power = d[1], d[2], d[3], d[4]
 		local col = look.pads[(i - 1) % #look.pads + 1]
-		if top > 1.2 then
+		if d[5] then
+			-- on a landing's deck: just the rim
+			part(folder, { Name = "PadRim", Shape = Enum.PartType.Cylinder, Size = Vector3.new(1, 9, 9), CFrame = CFrame.new(x, top - 0.5, z) * CYL, Color = Color3.fromRGB(60, 60, 70), Material = Enum.Material.Metal })
+		elseif top > 1.2 then
 			-- the post up to the pad
 			local h = top - 0.6
 			part(folder, { Name = "PadPost", Shape = Enum.PartType.Cylinder, Size = Vector3.new(h, 2.4, 2.4), CFrame = CFrame.new(x, h / 2, z) * CYL, Color = look.post, Material = look.postMat })
@@ -117,11 +140,42 @@ local function buildCourse(folder, season)
 			t.Parent = gui
 		end
 	end
+	-- 6 Nov (Brent): the landings on the way - the old perch is the first
+	for _, L in ipairs(Play.LANDINGS) do
+		local A = L.at
+		part(folder, { Name = "LandingFloor", Size = Vector3.new(12, 1, 12), Position = A - Vector3.new(0, 0.5, 0), Color = Color3.fromRGB(90, 60, 110), Material = Enum.Material.WoodPlanks })
+		part(folder, { Name = "LandingPost", Shape = Enum.PartType.Cylinder, Size = Vector3.new(A.Y - 1, 2.6, 2.6), CFrame = CFrame.new(A.X, (A.Y - 1) / 2, A.Z) * CYL, Color = look.post, Material = look.postMat })
+		for _, s in ipairs(L.rails) do
+			part(folder, { Name = "LandingRail", Size = Vector3.new(s[3], 2.4, s[4]), Position = A + Vector3.new(s[1], 1.2, s[2]), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood, Transparency = 0.2 })
+		end
+	end
+	-- the swing from the first landing to the second: two tall posts, a bar,
+	-- a platform on two ropes (at rest here; it swings on each player's screen)
+	do
+		local S = Play.SWING
+		local PV = S.pivot
+		local m = Instance.new("Model")
+		m.Name = "SkySwing"
+		m.Parent = folder
+		for _, dx in ipairs({ -4.5, 4.5 }) do
+			part(m, { Name = "SwingPost", Size = Vector3.new(1, PV.Y + 1, 1), Position = Vector3.new(PV.X + dx, (PV.Y + 1) / 2, PV.Z), Color = look.post, Material = look.postMat })
+		end
+		part(m, { Name = "SwingBar", Size = Vector3.new(10, 1, 1), Position = PV + Vector3.new(0, 0.5, 0), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood })
+		local seat = part(m, { Name = "SwingSeat", Size = Vector3.new(6, 0.8, 6), Position = PV - Vector3.new(0, S.radius, 0), Color = look.pads[1], Material = Enum.Material.WoodPlanks })
+		seat:SetAttribute("Pivot", PV)
+		seat:SetAttribute("Radius", S.radius)
+		seat:SetAttribute("Swing", S.swing)
+		seat:SetAttribute("Period", S.period)
+		for _, dx in ipairs({ -2.7, 2.7 }) do
+			local rope = part(m, { Name = "SwingRope", Size = Vector3.new(0.25, 0.25, S.radius), CFrame = CFrame.lookAt(PV + Vector3.new(dx, -S.radius / 2, 0), PV + Vector3.new(dx, -S.radius, 0)), Color = Color3.fromRGB(200, 170, 120), Material = Enum.Material.Fabric, CanCollide = false, CanQuery = false, CanTouch = false })
+			rope:SetAttribute("Side", dx)
+		end
+	end
 	-- the Sky Perch: a railed platform with a star
 	local P = Play.PERCH
 	part(folder, { Name = "PerchFloor", Size = Vector3.new(12, 1, 12), Position = P - Vector3.new(0, 0.5, 0), Color = Color3.fromRGB(90, 60, 110), Material = Enum.Material.WoodPlanks })
 	part(folder, { Name = "PerchPost", Shape = Enum.PartType.Cylinder, Size = Vector3.new(P.Y - 1, 2.6, 2.6), CFrame = CFrame.new(P.X, (P.Y - 1) / 2, P.Z) * CYL, Color = look.post, Material = look.postMat })
-	for _, s in ipairs({ { 0, 6, 12, 0.4 }, { 0, -6, 12, 0.4 }, { 6, 0, 0.4, 12 } }) do
+	for _, s in ipairs({ { 6, 0, 0.4, 12 }, { 0, -6, 12, 0.4 } }) do
 		part(folder, { Name = "PerchRail", Size = Vector3.new(s[3], 2.4, s[4]), Position = P + Vector3.new(s[1], 1.2, s[2]), Color = Color3.fromRGB(60, 40, 70), Material = Enum.Material.Wood, Transparency = 0.2 })
 	end
 	local star = part(folder, { Name = "PerchStar", Shape = Enum.PartType.Ball, Size = Vector3.new(2.4, 2.4, 2.4), Position = P + Vector3.new(0, 2.2, 0), Color = Color3.fromRGB(255, 220, 80), Material = Enum.Material.Neon, CanCollide = false })
@@ -156,7 +210,8 @@ local function rideModel(kind)
 			bit({ Name = "RunnerLeg", Size = Vector3.new(0.25, 1.1, 0.25), CFrame = CFrame.new(sx, 0.7, 1.4), Color = GOLD, Material = Enum.Material.Metal })
 			bit({ Name = "RunnerLeg", Size = Vector3.new(0.25, 1.1, 0.25), CFrame = CFrame.new(sx, 0.7, -1.4), Color = GOLD, Material = Enum.Material.Metal })
 		end
-		bit({ Name = "PresentSack", Shape = Enum.PartType.Ball, Size = Vector3.new(2, 2.2, 1.6), CFrame = CFrame.new(0, 3.4, 1.6), Color = Color3.fromRGB(150, 100, 60), Material = Enum.Material.Fabric })
+		-- (6 Nov, Brent: it sat over the rider's head) smaller, in the back corner
+		bit({ Name = "PresentSack", Shape = Enum.PartType.Ball, Size = Vector3.new(1.3, 1.3, 1.1), CFrame = CFrame.new(1.05, 3.1, 1.45), Color = Color3.fromRGB(150, 100, 60), Material = Enum.Material.Fabric })
 		local bell = bit({ Name = "SleighBell", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.6, 0.6), CFrame = CFrame.new(1.8, 2.6, -2), Color = GOLD, Material = Enum.Material.Metal })
 		bell.Name = "SleighBell"
 		seat = 2.7
@@ -179,6 +234,25 @@ local function rideModel(kind)
 			bit({ Name = "TurkeyLeg", Size = Vector3.new(0.3, 1.2, 0.3), CFrame = CFrame.new(lx, 0.6, 0), Color = Color3.fromRGB(240, 180, 40), Material = Enum.Material.SmoothPlastic })
 		end
 		seat = 3.4
+	elseif kind == "snowmobile" then
+		-- 6 Nov (Brent): a snowmobile - skis in front, a track behind, you sit on the seat
+		local BLUE, DARK, SILVER = Color3.fromRGB(35, 110, 210), Color3.fromRGB(30, 30, 36), Color3.fromRGB(200, 205, 215)
+		body = bit({ Name = "RideBody", Size = Vector3.new(2.6, 1.2, 4.4), CFrame = CFrame.new(0, 1.2, 0.3), Color = BLUE, Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "SnowStripe", Size = Vector3.new(2.65, 0.25, 4.45), CFrame = CFrame.new(0, 1.45, 0.3), Color = Color3.fromRGB(250, 250, 255), Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "SnowHood", Size = Vector3.new(2.6, 0.8, 1.8), CFrame = CFrame.new(0, 1.7, -1.4) * CFrame.Angles(math.rad(-16), 0, 0), Color = BLUE, Material = Enum.Material.SmoothPlastic })
+		bit({ Name = "Windshield", Size = Vector3.new(2.2, 1, 0.15), CFrame = CFrame.new(0, 2.4, -0.9) * CFrame.Angles(math.rad(25), 0, 0), Color = Color3.fromRGB(170, 220, 255), Material = Enum.Material.Glass, Transparency = 0.4 })
+		bit({ Name = "SnowSeat", Size = Vector3.new(1.6, 0.5, 2.2), CFrame = CFrame.new(0, 2.05, 1.2), Color = DARK, Material = Enum.Material.Fabric })
+		bit({ Name = "Handlebar", Size = Vector3.new(2.2, 0.2, 0.2), CFrame = CFrame.new(0, 2.5, -0.35), Color = DARK, Material = Enum.Material.Metal })
+		bit({ Name = "HandleStem", Size = Vector3.new(0.25, 0.6, 0.25), CFrame = CFrame.new(0, 2.15, -0.45), Color = DARK, Material = Enum.Material.Metal })
+		bit({ Name = "SnowTrack", Size = Vector3.new(2, 0.8, 2.6), CFrame = CFrame.new(0, 0.4, 1.4), Color = DARK, Material = Enum.Material.SmoothPlastic })
+		for _, sx in ipairs({ -1.15, 1.15 }) do
+			bit({ Name = "Ski", Size = Vector3.new(0.45, 0.15, 3.4), CFrame = CFrame.new(sx, 0.08, -1.7), Color = SILVER, Material = Enum.Material.Metal })
+			bit({ Name = "SkiTip", Shape = Enum.PartType.Ball, Size = Vector3.new(0.45, 0.6, 0.6), CFrame = CFrame.new(sx, 0.3, -3.35), Color = SILVER, Material = Enum.Material.Metal })
+			bit({ Name = "SkiStrut", Size = Vector3.new(0.2, 0.8, 0.2), CFrame = CFrame.new(sx, 0.5, -1.4), Color = DARK, Material = Enum.Material.Metal })
+		end
+		bit({ Name = "HeadLamp", Shape = Enum.PartType.Ball, Size = Vector3.new(0.6, 0.45, 0.3), CFrame = CFrame.new(0, 1.55, -2.25), Color = Color3.fromRGB(255, 245, 200), Material = Enum.Material.Neon })
+		bit({ Name = "TailLamp", Size = Vector3.new(1.2, 0.25, 0.1), CFrame = CFrame.new(0, 1.3, 2.52), Color = Color3.fromRGB(230, 40, 50), Material = Enum.Material.Neon })
+		seat = 2.3
 	else
 		-- a broomstick: you sit astride the handle
 		body = bit({ Name = "RideBody", Shape = Enum.PartType.Cylinder, Size = Vector3.new(6, 0.35, 0.35), CFrame = CFrame.new(0, 1.6, 0) * CFrame.Angles(0, math.rad(90), 0), Color = Color3.fromRGB(110, 70, 40), Material = Enum.Material.Wood })
@@ -198,9 +272,15 @@ local function rideModel(kind)
 end
 
 local RIDES = {
-	thanksgiving = { kind = "turkey", name = "the Turkey", verb = "Ride the turkey" },
-	christmas = { kind = "sleigh", name = "Santa's Sleigh", verb = "Ride the sleigh" },
-	halloween = { kind = "broom", name = "the Broomstick", verb = "Ride the broom" },
+	turkey = { name = "the Turkey", verb = "Ride the turkey", sign = "\u{1F983} the Turkey - hop on!" },
+	sleigh = { name = "Santa's Sleigh", verb = "Ride the sleigh", sign = "\u{1F6F7} Santa's Sleigh - press to ride!" },
+	broom = { name = "the Broomstick", verb = "Ride the broom", sign = "\u{1F9F9} the Broomstick - hop on!" },
+	snowmobile = { name = "the Snowmobile", verb = "Ride the snowmobile", sign = "\u{2744} the Snowmobile - zoom!" }, -- 6 Nov
+}
+-- each stand's ride in each season (6 Nov: a second stand, the snowmobile at Christmas)
+local STANDS = {
+	{ at = Play.STAND, rides = { thanksgiving = "turkey", christmas = "sleigh", halloween = "broom" } },
+	{ at = Play.STAND2, rides = { christmas = "snowmobile" } },
 }
 
 function Play.start(remote, notice)
@@ -211,6 +291,28 @@ function Play.start(remote, notice)
 	course.Name = "BounceCourse"
 	course.Parent = folder
 	local RideOff = remote("RideOff") -- client -> server: get off
+	local PerchWin = remote("PerchWin") -- server -> client: fireworks at the Sky Perch (6 Nov)
+	local function today()
+		return math.floor(os.time() / 86400)
+	end
+	-- the star is gone for whoever has had it today (their screen hides it)
+	local function markPerch(plr)
+		local data = Profile.get(plr)
+		if data then
+			plr:SetAttribute("PerchDone", data.perchDay == today() or nil)
+		end
+	end
+	Players.PlayerAdded:Connect(function(plr)
+		task.spawn(function()
+			for _ = 1, 30 do
+				if Profile.get(plr) or not plr.Parent then
+					break
+				end
+				task.wait(1)
+			end
+			markPerch(plr)
+		end)
+	end)
 
 	-- ---------- the course, dressed for the season (checked every minute) ----------
 	local shownSeason = false
@@ -231,85 +333,27 @@ function Play.start(remote, notice)
 			end
 			touchedAt[plr] = os.clock()
 			local data = Profile.get(plr)
-			if not data then
-				return
+			if not data or plr:GetAttribute("PerchDone") then
+				return -- (their star is hidden till tomorrow)
 			end
-			local today = math.floor(os.time() / 86400)
-			if data.perchDay == today then
+			if data.perchDay == today() then
+				plr:SetAttribute("PerchDone", true)
 				notice(plr, "\u{2B50} You reached the Sky Perch! Come back tomorrow for more points.")
 				return
 			end
-			data.perchDay = today
+			data.perchDay = today()
 			data.points += Play.PERCH_POINTS
 			data.stats.earned = (data.stats.earned or 0) + Play.PERCH_POINTS
 			Profile.publish(plr)
-			notice(plr, "\u{2B50} You reached the Sky Perch! +" .. Play.PERCH_POINTS .. " points (once a day)")
+			-- 6 Nov (Brent): fireworks for them, and the star is gone for them till tomorrow
+			PerchWin:FireClient(plr, star.Position)
+			plr:SetAttribute("PerchDone", true)
+			notice(plr, "\u{1F386} You made it to the Sky Perch! +" .. Play.PERCH_POINTS .. " points - the star comes back tomorrow.")
 		end)
 	end
 
-	-- ---------- the ride stand ----------
-	local stand = Instance.new("Model")
-	stand.Name = "RideStand"
-	stand.Parent = folder
-	local A = Play.STAND
-	part(stand, { Name = "StandBase", Size = Vector3.new(9, 0.6, 9), Position = A + Vector3.new(0, 0.3, 0), Color = Color3.fromRGB(90, 60, 110), Material = Enum.Material.WoodPlanks })
-	local signPart = part(stand, { Name = "StandSign", Size = Vector3.new(6, 1.8, 0.4), Position = A + Vector3.new(0, 6.2, 4.6), Color = Color3.fromRGB(40, 22, 62), Material = Enum.Material.SmoothPlastic })
-	for _, sx in ipairs({ -2.6, 2.6 }) do
-		part(stand, { Name = "StandPost", Size = Vector3.new(0.5, 6, 0.5), Position = A + Vector3.new(sx, 3.3, 4.6), Color = Color3.fromRGB(70, 50, 40), Material = Enum.Material.Wood })
-	end
-	local signGui = Instance.new("SurfaceGui")
-	signGui.Face = Enum.NormalId.Front
-	signGui.CanvasSize = Vector2.new(360, 108)
-	signGui.Parent = signPart
-	local signText = Instance.new("TextLabel")
-	signText.Size = UDim2.fromScale(1, 1)
-	signText.BackgroundTransparency = 1
-	signText.TextScaled = true
-	signText.Font = Enum.Font.FredokaOne
-	signText.TextColor3 = Color3.fromRGB(255, 180, 70)
-	signText.Parent = signGui
-	local shown -- the ride on show at the stand
-	local prompt = Instance.new("ProximityPrompt")
-	prompt.ActionText = "Ride"
-	prompt.HoldDuration = 0
-	prompt.MaxActivationDistance = 12
-	prompt.RequiresLineOfSight = false
-	local anchor = part(stand, { Name = "RideSpot", Size = Vector3.new(1, 1, 1), Position = A + Vector3.new(0, 2, 0), Transparency = 1, CanCollide = false, CanQuery = false })
-	prompt.Parent = anchor
-	local function showRide()
-		local s = Seasons.decor()
-		local r = s and RIDES[s]
-		if shown then
-			shown:Destroy()
-			shown = nil
-		end
-		stand.Parent = r and folder or nil
-		if not r then
-			return
-		end
-		signText.Text = "\u{1F6F7} " .. r.name .. " - press to ride!"
-		if r.kind == "turkey" then
-			signText.Text = "\u{1F983} " .. r.name .. " - hop on!"
-		elseif r.kind == "broom" then
-			signText.Text = "\u{1F9F9} " .. r.name .. " - hop on!"
-		end
-		prompt.ObjectText = r.name
-		prompt.ActionText = r.verb
-		local m = rideModel(r.kind)
-		m.Name = "RideOnShow"
-		m:ScaleTo(1.25)
-		for _, d in ipairs(m:GetDescendants()) do
-			if d:IsA("BasePart") then
-				d.Anchored = true
-			end
-		end
-		m:PivotTo(CFrame.new(A + Vector3.new(0, 0.6 + (m:GetPivot().Position.Y - (select(1, m:GetBoundingBox()).Position.Y - select(2, m:GetBoundingBox()).Y / 2)), 0)) * CFrame.Angles(0, math.rad(180), 0))
-		m.Parent = stand
-		shown = m
-	end
-
 	-- ---------- riding ----------
-	local riding = {} -- [player] = { model, hum, hip }
+	local riding = {} -- [player] = { model, hum, hip, jump }
 	local function getOff(plr)
 		local r = riding[plr]
 		if not r then
@@ -325,9 +369,8 @@ function Play.start(remote, notice)
 		end
 		plr:SetAttribute("Riding", nil)
 	end
-	local function getOn(plr)
-		local s = Seasons.decor()
-		local r = s and RIDES[s]
+	local function getOn(plr, kind)
+		local r = kind and RIDES[kind]
 		local char = plr.Character
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
@@ -337,11 +380,11 @@ function Play.start(remote, notice)
 		if riding[plr] then
 			return getOff(plr)
 		end
-		local m, seat = rideModel(r.kind)
+		local m, seat = rideModel(kind)
 		-- the ride sized to the rider: a sleigh about as long as they are tall
 		local _, csize = ModelBounds(char)
 		local tall = math.max(3, csize.Y)
-		local scale = tall / (r.kind == "turkey" and 5 or r.kind == "sleigh" and 4.4 or 4)
+		local scale = tall / (kind == "turkey" and 5 or (kind == "sleigh" or kind == "snowmobile") and 4.4 or 4)
 		m:ScaleTo(scale)
 		seat *= scale
 		m.Name = "Ride"
@@ -369,10 +412,74 @@ function Play.start(remote, notice)
 		riding[plr] = { model = m, hum = hum, hip = hip, jump = hum.JumpPower }
 		hum.UseJumpPower = true
 		hum.JumpPower = math.max(hum.JumpPower, 50) * 1.35
-		plr:SetAttribute("Riding", r.kind)
+		plr:SetAttribute("Riding", kind)
 		notice(plr, "\u{2B50} You're riding " .. r.name .. "! Run, jump - and try the bounce pads. Tap Get off to hop down.")
 	end
-	prompt.Triggered:Connect(getOn)
+
+	-- ---------- the ride stands ----------
+	local stands = {}
+	for _, def in ipairs(STANDS) do
+		local stand = Instance.new("Model")
+		stand.Name = "RideStand"
+		stand.Parent = folder
+		local A = def.at
+		part(stand, { Name = "StandBase", Size = Vector3.new(9, 0.6, 9), Position = A + Vector3.new(0, 0.3, 0), Color = Color3.fromRGB(90, 60, 110), Material = Enum.Material.WoodPlanks })
+		local signPart = part(stand, { Name = "StandSign", Size = Vector3.new(6, 1.8, 0.4), Position = A + Vector3.new(0, 6.2, 4.6), Color = Color3.fromRGB(40, 22, 62), Material = Enum.Material.SmoothPlastic })
+		for _, sx in ipairs({ -2.6, 2.6 }) do
+			part(stand, { Name = "StandPost", Size = Vector3.new(0.5, 6, 0.5), Position = A + Vector3.new(sx, 3.3, 4.6), Color = Color3.fromRGB(70, 50, 40), Material = Enum.Material.Wood })
+		end
+		local signGui = Instance.new("SurfaceGui")
+		signGui.Face = Enum.NormalId.Front
+		signGui.CanvasSize = Vector2.new(360, 108)
+		signGui.Parent = signPart
+		local signText = Instance.new("TextLabel")
+		signText.Size = UDim2.fromScale(1, 1)
+		signText.BackgroundTransparency = 1
+		signText.TextScaled = true
+		signText.Font = Enum.Font.FredokaOne
+		signText.TextColor3 = Color3.fromRGB(255, 180, 70)
+		signText.Parent = signGui
+		local prompt = Instance.new("ProximityPrompt")
+		prompt.ActionText = "Ride"
+		prompt.HoldDuration = 0
+		prompt.MaxActivationDistance = 12
+		prompt.RequiresLineOfSight = false
+		local anchor = part(stand, { Name = "RideSpot", Size = Vector3.new(1, 1, 1), Position = A + Vector3.new(0, 2, 0), Transparency = 1, CanCollide = false, CanQuery = false })
+		prompt.Parent = anchor
+		local st = { kind = nil, shown = nil }
+		function st.show()
+			local s = Seasons.decor()
+			local kind = s and def.rides[s]
+			local r = kind and RIDES[kind]
+			st.kind = r and kind or nil
+			if st.shown then
+				st.shown:Destroy()
+				st.shown = nil
+			end
+			stand.Parent = r and folder or nil
+			if not r then
+				return
+			end
+			signText.Text = r.sign
+			prompt.ObjectText = r.name
+			prompt.ActionText = r.verb
+			local m = rideModel(kind)
+			m.Name = "RideOnShow"
+			m:ScaleTo(1.25)
+			for _, d in ipairs(m:GetDescendants()) do
+				if d:IsA("BasePart") then
+					d.Anchored = true
+				end
+			end
+			m:PivotTo(CFrame.new(A + Vector3.new(0, 0.6 + (m:GetPivot().Position.Y - (select(1, m:GetBoundingBox()).Position.Y - select(2, m:GetBoundingBox()).Y / 2)), 0)) * CFrame.Angles(0, math.rad(180), 0))
+			m.Parent = stand
+			st.shown = m
+		end
+		prompt.Triggered:Connect(function(plr)
+			getOn(plr, st.kind)
+		end)
+		table.insert(stands, st)
+	end
 	RideOff.OnServerEvent:Connect(getOff)
 	Players.PlayerRemoving:Connect(function(plr)
 		riding[plr] = nil
@@ -397,11 +504,16 @@ function Play.start(remote, notice)
 			local want = Seasons.decor() or false
 			if want ~= (Play.shownRide or false) then
 				Play.shownRide = want
-				showRide()
+				for _, st in ipairs(stands) do
+					st.show()
+				end
 				-- out of season: everyone gets off
 				for plr in pairs(riding) do
 					getOff(plr)
 				end
+			end
+			for _, plr in ipairs(Players:GetPlayers()) do
+				markPerch(plr) -- (a new day: the star is back)
 			end
 			task.wait(60)
 		end

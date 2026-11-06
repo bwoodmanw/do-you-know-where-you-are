@@ -462,6 +462,11 @@ local function paintCode()
 	if roundup then
 		codeLabel.Text = "\u{1F983} Turkeys: " .. string.gsub(roundup, "/", " / ")
 	end
+	-- 6 Nov (Brent): Claus Manor - the presents opened instead of the code
+	local presents = RoundState:GetAttribute("Presents")
+	if presents then
+		codeLabel.Text = "\u{1F381} Presents: " .. string.gsub(presents, "/", " / ")
+	end
 	if clueBtn then
 		local cost = RoundState:GetAttribute("ClueCost") or 10
 		if player:GetAttribute("Skill") == "brainy" then
@@ -557,7 +562,23 @@ do
 		end)
 		local n = ok and data and data.stats and data.stats[s.item] or 0
 		local Many = string.upper(string.sub(s.many, 1, 1)) .. string.sub(s.many, 2)
-		seasonCount.Text = s.icon .. " " .. Many .. ": " .. n
+		-- 6 Nov (Brent): the item's own picture (there is no candy cane emoji)
+		local pic = Config.SEASON_IMAGES and Config.SEASON_IMAGES[s.item] or 0
+		local img = seasonCount:FindFirstChild("ItemPic")
+		if pic > 0 and not img then
+			img = Instance.new("ImageLabel")
+			img.Name = "ItemPic"
+			img.BackgroundTransparency = 1
+			img.Size = UDim2.fromOffset(18, 18)
+			img.ScaleType = Enum.ScaleType.Fit
+			img.ZIndex = seasonCount.ZIndex
+			img.Parent = seasonCount
+		end
+		if img then
+			img.Image = pic > 0 and ("rbxassetid://" .. pic) or ""
+			img.Visible = pic > 0
+		end
+		seasonCount.Text = (pic > 0 and "      " or (s.icon .. " ")) .. Many .. " found: " .. n
 		seasonCount.Visible = true
 	end
 	player:GetAttributeChangedSignal("ProfileJson"):Connect(paintSeason)
