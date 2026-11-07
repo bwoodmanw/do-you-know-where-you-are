@@ -428,10 +428,12 @@ do
 		local cam = workspace.CurrentCamera
 		local vy = cam and cam.ViewportSize.Y or 900
 		-- 16 Oct (Brent): a little smaller everywhere (at most 88%)
-		-- 7 Nov (Brent: on a tablet they took a lot of room): at most 62% - a
-		-- tile then is the right bar's size (148 x 0.62 = 92 wide, 104 x 0.88 = 92)
-		fitL.Scale = math.clamp((vy - 70 - 16) / (590 + 66), 0.4, 0.62) -- the points chip sits above the tiles
 		fitR.Scale = math.clamp((vy - 196 - 60) / 520, 0.45, 0.88)
+		-- 7 Nov (Brent: they took a lot of room, and on a short screen ran
+		-- under the Feast Meter): a left tile is the right bar's tile size
+		-- (148 x L = 104 x R), and the column ends above the bottom-left
+		-- meter (about 100 tall; the tiles start 136 down)
+		fitL.Scale = math.clamp(math.min(fitR.Scale * 104 / 148, (vy - 136 - 100) / 590), 0.3, 0.62)
 	end
 	refit()
 	if workspace.CurrentCamera then
