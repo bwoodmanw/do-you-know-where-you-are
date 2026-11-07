@@ -393,7 +393,7 @@ Config.HOLLY = { radius = 4, stormRadius = 8, patch = 20, slipStun = 2, trapStun
 -- `liningSpeed` for `liningTime` s. Float Up: `spots` high shelves a floor with
 -- a cloud mark - only Cloud reaches them (hold `floatHold` s): a free clue, or
 -- `spotPoints` points for everyone
-Config.CLOUD = { edge = 1, fog = 8, radius = 5, throw = 60, stormStop = 3, stormStamina = 25, stormSpeed = 1.1, stormSpeedTime = 5, stormNear = 16,
+Config.CLOUD = { edge = 1, fog = 8, radius = 5, throw = 60, stormStop = 3, stormStamina = 25, stormSpeed = 1.1, stormSpeedTime = 5, stormNear = 16, stormCool = 50, -- stormCool: 7 Nov (Brent) Storm Cloud's own recharge
 	liningSpeed = 1.05, liningTime = 3, spots = 2, floatHold = 1.5, spotPoints = 10 }
 -- Nutmeg, the Christmas reindeer (3 Nov, NEW_CHARACTERS.md): Good Nose shows
 -- drawers and boxes holding a key or a Confetti Cannon within `nose` studs (her

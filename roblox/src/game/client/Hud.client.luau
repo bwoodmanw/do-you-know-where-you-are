@@ -1472,7 +1472,7 @@ local function useSkill()
 end
 skillBtn.Activated:Connect(useSkill)
 -- 7 Nov (Brent): Cloud's Storm Cloud (level 20) - its own button beside Fog,
--- thrown where you tap (G on a keyboard); it shares Fog's recharge
+-- thrown where you tap (G on a keyboard); its own recharge (StormUntil)
 do
 	local stormBtn = button(acts, "", { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(90, 95, 130), Visible = false })
 	local G = KEYS and " (G)" or ""
@@ -1486,9 +1486,9 @@ do
 			toast("Put away - nothing thrown.", 2)
 			return
 		end
-		local left = (player:GetAttribute("CoolUntil") or 0) - workspace:GetServerTimeNow()
+		local left = (player:GetAttribute("StormUntil") or 0) - workspace:GetServerTimeNow()
 		if left > 0 then
-			toast("Your fog is recharging... " .. math.ceil(left) .. " seconds", 2)
+			toast("Storm Cloud is recharging... " .. math.ceil(left) .. " seconds", 2)
 			return
 		end
 		if Gamepad.on() then
@@ -1514,7 +1514,7 @@ do
 		local on = player:GetAttribute("Skill") == "cloud" and player:GetAttribute("Power20") == "storm"
 		stormBtn.Visible = on
 		if on then
-			local left = math.ceil((player:GetAttribute("CoolUntil") or 0) - workspace:GetServerTimeNow())
+			local left = math.ceil((player:GetAttribute("StormUntil") or 0) - workspace:GetServerTimeNow())
 			stormBtn.Text = "\u{26C8} Storm Cloud" .. (left > 0 and ("  " .. left .. "s") or G)
 			stormBtn.AutoButtonColor = left <= 0
 			stormBtn.BackgroundColor3 = left > 0 and Color3.fromRGB(60, 70, 80) or Color3.fromRGB(90, 95, 130)

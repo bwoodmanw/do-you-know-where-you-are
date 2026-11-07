@@ -4930,8 +4930,10 @@ do
 			if p10 == "chorus" then
 				local now2 = workspace:GetServerTimeNow()
 				for _, p in ipairs(Players:GetPlayers()) do
-					if p ~= plr and (p:GetAttribute("CoolUntil") or 0) > now2 then
-						p:SetAttribute("CoolUntil", p:GetAttribute("CoolUntil") - Hm.chorus)
+					for _, k in ipairs({ "CoolUntil", "StormUntil" }) do -- (7 Nov: Storm Cloud's own recharge)
+						if p ~= plr and (p:GetAttribute(k) or 0) > now2 then
+							p:SetAttribute(k, p:GetAttribute(k) - Hm.chorus)
+						end
 					end
 				end
 			end
@@ -5576,7 +5578,7 @@ task.spawn(function()
 						end
 					end
 					if near then
-						for _, k in ipairs({ "CoolUntil", "CopyCool1", "CopyCool2" }) do
+						for _, k in ipairs({ "CoolUntil", "CopyCool1", "CopyCool2", "StormUntil" }) do
 							local u = p:GetAttribute(k) or 0
 							if u > now then
 								p:SetAttribute(k, math.max(now, u - E.help))
@@ -5658,10 +5660,16 @@ local function runSkill(plr, skill, pos, slot)
 		return
 	end
 	local coolKey = slot and ("CopyCool" .. slot) or "CoolUntil"
+	-- 7 Nov (Brent: two skills, two recharges): Cloud's Storm Cloud (thrown at
+	-- a spot) has its own, StormUntil - Fog keeps CoolUntil
+	if skill == "cloud" and not slot and plr:GetAttribute("Power20") == "storm" and typeof(pos) == "Vector3" then
+		coolKey = "StormUntil"
+		cd = Config.CLOUD.stormCool
+	end
 	local coolMult = slot and (plr:GetAttribute("Power10") == "quickcopy" and 0.85 or 1) or (plr:GetAttribute("CooldownMult") or 1)
 	local now = workspace:GetServerTimeNow()
 	if (plr:GetAttribute(coolKey) or 0) > now then
-		return say("info", (slot and "That copied skill is" or "Your skill is") .. " recharging... " .. math.ceil(plr:GetAttribute(coolKey) - now) .. " seconds", nil, plr)
+		return say("info", (slot and "That copied skill is" or coolKey == "StormUntil" and "Storm Cloud is" or "Your skill is") .. " recharging... " .. math.ceil(plr:GetAttribute(coolKey) - now) .. " seconds", nil, plr)
 	end
 	local hrp = hrpOf(plr)
 	if not hrp then
@@ -5869,7 +5877,7 @@ ElfyPower.OnServerEvent:Connect(function(plr)
 		for _, p in ipairs(Players:GetPlayers()) do
 			if not p:GetAttribute("Escaped") then
 				local was = false
-				for _, k in ipairs({ "CoolUntil", "CopyCool1", "CopyCool2" }) do
+				for _, k in ipairs({ "CoolUntil", "CopyCool1", "CopyCool2", "StormUntil" }) do
 					if (p:GetAttribute(k) or 0) > now then
 						p:SetAttribute(k, now)
 						was = true

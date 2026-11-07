@@ -812,7 +812,7 @@ local SPECIAL = {
 			{ id = "wall19", name = "Fog Wall", say = "Your fog is 2 studs wider", mods = { fogSize = 2 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[20] = {
-			{ id = "storm20", name = "Storm Cloud", say = "A Storm Cloud button beside Fog (they share a recharge): tap where to throw it - lightning stops the host 3 s, friends near you get 25% stamina and run 10% faster for 5 s", mods = { p20 = "storm" } },
+			{ id = "storm20", name = "Storm Cloud", say = "A Storm Cloud button beside Fog, with its own 50 s recharge: tap where to throw it - lightning stops the host 3 s, friends near you get 25% stamina and run 10% faster for 5 s", mods = { p20 = "storm" } },
 			{ id = "bank20", name = "Fog Bank", say = "Two fogs before Fog recharges", mods = { p20 = "bank" } },
 		},
 	},
