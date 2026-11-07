@@ -148,8 +148,9 @@ Config.ANIM = {
 	-- bigger, she bounced in it - back to Patch's cartoony run)
 	plainRun = { shadow = true, brainy = true },
 	run = 507767714, -- Roblox's plain R15 run
-	-- the hosts
-	host = { pumpkin = "zombie", gummy = "werewolf", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie", crumbles = "zombie", mrclaus = "zombie", mrsclaus = "elder" },
+	-- the hosts (7 Nov, Brent: the werewolf run's wide lunge stretched Gummy
+	-- Bear Man's toon legs into spikes at the knees - he walks like a zombie)
+	host = { pumpkin = "zombie", gummy = "zombie", robot = "robot", caretaker = "elder", clownbear = "toy", anglerfish = "levitation", gobbler = "zombie", crumbles = "zombie", mrclaus = "zombie", mrsclaus = "elder" },
 	-- hosts that play no body animation and glide (16 Oct: the Robot toon is a
 	-- lamp on wheels - a walk animation tied it in knots)
 	hostStill = { robot = true },

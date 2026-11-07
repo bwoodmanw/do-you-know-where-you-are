@@ -345,7 +345,8 @@ PIECES.HoneyDrips = { size = Vector3.new(8, 10, 1), build = function(f, b)
 	add(f, b, { size = Vector3.new(2.6, 0.12, 2), at = Vector3.new(0.5, 0.07, 1.2), color = C(240, 160, 30), mat = GLASS, alpha = 0.2 })
 end }
 
-PIECES.LightSwitch = { size = Vector3.new(1, 2, 1), build = function(f, b)
+-- (7 Nov, Brent: one stood in the middle of a room) only ever on a wall
+PIECES.LightSwitch = { size = Vector3.new(1, 2, 1), wallOnly = true, build = function(f, b)
 	local plate = add(f, b, { size = Vector3.new(0.8, 1.2, 0.12), at = Vector3.new(0, 4.6, T / 2 - 0.08), color = C(240, 236, 225) })
 	add(f, b, { size = Vector3.new(0.25, 0.45, 0.12), at = Vector3.new(0, 4.6, T / 2 - 0.16), color = C(255, 210, 63), mat = NEON })
 	local pp = Instance.new("ProximityPrompt")
@@ -2067,7 +2068,7 @@ function Rooms.dress(world)
 		end
 		-- every room has a light switch (Party House and Hospital: a dark room hides you)
 		if theme ~= "gummy" then
-			table.insert(pieces, "LightSwitch")
+			table.insert(pieces, 1, "LightSwitch") -- (7 Nov) first, so a wall tile is still free
 		end
 		-- the Jelly Vault's vault door, in the outer wall
 		if string.find(string.lower(f.name), "vault door hall", 1, true) then
@@ -2094,7 +2095,7 @@ function Rooms.dress(world)
 			local piece = PIECES[name]
 			if piece then
 				local best, bestDir
-				for pass = 1, 2 do
+				for pass = 1, piece.wallOnly and 1 or 2 do
 					for y = f.y0, f.y1 do
 						for x = f.x0, f.x1 do
 							if not best and cell(map, x, y) == "." and not busy[x .. "," .. y] then

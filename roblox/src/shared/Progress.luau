@@ -268,7 +268,7 @@ local SPECIAL = {
 		},
 		[9] = {
 			{ id = "phantom", name = "Phantom", say = "Sneak lasts 2 s longer", mods = { sneakTime = 2 } },
-			{ id = "swift9", name = "Swift Shadow", say = "Your Sneak's run lasts 1 s longer", mods = { buttonBurst = 1 } }, -- 7 Nov (Brent: a repeat replaced)
+			{ id = "swift9", name = "Swift Shadow", say = "You run 10% faster the whole time you Sneak", mods = { sneakRun = 1 } }, -- 7 Nov (Brent: read like Phantom - was a 1 s run)
 		},
 		[10] = {
 			{ id = "clone10", name = "Shadow Clone", say = "Sneak also sends a dark copy of you running off - the host chases it for 4 s", mods = { p10 = "clone" } },
@@ -805,7 +805,7 @@ local SPECIAL = {
 		},
 		[17] = {
 			{ id = "mist17b", name = "Silver Mist", say = "Your fog lasts 1 s longer", mods = { fogTime = 1 } }, -- 7 Nov (Brent): was a +1 free clue
-			{ id = "gust17", name = "Gust", say = "Your fog's run lasts 1 s longer", mods = { buttonBurst = 1 } }, -- 7 Nov (Brent: a repeat replaced)
+			{ id = "gust17", name = "Gust", say = "Each fog gives friends near you a 10% run for 3 s", mods = { fogGust = 3 } }, -- 7 Nov (Brent: read like Silver Mist - was your own run 1 s longer)
 		},
 		[19] = {
 			{ id = "season19", name = "Storm Season", say = "Fog recharges 15% faster", mods = { cooldownMult = 0.85 } },
@@ -883,7 +883,8 @@ Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRang
 	mouseTime = true, bootsTime = true, poundRange = true, selfShield = true,
 	rescuePoints = true, lureTime = true, vineSlow = true, toyTime = true, helpNear = true,
 	-- 7 Nov (Brent: the repeats replaced): any character's own button, and Patch's
-	buttonStamina = true, buttonBurst = true, shieldStamina = true, freeStamina = true, rescueCool = true, freeSneak = true }
+	buttonStamina = true, buttonBurst = true, shieldStamina = true, freeStamina = true, rescueCool = true, freeSneak = true,
+	sneakRun = true, fogGust = true } -- (7 Nov) Swift Shadow, Gust
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

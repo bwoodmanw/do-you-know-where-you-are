@@ -338,6 +338,8 @@ local function applyMods(plr)
 	plr:SetAttribute("FreeStamina", m.freeStamina or 0)
 	plr:SetAttribute("RescueCool", m.rescueCool or 0)
 	plr:SetAttribute("FreeSneak", m.freeSneak or 0)
+	plr:SetAttribute("SneakRun", m.sneakRun or 0) -- (7 Nov) Swift Shadow: a 10% run all through each Sneak
+	plr:SetAttribute("FogGust", m.fogGust or 0) -- (7 Nov) Gust: s of a 10% run for friends near each fog
 	plr:SetAttribute("MouseTime", Config.MOUSE.seconds + (m.mouseTime or 0))
 	plr:SetAttribute("BootsTime", Config.ROCKET_BOOTS.seconds + (m.bootsTime or 0))
 	plr:SetAttribute("PoundRange", Config.POUND.range + (m.poundRange or 0))
@@ -3889,6 +3891,19 @@ local function lightUp(id, colour)
 	end
 end
 
+-- (7 Nov, Brent: the same clue twice) the steps whose clue nobody in the
+-- team has been given yet this game (state.cluesSaid, by the clue's text)
+local function freshSteps()
+	local said = state.cluesSaid or {}
+	local fresh = {}
+	for _, s in ipairs(clueSteps()) do
+		if not said[s.text] then
+			table.insert(fresh, s)
+		end
+	end
+	return fresh
+end
+
 -- one clue for the team (prefix: "Free clue: " or "")
 local function giveClue(prefix)
 	if state.mastermind then
@@ -3900,16 +3915,19 @@ local function giveClue(prefix)
 		end
 		return say("clue", "\u{1F9E0} Mastermind route: " .. routeText())
 	end
-	local steps = clueSteps()
+	local steps = freshSteps()
 	local first = steps[1]
 	if not first then
 		return
 	end
+	state.cluesSaid = state.cluesSaid or {}
+	state.cluesSaid[first.text] = true
 	lightUp(first.id, Color3.fromRGB(123, 227, 107))
 	local text = prefix .. first.text
 	if state.twoStep then
 		for i = 2, #steps do
 			if steps[i].id ~= first.id then
+				state.cluesSaid[steps[i].text] = true
 				lightUp(steps[i].id, Color3.fromRGB(255, 210, 63))
 				text ..= "  Then: " .. steps[i].text
 				break
@@ -4491,25 +4509,35 @@ do
 			end
 			return true
 		elseif skill == "brainy" then
-			local steps = clueSteps()
-			if not steps[1] then
+			local all = clueSteps()
+			if not all[1] then
 				say("info", "\u{1F9E0} Nothing left to work out - get to the exit!", nil, plr)
 				return false
 			end
-			lightUp(steps[1].id, Color3.fromRGB(120, 190, 255))
+			-- (7 Nov, Brent: no clue twice) a step nobody has a clue for yet
+			local steps = freshSteps()
 			Effects.icon(plr, "\u{1F4A1}", 2)
 			Effects.at(plr, "reveal")
-			local text = "\u{1F9E0} " .. plr.DisplayName .. " thinks: " .. steps[1].text
-			if p20 == "bigbrain" then
-				for i = 2, #steps do
-					if steps[i].id ~= steps[1].id then
-						lightUp(steps[i].id, Color3.fromRGB(255, 210, 63))
-						text ..= "  Then: " .. steps[i].text
-						break
+			if not steps[1] then
+				lightUp(all[1].id, Color3.fromRGB(120, 190, 255))
+				say("info", "\u{1F9E0} Your crew already has a clue for every step left - the next one is lit up!", nil, plr)
+			else
+				state.cluesSaid = state.cluesSaid or {}
+				state.cluesSaid[steps[1].text] = true
+				lightUp(steps[1].id, Color3.fromRGB(120, 190, 255))
+				local text = "\u{1F9E0} " .. plr.DisplayName .. " thinks: " .. steps[1].text
+				if p20 == "bigbrain" then
+					for i = 2, #steps do
+						if steps[i].id ~= steps[1].id then
+							state.cluesSaid[steps[i].text] = true
+							lightUp(steps[i].id, Color3.fromRGB(255, 210, 63))
+							text ..= "  Then: " .. steps[i].text
+							break
+						end
 					end
 				end
+				say("clue", text)
 			end
-			say("clue", text)
 			plr:SetAttribute("ThinkUntil", workspace:GetServerTimeNow() + (plr:GetAttribute("ThinkTime") or Config.THINK_SECONDS)) -- the lit-up step stays (15 s + ladder steps)
 			if p20 == "photo" and not once["photo" .. plr.UserId] then
 				once["photo" .. plr.UserId] = true
@@ -4692,6 +4720,22 @@ do
 			else
 				say("info", "\u{2601} " .. plr.DisplayName .. " breathed out a fog - anyone inside is hidden from the host!")
 			end
+			-- Gust (17, 7 Nov): friends near her run 10% faster for FogGust s
+			local gust = plr:GetAttribute("FogGust") or 0
+			if gust > 0 then
+				local nowG = workspace:GetServerTimeNow()
+				for _, p in ipairs(Players:GetPlayers()) do
+					local h = hrpOf(p)
+					if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude <= C.stormNear then
+						local u, m0 = p:GetAttribute("TeamBurstUntil") or 0, p:GetAttribute("TeamBurstMult") or 1
+						if not (u > nowG and m0 > Config.BUTTON_BURST) then
+							p:SetAttribute("TeamBurstMult", Config.BUTTON_BURST)
+							p:SetAttribute("TeamBurstUntil", math.max(u, nowG + gust))
+							Effects.aura(p, "speed", gust)
+						end
+					end
+				end
+			end
 			-- Fog Bank (level 20): a second fog before it recharges
 			if p20 == "bank" then
 				if not plr:GetAttribute("FogBankUsed") then
@@ -4746,20 +4790,27 @@ do
 			pad:SetAttribute("Holly", trap or nil)
 			pad:SetAttribute("Stun", (trap and H.trapStun or H.slipStun) + (plr:GetAttribute("SlipTime") or 0))
 			pad.Parent = m
+			-- 7 Nov (Brent: they looked like eggs): each mint a white disc with a
+			-- red star of stripes across it, like a real peppermint
 			local rng = Random.new()
-			for _ = 1, math.floor(r * r * 1.2) do
-				local a, d = rng:NextNumber(0, math.pi * 2), math.sqrt(rng:NextNumber()) * (r - 0.4)
+			for _ = 1, math.max(6, math.floor(r * r * 0.8)) do
+				local a, d = rng:NextNumber(0, math.pi * 2), math.sqrt(rng:NextNumber()) * (r - 0.6)
 				local at = ground + Vector3.new(math.cos(a) * d, 0.15, math.sin(a) * d)
-				for k, col in ipairs({ Color3.fromRGB(250, 250, 250), Color3.fromRGB(215, 30, 45) }) do
+				local turn = CFrame.new(at) * CFrame.Angles(0, rng:NextNumber(0, math.pi), 0)
+				local function bit(size, cf, col, shape)
 					local candy = Instance.new("Part")
 					candy.Name = "Peppermint"
-					candy.Shape = Enum.PartType.Cylinder
-					candy.Size = k == 1 and Vector3.new(0.18, 0.7, 0.7) or Vector3.new(0.2, 0.32, 0.32)
-					candy.CFrame = CFrame.new(at + Vector3.new(0, (k - 1) * 0.02, 0)) * CFrame.Angles(0, 0, math.rad(90))
+					candy.Shape = shape or Enum.PartType.Block
+					candy.Size = size
+					candy.CFrame = cf
 					candy.Anchored, candy.CanCollide, candy.CanQuery, candy.CanTouch, candy.CastShadow = true, false, false, false, false
 					candy.Color = col
 					candy.Material = Enum.Material.SmoothPlastic
 					candy.Parent = m
+				end
+				bit(Vector3.new(0.2, 1, 1), turn * CFrame.Angles(0, 0, math.rad(90)), Color3.fromRGB(252, 252, 252), Enum.PartType.Cylinder)
+				for s = 0, 2 do
+					bit(Vector3.new(0.92, 0.04, 0.13), turn * CFrame.new(0, 0.1, 0) * CFrame.Angles(0, s * math.pi / 3, 0), Color3.fromRGB(215, 25, 40))
 				end
 			end
 			if trap then
@@ -5700,6 +5751,17 @@ local function runSkill(plr, skill, pos, slot)
 	end
 	if skill == "shadow" then
 		plr:SetAttribute("SneakUntil", now + (plr:GetAttribute("SneakTime") or 6))
+		-- Swift Shadow (7 Nov): a 10% run the whole sneak (plus any Shadow
+		-- Step / Slip Away seconds after it); never cuts a faster run short
+		if (plr:GetAttribute("SneakRun") or 0) > 0 then
+			local len = (plr:GetAttribute("SneakTime") or 6) + (plr:GetAttribute("ButtonBurst") or 0)
+			local u, m0 = plr:GetAttribute("TeamBurstUntil") or 0, plr:GetAttribute("TeamBurstMult") or 1
+			if not (u > now and m0 > Config.BUTTON_BURST) then
+				plr:SetAttribute("TeamBurstMult", Config.BUTTON_BURST)
+				plr:SetAttribute("TeamBurstUntil", math.max(u, now + len))
+				Effects.aura(plr, "speed", len)
+			end
+		end
 		Effects.at(plr, "sneak")
 		Effects.aura(plr, "sneak", plr:GetAttribute("SneakTime") or 6)
 		say("sneak", plr.DisplayName .. " is sneaking - the host cannot see or grab them for " .. (plr:GetAttribute("SneakTime") or 6) .. " seconds!", { userId = plr.UserId })
@@ -5984,6 +6046,10 @@ end)
 AskClue.OnServerEvent:Connect(function(plr)
 	if state.status ~= "playing" or state.cluesLeft <= 0 then
 		return
+	end
+	-- (7 Nov) never the same clue twice: nothing new to tell costs nothing
+	if not state.mastermind and #freshSteps() == 0 then
+		return say("info", "\u{1F4DC} No new clue yet - your crew already has a clue for every step left. Check Clues this game! Ask again after the next step is done.", nil, plr)
 	end
 	-- a bonus clue (a present, the Extra Clue boost, a ladder upgrade) is free
 	if (state.freeClues or 0) > 0 then
