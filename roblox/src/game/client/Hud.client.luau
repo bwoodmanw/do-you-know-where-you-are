@@ -1290,7 +1290,7 @@ end
 local keypad = frame(gui, { Size = UDim2.fromOffset(250, 300), Position = UDim2.new(1, -270, 0.5, -150), Visible = false, ZIndex = 30 })
 corner(keypad, 16)
 label(keypad, { Size = UDim2.new(1, 0, 0, 34), Position = UDim2.fromOffset(0, 8), Text = "Door keypad", ZIndex = 31 })
-local entered = label(keypad, { Size = UDim2.new(1, 0, 0, 30), Position = UDim2.fromOffset(0, 44), Text = "_ _ _", RichText = true, ZIndex = 31 })
+local entered = label(keypad, { Size = UDim2.new(1, 0, 0, 30), Position = UDim2.fromOffset(0, 44), Text = string.rep("_ ", RoundState:GetAttribute("CodeLen") or 3), RichText = true, ZIndex = 31 })
 local pressed = {}
 for i, c in ipairs(Config.COLORS) do
 	button(keypad, Config.COLOR_SHAPE[c] or "", {
@@ -1301,7 +1301,7 @@ for i, c in ipairs(Config.COLORS) do
 	}, function()
 		table.insert(pressed, c)
 		local shown = {}
-		for j = 1, 3 do
+		for j = 1, RoundState:GetAttribute("CodeLen") or 3 do -- (7 Nov, Brent: showed 3 with a 4-color code)
 			shown[j] = pressed[j] and (Config.COLOR_SHAPE[pressed[j]] or ('<font color="' .. hex(Config.COLOR3[pressed[j]]) .. '">\u{25CF}</font>')) or "_"
 		end
 		entered.Text = table.concat(shown, " ")
