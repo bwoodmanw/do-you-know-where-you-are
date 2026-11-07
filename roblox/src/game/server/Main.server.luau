@@ -352,6 +352,8 @@ local function applyMods(plr)
 	if skill ~= "clone" then
 		plr:SetAttribute("Copy1", nil)
 		plr:SetAttribute("Copy2", nil)
+		plr:SetAttribute("CopyPower1", nil) -- (7 Nov) the friend's second button
+		plr:SetAttribute("CopyPower2", nil)
 	end
 	-- Muscle's Iron Lungs: stamina refills twice as fast
 	plr:SetAttribute("RegenMult", m.p10 == "ironlungs" and Config.IRON_LUNGS_REGEN or 1)
@@ -4495,8 +4497,11 @@ do
 		end)
 	end
 
-	function round.skillV2(plr, skill, hrp, pos)
+	function round.skillV2(plr, skill, hrp, pos, stormCopy)
 		local p10, p20 = plr:GetAttribute("Power10"), plr:GetAttribute("Power20")
+		if stormCopy then
+			p20 = "storm" -- (7 Nov) Clone's copy of a friend's Storm Cloud
+		end
 		state.oncePerGame = state.oncePerGame or {}
 		local once = state.oncePerGame
 		if skill == "tinker" then
@@ -4884,6 +4889,12 @@ do
 				local k = picks[slot]
 				plr:SetAttribute("Copy" .. slot, k and k.s or nil)
 				plr:SetAttribute("CopyCool" .. slot, 0)
+				-- 7 Nov (Brent: copying Cloud gave Fog but not her Storm Cloud):
+				-- the friend's level-20 second button comes along
+				local p20k = k and k.p and k.p:GetAttribute("Power20")
+				local BUTTON20 = { cloud = { storm = true }, nutmeg = { bells = true }, holly = { hedge = true }, harmony = { encore = true },
+					elfy = { parade = true, rush = true }, patch = { guardian = true } }
+				plr:SetAttribute("CopyPower" .. slot, (k and BUTTON20[k.s] and BUTTON20[k.s][p20k]) and p20k or nil)
 				if k then
 					local nm = k.s
 					for _, sk in ipairs(Config.SKILLS) do
@@ -5642,11 +5653,28 @@ task.spawn(function()
 	end
 end)
 
+-- 7 Nov (Brent): a level-20 second button is the character's own - or Clone's,
+-- copied from a friend who has it (CopyPower1 / 2). Its once-a-game use
+-- (BellsUsed, HedgeUsed...) is Clone's own too
+local function hasPower(plr, skill, power)
+	if plr:GetAttribute("Skill") == skill and plr:GetAttribute("Power20") == power then
+		return true
+	end
+	if plr:GetAttribute("Skill") == "clone" then
+		for s = 1, 2 do
+			if plr:GetAttribute("Copy" .. s) == skill and plr:GetAttribute("CopyPower" .. s) == power then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 -- Nutmeg's Jingle Bells (level 20; 4 Nov, Brent: her choice when, not her first
 -- dash): its own button, once a game - the host freezes for Config.NUTMEG.bells
 -- seconds wherever he is. Not used up while the host isn't out yet
 RingBells.OnServerEvent:Connect(function(plr)
-	if plr:GetAttribute("Skill") ~= "nutmeg" or plr:GetAttribute("Power20") ~= "bells" or plr:GetAttribute("BellsUsed")
+	if not hasPower(plr, "nutmeg", "bells") or plr:GetAttribute("BellsUsed")
 		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return
 	end
@@ -5670,7 +5698,7 @@ end)
 -- Holly's Holly Hedge (level 20; 4 Nov): its own button, once a game, at the
 -- nearest doorway (not used up when there's no doorway close by)
 GrowHedge.OnServerEvent:Connect(function(plr)
-	if plr:GetAttribute("Skill") ~= "holly" or plr:GetAttribute("Power20") ~= "hedge" or plr:GetAttribute("HedgeUsed")
+	if not hasPower(plr, "holly", "hedge") or plr:GetAttribute("HedgeUsed")
 		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return
 	end
@@ -5705,7 +5733,7 @@ end
 -- a skill used by its own button - or (4 Nov) one of Clone's copies of a
 -- friend's (slot 1 / 2), which runs just like the friend's own, at its basic
 -- strength (Full Copy: the friend's), with its own recharge CopyCool1 / 2
-local function runSkill(plr, skill, pos, slot)
+local function runSkill(plr, skill, pos, slot, stormCopy)
 	local cd = Config.COOLDOWN[skill]
 	if not cd or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return
@@ -5713,21 +5741,21 @@ local function runSkill(plr, skill, pos, slot)
 	local coolKey = slot and ("CopyCool" .. slot) or "CoolUntil"
 	-- 7 Nov (Brent: two skills, two recharges): Cloud's Storm Cloud (thrown at
 	-- a spot) has its own, StormUntil - Fog keeps CoolUntil
-	if skill == "cloud" and not slot and plr:GetAttribute("Power20") == "storm" and typeof(pos) == "Vector3" then
+	if skill == "cloud" and typeof(pos) == "Vector3" and ((not slot and plr:GetAttribute("Power20") == "storm") or stormCopy) then
 		coolKey = "StormUntil"
 		cd = Config.CLOUD.stormCool
 	end
 	local coolMult = slot and (plr:GetAttribute("Power10") == "quickcopy" and 0.85 or 1) or (plr:GetAttribute("CooldownMult") or 1)
 	local now = workspace:GetServerTimeNow()
 	if (plr:GetAttribute(coolKey) or 0) > now then
-		return say("info", (slot and "That copied skill is" or coolKey == "StormUntil" and "Storm Cloud is" or "Your skill is") .. " recharging... " .. math.ceil(plr:GetAttribute(coolKey) - now) .. " seconds", nil, plr)
+		return say("info", (coolKey == "StormUntil" and "Storm Cloud is" or slot and "That copied skill is" or "Your skill is") .. " recharging... " .. math.ceil(plr:GetAttribute(coolKey) - now) .. " seconds", nil, plr)
 	end
 	local hrp = hrpOf(plr)
 	if not hrp then
 		return
 	end
 	-- skills version 2: Tinker's Toolkit, Brainy's Think!, Bramble's Vines
-	local v2 = round.skillV2(plr, skill, hrp, pos)
+	local v2 = round.skillV2(plr, skill, hrp, pos, stormCopy)
 	if v2 ~= nil then
 		if v2 == "free" then
 			quest(plr, "skill") -- worked, and the button is ready again at once (Cloud's Fog Bank)
@@ -5916,8 +5944,8 @@ end
 -- Elfy's level-20 buttons (5 Nov), once a game: Toy Parade (three toys at
 -- once) or Workshop Rush (every friend's skill button ready again at once)
 ElfyPower.OnServerEvent:Connect(function(plr)
-	local p20 = plr:GetAttribute("Power20")
-	if plr:GetAttribute("Skill") ~= "elfy" or (p20 ~= "parade" and p20 ~= "rush") or plr:GetAttribute("ToyPowerUsed")
+	local p20 = hasPower(plr, "elfy", "parade") and "parade" or hasPower(plr, "elfy", "rush") and "rush" or nil
+	if not p20 or plr:GetAttribute("ToyPowerUsed")
 		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return
 	end
@@ -5961,7 +5989,7 @@ end)
 -- friend when she reached the cage): its own button, once a game - everyone
 -- in the cage is freed, wherever Patch is. Not used up with nobody caged
 Jailbreak.OnServerEvent:Connect(function(plr)
-	if plr:GetAttribute("Skill") ~= "patch" or plr:GetAttribute("Power20") ~= "guardian" or plr:GetAttribute("JailbreakUsed")
+	if not hasPower(plr, "patch", "guardian") or plr:GetAttribute("JailbreakUsed")
 		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return
 	end
@@ -6007,7 +6035,7 @@ Jailbreak.OnServerEvent:Connect(function(plr)
 end)
 
 SingEncore.OnServerEvent:Connect(function(plr)
-	if plr:GetAttribute("Skill") ~= "harmony" or plr:GetAttribute("Power20") ~= "encore" or plr:GetAttribute("EncoreUsed")
+	if not hasPower(plr, "harmony", "encore") or plr:GetAttribute("EncoreUsed")
 		or state.status ~= "playing" or plr:GetAttribute("Caged") or plr:GetAttribute("Escaped") then
 		return
 	end
@@ -6034,7 +6062,15 @@ UseSkill.OnServerEvent:Connect(function(plr, pos)
 end)
 -- Clone's copied skill buttons (4 Nov): slot 1 or 2 (two with Copy Two)
 UseCopy.OnServerEvent:Connect(function(plr, slot, pos)
-	if plr:GetAttribute("Skill") ~= "clone" or (slot ~= 1 and slot ~= 2) then
+	if plr:GetAttribute("Skill") ~= "clone" or (slot ~= 1 and slot ~= 2 and slot ~= 3 and slot ~= 4) then
+		return
+	end
+	-- (7 Nov) 3 / 4: the Storm Cloud that came with copy 1 / 2
+	if slot >= 3 then
+		local s = slot - 2
+		if plr:GetAttribute("Copy" .. s) == "cloud" and plr:GetAttribute("CopyPower" .. s) == "storm" and typeof(pos) == "Vector3" then
+			runSkill(plr, "cloud", pos, s, true)
+		end
 		return
 	end
 	local copied = plr:GetAttribute("Copy" .. slot)

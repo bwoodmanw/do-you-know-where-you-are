@@ -1472,10 +1472,10 @@ local function useSkill()
 end
 skillBtn.Activated:Connect(useSkill)
 -- 7 Nov (Brent): Cloud's Storm Cloud (level 20) - its own button beside Fog,
--- thrown where you tap (G on a keyboard); its own recharge (StormUntil)
+-- thrown where you tap (B on a keyboard - G is Emote); its own recharge (StormUntil)
 do
 	local stormBtn = button(acts, "", { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(90, 95, 130), Visible = false })
-	local G = KEYS and " (G)" or ""
+	local G = KEYS and " (B)" or ""
 	local function throwStorm()
 		if player:GetAttribute("Skill") ~= "cloud" or player:GetAttribute("Power20") ~= "storm" or player:GetAttribute("Caged") or player:GetAttribute("Escaped") then
 			return
@@ -1506,7 +1506,7 @@ do
 	end
 	stormBtn.Activated:Connect(throwStorm)
 	UserInputService.InputBegan:Connect(function(input, used)
-		if not used and input.KeyCode == Enum.KeyCode.G then
+		if not used and input.KeyCode == Enum.KeyCode.B then
 			throwStorm()
 		end
 	end)
@@ -1578,8 +1578,81 @@ do
 			end
 		end
 	end)
+	-- 7 Nov (Brent: copying Cloud gave Fog but not Storm Cloud): the friend's
+	-- level-20 second button comes with each copy - B (copy 1) and H (copy 2)
+	local POW = {
+		storm = { text = "\u{26C8} Storm Cloud" },
+		bells = { text = "\u{1F514} Jingle Bells", used = "BellsUsed", remote = "RingBells" },
+		hedge = { text = "\u{1F33F} Holly Hedge", used = "HedgeUsed", remote = "GrowHedge" },
+		encore = { text = "\u{1F3B6} Encore", used = "EncoreUsed", remote = "SingEncore" },
+		parade = { text = "\u{1F941} Toy Parade", used = "ToyPowerUsed", remote = "ElfyPower" },
+		rush = { text = "\u{1F6E0} Workshop Rush", used = "ToyPowerUsed", remote = "ElfyPower" },
+		guardian = { text = "\u{1F513} Jailbreak", used = "JailbreakUsed", remote = "Jailbreak" },
+	}
+	local POW_KEYS = { Enum.KeyCode.B, Enum.KeyCode.H }
+	local powBtns = {}
+	local function usePower(slot)
+		local pw = player:GetAttribute("CopyPower" .. slot)
+		local def = pw and POW[pw]
+		if not def or player:GetAttribute("Skill") ~= "clone" or player:GetAttribute("Caged") or player:GetAttribute("Escaped") then
+			return
+		end
+		if pw ~= "storm" then
+			if not player:GetAttribute(def.used) then
+				remotes[def.remote]:FireServer()
+			end
+			return
+		end
+		if aiming and aimCopySlot == slot + 2 then
+			aiming = false
+			aimCopySlot = nil
+			toast("Put away - nothing thrown.", 2)
+			return
+		end
+		local left = (player:GetAttribute("StormUntil") or 0) - workspace:GetServerTimeNow()
+		if left > 0 then
+			toast("Storm Cloud is recharging... " .. math.ceil(left) .. " seconds", 2)
+			return
+		end
+		if Gamepad.on() then
+			local spot = Gamepad.aimPoint({ player.Character }, 300)
+			if spot then
+				remotes.UseCopy:FireServer(slot + 2, spot)
+			end
+		else
+			aiming = true
+			aimCopySlot = slot + 2
+			toast("Tap or click a spot to throw your copied \u{26C8} storm cloud there - or tap the button again to cancel.", 4)
+		end
+	end
+	for slot = 1, 2 do
+		powBtns[slot] = button(acts, "", { LayoutOrder = 3, BackgroundColor3 = Color3.fromRGB(90, 95, 130), Visible = false }, function()
+			usePower(slot)
+		end)
+	end
+	UserInputService.InputBegan:Connect(function(input, used)
+		if used or player:GetAttribute("Skill") ~= "clone" then
+			return
+		end
+		for slot, k in ipairs(POW_KEYS) do
+			if input.KeyCode == k then
+				usePower(slot)
+			end
+		end
+	end)
 	RunService.Heartbeat:Connect(function()
 		local clone = player:GetAttribute("Skill") == "clone"
+		for slot, b in ipairs(powBtns) do
+			local pw = clone and player:GetAttribute("CopyPower" .. slot)
+			local def = pw and POW[pw]
+			b.Visible = def ~= nil and (pw == "storm" or not player:GetAttribute(def.used))
+			if b.Visible then
+				local left = pw == "storm" and math.ceil((player:GetAttribute("StormUntil") or 0) - workspace:GetServerTimeNow()) or 0
+				b.Text = def.text .. (left > 0 and ("  " .. left .. "s") or (keyed and (" (" .. (slot == 1 and "B" or "H") .. ")") or ""))
+				b.AutoButtonColor = left <= 0
+				b.BackgroundColor3 = left > 0 and Color3.fromRGB(60, 70, 80) or Color3.fromRGB(90, 95, 130)
+			end
+		end
 		for slot, b in ipairs(btns) do
 			local id = clone and player:GetAttribute("Copy" .. slot)
 			b.Visible = id ~= nil and id ~= false
