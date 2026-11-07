@@ -1507,17 +1507,33 @@ do
 			end
 			return false
 		end
+		-- (7 Nov, Brent: everything scales) at the right bar's scale
+		local function scaled(g, s)
+			local u = g:FindFirstChild("Fit") or Instance.new("UIScale")
+			u.Name = "Fit"
+			u.Scale = s
+			u.Parent = g
+			if g:GetAttribute("X0") == nil then
+				g:SetAttribute("X0", g.Position.X.Offset)
+			end
+			return g:GetAttribute("X0") * s
+		end
 		local function lower()
+			local vy = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y or 900
+			local s = math.clamp((vy - 196 - 60) / 520, 0.45, 0.88)
 			local base = hasTool() and 70 or 12
 			for _, c in ipairs(chips) do
-				c.Position = UDim2.new(c.Position.X.Scale, c.Position.X.Offset, 1, -base)
+				c.Position = UDim2.new(c.Position.X.Scale, scaled(c, s), 1, -base)
 			end
 			for _, n in ipairs({ "OwnerBalance", "OwnerGift" }) do
 				local b = gui:FindFirstChild(n)
 				if b then
-					b.Position = UDim2.new(b.Position.X.Scale, b.Position.X.Offset, 1, -(base + 46))
+					b.Position = UDim2.new(b.Position.X.Scale, scaled(b, s), 1, -(base + 46 * s))
 				end
 			end
+		end
+		if workspace.CurrentCamera then
+			workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(lower)
 		end
 		local function watch(holder)
 			if holder then
@@ -1777,6 +1793,18 @@ end
 do
 	local panel = frame(gui, { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 12, 1, -12), Size = UDim2.fromOffset(340, 76), Visible = false, ZIndex = 5 })
 	corner(panel, 14)
+	do -- (7 Nov, Brent: everything scales) at the right bar's scale
+		local fit = Instance.new("UIScale")
+		fit.Parent = panel
+		local function refit()
+			local vy = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y or 900
+			fit.Scale = math.clamp((vy - 196 - 60) / 520, 0.45, 0.88)
+		end
+		refit()
+		if workspace.CurrentCamera then
+			workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(refit)
+		end
+	end
 	local fmTitle = label(panel, { Size = UDim2.new(1, -16, 0, 26), Position = UDim2.fromOffset(8, 4), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = PUMP, ZIndex = 6 })
 	local back = frame(panel, { Size = UDim2.new(1, -16, 0, 16), Position = UDim2.fromOffset(8, 34), BackgroundColor3 = Color3.fromRGB(18, 10, 27), BackgroundTransparency = 0, ZIndex = 6 })
 	corner(back, 8)
@@ -3178,6 +3206,40 @@ end
 
 -- ---------- music ----------
 require(ReplicatedStorage.Shared.MusicPlayer).start("lobby", gui, UDim2.new(1, -116, 0, 104), remotes:WaitForChild("SetMusic"), remotes:WaitForChild("SetSfx"))
+do
+	-- (7 Nov, Brent: everything scales) the sound and music buttons and the
+	-- song's name, at the right bar's scale, kept 20 from the right edge
+	local music, sounds, song = gui:FindFirstChild("MusicButton"), gui:FindFirstChild("SoundsButton"), gui:FindFirstChild("NowPlaying")
+	local fits = {}
+	for _, g in ipairs({ music, sounds, song }) do
+		if g then
+			local u = Instance.new("UIScale")
+			u.Parent = g
+			fits[g] = u
+		end
+	end
+	local function refit()
+		local vy = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.Y or 900
+		local s = math.clamp((vy - 196 - 60) / 520, 0.45, 0.88)
+		for _, u in pairs(fits) do
+			u.Scale = s
+		end
+		if music then
+			music.Position = UDim2.new(1, -20 - 96 * s, 0, 104)
+		end
+		if sounds then
+			sounds.Position = UDim2.new(1, -20 - 198 * s, 0, 104)
+		end
+		if song then
+			song.AnchorPoint = Vector2.new(1, 0)
+			song.Position = UDim2.new(1, -20, 0, 104 + 38 * s)
+		end
+	end
+	refit()
+	if workspace.CurrentCamera then
+		workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(refit)
+	end
+end
 
 -- ---------- the trampoline: bounce high (here, where the character's physics run) ----------
 task.spawn(function()

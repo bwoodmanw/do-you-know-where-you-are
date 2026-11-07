@@ -39,6 +39,7 @@ function MusicPlayer.start(listName, gui, position, setRemote, setSfxRemote, now
 	btn.Parent = gui
 	-- what is playing, under the button
 	local nowPlaying = Instance.new("TextLabel")
+	nowPlaying.Name = "NowPlaying"
 	nowPlaying.Size = UDim2.fromOffset(240, 18)
 	nowPlaying.Position = nowPlayingAt or (position + UDim2.fromOffset(-144, 38))
 	nowPlaying.BackgroundTransparency = 1
