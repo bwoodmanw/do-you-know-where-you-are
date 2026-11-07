@@ -428,7 +428,9 @@ do
 		local cam = workspace.CurrentCamera
 		local vy = cam and cam.ViewportSize.Y or 900
 		-- 16 Oct (Brent): a little smaller everywhere (at most 88%)
-		fitL.Scale = math.clamp((vy - 70 - 16) / (590 + 66), 0.4, 0.88) -- the points chip sits above the tiles
+		-- 7 Nov (Brent: on a tablet they took a lot of room): at most 62% - a
+		-- tile then is the right bar's size (148 x 0.62 = 92 wide, 104 x 0.88 = 92)
+		fitL.Scale = math.clamp((vy - 70 - 16) / (590 + 66), 0.4, 0.62) -- the points chip sits above the tiles
 		fitR.Scale = math.clamp((vy - 196 - 60) / 520, 0.45, 0.88)
 	end
 	refit()
@@ -1491,12 +1493,53 @@ do
 	end
 	partyBox:GetPropertyChangedSignal("Visible"):Connect(chipsShown)
 	chipsShown()
+	-- 7 Nov (Brent: move them down): the chips sit just above the toolbar
+	-- when there is one (a tool in the bag), at the bottom edge when not;
+	-- the owner's Balance and Gift stay one row above them
+	do
+		local function hasTool()
+			for _, holder in ipairs({ player:FindFirstChildOfClass("Backpack"), player.Character }) do
+				if holder and holder:FindFirstChildOfClass("Tool") then
+					return true
+				end
+			end
+			return false
+		end
+		local function lower()
+			local base = hasTool() and 70 or 12
+			for _, c in ipairs(chips) do
+				c.Position = UDim2.new(c.Position.X.Scale, c.Position.X.Offset, 1, -base)
+			end
+			for _, n in ipairs({ "OwnerBalance", "OwnerGift" }) do
+				local b = gui:FindFirstChild(n)
+				if b then
+					b.Position = UDim2.new(b.Position.X.Scale, b.Position.X.Offset, 1, -(base + 46))
+				end
+			end
+		end
+		local function watch(holder)
+			if holder then
+				holder.ChildAdded:Connect(lower)
+				holder.ChildRemoved:Connect(lower)
+			end
+		end
+		watch(player:FindFirstChildOfClass("Backpack"))
+		watch(player.Character)
+		player.CharacterAdded:Connect(function(ch)
+			watch(ch)
+			task.defer(function()
+				watch(player:FindFirstChildOfClass("Backpack"))
+				lower()
+			end)
+		end)
+		task.defer(lower)
+	end
 
 	-- the owner's gift panel: the running season's item (or the one whose
 	-- shop is still open) or points, for anyone in this Lobby
 	local gs = open[1] and open[1].season
 	if game.CreatorType == Enum.CreatorType.User and player.UserId == game.CreatorId then
-		local giftBtn = button(gui, "\u{1F381} Gift", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0.5, 5, 1, -130), Size = UDim2.fromOffset(170, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
+		local giftBtn = button(gui, "\u{1F381} Gift", { Name = "OwnerGift", AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0.5, 5, 1, -130), Size = UDim2.fromOffset(170, 38), BackgroundColor3 = Color3.fromRGB(47, 107, 58), ZIndex = 5 })
 		local panel = frame(gui, { Size = UDim2.fromOffset(660, 420), Position = UDim2.new(0.5, -330, 0.5, -210), Visible = false, ZIndex = 10 })
 		corner(panel, 18)
 		label(panel, { Size = UDim2.new(1, -20, 0, 36), Position = UDim2.fromOffset(10, 8), Text = "\u{1F381} Gifts (only you see this)", TextColor3 = PUMP, ZIndex = 11 })
