@@ -1082,6 +1082,19 @@ local function applyBoost(plr, id, seconds)
 		plr:SetAttribute("GiftBoxUntil", untilT)
 		hrp.Anchored = true
 		setVisible(plr, false)
+		-- 7 Nov (Brent: in a doorway the present kept the host from getting
+		-- through to Elfy's toy): while inside, the body is not solid - the
+		-- host walks (and plans his path) straight through
+		local solid = {}
+		for _, d in ipairs(plr.Character and plr.Character:GetDescendants() or {}) do
+			if d:IsA("BasePart") then
+				solid[d] = { d.CanCollide, d.CollisionGroup }
+				d.CanCollide = false
+				pcall(function()
+					d.CollisionGroup = "Hidden"
+				end)
+			end
+		end
 		Effects.burst(mid, "boost", "collect")
 		Effects.sound(mid, "hide")
 		local conn
@@ -1090,6 +1103,12 @@ local function applyBoost(plr, id, seconds)
 				conn:Disconnect()
 				box:Destroy()
 				plr:SetAttribute("GiftBoxUntil", nil)
+				for d, was in pairs(solid) do
+					if d.Parent then
+						d.CanCollide = was[1]
+						d.CollisionGroup = was[2]
+					end
+				end
 			end
 		end)
 		task.delay(seconds, function()
@@ -2021,12 +2040,13 @@ end
 -- through it (collision groups); Tinker picks it at once.
 do
 	local PhysicsService = game:GetService("PhysicsService")
-	for _, g in ipairs({ "Host", "LockUp" }) do
+	for _, g in ipairs({ "Host", "LockUp", "Hidden" }) do
 		pcall(function()
 			PhysicsService:RegisterCollisionGroup(g)
 		end)
 	end
 	PhysicsService:CollisionGroupSetCollidable("Host", "LockUp", false)
+	PhysicsService:CollisionGroupSetCollidable("Host", "Hidden", false) -- (7 Nov) a kid in a present
 
 	-- a plain doorway: floor with wall either side, not by a locked door, the exit or the host's door
 	local function plainDoorway(x, y)
