@@ -1774,8 +1774,9 @@ function Scene.more(onWish)
 		local function place(x)
 			local cf = pivot * CFrame.Angles(x, 0, 0)
 			plank.CFrame = cf
-			a.CFrame = cf * CFrame.new(0, 0.4, -7)
-			b.CFrame = cf * CFrame.new(0, 0.4, 7) * CFrame.Angles(0, math.pi, 0)
+			-- (7 Nov, Brent: backwards) both riders face the middle - a seat faces its -Z
+			a.CFrame = cf * CFrame.new(0, 0.4, -7) * CFrame.Angles(0, math.pi, 0)
+			b.CFrame = cf * CFrame.new(0, 0.4, 7)
 		end
 		place(0)
 		RunService.Heartbeat:Connect(function(dt)
