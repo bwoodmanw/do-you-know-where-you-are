@@ -4393,6 +4393,38 @@ do
 	-- Elfy's wind-up toy soldier (5 Nov): marches `march` studs a second along
 	-- `dir` (stopping at walls) for Config.ELFY.toy s (+band); every `every`
 	-- s each host within earshot goes after it (as after Echo's noise)
+	-- (7 Nov, Brent: caught right after) which way the toy goes: not the way
+	-- Elfy faces (the way he's running - it led the host after him) but the
+	-- open way, of 12, that points least along his run and towards the host
+	function round.toyWay(hrp)
+		local look = Vector3.new(hrp.CFrame.LookVector.X, 0, hrp.CFrame.LookVector.Z)
+		look = look.Magnitude > 0.05 and look.Unit or Vector3.new(0, 0, 1)
+		local h = nearestHost(hrp.Position)
+		local toHost = h and h.root and Vector3.new(h.root.Position.X - hrp.Position.X, 0, h.root.Position.Z - hrp.Position.Z)
+		toHost = toHost and toHost.Magnitude > 0.5 and toHost.Unit or nil
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		local skip = {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Character then
+				table.insert(skip, p.Character)
+			end
+		end
+		params.FilterDescendantsInstances = skip
+		local best, bestScore = nil, -math.huge
+		for k = 0, 11 do
+			local a = k / 12 * math.pi * 2
+			local d = Vector3.new(math.cos(a), 0, math.sin(a))
+			local hit = workspace:Raycast(hrp.Position, d * 40, params)
+			local free = hit and (hit.Position - hrp.Position).Magnitude or 40
+			local score = free - 25 * math.max(0, d:Dot(look)) - 15 * (toHost and math.max(0, d:Dot(toHost)) or 0)
+			if score > bestScore then
+				best, bestScore = d, score
+			end
+		end
+		return best or -look
+	end
+
 	function round.windUpToy(plr, hrp, dir, band, stun, dash)
 		local E = Config.ELFY
 		stun = stun or E.toyStun -- (5 Nov) a host reaching the toy is stunned
@@ -4450,18 +4482,21 @@ do
 		Effects.burst(ground + Vector3.new(0, 1, 0), "noise")
 		task.spawn(function()
 			local start, last, nextCall = os.clock(), os.clock(), 0
-			-- 7 Nov (Brent: Wrapped Up - the toy stayed right by Elfy's present):
-			-- it dashes off fast first, and the hosts are called only once it's away
+			-- 7 Nov (Brent: Wrapped Up - the toy stayed right by Elfy's present;
+			-- then: caught right after any toy): every toy dashes off fast first
+			-- (Wrapped Up further), and the hosts are called only once it's away
+			local dashFor, dashSpeed = E.dash, E.dashMarch
 			if dash then
-				nextCall = start + E.wrappedDash * 0.6
+				dashFor, dashSpeed = E.wrappedDash, E.wrappedMarch
 			end
+			nextCall = start + dashFor * 0.6
 			while m.Parent and state == myState and state.status == "playing" do
 				local now = os.clock()
 				local t = now - start
 				if t >= seconds then
 					break
 				end
-				local step = (now - last) * ((dash and t < E.wrappedDash) and E.wrappedMarch or E.march)
+				local step = (now - last) * (t < dashFor and dashSpeed or E.march)
 				last = now
 				local hit = workspace:Raycast(pos + Vector3.new(0, 1, 0), dir * (step + 1.2), params)
 				if hit then
@@ -4758,7 +4793,7 @@ do
 		elseif skill == "elfy" then
 			-- Wind-up Toy (5 Nov): a toy soldier marches off straight ahead
 			-- jingling; the hosts within earshot go after it
-			round.windUpToy(plr, hrp, hrp.CFrame.LookVector, p10 == "band", nil, p10 == "wrapped")
+			round.windUpToy(plr, hrp, round.toyWay(hrp), p10 == "band", nil, p10 == "wrapped")
 			if p10 == "wrapped" then
 				applyBoost(plr, "giftbox", Config.ELFY.wrapped)
 				say("info", "\u{1F381} " .. plr.DisplayName .. " set down a wind-up toy and hid inside a present!")

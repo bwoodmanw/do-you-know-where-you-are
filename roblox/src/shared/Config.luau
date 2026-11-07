@@ -468,7 +468,9 @@ Config.ECHO_LURE = 5
 -- `paradeStun`); Workshop Rush also gives everyone `rushStamina`% stamina
 -- (7 Nov, Brent) Wrapped Up: the toy first runs `wrappedMarch` studs a second
 -- for `wrappedDash` s (about 30 studs) so the host is led away from the present
-Config.ELFY = { wrappedDash = 1.5, wrappedMarch = 20, help = 0.15, helpNear = 20, toy = 6, march = 6, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5, toyStun = 1, paradeStun = 2, rushStamina = 25 }
+-- (7 Nov, Brent: caught right after) every toy dashes `dashMarch` studs/s for
+-- `dash` s first, then marches at `march` (was 6)
+Config.ELFY = { dash = 1.2, dashMarch = 18, wrappedDash = 1.5, wrappedMarch = 20, help = 0.15, helpNear = 20, toy = 6, march = 8, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5, toyStun = 1, paradeStun = 2, rushStamina = 25 }
 -- Echo's Sharp Ears (4 Nov): within this many studs Echo sees the host through walls
 Config.ECHO_EARS = 30
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
