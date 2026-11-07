@@ -645,7 +645,7 @@ local SPECIAL = {
 			{ id = "twin9", name = "Twin Breath", say = "Each Copycat gives you 15% more stamina", mods = { buttonStamina = 15 } }, -- 7 Nov (Brent: a repeat replaced)
 		},
 		[10] = {
-			{ id = "fullcopy10", name = "Full Copy", say = "A copied skill works at your friend's own strength, upgrades and all", mods = { p10 = "fullcopy" } },
+			{ id = "fullcopy10", name = "Full Copy", say = "A copied skill works at your friend's own strength - upgrades, level 10 and level 20 powers and all", mods = { p10 = "fullcopy" } },
 			{ id = "quickcopy10", name = "Quick Copy", say = "A copied skill recharges 15% faster than your friend's", mods = { p10 = "quickcopy" } },
 		},
 		[11] = {

@@ -354,6 +354,10 @@ local function applyMods(plr)
 		plr:SetAttribute("Copy2", nil)
 		plr:SetAttribute("CopyPower1", nil) -- (7 Nov) the friend's second button
 		plr:SetAttribute("CopyPower2", nil)
+		for s = 1, 2 do -- (7 Nov) Full Copy: the friend's level-10 / 20 picks
+			plr:SetAttribute("CopyP10_" .. s, nil)
+			plr:SetAttribute("CopyP20_" .. s, nil)
+		end
 	end
 	-- Muscle's Iron Lungs: stamina refills twice as fast
 	plr:SetAttribute("RegenMult", m.p10 == "ironlungs" and Config.IRON_LUNGS_REGEN or 1)
@@ -4895,6 +4899,11 @@ do
 				local BUTTON20 = { cloud = { storm = true }, nutmeg = { bells = true }, holly = { hedge = true }, harmony = { encore = true },
 					elfy = { parade = true, rush = true }, patch = { guardian = true } }
 				plr:SetAttribute("CopyPower" .. slot, (k and BUTTON20[k.s] and BUTTON20[k.s][p20k]) and p20k or nil)
+				-- 7 Nov (Brent): Full Copy brings the friend's level-10 and level-20
+				-- picks too - the copied skill runs with them
+				local full = p10 == "fullcopy" and k and k.p
+				plr:SetAttribute("CopyP10_" .. slot, full and (k.p:GetAttribute("Power10") or "") or nil)
+				plr:SetAttribute("CopyP20_" .. slot, full and (k.p:GetAttribute("Power20") or "") or nil)
 				if k then
 					local nm = k.s
 					for _, sk in ipairs(Config.SKILLS) do
@@ -6060,6 +6069,26 @@ end)
 UseSkill.OnServerEvent:Connect(function(plr, pos)
 	runSkill(plr, plr:GetAttribute("Skill"), pos)
 end)
+-- (7 Nov) Full Copy: while a copied skill runs, Clone has the friend's
+-- level-10 / 20 picks (Rolling Fog, Shadow Clone, Fog Bank...) - then his own again
+local function withFriendPowers(plr, slot, fn)
+	local f10, f20 = plr:GetAttribute("CopyP10_" .. slot), plr:GetAttribute("CopyP20_" .. slot)
+	if f10 == nil and f20 == nil then
+		return fn()
+	end
+	local o10, o20 = plr:GetAttribute("Power10"), plr:GetAttribute("Power20")
+	plr:SetAttribute("Power10", f10 or "")
+	plr:SetAttribute("Power20", f20 or "")
+	local ok, err = pcall(fn)
+	if plr.Parent then
+		plr:SetAttribute("Power10", o10)
+		plr:SetAttribute("Power20", o20)
+	end
+	if not ok then
+		warn("Full Copy: " .. tostring(err))
+	end
+end
+
 -- Clone's copied skill buttons (4 Nov): slot 1 or 2 (two with Copy Two)
 UseCopy.OnServerEvent:Connect(function(plr, slot, pos)
 	if plr:GetAttribute("Skill") ~= "clone" or (slot ~= 1 and slot ~= 2 and slot ~= 3 and slot ~= 4) then
@@ -6069,13 +6098,17 @@ UseCopy.OnServerEvent:Connect(function(plr, slot, pos)
 	if slot >= 3 then
 		local s = slot - 2
 		if plr:GetAttribute("Copy" .. s) == "cloud" and plr:GetAttribute("CopyPower" .. s) == "storm" and typeof(pos) == "Vector3" then
-			runSkill(plr, "cloud", pos, s, true)
+			withFriendPowers(plr, s, function()
+				runSkill(plr, "cloud", pos, s, true)
+			end)
 		end
 		return
 	end
 	local copied = plr:GetAttribute("Copy" .. slot)
 	if typeof(copied) == "string" and copied ~= "clone" and Config.COOLDOWN[copied] then
-		runSkill(plr, copied, pos, slot)
+		withFriendPowers(plr, slot, function()
+			runSkill(plr, copied, pos, slot)
+		end)
 	end
 end)
 

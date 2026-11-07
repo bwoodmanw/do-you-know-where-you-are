@@ -345,10 +345,31 @@ do
 	gui.Name = "RideGui"
 	gui.ResetOnSpawn = false
 	gui.Parent = player:WaitForChild("PlayerGui")
+	-- 7 Nov (Brent: the big button over the middle blocked the view): E on a
+	-- keyboard (unless another prompt is showing - its E wins), Y on a
+	-- controller; phones get a small button at the right edge
+	local UIS = game:GetService("UserInputService")
+	local PPS = game:GetService("ProximityPromptService")
+	local promptsShown = 0
+	PPS.PromptShown:Connect(function()
+		promptsShown += 1
+	end)
+	PPS.PromptHidden:Connect(function()
+		promptsShown = math.max(0, promptsShown - 1)
+	end)
+	UIS.InputBegan:Connect(function(input, used)
+		if used or not player:GetAttribute("Riding") or not RideOff then
+			return
+		end
+		if (input.KeyCode == Enum.KeyCode.E and promptsShown == 0) or input.KeyCode == Enum.KeyCode.ButtonY then
+			RideOff:FireServer()
+		end
+	end)
+	local phone = UIS.TouchEnabled and not UIS.KeyboardEnabled
 	local off = Instance.new("TextButton")
-	off.Size = UDim2.fromOffset(150, 46)
-	off.AnchorPoint = Vector2.new(0.5, 0)
-	off.Position = UDim2.new(0.5, 0, 0, 120)
+	off.Size = UDim2.fromOffset(104, 36)
+	off.AnchorPoint = Vector2.new(1, 0.5)
+	off.Position = UDim2.new(1, -12, 0.4, 0)
 	off.BackgroundColor3 = Color3.fromRGB(232, 80, 91)
 	off.TextColor3 = Color3.fromRGB(255, 244, 224)
 	off.Font = Enum.Font.FredokaOne
@@ -372,7 +393,7 @@ do
 			track = nil
 		end
 		local kind = player:GetAttribute("Riding")
-		off.Visible = kind ~= nil
+		off.Visible = kind ~= nil and phone
 		if not kind then
 			return
 		end

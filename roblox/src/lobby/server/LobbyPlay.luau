@@ -568,7 +568,7 @@ function Play.start(remote, notice)
 		hum.UseJumpPower = true
 		hum.JumpPower = math.max(hum.JumpPower, 50) * 1.35
 		plr:SetAttribute("Riding", kind)
-		notice(plr, "\u{2B50} You're riding " .. r.name .. "! Run, jump - and try the bounce pads. Tap Get off to hop down.")
+		notice(plr, "\u{2B50} You're riding " .. r.name .. "! Run, jump - and try the bounce pads. Press E (Y on a controller, Get off on a phone) to hop down.")
 	end
 
 	-- ---------- the ride stands ----------
