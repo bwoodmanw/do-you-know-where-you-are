@@ -1063,6 +1063,19 @@ function House.build(map)
 		table.insert(world.lights, l)
 		world.roomLights = world.roomLights or {}
 		world.roomLights[f.name] = l
+		-- 7 Nov (Brent: lost in the Hall of Mirrors): the mirror walls hide the
+		-- room's one light - more lights along its paths (dimmed for Spooky too)
+		if map.theme == "carnival" and string.find(f.name, "Mirror", 1, true) then
+			for ly = f.y0, f.y1, 2 do
+				for lx = f.x0, f.x1, 3 do
+					if cell(map, lx, ly) == "." then
+						local ml = light(root, at(lx, ly, H - 1.5), Color3.fromRGB(255, 240, 220), 18, 0.9)
+						ml.Shadows = false
+						table.insert(world.lights, ml)
+					end
+				end
+			end
+		end
 	end
 
 	-- doorway floors, walls, furniture
@@ -1097,6 +1110,21 @@ function House.build(map)
 					Reflectance = mirror and 0.55 or tunnel and 0.05 or 0,
 					Transparency = tunnel and 0.55 or 0,
 				})
+				if mirror then
+					-- 7 Nov (Brent: lost in the Hall of Mirrors): a gold frame - rails at
+					-- the floor and the top, posts at the corners - so a mirror reads
+					-- as a mirror, not more room
+					local hgt = tallAt(map, x, y, true) and HT or H
+					local gold = Color3.fromRGB(232, 182, 62)
+					for _, fy in ipairs({ 0.6, hgt - 0.6 }) do
+						part(root, { Name = "MirrorFrame", Size = Vector3.new(T + 0.5, 1.2, T + 0.5), Position = at(x, y, fy), Material = Enum.Material.Foil, Color = gold, CanCollide = false, CanQuery = false, CastShadow = false })
+					end
+					for _, cx in ipairs({ -1, 1 }) do
+						for _, cz in ipairs({ -1, 1 }) do
+							part(root, { Name = "MirrorFrame", Size = Vector3.new(0.8, hgt, 0.8), Position = at(x, y, hgt / 2) + Vector3.new(cx * T / 2, 0, cz * T / 2), Material = Enum.Material.Foil, Color = gold, CanCollide = false, CanQuery = false, CastShadow = false })
+						end
+					end
+				end
 				if tunnel then
 					-- a lit tank of water: big bright fish, weed and sand at the bottom, a blue glow
 					fishIn(root, at(x, y, 7), Vector3.new(2.6, 3.5, 2.6), 4, x * 7 + y, 1.7)
