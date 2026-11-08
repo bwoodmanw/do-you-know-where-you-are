@@ -31,7 +31,8 @@ local function setHidden(on)
 			end
 		end
 	end
-	-- name tags and other floating labels over heads
+	-- name tags and other floating labels over heads; (7 Nov) the names
+	-- Roblox puts over every character (Player1...) too
 	for _, d in ipairs(workspace:GetDescendants()) do
 		if d:IsA("BillboardGui") then
 			if on then
@@ -40,8 +41,23 @@ local function setHidden(on)
 			elseif was[d] ~= nil then
 				d.Enabled = was[d]
 			end
+		elseif d:IsA("Humanoid") then
+			if on then
+				was[d] = d.DisplayDistanceType
+				d.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+			elseif was[d] ~= nil then
+				d.DisplayDistanceType = was[d]
+			end
 		end
 	end
+	-- (7 Nov) the E prompts, the mouse pointer and Roblox's top-left buttons
+	pcall(function()
+		game:GetService("ProximityPromptService").Enabled = not on
+	end)
+	UserInputService.MouseIconEnabled = not on
+	pcall(function()
+		StarterGui:SetCore("TopbarEnabled", not on)
+	end)
 	if not on then
 		was = {}
 	end
