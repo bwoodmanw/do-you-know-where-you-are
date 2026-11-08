@@ -1444,6 +1444,10 @@ local function useSkill()
 		aiming = true
 		aimCopySlot = nil
 		toast("Tap or click a spot to throw your " .. what .. " there - or tap the button again to cancel.", 4)
+	elseif s == "bramble" and workspace.CurrentCamera then
+		-- 7 Nov (Brent): Vine Swing goes to the doorway the camera aims at
+		local cam = workspace.CurrentCamera.CFrame
+		remotes.UseSkill:FireServer(cam.Position + cam.LookVector * 200)
 	elseif SKILL_TEXT[s] then
 		remotes.UseSkill:FireServer()
 	else
@@ -1562,6 +1566,10 @@ do
 				aimCopySlot = slot
 				toast("Tap or click a spot to throw your copied \u{1F3A7} noise there - or tap the button again to cancel.", 4)
 			end
+		elseif id == "bramble" and workspace.CurrentCamera then
+			-- 7 Nov: a copied Vine Swing (Full Copy) aims with the camera too
+			local cam = workspace.CurrentCamera.CFrame
+			remotes.UseCopy:FireServer(slot, cam.Position + cam.LookVector * 200)
 		else
 			remotes.UseCopy:FireServer(slot)
 		end

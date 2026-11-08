@@ -4556,6 +4556,119 @@ do
 		end)
 	end
 
+	-- 7 Nov (Brent): Bramble's Vine Swing (level 20). She aims (the camera;
+	-- else the way she faces) at a doorway up to VINE_SWING.tiles away with a
+	-- clear way there; a vine swings her, and friends near her, fast to it and
+	-- seals it with vines on arrival. The vine lies along the floor for a few
+	-- seconds: the host walks slower on it. No doorway in her aim: vines grow
+	-- where she stands, if that's a doorway, as before
+	function round.vineSwing(plr, hrp, pos, spots, snapper)
+		local VS = Config.VINE_SWING
+		local seconds = plr:GetAttribute("VineTime") or Config.VINES.seconds
+		local look
+		if typeof(pos) == "Vector3" then
+			look = Vector3.new(pos.X - hrp.Position.X, 0, pos.Z - hrp.Position.Z)
+		end
+		if not look or look.Magnitude < 0.1 then
+			look = Vector3.new(hrp.CFrame.LookVector.X, 0, hrp.CFrame.LookVector.Z)
+		end
+		look = look.Magnitude > 0.05 and look.Unit or Vector3.new(0, 0, 1)
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		params.RespectCanCollide = true
+		local skip = {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Character then
+				table.insert(skip, p.Character)
+			end
+		end
+		params.FilterDescendantsInstances = skip
+		local best, bestSpot, bestScore
+		for _, d in ipairs(doorwaysNear(hrp.Position, VS.tiles)) do
+			local to = House.at(d.mx, d.my, 0) + Vector3.new(0, hrp.Position.Y - House.at(0, 0, 0).Y, 0)
+			local way = Vector3.new(to.X - hrp.Position.X, 0, to.Z - hrp.Position.Z)
+			-- not the doorway she's standing in; one in her aim, a clear way there
+			if way.Magnitude > T * 1.5 then
+				local dot = way.Unit:Dot(look)
+				if dot > VS.cone and not workspace:Raycast(hrp.Position, to - hrp.Position, params) then
+					-- the one nearest the line she aims along (a nearer one wins a tie)
+					local score = way.Magnitude * math.sqrt(math.max(0, 1 - dot * dot)) + way.Magnitude * 0.15
+					if not bestScore or score < bestScore then
+						best, bestSpot, bestScore = to, d, score
+					end
+				end
+			end
+		end
+		if not best then
+			if spots[1] then
+				growVines(plr, spots[1], seconds, snapper)
+				plr:SetAttribute("VinesUntil", workspace:GetServerTimeNow() + seconds)
+				say("info", "\u{1F33F} No doorway in your aim to swing to - vines grew across this one.", nil, plr)
+				return true
+			end
+			say("info", "\u{1F33F} Aim the camera at a doorway (with a clear way there) to swing to it.", nil, plr)
+			return false
+		end
+		local now = workspace:GetServerTimeNow()
+		local from = hrp.Position
+		local names = {}
+		local herTrip = Vector3.new(best.X - from.X, 0, best.Z - from.Z).Magnitude / (Config.WALK * VS.speed)
+		for _, p in ipairs(Players:GetPlayers()) do
+			local h = hrpOf(p)
+			if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (p == plr or (h.Position - from).Magnitude <= VS.near) then
+				local trip = (Vector3.new(best.X - h.Position.X, 0, best.Z - h.Position.Z)).Magnitude / (Config.WALK * VS.speed) + 0.8
+				p:SetAttribute("VineTo", best)
+				p:SetAttribute("VineUntil", now + trip)
+				p:SetAttribute("TeamBurstMult", VS.speed)
+				p:SetAttribute("TeamBurstUntil", now + trip)
+				Effects.aura(p, "speed", trip)
+				if p ~= plr then
+					table.insert(names, p.DisplayName)
+				end
+			end
+		end
+		-- the swinging vine, for a moment
+		local mid = (from + best) / 2 + Vector3.new(0, 2, 0)
+		local rope = Instance.new("Part")
+		rope.Name = "SwingVine"
+		rope.Anchored, rope.CanCollide, rope.CanQuery, rope.CanTouch = true, false, false, false
+		rope.Size = Vector3.new(0.4, 0.4, (best - from).Magnitude)
+		rope.CFrame = CFrame.lookAt(mid, best + Vector3.new(0, 2, 0))
+		rope.Color = Color3.fromRGB(60, 140, 60)
+		rope.Material = Enum.Material.Grass
+		rope.Parent = world.root
+		game:GetService("Debris"):AddItem(rope, 2)
+		-- the vine along the floor: the host wades slower on it (kids don't)
+		local floorY = House.at(bestSpot.mx, bestSpot.my, 0).Y
+		local a = Vector3.new(from.X, floorY + 0.1, from.Z)
+		local b = Vector3.new(best.X, floorY + 0.1, best.Z)
+		local trail = Instance.new("Part")
+		trail.Name = "Vines" -- the host's floor check slows him on anything so named
+		trail.Size = Vector3.new(2.6, 0.2, (b - a).Magnitude)
+		trail.CFrame = CFrame.lookAt((a + b) / 2, b)
+		trail.Color = Color3.fromRGB(50, 125, 55)
+		trail.Material = Enum.Material.Grass
+		trail.Anchored, trail.CanCollide, trail.CanQuery, trail.CanTouch = true, false, true, false
+		trail:SetAttribute("Slow", VS.trailSlow)
+		trail.Parent = world.root
+		local myWorld = world
+		task.delay(VS.trail, function()
+			if trail.Parent and world == myWorld then
+				game:GetService("TweenService"):Create(trail, TweenInfo.new(0.4), { Transparency = 1 }):Play()
+				game:GetService("Debris"):AddItem(trail, 0.45)
+			end
+		end)
+		-- she lands and the doorway is sealed behind her, as Vines always do
+		task.delay(herTrip + 0.1, function()
+			if world == myWorld and state.status == "playing" then
+				growVines(plr, bestSpot, seconds, snapper)
+			end
+		end)
+		plr:SetAttribute("VinesUntil", now + herTrip + seconds)
+		say("info", "\u{1F33F} Vine Swing! " .. plr.DisplayName .. (#names > 0 and (" swung off with " .. table.concat(names, " and ")) or " swung off") .. " - and vines seal the doorway!")
+		return true
+	end
+
 	function round.skillV2(plr, skill, hrp, pos, stormCopy)
 		local p10, p20 = plr:GetAttribute("Power10"), plr:GetAttribute("Power20")
 		if stormCopy then
@@ -4613,6 +4726,10 @@ do
 			return true
 		elseif skill == "bramble" then
 			local spots = doorwaysNear(hrp.Position, Config.VINES.reach)
+			-- 7 Nov (Brent): Vine Swing aims at a doorway - she needn't be in one
+			if p20 == "forest" then
+				return round.vineSwing(plr, hrp, pos, spots, p10 == "snapper")
+			end
 			if #spots == 0 then
 				say("info", "\u{1F33F} Stand in or next to a doorway to grow vines across it.", nil, plr)
 				return false
@@ -4624,71 +4741,6 @@ do
 			end
 			say("info", "\u{1F33F} " .. plr.DisplayName .. " grew vines across the doorway - the host will wade through slowly!")
 			plr:SetAttribute("VinesUntil", workspace:GetServerTimeNow() + seconds)
-			-- 5 Nov (Brent): Vine Swing (level 20) - a vine shoots to the next
-			-- doorway ahead (a clear path, the nearest in front first) and
-			-- swings her and the friends near her there, fast, at once
-			if p20 == "forest" then
-				local VS = Config.VINE_SWING
-				local here = spots[1]
-				local look = Vector3.new(hrp.CFrame.LookVector.X, 0, hrp.CFrame.LookVector.Z)
-				local params = RaycastParams.new()
-				params.FilterType = Enum.RaycastFilterType.Exclude
-				params.RespectCanCollide = true
-				local skip = {}
-				for _, p in ipairs(Players:GetPlayers()) do
-					if p.Character then
-						table.insert(skip, p.Character)
-					end
-				end
-				params.FilterDescendantsInstances = skip
-				local best, bestScore
-				for _, d in ipairs(doorwaysNear(hrp.Position, VS.tiles)) do
-					if d ~= here and (math.abs(d.mx - here.mx) + math.abs(d.my - here.my)) >= 2 then
-						local to = House.at(d.mx, d.my, 0) + Vector3.new(0, hrp.Position.Y - House.at(0, 0, 0).Y, 0)
-						local way = Vector3.new(to.X - hrp.Position.X, 0, to.Z - hrp.Position.Z)
-						-- (5 Nov, Brent) only a doorway she faces (within about 70 degrees)
-						local ahead = look.Magnitude > 0.1 and way.Magnitude > 0.1 and way.Unit:Dot(look.Unit) > 0.35
-						if ahead and way.Magnitude > 4 and not workspace:Raycast(hrp.Position, way, params) then
-							local score = way.Magnitude
-							if not bestScore or score < bestScore then
-								best, bestScore = to, score
-							end
-						end
-					end
-				end
-				if best then
-					local now3 = workspace:GetServerTimeNow()
-					local names = {}
-					for _, p in ipairs(Players:GetPlayers()) do
-						local h = hrpOf(p)
-						if h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (p == plr or (h.Position - hrp.Position).Magnitude <= VS.near) then
-							local trip = (Vector3.new(best.X - h.Position.X, 0, best.Z - h.Position.Z)).Magnitude / (Config.WALK * VS.speed) + 0.8
-							p:SetAttribute("VineTo", best)
-							p:SetAttribute("VineUntil", now3 + trip)
-							p:SetAttribute("TeamBurstMult", VS.speed)
-							p:SetAttribute("TeamBurstUntil", now3 + trip)
-							Effects.aura(p, "speed", trip)
-							if p ~= plr then
-								table.insert(names, p.DisplayName)
-							end
-						end
-					end
-					-- the vine itself, for a moment
-					local mid = (hrp.Position + best) / 2 + Vector3.new(0, 2, 0)
-					local rope = Instance.new("Part")
-					rope.Name = "SwingVine"
-					rope.Anchored, rope.CanCollide, rope.CanQuery, rope.CanTouch = true, false, false, false
-					rope.Size = Vector3.new(0.4, 0.4, (best - hrp.Position).Magnitude)
-					rope.CFrame = CFrame.lookAt(mid, best + Vector3.new(0, 2, 0))
-					rope.Color = Color3.fromRGB(60, 140, 60)
-					rope.Material = Enum.Material.Grass
-					rope.Parent = world.root
-					game:GetService("Debris"):AddItem(rope, 2)
-					say("info", "\u{1F33F} Vine Swing! " .. plr.DisplayName .. (#names > 0 and (" swung off with " .. table.concat(names, " and ")) or " swung off") .. " to the next doorway!")
-				else
-					say("info", "\u{1F33F} No doorway ahead to swing to - face one (with a clear way there) next time.", nil, plr)
-				end
-			end
 			return true
 		elseif skill == "nutmeg" then
 			-- Sleigh Dash (3 Nov): double speed for DashTime seconds; the nearest

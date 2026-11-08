@@ -439,9 +439,11 @@ Config.JAILBREAK = { reach = 100, hold = 1 } -- reach: 7 Nov (Brent), was 35
 Config.MEDIC_RUN = { speed = 1.2, seconds = 6 }
 -- the ladder's run after your own button (7 Nov): this much faster
 Config.BUTTON_BURST = 1.1
--- Bramble's Vine Swing (5 Nov): to the next doorway within `tiles`, `speed`
--- times as fast; friends within `near` studs come along
-Config.VINE_SWING = { tiles = 6, speed = 3, near = 8 }
+-- Bramble's Vine Swing (5 Nov; 7 Nov, Brent: aimed): to the doorway she aims
+-- at (within `cone` of the camera's aim) up to `tiles` tiles away, `speed`
+-- times as fast; friends within `near` studs come along. The vine she swung
+-- on lies on the floor `trail` s: the host walks at `trailSlow` on it
+Config.VINE_SWING = { tiles = 10, speed = 3, near = 8, cone = 0.75, trail = 5, trailSlow = 0.6 }
 -- guard rails: a skill stun is at most `max` s (1 s on Nightmare) and the
 -- host can't be stunned by a skill again for `gap` s after one ends
 Config.SKILL_STUN = { max = 2, nightmare = 1, gap = 8 }
