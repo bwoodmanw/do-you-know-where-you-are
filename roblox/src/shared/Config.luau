@@ -209,6 +209,11 @@ Config.DIFFICULTY_LEVEL = {
 -- (Brainy pays half). Points from a game are scaled by POINT_SCALE.
 Config.CLUE_COSTS = { 10, 20, 30 }
 Config.POINT_SCALE = 0.67
+-- (7 Nov, Brent) the Escape Crew community: its members earn `COMMUNITY_BONUS`
+-- more points. nil = no community yet (the bonus and the Lobby's line are off)
+Config.COMMUNITY_ID = nil
+Config.COMMUNITY_NAME = "Escape Crew Club"
+Config.COMMUNITY_BONUS = 0.1
 -- reset one character's skill ladder (the Robux price is set on the
 -- Developer Product in Creator Hub; the Lobby button reads it from there)
 Config.RESET_POINTS = 800

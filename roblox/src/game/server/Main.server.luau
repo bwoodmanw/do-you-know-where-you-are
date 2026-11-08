@@ -265,6 +265,10 @@ local state = {}
 local function addPoints(plr, n, exact)
 	if n > 0 and not exact then
 		n = math.max(1, math.floor(n * Config.POINT_SCALE + 0.5))
+		-- (7 Nov) the community bonus
+		if plr:GetAttribute("Community") then
+			n += math.floor(n * Config.COMMUNITY_BONUS + 0.5)
+		end
 	end
 	Profile.addPoints(plr, n)
 	if state.earned then
@@ -7169,6 +7173,17 @@ spawnPart.Parent = workspace
 local started = false
 Players.PlayerAdded:Connect(function(plr)
 	setupPlayer(plr)
+	-- (7 Nov) a member of the Escape Crew community earns 10% more points
+	if Config.COMMUNITY_ID then
+		task.spawn(function()
+			local ok, member = pcall(function()
+				return plr:IsInGroup(Config.COMMUNITY_ID)
+			end)
+			if ok and member and plr.Parent then
+				plr:SetAttribute("Community", true)
+			end
+		end)
+	end
 	local data = plr:GetJoinData().TeleportData
 	if type(data) == "table" and not (host and host.model) then
 		if Config.DIFFICULTY[data.difficulty] then

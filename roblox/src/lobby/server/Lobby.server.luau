@@ -2127,6 +2127,17 @@ Players.PlayerAdded:Connect(function(plr)
 	local data = Profile.load(plr)
 	task.spawn(paintUnlocked, plr) -- the characters you unlock that are yours
 	dailyReward(plr, data)
+	-- (7 Nov) not in the Escape Crew community yet: say what it gives, once a visit
+	if Config.COMMUNITY_ID then
+		task.delay(20, function()
+			local ok, member = pcall(function()
+				return plr:IsInGroup(Config.COMMUNITY_ID)
+			end)
+			if ok and not member and plr.Parent then
+				Notice:FireClient(plr, "Join the " .. Config.COMMUNITY_NAME .. " community (on the game page) for 10% more points in every game!")
+			end
+		end)
+	end
 	if data then
 		task.spawn(function()
 			checkInvite(plr, data)
