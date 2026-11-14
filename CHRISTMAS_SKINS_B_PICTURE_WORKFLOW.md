@@ -1,0 +1,40 @@
+# Christmas skins picture workflow B
+
+Generate ten images using the built-in image generator, in the exact order below. Full prompts and completion records: [JSON workflow](tools/workflows/christmas-skins-b-pictures.json).
+
+Reference and output root: `C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input`.
+
+Include the complete Picture Standard followed by a blank line and the row Picture in every generation prompt. Inspect and attach only the listed reference. Create missing output folders. Save and verify each front before generating its back; each back uses the front saved immediately before it.
+
+## Picture Standard
+
+This is a Christmas outfit for a character in a kids' co-op escape game for ages 8 and up: festive, cozy and fun, never scary. For a FRONT view the attached picture is this SAME character's approved look: keep the face, skin tone, eyes, hair, body shape and proportions exactly the same, with a friendly happy expression - change ONLY the clothes and accessories as described. For a BACK view the attached picture is the new outfit from the front: show the same character from directly behind, same pose, every color the same as the front. Clean, simple 3D cartoon toy style exactly like the attached picture: every area one smooth, flat, solid color, with no texture at all - no fabric grain, no knit, no fluffy fur strands, no stitching, no sparkles or glitter, no folds or wrinkles painted on, no shading or shadows painted on, nothing see-through and nothing glowing (lights are solid bright colors). Small details as simple solid shapes, close to the body - nothing thin or long sticking out (no strings, no straps hanging loose, no scarf ends flying). No logos, brand marks, emblems, swooshes, stripes on shoes, printed words, letters, numbers or graphics. Not like any famous character from a film, cartoon, ballet production or game. Full body standing in an A-pose: arms straight and angled clearly down and away from the body with a clear gap between each arm and the body all the way down, hands open, legs slightly apart, feet flat. Centered and filling the whole height, nothing cropped. Plain flat light-gray background, even soft light, no floor shadow. One character only, no text.
+
+## Ordered pictures
+
+| Order | Picture | Reference | File name |
+|---|---|---|---|
+| 1 | FRONT view of Snowflake Nutmeg: the same reindeer girl with her same face, brown braids, and her hoodie's same antlers and ears, but the reindeer hoodie is now snowy white with a pale ice-blue belly patch; her bell is now silver; an ice-blue scarf wrapped snugly at her neck (ends tucked in); pale ice-blue mittens; light-gray leggings; white boots with ice-blue tops | `nutmeg\front-toon.png` | `snowflake-nutmeg\front-toon.png` |
+| 2 | BACK view of Snowflake Nutmeg, matching the reference exactly: the back of the snowy-white reindeer hood with its antlers and ears, her brown braids, the ice-blue scarf, the back of the white hoodie, ice-blue mittens, light-gray leggings, white boots with ice-blue tops | `snowflake-nutmeg\front-toon.png` | `snowflake-nutmeg\back-toon.png` |
+| 3 | FRONT view of First Snow Cloud: her same almost-white chin-length bob with its faint pale-blue tint, plus a round pale-blue pom-pom beanie on top; a puffy ice-blue snow jacket (a clearly stronger blue than her hair) with the hood down and big round white buttons, the same shape as her yellow raincoat; pale-blue mittens; white snow pants; chunky silver-blue snow boots | `cloud\front-toon.png` | `snow-cloud\front-toon.png` |
+| 4 | BACK view of First Snow Cloud, matching the reference exactly: the back of her almost-white bob under the pale-blue pom-pom beanie, the back of the ice-blue snow jacket with the hood lying flat, pale-blue mittens, white snow pants, silver-blue snow boots | `snow-cloud\front-toon.png` | `snow-cloud\back-toon.png` |
+| 5 | FRONT view of Sugar Plum Holly: her same long straight golden-blonde hair, but her peppermint hair bows become two round plum-purple bows; a plum-purple party dress with a short puffy skirt (one solid shape, not see-through, no net layers) and a wide pink sash at the waist; a small solid pink star-shaped clip at the collar; pink tights; plum-purple shoes | `holly\front-toon.png` | `sugarplum-holly\front-toon.png` |
+| 6 | BACK view of Sugar Plum Holly, matching the reference exactly: the back of her long golden-blonde hair with the plum-purple bows at both sides, the back of the plum-purple dress with the pink sash tied in a small flat bow, pink tights, plum-purple shoes | `sugarplum-holly\front-toon.png` | `sugarplum-holly\back-toon.png` |
+| 7 | FRONT view of Nutcracker Clone: his same short curly black hair and his same round goggles pushed up on his forehead, now with gold rims; a smart toy-soldier jacket split down the middle - the left half bright red, the right half royal blue - with a row of round gold buttons and small flat gold shoulder pads close to the shoulders; a white belt; his same chunky round wrist gadget, now gold with a plain dark screen; black trousers with NO pockets; shiny black boots | `clone\front-toon.png` | `nutcracker-clone\front-toon.png` |
+| 8 | BACK view of Nutcracker Clone, matching the reference exactly: the back of his curly black hair with the gold-rimmed goggles, the back of the toy-soldier jacket (seen from behind, the red half is on the RIGHT of the picture and the royal-blue half on the LEFT), gold shoulder pads, white belt, black trousers, black boots | `nutcracker-clone\front-toon.png` | `nutcracker-clone\back-toon.png` |
+| 9 | FRONT view of Carol Singer Harmony: her same long straight black hair with bangs, the music-note hair clips now solid gold; a small round red beret; a knee-length deep-green winter coat with a smooth solid white collar, cuffs and hem and round gold buttons; a short red scarf wrapped snugly at her neck (ends tucked in); her same small round gold music-box pendant; plain white tights; red boots. NO headphones, NO earmuffs | `harmony\front-toon.png` | `carol-harmony\front-toon.png` |
+| 10 | BACK view of Carol Singer Harmony, matching the reference exactly: the back of her long straight black hair under the red beret, the gold note clips at the side, the red scarf, the back of the deep-green coat with its white collar and hem, white tights, red boots | `carol-harmony\front-toon.png` | `carol-harmony\back-toon.png` |
+
+## Verification
+
+Check character identity, complete A-pose framing and arm gaps, outfit details and solid colors, smooth surfaces without texture, plain light-gray background, no text/logos, and front/back consistency. For Clone, the jacket is red on the left and royal blue on the right in front; the back reverses those picture sides. Record source, saved path, dimensions, SHA-256 and visual checks in the JSON for each result.
+
+## Execution record
+
+Completed 5 November 2026. All ten PNGs are saved at the exact file names above, each 1024 x 1536. The interrupted run's Nutmeg pair and Cloud front were preserved; its final Cloud back was recovered, inspected and saved before continuing with Holly, Clone and Harmony in order.
+
+Verified all ten file hashes, PNG dimensions, exact Picture Standard and row text against the supplied request, and all five saved-front dependencies. Every back references the front saved immediately before it. The JSON records complete submitted prompts, attached references, generation sources, saved paths, dimensions, SHA-256 hashes, visual checks and discarded attempts. Generation used the built-in image generator.
+
+Corrections: Clone has one central column of gold buttons, the correct reversed red/blue sides in back, and a rear goggle strap without backward-facing lenses. Harmony's rear hair falls naturally over the scarf and collar. No headphones or earmuffs were added.
+
+Visual limitation: soft 3D form lighting and slight background tonal variation remain visible despite the flat-color standard. Surfaces are smooth without fabric grain, knit texture or glitter.

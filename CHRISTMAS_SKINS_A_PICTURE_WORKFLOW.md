@@ -30,3 +30,9 @@ This is a Christmas outfit for a character in a kids' co-op escape game for ages
 ## Verification
 
 Inspect the character identity, complete A-pose framing, outfit details and colors, plain light-gray background, and front/back consistency. Record PNG dimensions, SHA-256, source, saved path and visual checks in the JSON as each image is completed.
+
+## Saved results
+
+All 16 PNGs generated with the built-in image generator and saved at the exact file names above, each 1024 x 1536. File hashes and all eight saved-front dependencies verified. The JSON contains the final submitted prompts, generation sources, per-image visual checks, and discarded attempts.
+
+Visual notes: soft 3D form lighting remains visible. Tinker's cap now points backward; the rear view has crossed overall straps, a plain goggle strap and rear belt. Fine ribbing remains on Muscle's front socks despite two targeted correction attempts.
