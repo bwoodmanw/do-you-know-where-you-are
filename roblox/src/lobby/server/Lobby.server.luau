@@ -1752,29 +1752,52 @@ local function mapName(id)
 	local i = Progress.mapIndex(id)
 	return i and Progress.MAPS[i].name or "?"
 end
-task.spawn(function()
-	while true do
-		local names = Profile.boardNames()
-		fill(boardPoints, Profile.top(names.points, 10), function(v)
-			return tostring(v)
-		end)
-		fill(boardEscapes, Profile.top(names.escapes, 10), function(v)
-			return tostring(v)
-		end)
-		fill(boardFloors, Profile.top(names.floors, 10), function(v)
-			return tostring(v)
-		end)
+-- 14 Nov (Brent: the boards only said Loading... in the live game): each
+-- board loads on its own, so one stuck or failing board can't hold up the
+-- rest; a failure goes to the server log (F9 -> Server: [Boards]) and onto
+-- the board, and one still loading after 30 s says so
+do
+	local plain = function(v)
+		return tostring(math.floor(tonumber(v) or 0))
+	end
+	local BOARDS = {
+		{ body = boardPoints, key = "points", n = 10, fmt = plain },
+		{ body = boardEscapes, key = "escapes", n = 10, fmt = plain },
+		{ body = boardFloors, key = "floors", n = 10, fmt = plain },
 		-- two lines a row: the time, then where it was set
-		fill(boardFast, Profile.top(names.fastest, 6, true), function(v, r)
+		{ body = boardFast, key = "fastest", n = 6, negate = true, rowH = 62, fmt = function(v, r)
+			v = math.max(0, math.floor(tonumber(v) or 0))
 			local d = Config.DIFFICULTY[r.difficulty]
 			return string.format("%d:%02d", math.floor(v / 60), v % 60) .. "\n" .. mapName(r.map) .. (d and (" \u{00B7} " .. d.name) or "")
-		end, 62)
-		fill(boardRescue, Profile.top(names.rescues, 10), function(v)
-			return tostring(v)
+		end },
+		{ body = boardRescue, key = "rescues", n = 10, fmt = plain },
+	}
+	for _, b in ipairs(BOARDS) do
+		task.spawn(function()
+			local loaded = false
+			task.delay(30, function()
+				if not loaded and b.body.Text == "Loading..." then
+					b.body.Text = "Still loading - Roblox is slow right now."
+					warn("[Boards] " .. b.key .. " still loading after 30 s")
+				end
+			end)
+			while true do
+				local ok, err = pcall(function()
+					local names = Profile.boardNames()
+					fill(b.body, Profile.top(names[b.key], b.n, b.negate), b.fmt, b.rowH)
+				end)
+				loaded = true
+				if not ok then
+					warn("[Boards] " .. b.key .. ": " .. tostring(err))
+					if b.body.Text == "Loading..." or string.find(b.body.Text, "Still loading", 1, true) then
+						b.body.Text = "Can't load right now - trying again in a minute."
+					end
+				end
+				task.wait(60)
+			end
 		end)
-		task.wait(60)
 	end
-end)
+end
 
 -- ---------- daily quests (shared/Quests.luau; the game counts them) ----------
 Quests = require(ReplicatedStorage.Shared.Quests)

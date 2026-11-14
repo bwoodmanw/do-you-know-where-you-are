@@ -363,6 +363,9 @@ function Profile.top(boardName, n, negate)
 	local ok, pages = pcall(function()
 		return b:GetSortedAsync(false, n)
 	end)
+	if not ok then
+		warn("[Boards] " .. boardName .. ": " .. tostring(pages)) -- (14 Nov) why a board is empty
+	end
 	if ok and pages then
 		for _, entry in ipairs(pages:GetCurrentPage()) do
 			local uid, map, diff = string.match(entry.key, "^(%d+)|?([^|]*)|?([^|]*)$")
