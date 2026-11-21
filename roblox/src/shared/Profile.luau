@@ -293,6 +293,10 @@ function Profile.record(plr, mapId, difficulty, escapedSeconds)
 	if not data then
 		return
 	end
+	-- (21 Nov) Studio's test players (negative ids) never go on the boards
+	if plr.UserId <= 0 then
+		return
+	end
 	local names = Profile.boardNames()
 	local key = tostring(plr.UserId)
 	task.spawn(function()
@@ -343,6 +347,9 @@ end
 
 local nameCache = {}
 local function nameOf(userId)
+	if not userId then
+		return "?"
+	end
 	if nameCache[userId] then
 		return nameCache[userId]
 	end
@@ -361,7 +368,7 @@ function Profile.top(boardName, n, negate)
 	end
 	local rows = {}
 	local ok, pages = pcall(function()
-		return b:GetSortedAsync(false, n)
+		return b:GetSortedAsync(false, n + 5) -- (21 Nov) spare rows for skipped ones
 	end)
 	if not ok then
 		warn("[Boards] " .. boardName .. ": " .. tostring(pages)) -- (14 Nov) why a board is empty
@@ -369,7 +376,11 @@ function Profile.top(boardName, n, negate)
 	if ok and pages then
 		for _, entry in ipairs(pages:GetCurrentPage()) do
 			local uid, map, diff = string.match(entry.key, "^(%d+)|?([^|]*)|?([^|]*)$")
-			table.insert(rows, { name = nameOf(tonumber(uid)), userId = tonumber(uid), value = negate and -entry.value or entry.value, map = map, difficulty = diff })
+			uid = tonumber(uid)
+			-- (21 Nov) a Studio test player (negative id) or an odd key: skip it
+			if uid and uid > 0 and #rows < n then
+				table.insert(rows, { name = nameOf(uid), userId = uid, value = negate and -entry.value or entry.value, map = map, difficulty = diff })
+			end
 		end
 	end
 	return rows
