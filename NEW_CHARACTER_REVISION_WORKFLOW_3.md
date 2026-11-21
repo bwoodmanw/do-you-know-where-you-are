@@ -15,6 +15,22 @@ each folder. Each front revision attaches its v1 front, and each back
 attaches the new front made just before it. The new pictures replace
 `front-toon.png` and `back-toon.png`.
 
+## Run the revision
+
+1. Follow the rows in order. Resolve references from `art/` and output
+   filenames from `art/model-input/`.
+2. Attach the row's reference in ImageGen. Combine the full Picture
+   Standard and the row's Picture prompt. Generate one character at
+   full height in the specified view.
+3. Check the requested changes against the reference, including pose,
+   framing, face, and clothing details. Save the PNG to the output path,
+   replacing the existing file. Keep the `-v1.png` source copies.
+4. Attach the newly saved front PNG as the sole reference for that
+   character's back view. Check that both views agree before moving to
+   the next character.
+
+## Picture Standard and ordered prompts
+
 ```
 create new workflow to create images based on the [Picture Standard], [Reference] and [Picture]. For each picture, attach every [Reference] picture listed, in that order, then save to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]", replacing the file if it exists. For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\juliette\front-toon.png.
 The [Picture Standard] will be included with every picture prompt. The [Picture] prompt is added to [Picture Standard] and changes per prompt. The [Reference] and [file name] are defined per picture. Make the pictures in the order of the table: each back view uses the front view made just before it as its reference.
