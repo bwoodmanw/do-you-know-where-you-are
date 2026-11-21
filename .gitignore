@@ -16,3 +16,6 @@ __pycache__/
 
 # Studio exports for diagnosis (test data)
 art/models/studio-export/
+
+# photo-style look pictures of real kids - never in the public repo
+art/look-source/
