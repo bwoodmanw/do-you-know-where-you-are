@@ -25,6 +25,23 @@ marks), because the game is public:
 Juliette's turtle costume also has no mask, bandana or headband, so she
 can't be read as a famous cartoon turtle.
 
+## Run the workflow
+
+1. Read the rows below in order. Resolve the reference paths from `art/`
+   and the output paths from `art/model-input/`.
+2. In ImageGen, attach the references in the listed order. Use the full
+   Picture Standard followed by the row's Picture prompt. Request one
+   full-body figure in a portrait image, facing only the specified direction.
+3. Check that the full figure fits, the hands are empty, and both arms are
+   clear of the torso. Save the PNG to the specified path, creating the
+   character folder as needed. Attach that saved front PNG as the sole
+   reference for the following back view.
+4. Compare each pair for pose, scale, hair, clothing, and colors before
+   proceeding to the next character. Check that Gillian's iris is teal on
+   the viewer's left and bright green on the viewer's right.
+
+## Picture Standard and ordered prompts
+
 ```
 create new workflow to create images based on the [Picture Standard], [Reference] and [Picture]. For each picture, attach every [Reference] picture listed, in that order, then save to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\model-input\juliette\front-toon.png. Create the folder if it does not exist.
 The [Picture Standard] will be included with every picture prompt. The [Picture] prompt is added to [Picture Standard] and changes per prompt. The [Reference] and [file name] are defined per picture. Make the pictures in the order of the table: each back view uses the front view made just before it as its reference.
