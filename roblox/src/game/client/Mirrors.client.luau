@@ -188,6 +188,10 @@ local function makeGui(p)
 						end
 					end
 					copy.Anchored = true
+					-- 21 Nov (Brent: stopped in the Hall of Mirrors, at its door and
+					-- by the Junk Closet): the copies kept their walls solid - flipped
+					-- behind the glass they stood in the real paths as invisible walls
+					copy.CanCollide, copy.CanQuery, copy.CanTouch = false, false, false
 					copy.CFrame = flipCF(d.CFrame, p.c, p.n)
 					if d.Name == "MirrorWall" then
 						copy.Color = Color3.fromRGB(190, 210, 225) -- other mirrors: silvery glass
