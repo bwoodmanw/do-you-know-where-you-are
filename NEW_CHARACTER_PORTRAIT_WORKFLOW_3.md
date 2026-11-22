@@ -15,6 +15,23 @@ The portraits are used for:
   (`Config.PORTRAITS`);
 - the game's character card (`Config.PORTRAITS_GAME`).
 
+## Generate the portraits
+
+1. Resolve the reference and output paths from `art/`. Process each row
+   with a separate ImageGen call, attaching the approved front first and
+   `Nutmeg.png` second.
+2. Combine the full Picture Standard with the row's Picture prompt.
+   Match Nutmeg's square chest-up crop, head scale, halo placement, and
+   gold-rimmed badge in the bottom-right corner.
+3. Check the portrait against the character's approved front for hair,
+   eye color, glasses, and clothing. Check the gesture and badge against
+   the row. Gillian's teal iris belongs on the viewer's left and her
+   green iris on the right.
+4. Save the checked square PNG to the row's output path. Create the
+   destination folder if needed.
+
+## Picture Standard and portrait prompts
+
 ```
 create new workflow to create images based on the [Picture Standard], [Reference] and [Picture]. For each picture, attach every [Reference] picture listed, in that order, then save to "C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\[file name]". For example, C:\Users\bwood\OneDrive\Documents\Kids Games\Do You Know Where You Are\art\roblox-store\portraits\Juliette.png. Create the folder if it does not exist.
 The [Picture Standard] will be included with every picture prompt. The [Picture] prompt is added to [Picture Standard] and changes per prompt. The [Reference] and [file name] are defined per picture.
