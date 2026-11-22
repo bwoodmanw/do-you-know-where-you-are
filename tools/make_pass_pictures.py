@@ -77,13 +77,16 @@ def picture(folder):
     yy, xx = np.mgrid[0:S, 0:S]
     t = np.clip(np.hypot(xx - S / 2, yy - S * 0.4) / (S * 0.62), 0, 1)[..., None]
     inner, outer = np.array([232, 140, 60]), np.array([120, 52, 26])
-    if XMAS:
+    if folder in GIRLS:
+        # 21 Nov: the four girls' character passes - a circle in her own color
+        inner, outer = np.array(GIRLS[folder][0]), np.array(GIRLS[folder][1])
+    elif XMAS:
         # 6 Nov: Christmas - a warm red middle to a deep pine green, snowflakes
         inner, outer = np.array([214, 52, 60]), np.array([22, 84, 48])
     bg = Image.fromarray((inner * (1 - t) + outer * t).astype(np.uint8)).convert("RGBA")
     d = ImageDraw.Draw(bg)
     for (x, y, r) in [(70, 120, 9), (440, 150, 7), (95, 380, 6), (420, 400, 8), (380, 70, 5)]:
-        d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 255, 255, 255) if XMAS else (255, 214, 140, 255))
+        d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 255, 255, 140) if folder in GIRLS else (255, 255, 255, 255) if XMAS else (255, 214, 140, 255))
     if XMAS:
         for (x, y, r) in [(120, 60, 4), (470, 260, 5), (40, 260, 5), (300, 40, 3), (460, 330, 3)]:
             d.ellipse((x - r, y - r, x + r, y + r), fill=(235, 245, 255, 255))
@@ -100,6 +103,10 @@ def picture(folder):
 # 6 Nov: --christmas for the Christmas skins (python tools/make_pass_pictures.py
 #   --christmas skater-patch gingerbread-brainy ...) -> _christmas.png
 XMAS = "--christmas" in sys.argv
+# 21 Nov: the four girls (python tools/make_pass_pictures.py juliette gillian
+#   vivienne charlotte) - a circle in each one's color -> _girls.png
+GIRLS = {"juliette": ((120, 200, 100), (30, 90, 40)), "gillian": ((160, 150, 250), (60, 50, 140)),
+         "vivienne": ((255, 190, 215), (170, 70, 120)), "charlotte": ((245, 210, 100), (150, 100, 20))}
 ONLY = [a for a in sys.argv[1:] if a != "--christmas"]
 pics = []
 for f in ONLY or SKINS:
@@ -111,5 +118,5 @@ rows = (len(pics) + cols - 1) // cols
 sheet = Image.new("RGBA", (cols * 260, rows * 260), (30, 20, 40, 255))
 for i, p in enumerate(pics):
     sheet.alpha_composite(p.resize((250, 250)), ((i % cols) * 260 + 5, (i // cols) * 260 + 5))
-sheet.save(os.path.join(ROOT, "art", "roblox-store", "passes", "_christmas.png" if XMAS else "_thanksgiving-new.png" if ONLY else "_thanksgiving.png"))
+sheet.save(os.path.join(ROOT, "art", "roblox-store", "passes", "_girls.png" if ONLY and all(f in GIRLS for f in ONLY) else "_christmas.png" if XMAS else "_thanksgiving-new.png" if ONLY else "_thanksgiving.png"))
 print("wrote", len(pics), "pass pictures")

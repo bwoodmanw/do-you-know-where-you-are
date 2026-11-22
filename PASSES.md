@@ -64,6 +64,24 @@ Ids go in `Config.SKINS` as `pass = <id>` (Thanksgiving skins at the end).
 | Acorn Bramble | 2064942592 |
 
 
+## The four girls (21 Nov): 4 character passes, 499 Robux each
+
+Pictures made by `tools/make_pass_pictures.py juliette gillian vivienne
+charlotte` from each girl's approved front picture, in a circle of her own
+color (checked: faces match, no logos): `art/roblox-store/passes/`, all four in
+`_girls.png`. Each girl can also be earned free by escaping (60 / 75 / 90 /
+110 escapes). Price **499**, Managed pricing off, same steps as below (step 4:
+price 499).
+
+| # | Name (type exactly) | Picture | Price | Description |
+|---|---|---|---|---|
+| 35 | Juliette | `pass-juliette.png` | 499 | Play as Juliette, the theater-camp turtle! Shell Up: she tucks into her shell and the host can't grab her. Her stamina lasts longer, and at level 20 she can throw her shell to make the host dizzy. Yours for good - or earn her free with 60 escapes. |
+| 36 | Gillian | `pass-gillian.png` | 499 | Play as Gillian, the fastest feet in the crew! Juke: a burst of speed nothing can grab, even straight past the host. Her sharp eyes spot trick balloons, and at level 20 a spin move leaves the host dizzy. Yours for good - or earn her free with 75 escapes. |
+| 37 | Vivienne | `pass-vivienne.png` | 499 | Play as Vivienne, the crew's cheerleader! Cheer: every friend near her gets their skill back at once. The host never peeks into her hiding spot, and at level 20 her cheers make everyone run faster. Yours for good - or earn her free with 90 escapes. |
+| 38 | Charlotte | `pass-charlotte.png` | 499 | Play as Charlotte, the crew's lookout! Lookout: the whole team sees the host through the walls. When she's the last one free she runs faster, and at level 20 she gets a warning when the host comes close. Yours for good - or earn her free with 110 escapes. |
+
+Ids go in `Config.CHARACTER_UNLOCK` as `pass = <id>`.
+
 ## Managed pricing: OFF (8 Oct)
 
 Creator Hub's **Managed pricing** lets Roblox test different prices on small
