@@ -794,8 +794,39 @@ local function checkEnd()
 					end
 				end
 				local key = mapId .. "_" .. state.diff
+				-- (22 Nov, Brent) "beat your best time": the results screen
+				-- shows this run against the best before it
+				if not towerRun then
+					row.seconds, row.prevBest = seconds, pd.best[key]
+				end
 				if not towerRun and (not pd.best[key] or seconds < pd.best[key]) then
 					pd.best[key] = seconds
+				end
+				-- (22 Nov) the Weekly Speedrun Challenge: once a week, on Hard
+				-- or Nightmare, within par (shared/Speedrun.luau)
+				if won and not towerRun then
+					local Speedrun = require(ReplicatedStorage.Shared.Speedrun)
+					local beat, ch = Speedrun.beats(mapId, state.diff, seconds)
+					if beat and ch then
+						if pd.speedrunWeek ~= ch.week then
+							pd.speedrunWeek = ch.week
+							local bonus = Config.SPEEDRUN.points
+							addPoints(plr, bonus, true)
+							row.points += bonus
+							row.speedrun = bonus
+						else
+							row.speedrun = 0 -- beaten again: already paid this week
+						end
+						if (Config.BADGES.speedrun or 0) > 0 then
+							task.spawn(function()
+								pcall(function()
+									game:GetService("BadgeService"):AwardBadge(plr.UserId, Config.BADGES.speedrun)
+								end)
+							end)
+						end
+					elseif ch and ch.map.id == mapId and ch.par[state.diff] then
+						row.speedrunMiss = ch.par[state.diff] -- the par it missed
+					end
 				end
 			end
 			if won and out then
@@ -7526,6 +7557,22 @@ function round.start()
 			state.towerStarted = t0
 		end
 		RoundState:SetAttribute("EndsAt", state.endsAt)
+		do
+			-- (22 Nov) the Weekly Speedrun Challenge floor
+			local ch = require(ReplicatedStorage.Shared.Speedrun).current()
+			if ch and ch.map.id == RoundState:GetAttribute("Map") and not RoundState:GetAttribute("Tower") then
+				local par = ch.par[state.diff]
+				local myState = state
+				task.delay(6, function()
+					if state ~= myState or state.status ~= "playing" then
+						return
+					end
+					local clock = require(ReplicatedStorage.Shared.Speedrun).clock
+					say("info", par and ("\u{26A1} Weekly Speedrun floor! Escape in under " .. clock(par) .. " for +" .. Config.SPEEDRUN.points .. " points and the Speedrunner badge.")
+						or ("\u{26A1} This is the Weekly Speedrun floor - play it on Hard or Nightmare to take the challenge."))
+				end)
+			end
+		end
 		say("start", (RoundState:GetAttribute("Tower") and ("\u{1F5FC} Tower Run, floor " .. (state.towerFloor or 1) .. ": ") or "") .. "Find the way out of " .. (HouseMap.name or "the Party House") .. ". Don't get caught!", { grace = grace })
 		task.wait(grace)
 		hostTimer = nil

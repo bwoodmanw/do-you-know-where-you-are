@@ -3031,6 +3031,28 @@ remotes.Results.OnClientEvent:Connect(function(r)
 		if row.friendBonus and row.friendBonus > 0 then
 			extra ..= "  \u{1F46B} +" .. row.friendBonus .. " friend bonus"
 		end
+		-- (22 Nov, Brent) the Weekly Speedrun Challenge and your best time
+		if row.speedrun then
+			extra ..= row.speedrun > 0 and ("  \u{26A1} Speedrun Challenge beaten! +" .. row.speedrun) or "  \u{26A1} Speedrun beaten again"
+		end
+		if row.userId == player.UserId and row.seconds then
+			local function clk(s)
+				return string.format("%d:%02d", math.floor(s / 60), s % 60)
+			end
+			local prev = row.prevBest
+			if not prev then
+				extra ..= "  \u{23F1} First best time: " .. clk(row.seconds)
+			elseif row.seconds < prev then
+				extra ..= "  \u{23F1} New best! " .. (prev - row.seconds) .. " s faster"
+			elseif row.seconds == prev then
+				extra ..= "  \u{23F1} Tied your best!"
+			else
+				extra ..= "  \u{23F1} " .. (row.seconds - prev) .. " s off your best (" .. clk(prev) .. ")"
+			end
+			if row.speedrunMiss then
+				extra ..= "  \u{26A1} Speedrun par " .. clk(row.speedrunMiss) .. " - so close!"
+			end
+		end
 		table.insert(lines, (row.escaped and "\u{2705} " or "\u{1F512} ") .. row.name .. "  +" .. row.points .. " points" .. extra)
 	end
 	resList.Text = table.concat(lines, "\n")

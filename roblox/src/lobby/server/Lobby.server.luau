@@ -1765,13 +1765,39 @@ do
 		{ body = boardEscapes, key = "escapes", n = 10, fmt = plain },
 		{ body = boardFloors, key = "floors", n = 10, fmt = plain },
 		-- two lines a row: the time, then where it was set
-		{ body = boardFast, key = "fastest", n = 6, negate = true, rowH = 62, fmt = function(v, r)
+		{ body = boardFast, key = "fastest", n = 5, negate = true, rowH = 62, fmt = function(v, r)
 			v = math.max(0, math.floor(tonumber(v) or 0))
 			local d = Config.DIFFICULTY[r.difficulty]
 			return string.format("%d:%02d", math.floor(v / 60), v % 60) .. "\n" .. mapName(r.map) .. (d and (" \u{00B7} " .. d.name) or "")
 		end },
 		{ body = boardRescue, key = "rescues", n = 10, fmt = plain },
 	}
+	-- (22 Nov, Brent) the Weekly Speedrun Challenge along the bottom of the
+	-- fastest board (5 rows now, to make room); it changes with the week
+	do
+		local Speedrun = require(ReplicatedStorage.Shared.Speedrun)
+		local strip = Instance.new("TextLabel")
+		strip.Name = "SpeedrunChallenge"
+		strip.AnchorPoint = Vector2.new(0, 1)
+		strip.Size = UDim2.new(1, 0, 0, 84)
+		strip.Position = UDim2.fromScale(0, 1)
+		strip.BackgroundColor3 = Color3.fromRGB(255, 210, 63)
+		strip.Font = Enum.Font.FredokaOne
+		strip.TextScaled = true
+		strip.TextColor3 = Color3.fromRGB(26, 16, 38)
+		strip.Parent = boardFast.Parent
+		local pad = Instance.new("UIPadding")
+		pad.PaddingLeft, pad.PaddingRight = UDim.new(0, 8), UDim.new(0, 8)
+		pad.PaddingTop, pad.PaddingBottom = UDim.new(0, 4), UDim.new(0, 4)
+		pad.Parent = strip
+		task.spawn(function()
+			while true do
+				local ch = Speedrun.current()
+				strip.Text = ch and ("\u{26A1} Weekly Speedrun: " .. ch.map.name .. "\nHard under " .. Speedrun.clock(ch.par.hard) .. " or Nightmare under " .. Speedrun.clock(ch.par.nightmare)) or ""
+				task.wait(60)
+			end
+		end)
+	end
 	for _, b in ipairs(BOARDS) do
 		task.spawn(function()
 			local loaded = false

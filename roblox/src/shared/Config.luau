@@ -319,7 +319,15 @@ Config.BADGES = {
 	nightmare = 1282994468042939, -- Nightmare Escaper: escaped on Nightmare
 	plushies = 4046817833899589, -- Plushie Collector: found every lost plushie
 	cane = 2401445065578683, -- Candy Cane Collector: found the Christmas goal of candy canes (3 Nov; checked on Roblox's API: enabled)
+	speedrun = 0, -- Speedrunner: beat the Weekly Speedrun Challenge (22 Nov; 0 until made in Creator Hub)
 }
+
+-- (22 Nov, Brent) the Weekly Speedrun Challenge (shared/Speedrun.luau): one
+-- floor a week; escape it on Hard or Nightmare within `par` seconds (counted
+-- like the results screen's time) for `points` once a week and BADGES.speedrun.
+-- Par is about two thirds of each difficulty's timer (Hard 315 s, Nightmare
+-- 255 s); tune it from the Lobby's Balance panel (average winning time)
+Config.SPEEDRUN = { par = { hard = 210, nightmare = 180 }, points = 100 }
 
 -- the collectibles book: one lost plushie hidden on every floor (by map id).
 -- Each player finds their own; found ones fill the Lobby's Plushie Book.
