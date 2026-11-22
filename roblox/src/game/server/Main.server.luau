@@ -3173,6 +3173,7 @@ function round.placeTurkeys()
 		table.insert(turkeys, t)
 	end
 	state.roundup.total = #turkeys
+	state.roundup.list = turkeys -- (21 Nov) for the clues: where one still runs
 	RoundState:SetAttribute("Roundup", "0/" .. #turkeys)
 	if #turkeys == 0 then
 		return
@@ -3641,6 +3642,11 @@ function round.placePresents()
 		box.Material = Enum.Material.SmoothPlastic
 		box.Anchored, box.CanCollide = true, true
 		box.Parent = folder
+		if real then
+			-- (21 Nov) for the clues: a room with a real present still in it
+			state.presentHunt.real = state.presentHunt.real or {}
+			table.insert(state.presentHunt.real, box)
+		end
 		for _, sz in ipairs({ Vector3.new(s * 1.22, s + 0.04, 0.4), Vector3.new(0.4, s + 0.04, s * 1.22) }) do
 			local r = Instance.new("Part")
 			r.Name = "Ribbon"
@@ -3818,6 +3824,49 @@ local function clueSteps()
 		add("door", "The big door is open - everybody out!")
 		return list
 	end
+	-- (21 Nov, Brent) no code on these floors: no balloon or keypad clues
+	local function roomAtPos(pos)
+		local x, y = math.floor(pos.X / Config.TILE), math.floor(pos.Z / Config.TILE)
+		for _, f in ipairs(HouseMap.floors) do
+			if x >= f.x0 and x <= f.x1 and y >= f.y0 and y <= f.y1 then
+				return f.name
+			end
+		end
+		return nil
+	end
+	if state.roundup and (state.roundup.total or 0) > 0 then
+		local left = state.roundup.total - state.roundup.caught
+		local rooms, seen = {}, {}
+		for _, tk in ipairs(state.roundup.list or {}) do
+			local r = tk.model and tk.model.Parent and tk.pos and roomAtPos(tk.pos)
+			if r and not seen[r] then
+				seen[r] = true
+				table.insert(rooms, r)
+			end
+		end
+		if #rooms > 0 then
+			add("hunt", "A loose turkey is in the " .. rooms[math.random(1, #rooms)] .. " - corner it with a friend and grab it! " .. left .. " to go, then the big barn doors open.")
+		end
+		add("hunt", left .. (left == 1 and " turkey is" or " turkeys are") .. " still loose. Catch them all and the big barn doors swing open - no code needed!")
+		return list, {}, nil
+	end
+	if state.presentHunt then
+		local h = state.presentHunt
+		local left = h.total - h.found
+		local rooms, seen = {}, {}
+		for _, box in ipairs(h.real or {}) do
+			local r = box.Parent and roomAtPos(box.Position)
+			if r and not seen[r] then
+				seen[r] = true
+				table.insert(rooms, r)
+			end
+		end
+		if #rooms > 0 then
+			add("hunt", "A real present is waiting in the " .. rooms[math.random(1, #rooms)] .. " - open it! " .. left .. " to go, then the big door opens.")
+		end
+		add("hunt", left .. (left == 1 and " real present is" or " real presents are") .. " still to find. Open them all and the big door opens - no code needed! Careful: some are decoys.")
+		return list, {}, nil
+	end
 	local skills = {}
 	for _, p in ipairs(playersInRound()) do
 		if not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
@@ -3883,7 +3932,14 @@ end
 local function routeText()
 	local o = world.objects
 	local steps, skills, lockHint = clueSteps()
-	local _ = steps
+	if not lockHint then
+		-- (21 Nov) the Turkey Round-up / Present Hunt: no code, no locks
+		local texts = {}
+		for _, s in ipairs(steps) do
+			table.insert(texts, s.text)
+		end
+		return table.concat(texts, "  ")
+	end
 	local parts = {}
 	local known = codeKnown()
 	if not known then
