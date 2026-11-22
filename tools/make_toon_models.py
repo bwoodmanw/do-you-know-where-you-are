@@ -104,6 +104,11 @@ JOBS = {
     "sugarplum-holly": "sugarplum-holly-toon.glb",
     "nutcracker-clone": "nutcracker-clone-toon.glb",
     "carol-harmony": "carol-harmony-toon.glb",
+    # the four girls (21 Nov, NEW_CHARACTER_PICTURE_WORKFLOW_3.md)
+    "juliette": "juliette-toon.glb",
+    "gillian": "gillian-toon.glb",
+    "vivienne": "vivienne-toon.glb",
+    "charlotte": "charlotte-toon.glb",
 }
 TEXTURE = 1024  # one 1024 x 1024 picture: plenty for flat cartoon colors
 VERTICES = 4000  # about 8,000 triangles
