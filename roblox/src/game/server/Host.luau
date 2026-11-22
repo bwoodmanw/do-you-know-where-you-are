@@ -252,6 +252,22 @@ function Host:lure(pos, seconds)
 	self.lureUntil = os.clock() + seconds
 end
 
+-- 21 Nov: Vivienne's Cozy Hider - he never peeks into her hiding spot (Cozy
+-- Crew, level 20: nor into any within Config.VIVIENNE.crew studs of her)
+function Host:cozy(plr, hrp)
+	if plr:GetAttribute("Skill") == "vivienne" then
+		return true
+	end
+	for _, p in ipairs(Players:GetPlayers()) do
+		local h = p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+		if p ~= plr and h and p:GetAttribute("Skill") == "vivienne" and p:GetAttribute("Power20") == "cozycrew"
+			and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude <= Config.VIVIENNE.crew then
+			return true
+		end
+	end
+	return false
+end
+
 function Host:canSee(char)
 	local head = self.model and self.model:FindFirstChild("Head")
 	local target = char and char:FindFirstChild("HumanoidRootPart")
@@ -264,6 +280,10 @@ function Host:canSee(char)
 	end
 	-- 4 Nov: in Cloud's fog the host can't see you (Main sets Fogged)
 	if plr:GetAttribute("Fogged") then
+		return false
+	end
+	-- 21 Nov: Juliette in her shell (and friends with Curtain Call)
+	if (plr:GetAttribute("SafeUntil") or 0) > workspace:GetServerTimeNow() then
 		return false
 	end
 	if (plr:GetAttribute("SneakUntil") or 0) > workspace:GetServerTimeNow() then
@@ -554,14 +574,16 @@ function Host:step(dt)
 		local hrp = char and char:FindFirstChild("HumanoidRootPart")
 		local hidden = plr:GetAttribute("Hidden") or plr:GetAttribute("Crawling")
 		if hrp and (not hidden or self.frenzy or self.diff.peek) and not plr:GetAttribute("Caged") and not plr:GetAttribute("Escaped")
-			and (plr:GetAttribute("SneakUntil") or 0) <= workspace:GetServerTimeNow() then
+			and (plr:GetAttribute("SneakUntil") or 0) <= workspace:GetServerTimeNow()
+			-- 21 Nov: Juliette's shell, Gillian's Juke - nothing can grab them
+			and math.max(plr:GetAttribute("SafeUntil") or 0, plr:GetAttribute("JukeUntil") or 0) <= workspace:GetServerTimeNow() then
 			local flat = Vector3.new(hrp.Position.X - self.root.Position.X, 0, hrp.Position.Z - self.root.Position.Z)
 			-- in a frenzy it searches hiding places it walks right up to
 			-- it reaches up: standing on a table or furniture is no escape
 			local reach = (hidden and 3.5 or self.diff.catch) + (hrp.Position.Y > 4.5 and 4 or 0)
 			-- 17 Oct (Brent): on Hard / Nightmare the host may peek into a hiding
 			-- spot it walks right past (self.diff.peek; one roll every 4 s each)
-			if hidden and not self.frenzy and self.diff.peek and flat.Magnitude < reach then
+			if hidden and not self.frenzy and self.diff.peek and flat.Magnitude < reach and not self:cozy(plr, hrp) then
 				self.peeked = self.peeked or {}
 				if now - (self.peeked[plr] or -math.huge) >= 4 then
 					self.peeked[plr] = now

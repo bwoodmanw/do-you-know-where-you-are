@@ -133,7 +133,8 @@ Config.ANIM = {
 		levitation = { idle = 616006778, idle2 = 616008087, walk = 616013216, run = 616010382, jump = 616008936, fall = 616005863, climb = 616003713 },
 	},
 	-- the kids (their skins use the same pack unless listed under model)
-	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy", nutmeg = "bubbly", cloud = "levitation", holly = "cartoony", clone = "astronaut", harmony = "bubbly", elfy = "toy" },
+	skill = { tinker = "robot", shadow = "ninja", brainy = "mage", muscle = "superhero", glow = "bubbly", patch = "cartoony", echo = "stylish", bramble = "toy", nutmeg = "bubbly", cloud = "levitation", holly = "cartoony", clone = "astronaut", harmony = "bubbly", elfy = "toy",
+		juliette = "toy", gillian = "ninja", vivienne = "cartoony", charlotte = "bubbly" }, -- (21 Nov) the four girls
 	model = { MuscleMummy = "zombie" }, -- (a "...Toon" test model walks like its character)
 	-- models saved in a T-pose whose pack idle swings the arms behind the back
 	-- (Echo, 9 Oct): they keep the pack's walk and run but stand in Roblox's
@@ -366,7 +367,8 @@ Config.SKILLS = {
 -- seconds Patch's shield on herself lasts (shields she gives friends last
 -- until a grab) - 10 Oct, Brent: a solo Patch was shielded all the time
 Config.SELF_SHIELD = 30
-Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30, nutmeg = 25, cloud = 35, holly = 30, clone = 90, harmony = 30, elfy = 35 }
+Config.COOLDOWN = { shadow = 20, patch = 45, echo = 25, muscle = 25, glow = 30, tinker = 40, brainy = 60, bramble = 30, nutmeg = 25, cloud = 35, holly = 30, clone = 90, harmony = 30, elfy = 35,
+	juliette = 30, gillian = 20, vivienne = 60, charlotte = 40 } -- (21 Nov) the four girls
 -- Harmony (4 Nov, NEW_CHARACTERS.md). Music Box (floor job): a music box in the
 -- room you start in plays the door code for Harmony (hold E `listen` s). In
 -- Tune (always on): friends within `tune` studs of her get their stamina back
@@ -423,6 +425,12 @@ Config.CHARACTER_UNLOCK = {
 	-- 5 Nov (Brent): limited edition - only by opening `presents` real presents
 	-- yourself in Claus Manor (Config.PRESENT_HUNT.goal); no pass, no shop price
 	elfy = { presents = 150, limited = true },
+	-- 21 Nov (Brent): the four girls - earned by escaping, or a 499 Robux Game
+	-- Pass each (pass 0 until Brent makes them)
+	juliette = { escapes = 60, pass = 0 },
+	gillian = { escapes = 75, pass = 0 },
+	vivienne = { escapes = 90, pass = 0 },
+	charlotte = { escapes = 110, pass = 0 },
 }
 -- skills version 2 (SKILLS_V2.md): every character has a button
 Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise
@@ -478,6 +486,37 @@ Config.ECHO_LURE = 5
 -- (7 Nov, Brent: caught right after) every toy dashes `dashMarch` studs/s for
 -- `dash` s first, then marches at `march` (was 6)
 Config.ELFY = { dash = 1.2, dashMarch = 18, wrappedDash = 1.5, wrappedMarch = 20, help = 0.15, helpNear = 20, toy = 6, march = 8, every = 1, hear = 45, band = 3, bandHear = 90, wrapped = 5, toyStun = 1, paradeStun = 2, rushStamina = 25 }
+-- (21 Nov, NEW_CHARACTERS_SKILLS_3.md) the four girls.
+-- Juliette. Shell Up: tucked in her shell `shell` s (the ladder adds) - the host
+-- can't see or grab her and walks through her; she can't move (Rolling Shell,
+-- 10: creeps at `rolling` of walking speed). Slow and Steady: her stamina
+-- drains `steady` as fast. Shell Toss (20): the button again within
+-- `tossWindow` s after the shell throws it up to `tossRange` studs - a host
+-- within `tossHit` studs of its path is dizzy `tossStun` s, and the recharge is
+-- `tossCool` s longer. Curtain Call (20): friends within `curtain` studs tuck in too
+Config.JULIETTE = { shell = 4, rolling = 0.3, steady = 0.75, tossWindow = 3, tossRange = 40, tossHit = 4.5, tossStun = 2, tossCool = 15, curtain = 6 }
+-- Gillian. Juke: `dashMult` speed for `dash` s (the ladder adds) - nothing can
+-- grab her and she slips through the host - then `afterMult` for `after` s
+-- (Afterburner, 10: `afterburn` s more). Spin Move (20): passing within `spin`
+-- studs of the host dizzies him `spinStun` s. Relay (20): friends within
+-- `relay` studs get the run after it too. Eagle Eyes: trick balloons look gray to her
+Config.GILLIAN = { dash = 0.6, dashMult = 2, afterMult = 1.3, after = 2, afterburn = 2, spin = 5, spinStun = 1, relay = 12 }
+-- Vivienne. Cheer!: every friend within `range` studs (the ladder adds; Big
+-- Cheer, 10: `big` more, and `bigStamina`% stamina) gets their skill back at
+-- once - never another Vivienne. Pep Talk (20): they and she run `pep` faster
+-- for `pepTime` s. Cozy Hider: the host never peeks into her hiding spot (Cozy
+-- Crew, 20: nor any within `crew` studs of her)
+Config.VIVIENNE = { range = 16, big = 8, bigStamina = 50, pep = 1.15, pepTime = 3, crew = 24 }
+-- Charlotte. Lookout: the whole crew sees the host through walls `seconds` s
+-- (the ladder adds; `diffMult` on Hard / Nightmare; Long Watch, 20: twice as
+-- long; Lookout Run, 10: every free kid `runMult` faster `runTime` s). Never
+-- Give Up: the last kid still free (2+ kids) runs `lastStand` faster. Early
+-- Warning (20): the host within `warnTiles` tiles - a ping and `warnRun`
+-- faster for `warnTime` s, at most once every `warnEvery` s
+Config.CHARLOTTE = { seconds = 6, diffMult = { hard = 0.67, nightmare = 0.5 }, runMult = 1.1, runTime = 3, lastStand = 1.15, warnTiles = 5, warnRun = 1.15, warnTime = 3, warnEvery = 20 }
+-- Shell Toss and Spin Move dizzy the host at most once every this many s
+-- between them (on top of SKILL_STUN's own guard rails)
+Config.GIRL_STUN_GAP = 15
 -- Echo's Sharp Ears (4 Nov): within this many studs Echo sees the host through walls
 Config.ECHO_EARS = 30
 -- room sounds, quiet and looped (Roblox's licensed Pro Sound Effects library)
@@ -539,6 +578,23 @@ Config.SKILL_INFO = {
 	elfy = { parts = {
 		{ kind = "passive", name = "Workshop Helper", text = "Friends near Elfy get their skills back 15% faster." },
 		{ kind = "press", name = "Wind-up Toy", text = "Sets down a wind-up toy soldier that marches off jingling for 6 seconds - the host goes after the noise, and trips over it (1 second)." },
+	} },
+	-- (21 Nov) the four girls
+	juliette = { parts = {
+		{ kind = "passive", name = "Slow and Steady", text = "Her stamina drains 25% slower." },
+		{ kind = "press", name = "Shell Up", text = "She tucks into her turtle shell for 4 seconds wherever she is - the host can't see or grab her and walks right past, but she can't move." },
+	} },
+	gillian = { parts = {
+		{ kind = "passive", name = "Eagle Eyes", text = "Trick balloons look gray to her - she never pops a fake." },
+		{ kind = "press", name = "Juke", text = "A burst of double speed: for a moment nothing can grab her, even running straight through the host - then she runs 30% faster for 2 seconds." },
+	} },
+	vivienne = { parts = {
+		{ kind = "passive", name = "Cozy Hider", text = "The host never peeks into the hiding spot she's in." },
+		{ kind = "press", name = "Cheer!", text = "Every friend near her gets their skill back at once (not another Vivienne)." },
+	} },
+	charlotte = { parts = {
+		{ kind = "passive", name = "Never Give Up", text = "When she's the last kid still free, she runs 15% faster." },
+		{ kind = "press", name = "Lookout", text = "The whole crew sees the host through the walls for 6 seconds (less on Hard and Nightmare)." },
 	} },
 	harmony = { parts = {
 		{ kind = "hold", name = "Music Box", text = "The music box behind the first locked door plays the door code - only Harmony hears it." },
@@ -792,6 +848,7 @@ Config.CHARACTER_ASSETS = {
 	HostMrClaus = 130635679312254, -- 5 Nov: Mr Claus, Claus Manor (checked on Roblox: Model 'HostMrClaus', Brent's upload)
 	HostMrsClaus = 92544233290407, -- 5 Nov: Mrs Claus, Claus Manor (checked on Roblox: Model 'HostMrsClaus', Brent's upload)
 	Elfy = 137385510164350, -- 5 Nov: Elfy, the limited Christmas character (checked on Roblox: Model 'Elfy', Brent's upload)
+	Juliette = 81440887581798, -- 21 Nov: Juliette (checked on Roblox: Model 'Juliette', Brent's upload)
 	PatchSkater = 85745496736470, -- 5 Nov: Ice Skater Patch (checked on Roblox: Model 'PatchSkater', Brent's upload)
 	BrainyGingerbread = 78207892363161, -- 5 Nov: Gingerbread Brainy (checked on Roblox: Model 'BrainyGingerbread', Brent's upload)
 	ToyElf = 137802129295979, -- 5 Nov: the Toy Elf in Claus Manor (checked on Roblox: Model 'ToyElf', Brent's upload)
@@ -1154,6 +1211,12 @@ Config.NEW_SKILLS = {
 	-- Elfy (5 Nov, Brent): limited edition - won only by opening presents in
 	-- Claus Manor during Christmas (CHARACTER_UNLOCK.elfy); live once his model is saved
 	{ id = "elfy", name = "Elfy", icon = "\u{1F9DD}", say = "Wind-up toy maker", color = Color3.fromRGB(60, 160, 80), unlock = true, release = 1796101200 },
+	-- the four girls (21 Nov, Brent): unlocked by escapes or a Game Pass
+	-- (CHARACTER_UNLOCK); live once each model is saved
+	{ id = "juliette", name = "Juliette", icon = "\u{1F422}", say = "Hides in her shell", color = Color3.fromRGB(80, 170, 70), unlock = true },
+	{ id = "gillian", name = "Gillian", icon = "\u{1F45F}", say = "Jukes past the host", color = Color3.fromRGB(130, 120, 240), unlock = true },
+	{ id = "vivienne", name = "Vivienne", icon = "\u{1F4E3}", say = "Cheers skills back", color = Color3.fromRGB(255, 160, 200), unlock = true },
+	{ id = "charlotte", name = "Charlotte", icon = "\u{1F440}", say = "Spots the host", color = Color3.fromRGB(230, 190, 60), unlock = true },
 }
 do
 	local studio = game:GetService("RunService"):IsStudio()

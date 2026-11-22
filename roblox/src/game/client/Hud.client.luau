@@ -1403,7 +1403,7 @@ local aiming = false
 local aimCopySlot = nil -- (4 Nov) aiming for Clone's copied noise (slot 1 / 2)
 local SKILL_TEXT = { shadow = "\u{1F319} Sneak", patch = "\u{1F6E1} Shield", echo = "\u{1F3A7} Noise", muscle = "\u{1F4AA} Barricade", glow = "\u{2728} Flare",
 	tinker = "\u{1F527} Toolkit", brainy = "\u{1F9E0} Think!", bramble = "\u{1F33F} Vines", nutmeg = "\u{1F514} Sleigh Dash", cloud = "\u{2601} Fog", holly = "\u{1F36C} Peppermints", clone = "\u{1F465} Copycat", harmony = "\u{1F3B5} Lullaby",
-	elfy = "\u{1F941} Wind-up Toy" } -- 5 Nov: Elfy was missing, so his button only said 'press E'
+	elfy = "\u{1F941} Wind-up Toy", juliette = "\u{1F422} Shell Up", gillian = "\u{1F45F} Juke", vivienne = "\u{1F4E3} Cheer!", charlotte = "\u{1F440} Lookout" } -- 5 Nov: Elfy was missing, so his button only said 'press E'
 local KEYS = not TOUCH and UserInputService.KeyboardEnabled -- show the R key on the button
 do
 local function paintSkill()
@@ -1444,8 +1444,9 @@ local function useSkill()
 		aiming = true
 		aimCopySlot = nil
 		toast("Tap or click a spot to throw your " .. what .. " there - or tap the button again to cancel.", 4)
-	elseif s == "bramble" and workspace.CurrentCamera then
+	elseif (s == "bramble" or s == "juliette") and workspace.CurrentCamera then
 		-- 7 Nov (Brent): Vine Swing goes to the doorway the camera aims at
+		-- (21 Nov: and Juliette's Shell Toss flies where it aims)
 		local cam = workspace.CurrentCamera.CFrame
 		remotes.UseSkill:FireServer(cam.Position + cam.LookVector * 200)
 	elseif SKILL_TEXT[s] then
@@ -2512,6 +2513,9 @@ RunService.RenderStepped:Connect(function(dt)
 		if (player:GetAttribute("TeamBurstUntil") or 0) > workspace:GetServerTimeNow() then
 			bonus *= player:GetAttribute("TeamBurstMult") or 1
 		end
+		if player:GetAttribute("LastStand") then
+			bonus *= Config.CHARLOTTE.lastStand -- (21 Nov) Charlotte's Never Give Up
+		end
 		if wantRun and moving and not tired then
 			hum.WalkSpeed = Config.RUN * (player:GetAttribute("RunMult") or 1) * bonus
 			if not candy then
@@ -2537,6 +2541,10 @@ RunService.RenderStepped:Connect(function(dt)
 		-- (5 Nov) Mr Claus's lump of coal: slowed for a moment
 		if (player:GetAttribute("CoalUntil") or 0) > workspace:GetServerTimeNow() then
 			hum.WalkSpeed *= Config.HOST_SKILLS.coal.slowMult
+		end
+		-- (21 Nov) Juliette's Shell Up: tucked in, no moving (Rolling Shell: a creep)
+		if (player:GetAttribute("ShellUntil") or 0) > workspace:GetServerTimeNow() then
+			hum.WalkSpeed = (player:GetAttribute("Skill") == "juliette" and player:GetAttribute("Power10") == "rolling") and Config.WALK * Config.JULIETTE.rolling or 0
 		end
 		if below and (below.Instance.Name == "ChocolateRiver" or below.Instance.Name == "WadeWater") then
 			hum.WalkSpeed *= Config.WADE.kid
@@ -2587,7 +2595,8 @@ RunService.RenderStepped:Connect(function(dt)
 		-- while a skill is working: its own countdown; then the recharge countdown
 		local ACTIVE = { shadow = { "SneakUntil", "\u{1F319} Sneaking" }, glow = { "FlareUntil", "\u{2728} Flare" }, bramble = { "VinesUntil", "\u{1F33F} Vines" },
 			echo = { "EchoBurstUntil", "\u{1F3A7} Burst" }, muscle = { "BarricadeUntil", "\u{1F4AA} Barricade" }, brainy = { "ThinkUntil", "\u{1F9E0} Thinking" },
-			nutmeg = { "DashUntil", "\u{1F514} Dashing" }, cloud = { "FogUntil", "\u{2601} Fog" }, holly = { "PeppermintUntil", "\u{1F36C} Peppermints" }, harmony = { "LullabyUntil", "\u{1F3B5} Lullaby" } }
+			nutmeg = { "DashUntil", "\u{1F514} Dashing" }, cloud = { "FogUntil", "\u{2601} Fog" }, holly = { "PeppermintUntil", "\u{1F36C} Peppermints" }, harmony = { "LullabyUntil", "\u{1F3B5} Lullaby" },
+			juliette = { "ShellUntil", "\u{1F422} In shell" }, gillian = { "JukeUntil", "\u{1F45F} Juke" }, charlotte = { "LookoutUntil", "\u{1F440} Lookout" } }
 		local a = ACTIVE[skill]
 		local active = a and ((player:GetAttribute(a[1]) or 0) - serverNow) or 0
 		local cool = (player:GetAttribute("CoolUntil") or 0) - serverNow
@@ -2682,8 +2691,10 @@ RunService.RenderStepped:Connect(function(dt)
 	-- 4 Nov (Brent): Echo's Sharp Ears - with the host within ECHO_EARS
 	-- studs, Echo sees his outline through walls (only Echo: made here)
 	do
-		local ears = host and host.PrimaryPart and player:GetAttribute("Skill") == "echo" and not player:GetAttribute("Escaped")
-			and (host.PrimaryPart.Position - hrp.Position).Magnitude <= (Config.ECHO_EARS or 30)
+		-- (21 Nov) and everyone, while Charlotte's Lookout lasts
+		local ears = host and host.PrimaryPart and not player:GetAttribute("Escaped") and ((player:GetAttribute("Skill") == "echo"
+			and (host.PrimaryPart.Position - hrp.Position).Magnitude <= (Config.ECHO_EARS or 30))
+			or (RoundState:GetAttribute("LookoutUntil") or 0) > workspace:GetServerTimeNow())
 		local hl = host and host:FindFirstChild("SharpEars")
 		if ears and not hl then
 			hl = Instance.new("Highlight")
@@ -3508,3 +3519,36 @@ RunService:BindToRenderStep("VineSwing", Enum.RenderPriority.Character.Value + 2
 	end
 	hum:Move(d.Unit, false)
 end)
+
+-- (21 Nov) Gillian's Eagle Eyes: the trick balloons (tagged by the server)
+-- look gray to her - only on her screen
+do
+	local CollectionService = game:GetService("CollectionService")
+	local marks = {}
+	local function paint()
+		local mine = player:GetAttribute("Skill") == "gillian"
+		for _, part in ipairs(CollectionService:GetTagged("TrickBalloon")) do
+			if mine and not marks[part] then
+				local hl = Instance.new("Highlight")
+				hl.Name = "EagleEyes"
+				hl.FillColor = Color3.fromRGB(110, 110, 120)
+				hl.FillTransparency = 0.05
+				hl.OutlineColor = Color3.fromRGB(70, 70, 80)
+				hl.DepthMode = Enum.HighlightDepthMode.Occluded
+				hl.Adornee = part
+				hl.Parent = part
+				marks[part] = hl
+			end
+		end
+		for part, hl in pairs(marks) do
+			if not mine or not part.Parent or not CollectionService:HasTag(part, "TrickBalloon") then
+				hl:Destroy()
+				marks[part] = nil
+			end
+		end
+	end
+	CollectionService:GetInstanceAddedSignal("TrickBalloon"):Connect(paint)
+	CollectionService:GetInstanceRemovedSignal("TrickBalloon"):Connect(paint)
+	player:GetAttributeChangedSignal("Skill"):Connect(paint)
+	paint()
+end

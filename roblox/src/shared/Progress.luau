@@ -721,6 +721,193 @@ local SPECIAL = {
 			{ id = "storm20", name = "Candy Storm", say = "Your peppermint patch is twice as big, and friends nearby get 25% stamina", mods = { p20 = "candystorm" } },
 		},
 	},
+	-- (21 Nov, NEW_CHARACTERS_SKILLS_3.md) the four girls. shellTime / jukeTime
+	-- (s), cheerRange (studs), lookoutTime (s) add to Config.JULIETTE.shell,
+	-- GILLIAN.dash, VIVIENNE.range, CHARLOTTE.seconds
+	juliette = {
+		[3] = {
+			{ id = "thick3", name = "Thick Shell", say = "Shell Up lasts 0.5 s longer", mods = { shellTime = 0.5 } },
+			{ id = "breath3", name = "Deep Breath", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[5] = {
+			{ id = "tuck5", name = "Quick Tuck", say = "Shell Up recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "bow5", name = "Stage Bow", say = "Each Shell Up gives you 15% stamina", mods = { buttonStamina = 15 } },
+		},
+		[7] = {
+			{ id = "nap7", name = "Shell Nap", say = "Shell Up lasts 0.5 s longer", mods = { shellTime = 0.5 } },
+			{ id = "hands7", name = "Stagehand", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+		},
+		[9] = {
+			{ id = "polish9", name = "Shell Polish", say = "Shell Up recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "quiet9", name = "Quiet Turtle", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[10] = {
+			{ id = "rolling10", name = "Rolling Shell", say = "You can creep slowly while tucked in your shell", mods = { p10 = "rolling" } },
+			{ id = "hard10", name = "Hard Shell", say = "Shell Up lasts 1.5 s longer", mods = { p10 = "hardshell", shellTime = 1.5 } },
+		},
+		[11] = {
+			{ id = "tuck11", name = "Quick Change", say = "Shell Up recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "encore11", name = "Encore Bow", say = "Each Shell Up gives you 10% more stamina", mods = { buttonStamina = 10 } },
+		},
+		[13] = {
+			{ id = "snug13", name = "Snug Shell", say = "Shell Up lasts 0.5 s longer", mods = { shellTime = 0.5 } },
+			{ id = "lungs13", name = "Turtle Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[15] = {
+			{ id = "shield15", name = "Costume Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+			{ id = "tuck15", name = "Practiced Tuck", say = "Shell Up recharges 15% faster", mods = { cooldownMult = 0.85 } },
+		},
+		[17] = {
+			{ id = "long17", name = "Long Nap", say = "Shell Up lasts 0.5 s longer", mods = { shellTime = 0.5 } },
+			{ id = "hands17", name = "Quick Hands", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[19] = {
+			{ id = "master19", name = "Master Turtle", say = "Shell Up recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "lungs19", name = "Big Breath", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+		},
+		[20] = {
+			{ id = "toss20", name = "Shell Toss", say = "Out of your shell, press the button again within 3 s to throw it - the host it hits is dizzy 2 s", mods = { p20 = "shelltoss" } },
+			{ id = "curtain20", name = "Curtain Call", say = "Friends right next to you tuck in with you - the host can't grab them either", mods = { p20 = "curtain" } },
+		},
+	},
+	gillian = {
+		[3] = {
+			{ id = "feet3", name = "Quick Feet", say = "Juke lasts 0.1 s longer", mods = { jukeTime = 0.1 } },
+			{ id = "breath3", name = "Deep Breath", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[5] = {
+			{ id = "legs5", name = "Fresh Legs", say = "Juke recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "wind5", name = "Second Wind", say = "Each Juke gives you 15% stamina", mods = { buttonStamina = 15 } },
+		},
+		[7] = {
+			{ id = "stride7", name = "Long Stride", say = "Juke lasts 0.1 s longer", mods = { jukeTime = 0.1 } },
+			{ id = "quiet7", name = "Light Steps", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[9] = {
+			{ id = "spring9", name = "Spring Step", say = "Juke recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "lungs9", name = "Runner's Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[10] = {
+			{ id = "long10", name = "Long Juke", say = "Juke lasts 0.3 s longer - half as far again", mods = { p10 = "longjuke", jukeTime = 0.3 } },
+			{ id = "after10", name = "Afterburner", say = "The run after each Juke lasts 2 s longer", mods = { p10 = "afterburn" } },
+		},
+		[11] = {
+			{ id = "light11", name = "Light Feet", say = "Juke recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "cool11", name = "Cool Down", say = "Each Juke gives you 10% more stamina", mods = { buttonStamina = 10 } },
+		},
+		[13] = {
+			{ id = "stride13", name = "Sprinter", say = "Juke lasts 0.1 s longer", mods = { jukeTime = 0.1 } },
+			{ id = "hands13", name = "Quick Grab", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+		},
+		[15] = {
+			{ id = "shield15", name = "Hoodie Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+			{ id = "legs15", name = "Warm-up", say = "Juke recharges 15% faster", mods = { cooldownMult = 0.85 } },
+		},
+		[17] = {
+			{ id = "stride17", name = "Track Star", say = "Juke lasts 0.1 s longer", mods = { jukeTime = 0.1 } },
+			{ id = "hands17", name = "Quick Hands", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[19] = {
+			{ id = "champ19", name = "Champion", say = "Juke recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "lungs19", name = "Big Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+		},
+		[20] = {
+			{ id = "spin20", name = "Spin Move", say = "A Juke straight past the host leaves him dizzy 1 s", mods = { p20 = "spin" } },
+			{ id = "relay20", name = "Relay", say = "Friends near you when you Juke get the run after it too", mods = { p20 = "relay" } },
+		},
+	},
+	vivienne = {
+		[3] = {
+			{ id = "loud3", name = "Loud Cheer", say = "Cheer! reaches 2 studs further", mods = { cheerRange = 2 } },
+			{ id = "breath3", name = "Deep Breath", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[5] = {
+			{ id = "poms5", name = "Pom-poms", say = "Cheer! recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "hop5", name = "Happy Hop", say = "Each Cheer! gives you 15% stamina", mods = { buttonStamina = 15 } },
+		},
+		[7] = {
+			{ id = "voice7", name = "Big Voice", say = "Cheer! reaches 3 studs further", mods = { cheerRange = 3 } },
+			{ id = "quiet7", name = "Soft Boots", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[9] = {
+			{ id = "spirit9", name = "Team Spirit", say = "Cheer! recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "lungs9", name = "Cozy Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[10] = {
+			{ id = "big10", name = "Big Cheer", say = "Cheer! reaches 8 studs further and gives everyone in it half their stamina back", mods = { p10 = "bigcheer" } },
+			{ id = "quick10", name = "Quick Cheer", say = "Cheer! recharges 30% faster", mods = { p10 = "quickcheer", cooldownMult = 0.7 } },
+		},
+		[11] = {
+			{ id = "squad11", name = "Cheer Squad", say = "Cheer! recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "snack11", name = "Pep Snack", say = "Each Cheer! gives you 10% more stamina", mods = { buttonStamina = 10 } },
+		},
+		[13] = {
+			{ id = "echo13", name = "Echoing Cheer", say = "Cheer! reaches 3 studs further", mods = { cheerRange = 3 } },
+			{ id = "hands13", name = "Steady Hands", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+		},
+		[15] = {
+			{ id = "shield15", name = "Cozy Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+			{ id = "squad15", name = "Practice Routine", say = "Cheer! recharges 15% faster", mods = { cooldownMult = 0.85 } },
+		},
+		[17] = {
+			{ id = "mega17", name = "Megaphone", say = "Cheer! reaches 2 studs further", mods = { cheerRange = 2 } },
+			{ id = "hands17", name = "Quick Hands", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[19] = {
+			{ id = "captain19", name = "Head Cheerleader", say = "Cheer! recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "lungs19", name = "Big Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+		},
+		[20] = {
+			{ id = "pep20", name = "Pep Talk", say = "Cheer! also makes everyone in it - you too - run 15% faster for 3 s", mods = { p20 = "peptalk" } },
+			{ id = "crew20", name = "Cozy Crew", say = "The host never peeks into any hiding spot near you either", mods = { p20 = "cozycrew" } },
+		},
+	},
+	charlotte = {
+		[3] = {
+			{ id = "keen3", name = "Keen Eyes", say = "Lookout lasts 0.5 s longer", mods = { lookoutTime = 0.5 } },
+			{ id = "breath3", name = "Deep Breath", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[5] = {
+			{ id = "quick5", name = "Quick Look", say = "Lookout recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "spirit5", name = "Team Spirit", say = "Each Lookout gives you 15% stamina", mods = { buttonStamina = 15 } },
+		},
+		[7] = {
+			{ id = "look7", name = "Long Look", say = "Lookout lasts 0.5 s longer", mods = { lookoutTime = 0.5 } },
+			{ id = "quiet7", name = "Sneaky Sneakers", say = "The host sees you from 2% less far", mods = { sightMult = 0.98 } },
+		},
+		[9] = {
+			{ id = "scout9", name = "Scout", say = "Lookout recharges 10% faster", mods = { cooldownMult = 0.9 } },
+			{ id = "lungs9", name = "Sporty Lungs", say = "6% more stamina", mods = { staminaMult = 1.06 } },
+		},
+		[10] = {
+			{ id = "sharp10", name = "Sharp Eyes", say = "Lookout lasts 2 s longer", mods = { p10 = "sharpeyes", lookoutTime = 2 } },
+			{ id = "run10", name = "Lookout Run", say = "Lookout also makes every free kid run 10% faster for 3 s", mods = { p10 = "lookrun" } },
+		},
+		[11] = {
+			{ id = "scout11", name = "Fast Scout", say = "Lookout recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "air11", name = "Fresh Air", say = "Each Lookout gives you 10% more stamina", mods = { buttonStamina = 10 } },
+		},
+		[13] = {
+			{ id = "far13", name = "Far Sight", say = "Lookout lasts 0.5 s longer", mods = { lookoutTime = 0.5 } },
+			{ id = "hands13", name = "Steady Grip", say = "Hold things 8% faster", mods = { holdMult = 0.92 } },
+		},
+		[15] = {
+			{ id = "shield15", name = "Sweatshirt Shield", say = "Start every game with a Party Shield", mods = { shield = true } },
+			{ id = "scout15", name = "Practiced Eye", say = "Lookout recharges 15% faster", mods = { cooldownMult = 0.85 } },
+		},
+		[17] = {
+			{ id = "eagle17", name = "Eagle Scout", say = "Lookout lasts 0.5 s longer", mods = { lookoutTime = 0.5 } },
+			{ id = "hands17", name = "Quick Hands", say = "Hold things 10% faster", mods = { holdMult = 0.9 } },
+		},
+		[19] = {
+			{ id = "captain19", name = "Team Captain", say = "Lookout recharges 15% faster", mods = { cooldownMult = 0.85 } },
+			{ id = "lungs19", name = "Big Lungs", say = "10% more stamina", mods = { staminaMult = 1.1 } },
+		},
+		[20] = {
+			{ id = "warn20", name = "Early Warning", say = "Always on: when the host comes within 5 tiles you get a warning and run 15% faster for 3 s (once every 20 s)", mods = { p20 = "warning" } },
+			{ id = "watch20", name = "Long Watch", say = "Lookout lasts twice as long", mods = { p20 = "longwatch" } },
+		},
+	},
 	-- Elfy (5 Nov, CLAUS_MANOR.md): Workshop Helper, Wind-up Toy
 	elfy = {
 		[3] = {
@@ -884,7 +1071,8 @@ Progress.ADDS = { sneakTime = true, cloneTime = true, glowRange = true, echoRang
 	rescuePoints = true, lureTime = true, vineSlow = true, toyTime = true, helpNear = true,
 	-- 7 Nov (Brent: the repeats replaced): any character's own button, and Patch's
 	buttonStamina = true, buttonBurst = true, shieldStamina = true, freeStamina = true, rescueCool = true, freeSneak = true,
-	sneakRun = true, fogGust = true } -- (7 Nov) Swift Shadow, Gust
+	sneakRun = true, fogGust = true, -- (7 Nov) Swift Shadow, Gust
+	shellTime = true, jukeTime = true, cheerRange = true, lookoutTime = true } -- (21 Nov) the four girls
 
 -- how far the bonuses can stack, whatever is picked
 Progress.CAPS = { staminaMult = 1.5, runMult = 1.2, holdMult = 0.5, sightMult = 0.85, -- sightMult: 17 Oct (Brent) stealth picks capped at -15% (was -35%)

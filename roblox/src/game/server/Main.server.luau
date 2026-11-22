@@ -335,6 +335,15 @@ local function applyMods(plr)
 	plr:SetAttribute("LullabyTime", Config.HARMONY.seconds + (m.lullabyTime or 0))
 	plr:SetAttribute("LullabyRange", Config.HARMONY.range + (m.lullabyRange or 0))
 	plr:SetAttribute("LullabyRun", Config.HARMONY.runTime + (m.lullabyRun or 0)) -- (5 Nov) the speed burst
+	-- the four girls (21 Nov): Shell Up's time, Juke's dash, Cheer!'s reach, Lookout's time
+	plr:SetAttribute("ShellTime", Config.JULIETTE.shell + (m.shellTime or 0))
+	plr:SetAttribute("JukeTime", Config.GILLIAN.dash + (m.jukeTime or 0))
+	plr:SetAttribute("CheerRange", Config.VIVIENNE.range + (m.cheerRange or 0) + (m.p10 == "bigcheer" and Config.VIVIENNE.big or 0))
+	plr:SetAttribute("LookoutTime", Config.CHARLOTTE.seconds + (m.lookoutTime or 0))
+	if skill == "juliette" then
+		-- Juliette's Slow and Steady: her stamina drains 25% slower
+		plr:SetAttribute("StaminaMult", m.staminaMult / Config.JULIETTE.steady)
+	end
 	-- 7 Nov (Brent: the +1 clue picks replaced by each character's own)
 	plr:SetAttribute("ButtonStamina", m.buttonStamina or 0) -- (7 Nov) % back each time your own button works
 	plr:SetAttribute("ButtonBurst", m.buttonBurst or 0) -- (7 Nov) s of a 10% run each time
@@ -2044,13 +2053,14 @@ end
 -- through it (collision groups); Tinker picks it at once.
 do
 	local PhysicsService = game:GetService("PhysicsService")
-	for _, g in ipairs({ "Host", "LockUp", "Hidden" }) do
+	for _, g in ipairs({ "Host", "LockUp", "Hidden", "Juke" }) do
 		pcall(function()
 			PhysicsService:RegisterCollisionGroup(g)
 		end)
 	end
 	PhysicsService:CollisionGroupSetCollidable("Host", "LockUp", false)
 	PhysicsService:CollisionGroupSetCollidable("Host", "Hidden", false) -- (7 Nov) a kid in a present
+	PhysicsService:CollisionGroupSetCollidable("Host", "Juke", false) -- (21 Nov) Gillian's Juke, Juliette's shell
 
 	-- a plain doorway: floor with wall either side, not by a locked door, the exit or the host's door
 	local function plainDoorway(x, y)
@@ -4673,6 +4683,145 @@ do
 		return true
 	end
 
+	-- (21 Nov) the four girls' helpers.
+	-- A kid the host passes straight through for a while (Gillian's Juke,
+	-- Juliette's shell): collision group Juke, back to Default after
+	function round.slipThrough(plr, seconds)
+		local char = plr.Character
+		if not char then
+			return
+		end
+		plr:SetAttribute("SlipUntil", math.max(plr:GetAttribute("SlipUntil") or 0, workspace:GetServerTimeNow() + seconds))
+		for _, d in ipairs(char:GetDescendants()) do
+			if d:IsA("BasePart") and d.CollisionGroup == "Default" then
+				d.CollisionGroup = "Juke"
+			end
+		end
+		task.delay(seconds + 0.05, function()
+			if not char.Parent or (plr:GetAttribute("SlipUntil") or 0) > workspace:GetServerTimeNow() then
+				return -- gone, or a later slip still running (it puts them back)
+			end
+			for _, d in ipairs(char:GetDescendants()) do
+				if d:IsA("BasePart") and d.CollisionGroup == "Juke" then
+					d.CollisionGroup = "Default"
+				end
+			end
+		end)
+	end
+	-- a run at `mult` for `secs`, never cutting a faster one short
+	function round.runBurst(p, mult, secs)
+		local now = workspace:GetServerTimeNow()
+		local u, m0 = p:GetAttribute("TeamBurstUntil") or 0, p:GetAttribute("TeamBurstMult") or 1
+		if not (u > now and m0 > mult) then
+			p:SetAttribute("TeamBurstMult", mult)
+			p:SetAttribute("TeamBurstUntil", math.max(u > now and u or 0, now + secs))
+			Effects.aura(p, "speed", secs)
+		end
+	end
+	-- Shell Toss and Spin Move: the skill stun's guard rails, and at most once
+	-- every Config.GIRL_STUN_GAP s between the two
+	function round.girlStun(seconds, text, near)
+		local now = os.clock()
+		if now < (state.girlStunAt or -math.huge) + Config.GIRL_STUN_GAP then
+			return false
+		end
+		if round:skillStun(seconds, text, near) then
+			state.girlStunAt = now
+			return true
+		end
+		return false
+	end
+	-- Juliette's shell round a kid while it lasts
+	function round.shellDome(p, seconds)
+		local h = hrpOf(p)
+		if not h then
+			return
+		end
+		local dome = Instance.new("Part")
+		dome.Name = "TurtleShell"
+		dome.Shape = Enum.PartType.Ball
+		dome.Size = Vector3.new(5.5, 5.5, 5.5)
+		dome.Color = Color3.fromRGB(70, 150, 60)
+		dome.Material = Enum.Material.SmoothPlastic
+		dome.Transparency = 0.25
+		dome.CanCollide, dome.CanQuery, dome.CanTouch, dome.Massless, dome.CastShadow = false, false, false, true, false
+		dome.CFrame = h.CFrame * CFrame.new(0, -0.6, 0)
+		local w = Instance.new("WeldConstraint")
+		w.Part0, w.Part1 = dome, h
+		w.Parent = dome
+		dome.Parent = h
+		game:GetService("Debris"):AddItem(dome, seconds)
+	end
+	-- Juliette's Shell Toss (level 20): her shell flies where she aims and
+	-- bounces back; a host near its path is dizzy
+	function round.shellToss(plr, pos)
+		local J = Config.JULIETTE
+		local h = hrpOf(plr)
+		if not h then
+			return
+		end
+		local from = h.Position
+		local look
+		if typeof(pos) == "Vector3" then
+			look = Vector3.new(pos.X - from.X, 0, pos.Z - from.Z)
+		end
+		if not look or look.Magnitude < 0.1 then
+			look = Vector3.new(h.CFrame.LookVector.X, 0, h.CFrame.LookVector.Z)
+		end
+		look = look.Magnitude > 0.05 and look.Unit or Vector3.new(0, 0, 1)
+		local params = RaycastParams.new()
+		params.FilterType = Enum.RaycastFilterType.Exclude
+		local skip = {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p.Character then
+				table.insert(skip, p.Character)
+			end
+		end
+		for _, hh in ipairs(liveHosts()) do
+			table.insert(skip, hh.model)
+		end
+		params.FilterDescendantsInstances = skip
+		local hit = workspace:Raycast(from, look * J.tossRange, params)
+		local to = hit and (hit.Position - look * 1.5) or (from + look * J.tossRange)
+		local reach = (to - from).Magnitude
+		local struck = false
+		for _, hh in ipairs(liveHosts()) do
+			local rel = hh.root.Position - from
+			local along = math.clamp(rel:Dot(look), 0, reach)
+			local closest = from + look * along
+			if Vector3.new(hh.root.Position.X - closest.X, 0, hh.root.Position.Z - closest.Z).Magnitude <= J.tossHit then
+				struck = true
+				to = Vector3.new(hh.root.Position.X, from.Y, hh.root.Position.Z)
+				break
+			end
+		end
+		local ball = Instance.new("Part")
+		ball.Name = "ThrownShell"
+		ball.Shape = Enum.PartType.Ball
+		ball.Size = Vector3.new(2.6, 2.6, 2.6)
+		ball.Color = Color3.fromRGB(70, 150, 60)
+		ball.Material = Enum.Material.SmoothPlastic
+		ball.Anchored, ball.CanCollide, ball.CanQuery, ball.CanTouch, ball.CastShadow = true, false, false, false, false
+		ball.Position = from
+		ball.Parent = world.root
+		local out = TweenService:Create(ball, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Position = to })
+		out.Completed:Connect(function()
+			if struck and not round.girlStun(J.tossStun, "\u{1F422} Shell Toss! " .. plr.DisplayName .. " bonked the host with her shell - he's dizzy!", to) then
+				say("info", "\u{1F422} Bonk! But the host is still shaking off the last one.", nil, plr)
+			end
+			local hb = hrpOf(plr)
+			local back = TweenService:Create(ball, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Position = hb and hb.Position or from })
+			back.Completed:Connect(function()
+				ball:Destroy()
+			end)
+			back:Play()
+		end)
+		out:Play()
+		if not struck then
+			say("info", "\u{1F422} Your shell missed the host - it bounces back to you.", nil, plr)
+		end
+	end
+
 	function round.skillV2(plr, skill, hrp, pos, stormCopy)
 		local p10, p20 = plr:GetAttribute("Power10"), plr:GetAttribute("Power20")
 		if stormCopy then
@@ -5120,6 +5269,149 @@ do
 				end
 			end
 			say("info", "\u{1F3B5} " .. plr.DisplayName .. " sang a Lullaby - the host is sleepy and slow for " .. seconds .. " s!" .. (p10 == "chorus" and " Everyone's skills are 5 s nearer!" or ""))
+			return true
+		end
+		-- (21 Nov, NEW_CHARACTERS_SKILLS_3.md) the four girls
+		if skill == "juliette" then
+			-- Shell Up: tucked in her shell - unseen, can't be grabbed, can't move
+			local J = Config.JULIETTE
+			local t = plr:GetAttribute("ShellTime") or J.shell
+			local now = workspace:GetServerTimeNow()
+			local tucked = { plr }
+			if p20 == "curtain" then
+				-- Curtain Call: friends right next to her tuck in too
+				for _, p in ipairs(Players:GetPlayers()) do
+					local h = hrpOf(p)
+					if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude <= J.curtain then
+						table.insert(tucked, p)
+					end
+				end
+			end
+			for _, p in ipairs(tucked) do
+				p:SetAttribute("ShellUntil", now + t)
+				p:SetAttribute("SafeUntil", now + t)
+				round.slipThrough(p, t)
+				round.shellDome(p, t)
+			end
+			if p20 == "shelltoss" then
+				plr:SetAttribute("TossFrom", now + t)
+				plr:SetAttribute("TossUntil", now + t + J.tossWindow)
+				task.delay(t, function()
+					if (plr:GetAttribute("TossUntil") or 0) > workspace:GetServerTimeNow() then
+						say("info", "\u{1F422} Out of your shell - press your skill again within " .. J.tossWindow .. " s to throw it at the host!", nil, plr)
+					end
+				end)
+			end
+			Effects.at(plr, "sneak")
+			say("info", "\u{1F422} " .. plr.DisplayName .. " tucked into her shell" .. (#tucked > 1 and (" with " .. (#tucked - 1) .. (#tucked > 2 and " friends" or " friend")) or "") .. " - the host can't grab " .. (#tucked > 1 and "them" or "her") .. " for " .. t .. " s!")
+			return true
+		elseif skill == "gillian" then
+			-- Juke: double speed nothing can grab, straight through the host; then a run
+			local G = Config.GILLIAN
+			local dash = plr:GetAttribute("JukeTime") or G.dash
+			local after = G.after + (p10 == "afterburn" and G.afterburn or 0)
+			local now = workspace:GetServerTimeNow()
+			plr:SetAttribute("JukeUntil", now + dash + 0.2)
+			plr:SetAttribute("TeamBurstMult", G.dashMult)
+			plr:SetAttribute("TeamBurstUntil", now + dash)
+			round.slipThrough(plr, dash + 0.3)
+			Effects.aura(plr, "speed", dash + after)
+			local runners = {}
+			if p20 == "relay" then
+				-- Relay: friends near her get the run after it too
+				for _, p in ipairs(Players:GetPlayers()) do
+					local h = hrpOf(p)
+					if p ~= plr and h and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") and (h.Position - hrp.Position).Magnitude <= G.relay then
+						table.insert(runners, p)
+					end
+				end
+			end
+			local myState = state
+			task.delay(dash, function()
+				if state ~= myState then
+					return
+				end
+				local t2 = workspace:GetServerTimeNow()
+				plr:SetAttribute("TeamBurstMult", G.afterMult)
+				plr:SetAttribute("TeamBurstUntil", t2 + after)
+				for _, p in ipairs(runners) do
+					round.runBurst(p, G.afterMult, after)
+				end
+			end)
+			if p20 == "spin" then
+				-- Spin Move: past the host close enough, he's dizzy
+				task.spawn(function()
+					local stop = os.clock() + dash + 0.2
+					while os.clock() < stop and state == myState do
+						local h = hrpOf(plr)
+						if h and hostNear(h.Position, G.spin) then
+							round.girlStun(G.spinStun, "\u{1F300} Spin Move! " .. plr.DisplayName .. " spun past the host and left him dizzy!", h.Position)
+							break
+						end
+						task.wait(0.1)
+					end
+				end)
+			end
+			say("info", "\u{1F45F} Juke! Nothing can grab you - go!", nil, plr)
+			return true
+		elseif skill == "vivienne" then
+			-- Cheer!: every friend near her gets their skill back (never another Vivienne)
+			local V = Config.VIVIENNE
+			local range = plr:GetAttribute("CheerRange") or V.range
+			local now = workspace:GetServerTimeNow()
+			local names = {}
+			for _, p in ipairs(Players:GetPlayers()) do
+				local h = hrpOf(p)
+				if p ~= plr and h and p:GetAttribute("Skill") ~= "vivienne" and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped")
+					and (h.Position - hrp.Position).Magnitude <= range then
+					table.insert(names, p.DisplayName)
+					for _, k in ipairs({ "CoolUntil", "CopyCool1", "CopyCool2", "StormUntil" }) do
+						if (p:GetAttribute(k) or 0) > now then
+							p:SetAttribute(k, now)
+						end
+					end
+					Effects.icon(p, "\u{1F4E3}", 1.4)
+					if p10 == "bigcheer" then
+						Boost:FireClient(p, "plus", V.bigStamina)
+					end
+					if p20 == "peptalk" then
+						round.runBurst(p, V.pep, V.pepTime)
+					end
+				end
+			end
+			if #names == 0 then
+				say("info", "\u{1F4E3} No friends near enough to cheer - get closer to them first.", nil, plr)
+				return false
+			end
+			if p20 == "peptalk" then
+				round.runBurst(plr, V.pep, V.pepTime)
+			end
+			Effects.ring(hrp.Position - Vector3.new(0, 2.8, 0), Color3.fromRGB(255, 160, 200), range * 2, 0.8)
+			say("info", "\u{1F4E3} " .. plr.DisplayName .. " cheered! " .. table.concat(names, ", ") .. (#names == 1 and " has" or " have") .. " their skill back!" .. (p20 == "peptalk" and " And everyone runs faster!" or ""))
+			return true
+		elseif skill == "charlotte" then
+			-- Lookout: the whole crew sees the host through the walls
+			local Ch = Config.CHARLOTTE
+			if #liveHosts() == 0 then
+				say("info", "\u{1F440} The host isn't out yet - save your Lookout for when he is.", nil, plr)
+				return false
+			end
+			local t = plr:GetAttribute("LookoutTime") or Ch.seconds
+			if p20 == "longwatch" then
+				t *= 2
+			end
+			t = math.floor(t * (Ch.diffMult[state.diff] or 1) * 10 + 0.5) / 10
+			local now = workspace:GetServerTimeNow()
+			RoundState:SetAttribute("LookoutUntil", math.max(RoundState:GetAttribute("LookoutUntil") or 0, now + t))
+			plr:SetAttribute("LookoutUntil", now + t)
+			if p10 == "lookrun" then
+				for _, p in ipairs(Players:GetPlayers()) do
+					if hrpOf(p) and p:GetAttribute("Skill") and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
+						round.runBurst(p, Ch.runMult, Ch.runTime)
+					end
+				end
+			end
+			say("info", "\u{1F440} Lookout! " .. plr.DisplayName .. " spotted the host - everyone can see him through the walls for " .. t .. " s!" .. (p10 == "lookrun" and " Run!" or ""))
 			return true
 		end
 		return nil -- not a new button
@@ -5702,6 +5994,61 @@ task.spawn(function()
 	end
 end)
 
+-- (21 Nov) the four girls' always-on parts, twice a second: the trick
+-- balloons tagged for Gillian's Eagle Eyes (only her screen grays them),
+-- Charlotte's Never Give Up (LastStand) and Early Warning (level 20)
+task.spawn(function()
+	local CollectionService = game:GetService("CollectionService")
+	while true do
+		task.wait(0.5)
+		local playing = state ~= nil and state.status == "playing"
+		if world and world.objects then
+			for _, e in pairs(world.objects) do
+				if e.def and e.def.kind == "balloon" and e.part then
+					local want = playing and e.def.decoy and not e.popped
+					local has = CollectionService:HasTag(e.part, "TrickBalloon")
+					if want and not has then
+						CollectionService:AddTag(e.part, "TrickBalloon")
+					elseif has and not want then
+						CollectionService:RemoveTag(e.part, "TrickBalloon")
+					end
+				end
+			end
+		end
+		local kids, free = 0, {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p:GetAttribute("Skill") and not p:GetAttribute("Waiting") then
+				kids += 1
+				if not p:GetAttribute("Caged") and not p:GetAttribute("Escaped") then
+					table.insert(free, p)
+				end
+			end
+		end
+		local now = workspace:GetServerTimeNow()
+		local Ch = Config.CHARLOTTE
+		for _, p in ipairs(Players:GetPlayers()) do
+			local isC = p:GetAttribute("Skill") == "charlotte"
+			local last = playing and isC and kids >= 2 and #free == 1 and free[1] == p
+			if (p:GetAttribute("LastStand") == true) ~= (last == true) then
+				p:SetAttribute("LastStand", last == true)
+				if last then
+					say("info", "\u{1F4AA} Never Give Up! You're the last one free - you run 15% faster.", nil, p)
+				end
+			end
+			if playing and isC and p:GetAttribute("Power20") == "warning" and not p:GetAttribute("Caged") and not p:GetAttribute("Escaped")
+				and now >= (p:GetAttribute("WarnNext") or 0) then
+				local h = hrpOf(p)
+				if h and hostNear(h.Position, Ch.warnTiles * Config.TILE) then
+					p:SetAttribute("WarnNext", now + Ch.warnEvery)
+					round.runBurst(p, Ch.warnRun, Ch.warnTime)
+					Effects.icon(p, "\u{26A0}", 1.5)
+					say("info", "\u{26A0} Early Warning! The host is close - run!", nil, p)
+				end
+			end
+		end
+	end
+end)
+
 -- Harmony's In Tune (4 Nov): twice a second, every friend within
 -- Config.HARMONY.tune studs of a Harmony is InTune - their screen refills their
 -- stamina faster
@@ -5867,6 +6214,15 @@ local function runSkill(plr, skill, pos, slot, stormCopy)
 	end
 	local coolMult = slot and (plr:GetAttribute("Power10") == "quickcopy" and 0.85 or 1) or (plr:GetAttribute("CooldownMult") or 1)
 	local now = workspace:GetServerTimeNow()
+	-- (21 Nov) Juliette's Shell Toss (level 20): just out of her shell, the
+	-- button again throws it (before the recharge check); the recharge grows
+	if skill == "juliette" and not slot and plr:GetAttribute("Power20") == "shelltoss"
+		and now >= (plr:GetAttribute("TossFrom") or math.huge) and now < (plr:GetAttribute("TossUntil") or 0) then
+		plr:SetAttribute("TossUntil", 0)
+		round.shellToss(plr, pos)
+		plr:SetAttribute(coolKey, math.max(plr:GetAttribute(coolKey) or 0, now) + Config.JULIETTE.tossCool)
+		return
+	end
 	if (plr:GetAttribute(coolKey) or 0) > now then
 		return say("info", (coolKey == "StormUntil" and "Storm Cloud is" or slot and "That copied skill is" or "Your skill is") .. " recharging... " .. math.ceil(plr:GetAttribute(coolKey) - now) .. " seconds", nil, plr)
 	end
@@ -6744,6 +7100,13 @@ function round.start()
 			p:SetAttribute("JailbreakUsed", false) -- and Patch's Jailbreak (5 Nov)
 		end
 	end
+	-- (21 Nov) the four girls: nothing left over from the last floor
+	for _, p in ipairs(Players:GetPlayers()) do
+		for _, k in ipairs({ "ShellUntil", "SafeUntil", "JukeUntil", "TossFrom", "TossUntil", "WarnNext", "LookoutUntil" }) do
+			p:SetAttribute(k, nil)
+		end
+	end
+	RoundState:SetAttribute("LookoutUntil", 0)
 	towerCarry = nil
 	if RoundState:GetAttribute("Tower") then
 		state.towerFloor = carry and carry.floor or 1
