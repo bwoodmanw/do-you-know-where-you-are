@@ -5426,8 +5426,13 @@ do
 				end
 			end
 			if #names == 0 then
-				say("info", "\u{1F4E3} No friends near enough to cheer - get closer to them first.", nil, plr)
-				return false
+				-- (21 Nov, Brent: useless alone) no friend near: she cheers
+				-- herself - all her stamina back and a run
+				Boost:FireClient(plr, "plus", 100)
+				round.runBurst(plr, V.selfRun, V.selfTime)
+				Effects.icon(plr, "\u{1F4E3}", 1.4)
+				say("info", "\u{1F4E3} No friends near - you cheered yourself on: full stamina and " .. math.floor((V.selfRun - 1) * 100 + 0.5) .. "% faster for " .. V.selfTime .. " s!", nil, plr)
+				return true
 			end
 			if p20 == "peptalk" then
 				round.runBurst(plr, V.pep, V.pepTime)

@@ -506,7 +506,7 @@ Config.GILLIAN = { dash = 0.6, dashMult = 2, afterMult = 1.3, after = 2, afterbu
 -- once - never another Vivienne. Pep Talk (20): they and she run `pep` faster
 -- for `pepTime` s. Cozy Hider: the host never peeks into her hiding spot (Cozy
 -- Crew, 20: nor any within `crew` studs of her)
-Config.VIVIENNE = { range = 16, big = 8, bigStamina = 50, pep = 1.15, pepTime = 3, crew = 24 }
+Config.VIVIENNE = { range = 16, big = 8, bigStamina = 50, pep = 1.15, pepTime = 3, crew = 24, selfRun = 1.2, selfTime = 5 } -- self*: no friend near, she cheers herself (21 Nov)
 -- Charlotte. Lookout: the whole crew sees the host through walls `seconds` s
 -- (the ladder adds; `diffMult` on Hard / Nightmare; Long Watch, 20: twice as
 -- long; Lookout Run, 10: every free kid `runMult` faster `runTime` s). Never
@@ -590,7 +590,7 @@ Config.SKILL_INFO = {
 	} },
 	vivienne = { parts = {
 		{ kind = "passive", name = "Cozy Hider", text = "The host never peeks into the hiding spot she's in." },
-		{ kind = "press", name = "Cheer!", text = "Every friend near her gets their skill back at once (not another Vivienne)." },
+		{ kind = "press", name = "Cheer!", text = "Every friend near her gets their skill back at once (not another Vivienne). With no friend near, she cheers herself: full stamina and 20% faster for 5 seconds." },
 	} },
 	charlotte = { parts = {
 		{ kind = "passive", name = "Never Give Up", text = "When she's the last kid still free, she runs 15% faster." },
