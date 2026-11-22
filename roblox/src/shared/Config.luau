@@ -849,6 +849,7 @@ Config.CHARACTER_ASSETS = {
 	HostMrsClaus = 92544233290407, -- 5 Nov: Mrs Claus, Claus Manor (checked on Roblox: Model 'HostMrsClaus', Brent's upload)
 	Elfy = 137385510164350, -- 5 Nov: Elfy, the limited Christmas character (checked on Roblox: Model 'Elfy', Brent's upload)
 	Juliette = 81440887581798, -- 21 Nov: Juliette (checked on Roblox: Model 'Juliette', Brent's upload)
+	Charlotte = 115793552897612, -- 21 Nov: Charlotte (checked on Roblox: Model 'Charlotte', Brent's upload)
 	PatchSkater = 85745496736470, -- 5 Nov: Ice Skater Patch (checked on Roblox: Model 'PatchSkater', Brent's upload)
 	BrainyGingerbread = 78207892363161, -- 5 Nov: Gingerbread Brainy (checked on Roblox: Model 'BrainyGingerbread', Brent's upload)
 	ToyElf = 137802129295979, -- 5 Nov: the Toy Elf in Claus Manor (checked on Roblox: Model 'ToyElf', Brent's upload)
