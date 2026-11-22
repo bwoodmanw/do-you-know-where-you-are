@@ -426,11 +426,11 @@ Config.CHARACTER_UNLOCK = {
 	-- yourself in Claus Manor (Config.PRESENT_HUNT.goal); no pass, no shop price
 	elfy = { presents = 150, limited = true },
 	-- 21 Nov (Brent): the four girls - earned by escaping, or a 499 Robux Game
-	-- Pass each (pass 0 until Brent makes them)
-	juliette = { escapes = 60, pass = 0 },
-	gillian = { escapes = 75, pass = 0 },
-	vivienne = { escapes = 90, pass = 0 },
-	charlotte = { escapes = 110, pass = 0 },
+	-- Pass each
+	juliette = { escapes = 60, pass = 2093561634 }, -- checked on Roblox 21 Nov: "Juliette", 499 Robux, for sale
+	gillian = { escapes = 75, pass = 2093699406 }, -- checked on Roblox 21 Nov: "Gillian", 499 Robux, for sale
+	vivienne = { escapes = 90, pass = 2094533470 }, -- checked on Roblox 21 Nov: "Vivienne", 499 Robux, for sale
+	charlotte = { escapes = 110, pass = 2093615447 }, -- checked on Roblox 21 Nov: "Charlotte", 499 Robux, for sale
 }
 -- skills version 2 (SKILLS_V2.md): every character has a button
 Config.ECHO_BURST = { mult = 1.05, seconds = 3 } -- Echo runs faster for a moment after a noise

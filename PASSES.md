@@ -82,6 +82,15 @@ price 499).
 
 Ids go in `Config.CHARACTER_UNLOCK` as `pass = <id>`.
 
+## The four girls' pass ids (all 4, checked on Roblox 21 Nov: 499 Robux, for sale)
+
+| Character | Pass id |
+|---|---|
+| Juliette | 2093561634 |
+| Gillian | 2093699406 |
+| Vivienne | 2094533470 |
+| Charlotte | 2093615447 |
+
 ## Managed pricing: OFF (8 Oct)
 
 Creator Hub's **Managed pricing** lets Roblox test different prices on small
