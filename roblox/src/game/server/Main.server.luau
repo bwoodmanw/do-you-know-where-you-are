@@ -6048,17 +6048,30 @@ task.spawn(function()
 	while true do
 		task.wait(0.5)
 		local playing = state ~= nil and state.status == "playing"
+		-- (21 Nov, Brent: Eagle Eyes showed nothing) an attribute on the balloon
+		-- itself (Trick), which her screen reads; the tag stays as well
 		if world and world.objects then
+			local marked = 0
 			for _, e in pairs(world.objects) do
-				if e.def and e.def.kind == "balloon" and e.part then
-					local want = playing and e.def.decoy and not e.popped
+				if type(e) == "table" and e.def and e.def.kind == "balloon" and e.part then
+					local want = (playing and e.def.decoy and not e.popped) == true
+					if (e.part:GetAttribute("Trick") == true) ~= want then
+						e.part:SetAttribute("Trick", want)
+					end
 					local has = CollectionService:HasTag(e.part, "TrickBalloon")
 					if want and not has then
 						CollectionService:AddTag(e.part, "TrickBalloon")
 					elseif has and not want then
 						CollectionService:RemoveTag(e.part, "TrickBalloon")
 					end
+					if want then
+						marked += 1
+					end
 				end
+			end
+			if RunService:IsStudio() and playing and marked ~= (state.trickMarked or -1) then
+				state.trickMarked = marked
+				print("[Eagle Eyes] " .. marked .. " trick balloons marked")
 			end
 		end
 		local kids, free = 0, {}

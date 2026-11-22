@@ -3520,35 +3520,56 @@ RunService:BindToRenderStep("VineSwing", Enum.RenderPriority.Character.Value + 2
 	hum:Move(d.Unit, false)
 end)
 
--- (21 Nov) Gillian's Eagle Eyes: the trick balloons (tagged by the server)
--- look gray to her - only on her screen
+-- (21 Nov) Gillian's Eagle Eyes: the trick balloons (Trick, set by the
+-- server) look dark gray with a red X - only on her screen. (Brent: the first
+-- try showed nothing) checked twice a second; the color is changed on her
+-- screen itself, with an X over it
 do
-	local CollectionService = game:GetService("CollectionService")
-	local marks = {}
-	local function paint()
-		local mine = player:GetAttribute("Skill") == "gillian"
-		for _, part in ipairs(CollectionService:GetTagged("TrickBalloon")) do
-			if mine and not marks[part] then
-				local hl = Instance.new("Highlight")
-				hl.Name = "EagleEyes"
-				hl.FillColor = Color3.fromRGB(110, 110, 120)
-				hl.FillTransparency = 0.05
-				hl.OutlineColor = Color3.fromRGB(70, 70, 80)
-				hl.DepthMode = Enum.HighlightDepthMode.Occluded
-				hl.Adornee = part
-				hl.Parent = part
-				marks[part] = hl
+	local marks = {} -- balloon -> { its color, the X }
+	local told = false
+	task.spawn(function()
+		while true do
+			task.wait(0.5)
+			local seen = {}
+			if player:GetAttribute("Skill") == "gillian" then
+				for _, d in ipairs(workspace:GetDescendants()) do
+					if d:IsA("BasePart") and d.Name == "Balloon" and d:GetAttribute("Trick") == true and d.Transparency < 0.9 then
+						seen[d] = true
+						if not marks[d] then
+							local x = Instance.new("BillboardGui")
+							x.Name = "EagleEyes"
+							x.Size = UDim2.fromScale(2.6, 2.6)
+							x.LightInfluence = 0
+							local l = Instance.new("TextLabel")
+							l.Size = UDim2.fromScale(1, 1)
+							l.BackgroundTransparency = 1
+							l.Font = Enum.Font.FredokaOne
+							l.TextScaled = true
+							l.TextColor3 = Color3.fromRGB(235, 40, 40)
+							l.TextStrokeTransparency = 0.3
+							l.Text = "X"
+							l.Parent = x
+							x.Adornee = d
+							x.Parent = d
+							marks[d] = { d.Color, x }
+							d.Color = Color3.fromRGB(95, 95, 105)
+							if not told then
+								told = true
+								toast("\u{1F441} Eagle Eyes: the gray balloons with an X are tricks - skip them!", 4)
+							end
+						end
+					end
+				end
+			end
+			for d, m in pairs(marks) do
+				if not seen[d] then
+					if d.Parent then
+						d.Color = m[1]
+					end
+					m[2]:Destroy()
+					marks[d] = nil
+				end
 			end
 		end
-		for part, hl in pairs(marks) do
-			if not mine or not part.Parent or not CollectionService:HasTag(part, "TrickBalloon") then
-				hl:Destroy()
-				marks[part] = nil
-			end
-		end
-	end
-	CollectionService:GetInstanceAddedSignal("TrickBalloon"):Connect(paint)
-	CollectionService:GetInstanceRemovedSignal("TrickBalloon"):Connect(paint)
-	player:GetAttributeChangedSignal("Skill"):Connect(paint)
-	paint()
+	end)
 end
