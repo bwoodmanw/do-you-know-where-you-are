@@ -5289,7 +5289,15 @@ do
 			end
 			for _, p in ipairs(tucked) do
 				p:SetAttribute("ShellUntil", now + t)
-				p:SetAttribute("SafeUntil", now + t)
+				-- (21 Nov, Brent: the host waited by her shell) safe a moment
+				-- longer than the shell, to get moving
+				p:SetAttribute("SafeUntil", now + t + Config.JULIETTE.getaway)
+				-- and every host near her gives up and walks off to the far side
+				for _, hh in ipairs(liveHosts()) do
+					if (hh.root.Position - hrp.Position).Magnitude <= J.giveUp then
+						hh.shellLost = true
+					end
+				end
 				round.slipThrough(p, t)
 				round.shellDome(p, t)
 			end

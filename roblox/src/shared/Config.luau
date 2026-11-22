@@ -494,7 +494,7 @@ Config.ELFY = { dash = 1.2, dashMarch = 18, wrappedDash = 1.5, wrappedMarch = 20
 -- `tossWindow` s after the shell throws it up to `tossRange` studs - a host
 -- within `tossHit` studs of its path is dizzy `tossStun` s, and the recharge is
 -- `tossCool` s longer. Curtain Call (20): friends within `curtain` studs tuck in too
-Config.JULIETTE = { shell = 4, rolling = 0.3, steady = 0.75, tossWindow = 3, tossRange = 40, tossHit = 4.5, tossStun = 2, tossCool = 15, curtain = 6 }
+Config.JULIETTE = { shell = 4, rolling = 0.3, steady = 0.75, tossWindow = 3, tossRange = 40, tossHit = 4.5, tossStun = 2, tossCool = 15, curtain = 6, getaway = 1, giveUp = 60 } -- getaway: s safe after the shell opens (21 Nov)
 -- Gillian. Juke: `dashMult` speed for `dash` s (the ladder adds) - nothing can
 -- grab her and she slips through the host - then `afterMult` for `after` s
 -- (Afterburner, 10: `afterburn` s more). Spin Move (20): passing within `spin`

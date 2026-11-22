@@ -426,13 +426,22 @@ function Host:step(dt)
 	-- 4 Nov (Brent: he waited by Cloud's fog until it cleared): the moment the
 	-- kid he is after (or the spot he is heading for) is in fog, he loses
 	-- them at once and walks off to a far patrol point - he doesn't camp there
+	-- 21 Nov (Brent: he stood by Juliette's shell until it opened): a kid in
+	-- her shell (SafeUntil) counts as in fog - he walks off the same way
 	do
 		local fogLost = false
-		if (self.mode == "hunt" or self.mode == "search") and self.target and self.target:GetAttribute("Fogged") then
+		local tNow = workspace:GetServerTimeNow()
+		local function gone(p)
+			return p:GetAttribute("Fogged") or (p:GetAttribute("SafeUntil") or 0) > tNow
+		end
+		if self.shellLost then
+			self.shellLost = nil -- Main: Juliette tucked in near him
+			fogLost = true
+		elseif (self.mode == "hunt" or self.mode == "search") and self.target and gone(self.target) then
 			fogLost = true
 		elseif self.mode == "search" and self.goal then
 			for _, p in ipairs(Players:GetPlayers()) do
-				local h = p:GetAttribute("Fogged") and p.Character and p.Character:FindFirstChild("HumanoidRootPart")
+				local h = gone(p) and p.Character and p.Character:FindFirstChild("HumanoidRootPart")
 				if h and (Vector3.new(h.Position.X - self.goal.X, 0, h.Position.Z - self.goal.Z)).Magnitude < 8 then
 					fogLost = true
 				end
