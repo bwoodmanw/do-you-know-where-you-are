@@ -390,6 +390,58 @@ function Effects.icon(player, text, seconds)
 	Debris:AddItem(gui, (seconds or 1.8) + 0.5)
 end
 
+-- (21 Nov, Brent: brighter) Charlotte's Early Warning: a big glowing yellow
+-- sign with a "!" over her head that pulses, seen through walls
+function Effects.warning(player, seconds)
+	local char = player.Character
+	local head = char and (char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart"))
+	if not head then
+		return
+	end
+	seconds = seconds or 2
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "EarlyWarning"
+	gui.Size = UDim2.fromScale(1, 1)
+	gui.StudsOffset = Vector3.new(0, 3.6, 0)
+	gui.AlwaysOnTop = true
+	gui.LightInfluence = 0
+	gui.Brightness = 3
+	gui.Parent = head
+	local sign = Instance.new("Frame")
+	sign.AnchorPoint = Vector2.new(0.5, 0.5)
+	sign.Position = UDim2.fromScale(0.5, 0.5)
+	sign.Size = UDim2.fromScale(1, 1)
+	sign.BackgroundColor3 = Color3.fromRGB(255, 225, 0)
+	sign.Parent = gui
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0.5, 0)
+	c.Parent = sign
+	local s = Instance.new("UIStroke")
+	s.Color = Color3.fromRGB(255, 110, 0)
+	s.Thickness = 5
+	s.Parent = sign
+	local l = Instance.new("TextLabel")
+	l.Size = UDim2.fromScale(1, 1)
+	l.BackgroundTransparency = 1
+	l.Font = Enum.Font.FredokaOne
+	l.TextScaled = true
+	l.TextColor3 = Color3.fromRGB(30, 20, 0)
+	l.Text = "!"
+	l.Parent = sign
+	TweenService:Create(gui, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.fromScale(3.6, 3.6) }):Play()
+	-- a pulse: the sign swells and shrinks until it fades
+	TweenService:Create(sign, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), { Size = UDim2.fromScale(1.18, 1.18) }):Play()
+	task.delay(seconds, function()
+		if gui.Parent then
+			for _, o in ipairs({ sign, l }) do
+				TweenService:Create(o, TweenInfo.new(0.35), o == sign and { BackgroundTransparency = 1 } or { TextTransparency = 1 }):Play()
+			end
+			TweenService:Create(s, TweenInfo.new(0.35), { Transparency = 1 }):Play()
+		end
+	end)
+	Debris:AddItem(gui, seconds + 0.5)
+end
+
 -- ---------- reactions when a host's ability gets a kid (10 Oct, Brent) ----------
 -- Effects only (no body animations yet: those come after the toon switch-over).
 --   gummy  stuck in a gummy puddle: pink goo at the feet, a Stuck! bubble

@@ -4731,26 +4731,64 @@ do
 		end
 		return false
 	end
-	-- Juliette's shell round a kid while it lasts
+	-- Juliette's shell over a kid while it lasts (21 Nov, Brent: a real turtle
+	-- shell, not a green ball): a low dome sitting on the floor, darker plates
+	-- (a middle one, a ring of six, a ring of eight lower down) and a light rim
 	function round.shellDome(p, seconds)
 		local h = hrpOf(p)
 		if not h then
 			return
 		end
-		local dome = Instance.new("Part")
-		dome.Name = "TurtleShell"
-		dome.Shape = Enum.PartType.Ball
-		dome.Size = Vector3.new(5.5, 5.5, 5.5)
-		dome.Color = Color3.fromRGB(70, 150, 60)
-		dome.Material = Enum.Material.SmoothPlastic
-		dome.Transparency = 0.25
-		dome.CanCollide, dome.CanQuery, dome.CanTouch, dome.Massless, dome.CastShadow = false, false, false, true, false
-		dome.CFrame = h.CFrame * CFrame.new(0, -0.6, 0)
-		local w = Instance.new("WeldConstraint")
-		w.Part0, w.Part1 = dome, h
-		w.Parent = dome
-		dome.Parent = h
-		game:GetService("Debris"):AddItem(dome, seconds)
+		local hum = h.Parent and h.Parent:FindFirstChildOfClass("Humanoid")
+		local floorY = h.Position.Y - h.Size.Y / 2 - (hum and hum.HipHeight or 2)
+		local base = CFrame.new(h.Position.X, floorY, h.Position.Z) * (h.CFrame - h.CFrame.Position)
+		local A, Ht = 3.6, 5.2 -- half its width, its height
+		local shell = Instance.new("Model")
+		shell.Name = "TurtleShell"
+		local function piece(name, cf, size, color, mesh)
+			local q = Instance.new("Part")
+			q.Name = name
+			q.Size = size
+			q.CFrame = cf
+			q.Color = color
+			q.Material = Enum.Material.SmoothPlastic
+			q.TopSurface, q.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
+			q.Anchored, q.CanCollide, q.CanQuery, q.CanTouch, q.CastShadow, q.Massless = false, false, false, false, false, true
+			if mesh then
+				local m = Instance.new("SpecialMesh")
+				m.MeshType = Enum.MeshType.Sphere
+				m.Parent = q
+			end
+			local w = Instance.new("WeldConstraint")
+			w.Part0, w.Part1 = q, h
+			w.Parent = q
+			q.Parent = shell
+			return q
+		end
+		-- the dome: an ellipsoid whose lower half is under the floor
+		piece("Dome", base, Vector3.new(A * 2, Ht * 2, A * 2.15), Color3.fromRGB(78, 150, 62), true)
+		-- the light rim round its edge
+		piece("Rim", base * CFrame.new(0, 0.3, 0) * CFrame.Angles(0, 0, math.rad(90)), Vector3.new(0.6, A * 2 + 0.7, A * 2 + 0.7), Color3.fromRGB(170, 205, 90)).Shape = Enum.PartType.Cylinder
+		-- the plates: flat discs lying on the dome, darker green
+		local dark = Color3.fromRGB(40, 100, 40)
+		local function plate(el, az, d)
+			local ce, se = math.cos(el), math.sin(el)
+			local x, y, z = A * ce * math.cos(az), Ht * se, A * 1.075 * ce * math.sin(az)
+			local n = Vector3.new(x / (A * A), y / (Ht * Ht), z / (A * A * 1.156))
+			local pos = base * Vector3.new(x, y, z)
+			local nw = (base - base.Position):VectorToWorldSpace(n.Unit)
+			local q = piece("Plate", CFrame.lookAt(pos, pos + nw) * CFrame.Angles(0, math.rad(90), 0), Vector3.new(0.25, d, d), dark)
+			q.Shape = Enum.PartType.Cylinder
+		end
+		plate(math.rad(90), 0, 2.4)
+		for i = 0, 5 do
+			plate(math.rad(52), math.rad(i * 60), 2.1)
+		end
+		for i = 0, 7 do
+			plate(math.rad(20), math.rad(i * 45 + 22.5), 1.8)
+		end
+		shell.Parent = h.Parent
+		game:GetService("Debris"):AddItem(shell, seconds)
 	end
 	-- Juliette's Shell Toss (level 20): her shell flies where she aims and
 	-- bounces back; a host near its path is dizzy
@@ -6049,7 +6087,7 @@ task.spawn(function()
 				if h and hostNear(h.Position, Ch.warnTiles * Config.TILE) then
 					p:SetAttribute("WarnNext", now + Ch.warnEvery)
 					round.runBurst(p, Ch.warnRun, Ch.warnTime)
-					Effects.icon(p, "\u{26A0}", 1.5)
+					Effects.warning(p, 2) -- (21 Nov, Brent: brighter)
 					say("info", "\u{26A0} Early Warning! The host is close - run!", nil, p)
 				end
 			end
