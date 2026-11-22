@@ -942,6 +942,11 @@ Config.PORTRAITS = {
 	clone = 92508398113695, -- 4 Nov (Clone-512.png, one upload for both places; checked on Roblox)
 	harmony = 110743510829503, -- 4 Nov (Harmony-512.png, one upload for both places; checked on Roblox)
 	elfy = 126090240267338, -- 5 Nov (Elfy-512.png, one upload for both places; checked on Roblox)
+	-- 21 Nov: the four girls (<Name>-512.png, one upload for both places; checked on Roblox: Images, Brent's uploads)
+	juliette = 77221649040699,
+	gillian = 129623461617995,
+	vivienne = 81652255924574,
+	charlotte = 132239853706925,
 	brainy = 123589958200522,
 }
 -- the same portraits uploaded for the Party House place
@@ -959,6 +964,11 @@ Config.PORTRAITS_GAME = {
 	clone = 92508398113695, -- 4 Nov (Clone-512.png, one upload for both places; checked on Roblox)
 	harmony = 110743510829503, -- 4 Nov (Harmony-512.png, one upload for both places; checked on Roblox)
 	elfy = 126090240267338, -- 5 Nov (Elfy-512.png, one upload for both places; checked on Roblox)
+	-- 21 Nov: the four girls (<Name>-512.png, one upload for both places; checked on Roblox: Images, Brent's uploads)
+	juliette = 77221649040699,
+	gillian = 129623461617995,
+	vivienne = 81652255924574,
+	charlotte = 132239853706925,
 	brainy = 96437377458580,
 }
 -- daily login rewards: day 1-7 of an unbroken streak (then round again);
